@@ -1,0 +1,8 @@
+bg/output/single/**
+bg/output/stderr/**
+bg/output/stdoutput/**
+bg/output/sum/processed/**
+bg/output/sum/stack/**
+bg/output/sum/type_sum/**
+sim_x10x20x10/simData*
+analysis/output/**
