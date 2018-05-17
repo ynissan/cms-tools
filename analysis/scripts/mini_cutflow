@@ -1,0 +1,13 @@
+[?1034hBg=True Signal=False
+/pnfs/desy.de/cms/tier2/store/user/sbein/NtupleHub/Production2016v1/Summer16.WJetsToLNu_HT-1200To2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext1_75_RA2AnalysisTree.root
+nentries=79518
+processing entry 0 out of 79518
+processing entry 10000 out of 79518
+processing entry 20000 out of 79518
+processing entry 30000 out of 79518
+processing entry 40000 out of 79518
+processing entry 50000 out of 79518
+processing entry 60000 out of 79518
+processing entry 70000 out of 79518
+Total Dilepton DileptonPt DileptonInvMass GT1J MetCut Ht MetDHt NoBTags MtautauVeto Mt
+79518  1748  1723  928  928  353  353  1  0  0  0 

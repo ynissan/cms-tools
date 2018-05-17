@@ -1,0 +1,42 @@
+\documentclass[12pt,A4paper]{article}
+
+\usepackage{cite}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{mathtools}
+
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}
+
+\begin{document}
+
+\begin{table}
+\begin{centering}
+\begin{tabular}{ | c | c | c | }
+\hline
+selection & n(passed) & rel. eff. (tot. eff) \\
+\hline
+No cuts & 10046216 & 100.0(100.0) \\
+n($\ell$) = 2 & 215978 & 2.15(2.14984) \\
+n(jet) $\geq$ 1 & 215668 & 99.856(2.14676) \\
+n(b) = 0 & 27731 & 12.858(0.27603) \\
+$E_{\text{T}}^{\text{miss}} \geq 125$ GeV & 3869 & 13.952(0.03851) \\
+$p_{\text{T}}(\ell\ell) \geq 3$ GeV & 3861 & 99.793(0.03843) \\
+$p_{\text{T}}(\ell_{1,2}) \in [5,30]$ GeV & 555 & 14.375(0.00552) \\
+$0.6 \leq E_{\text{T}}^{\text{miss}}/H_{\text{T}} \leq$ 1.4 & 333 & 60.0(0.00331) \\
+$M_{\text{T}} \leq 70$ GeV & 73 & 21.922(0.00073) \\
+$M(\ell\ell) \in [4,9]$ or $[10.5,50]$ & 60 & 82.192(0.0006) \\
+$H_{\text{T}} \geq 100$ GeV & 60 & 100.0(0.0006) \\
+$\abs{\eta_{\mu}}<2.4,\abs{\eta_{e}}<2.5$ & 60 & 100.0(0.0006) \\
+$M(\tau\tau)$ veto $[0,160]$ GeV & 55 & 91.667(0.00055) \\
+$\mu$-corr. $E_{\text{T}}^{\text{miss}} \geq 125$ GeV & 55 & 100.0(0.00055) \\
+
+\hline
+\end{tabular}
+\caption{Cut flow of unweighted event counts derived from events in sample \texttt{*Summer16.TTJets\_TuneCUETP8M1\_13TeV*} in the attempt to carry out the SUS-16-048 selection.}
+\end{centering}
+\end{table}
+
+At this point we think we are using all of the required collections with a couple of small modifications, which are a nuissance. The differences are our jets have a pT cut of 30 and not 25 GeV, and the leptons we are using are the EGamma POG's loose WP leptons, and not the super loose HIG POG leptons. We don't think these differences should result in enormous changes. However, there is a good chance something else is not perfectly synchronized yet. - Yuval and Sam.
+
+\end{document}
