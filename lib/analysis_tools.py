@@ -57,7 +57,10 @@ def PreciseMtautau(MetPt, MetPhi,  L1, L2 ):
   #L2 = TLorentzVector( l2.Px(), l2.Py(), l2.Pz(), sqrt((l2.Px())**2 + (l2.Py())**2 + (l2.Py())**2 + 0.106**2))  
   
   #print "Masses: ",str(L1.M()),str(L2.M())                                                                                                                                                
-  #float A00,A01,A10,A11,  C0,C1,  X0,X1,  inv_det;     // Define A:2x2 matrix, C,X 2x1 vectors & det[A]^-1                                                                                                                    
+  #float A00,A01,A10,A11,  C0,C1,  X0,X1,  inv_det;     // Define A:2x2 matrix, C,X 2x1 vectors & det[A]^-1   
+  if ( L1.Px()*L2.Py() - L2.Px()*L1.Py()) == 0:
+  	print "*********WTF!!!!"
+  	return -1                                                                                                             
   inv_det = 1./( L1.Px()*L2.Py() - L2.Px()*L1.Py())
   A00 = inv_det*L2.Py();     A01 =-inv_det*L2.Px()
   A10 =-inv_det*L1.Py();     A11 = inv_det*L1.Px()

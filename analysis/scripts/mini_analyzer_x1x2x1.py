@@ -186,12 +186,12 @@ for ientry in range(nentries) :
 	cutValues[i] += 1
 	i +=1
 	#lowMET
-	if not (c.MET > 250 and analysis_tools.pt3(l1.Pt(),l1.Phi(),l2.Pt(),l2.Phi(),c.MET,c.METPhi) > 250):
+	pt3 = analysis_tools.pt3(l1.Pt(),l1.Phi(),l2.Pt(),l2.Phi(),c.MET,c.METPhi) 
+	if not (c.MET > 250 and pt3 > 250):
 		continue
 	cutValues[i] += 1
 	i +=1
 	
-		
 	#HT
 	HT = analysis_ntuples.htJet25(c)
 	if not (HT - l1.Pt() - l2.Pt() > 100):
@@ -200,7 +200,7 @@ for ientry in range(nentries) :
 	i +=1
 	
 	#METovHT
-	if not ((c.MET / HT) > (2/3) and (c.MET / HT) < 1.4):
+	if not ((c.MET / HT) > (2.0/3.0) and (c.MET / HT) < 1.4):
 		continue
 	cutValues[i] += 1
 	i +=1
@@ -267,7 +267,7 @@ for ientry in range(nentries) :
 #weight = 0.1 * 172004.0 / cutValues[0]
 #weight = 10757.0 / 42312.0
 #weight = 10757.0 / cutValues[1]
-weight = 10757.0 / cutValues[1]
+weight = 1
 
 for i, val in enumerate(cutValues):
 	print cutNames[i] + " " + str(val * weight)

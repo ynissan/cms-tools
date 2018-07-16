@@ -71,16 +71,42 @@ def MetCut(params, event, eventParams):
 	return met >= params.get("met")
 
 def Ht(params, event, eventParams):
-	return eventParams["ht"] >= params.get("ht")
+	#print "MET=" + str(event.MET) + " pt3=" + str(eventParams["pt3"]) 
+	return (eventParams["dilepHt"] - eventParams["leptons"][0].Pt() - eventParams["leptons"][1].Pt() > params.get("ht"))
+	#return eventParams["ht"] >= params.get("ht")
 	
 def Dilepton(params, event, eventParams):
 	return eventParams["dilepton"]
+	
+def TwoMu(params, event, eventParams):
+	return eventParams["dilepton"] and eventParams["leptonsType"] == "M"
+
+def LeplepPt(params, event, eventParams):
+	return eventParams["leptons"][0].Pt() > 5 and eventParams["leptons"][0].Pt() < 30
+	
+def Pt5sublep(params, event, eventParams):
+	return eventParams["leptons"][1].Pt() > 5
+
+def OppositeSign(params, event, eventParams):
+	return eventParams["oppositeSign"]
 
 def NoBTags(params, event, eventParams):
 	return eventParams["BTags"] == 0
 	
 def DileptonInvMass(params, event, eventParams):
 	return eventParams["dilepton"] and eventParams["invMass"] <= params["invMassMax"] and eventParams["invMass"] >= params["invMassMin"] and not (eventParams["invMass"] >= params["invMassRange"].get("min") and eventParams["invMass"] <= params["invMassRange"].get("max"))
+
+def DileptonInvMassMin(params, event, eventParams):
+	return eventParams["invMass"] >= params["invMassMin"]
+	
+def DileptonInvMassMax(params, event, eventParams):
+	return eventParams["invMass"] <= params["invMassMax"]
+	
+def DileptonInvMassRange(params, event, eventParams):
+	return not (eventParams["invMass"] >= params["invMassRange"].get("min") and eventParams["invMass"] <= params["invMassRange"].get("max"))
+
+def LowMET(params, event, eventParams):
+	return (event.MET > 250 and eventParams["pt3"] > 250)
 	
 def DileptonDeltaEta(params, event, eventParams):
 	return eventParams["dilepton"] and eventParams["deltaEta"] <= params["deltaEta"]
@@ -108,7 +134,8 @@ def DileptonLepCorMET(params, event, eventParams):
 	
 
 def MetDHt(params, event, eventParams):
-	return eventParams["metDHt"] >= params["minMetDHt"] and eventParams["metDHt"] <= params["maxMetDHt"]
+	metDHt = eventParams["met"] / eventParams["dilepHt"]
+	return metDHt >= params["minMetDHt"] and metDHt <= params["maxMetDHt"]
 
 def Mt(params, event, eventParams):
 	return eventParams["dilepton"] and eventParams["mt1"] <= params["mt"] and eventParams["mt2"] <= params["mt"]

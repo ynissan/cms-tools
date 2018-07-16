@@ -43,7 +43,7 @@ def isSusy(pdgId):
 
 def handleX10X20X10Cand(event, weight, params, cutFlow = False):
 	#JETS
-	nj, btags, ljet = analysis_ntuples.numberOfJets25Pt2_4Eta_Loose(event)
+	nj, btags, ljet = analysis_ntuples.numberOfJets25Pt2_4Eta_Loose2(event)
 	params["nj"] = nj
 	params["BTags"] = btags
 	params["ljet"] = ljet
@@ -68,16 +68,27 @@ def handleX10X20X10Cand(event, weight, params, cutFlow = False):
 	params["dilepton"] = False
 	if nL == 2:
 		#REMOVE COMMENTS!
-		# if event.Electrons.size() == 2 and event.Electrons_charge[0] * event.Electrons_charge[1] < 0:
-# 			dilepton = True
-# 			params["dilepton"] = True
-# 			params["leptons"] = event.Electrons
-# 			params["leptonsType"] = "E"
-# 			handleX10X20X10DiLepton(event.Electrons[0], event.Electrons[1], event, nj, weight, params, "E", cutFlow)
-		if event.Muons.size() == 2 and event.Muons_charge[0] * event.Muons_charge[1] < 0:
+		#HT
+		dilepHt = analysis_ntuples.htJet25(event)
+		params["dilepHt"] = dilepHt
+		if event.Electrons.size() == 2:# and event.Electrons_charge[0] * event.Electrons_charge[1] < 0:
 			dilepton = True
 			params["dilepton"] = True
-			params["leptons"] = event.Muons
+			params["oppositeSign"] = event.Electrons_charge[0] * event.Electrons_charge[1] < 0
+			if event.Electrons[0].Pt() > event.Electrons[1].Pt():
+				params["leptons"] = event.Electrons
+			else:
+				params["leptons"] = [event.Electrons[1], event.Electrons[0]]
+			params["leptonsType"] = "E"
+			handleX10X20X10DiLepton(event.Electrons[0], event.Electrons[1], event, nj, weight, params, "E", cutFlow)
+		if event.Muons.size() == 2:# and event.Muons_charge[0] * event.Muons_charge[1] < 0:
+			dilepton = True
+			params["dilepton"] = True
+			params["oppositeSign"] = event.Muons_charge[0] * event.Muons_charge[1] < 0
+			if event.Muons[0].Pt() > event.Muons[1].Pt():
+				params["leptons"] = event.Muons
+			else:
+				params["leptons"] = [event.Muons[1], event.Muons[0]]
 			params["leptonsType"] = "M"
 			handleX10X20X10DiLepton(event.Muons[0], event.Muons[1], event, nj, weight, params, "M", cutFlow)
 	
@@ -151,6 +162,8 @@ def handleX10X20X10DiLepton(l1, l2, event, nj, weight, params, type, cutFlow):
 	deltaR = abs(l1.DeltaR(l2))
 	params["deltaR"] = deltaR
 	
+	params["pt3"] = analysis_tools.pt3(l1.Pt(),l1.Phi(),l2.Pt(),l2.Phi(),event.MET,event.METPhi)
+	
 	deltaEtaLeadingJetDilepton = None
 	params["deltaEtaLeadingJetDilepton"] = None
 	leadingJetPartonFlavor = None
@@ -161,10 +174,10 @@ def handleX10X20X10DiLepton(l1, l2, event, nj, weight, params, type, cutFlow):
 	pt = TLorentzVector()
 	pt.SetPtEtaPhiE(event.MET,0,event.METPhi,event.MET)
 	
-	params["mt1"] = analysis_tools.MT(event.MET, pt, l1)
-	params["mt2"] = analysis_tools.MT(event.MET, pt, l2)
+	params["mt1"] = analysis_tools.MT2(event.MET, event.METPhi, l1)
+	params["mt2"] = analysis_tools.MT2(event.MET, event.METPhi, l2)
 	
-	mtautau = analysis_tools.Mtautau(pt, l1, l2)
+	mtautau = analysis_tools.PreciseMtautau(event.MET, event.METPhi, l1, l2)
 	params["mtautau"] = mtautau
 	
 	if cutFlow:
@@ -432,6 +445,7 @@ if (bg and signal) or not (bg or signal):
 	
 ################## CUT FLOW ##################
 if cf:
+	print "IN CUTFLOW"
 	cutFlow = cuts.createCutFlow(cf, cutsDef, "ntuples")
 	input_files = input_file.split(" ")
 	for file in input_files:
@@ -442,12 +456,12 @@ if cf:
 		for ientry in range(nentries):
 			if ientry % 10000 == 0:
 				print "processing entry" , ientry, "out of", nentries
-				print cutFlow
+				#print cutFlow
 			rightProcess = True
+			c.GetEntry(ientry)
 			if signal:
 				rightProcess = isRightProcess(c)
-			if rightProcess:	
-				c.GetEntry(ientry)
+			if rightProcess:
 				params = {}
 				handleX10X20X10Cand(c, 1, params, True)
 				cuts.appendCutFlow(cf, cutsDef, cutFlow, "ntuples", c, params)
