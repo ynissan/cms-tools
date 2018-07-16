@@ -21,6 +21,7 @@ sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
 from lib import analysis_ntuples
 from lib import utils
 from lib import analysis_tools
+import itertools
 
 #############    CMD ARGS    #############
 
@@ -88,8 +89,8 @@ c.Add(input_file)
 nentries = c.GetEntries()
 print "nentries=" + str(nentries)
 
-cutNames = ["Total", "Dilepton", "Sign", "DileptonPt", "DileptonInvMass", "GT1J", "MetCut", "Ht", "MetDHt", "NoBTags", "MtautauVeto", "Mt"]
-cutValues = [0,0,0,0,0,0,0,0,0,0,0,0]
+cutNames = ["Total", "2mu", "leplepPt", "pt5sublep", "opposite-sign", "dilepPt", "Mll>4", "Mll<50", "Upsilon_veto", "lowMET","HT", "METovHT", "bveto", "mtautau", "MT"]
+cutValues = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 cutValues[0] = nentries
 
 def DileptonLepCorMET(c):
@@ -103,21 +104,27 @@ def DileptonLepCorMET(c):
 	#if ptmiss.Pt() >= 125:
 	#	print "******** ptmiss=" + str(ptmiss.Pt())
 	return ptmiss.Pt() >= 125
-
+		
 def passedLep(leps, miniIsos, tightIDs, eta, lcharges):
 	passed = 0
 	passedMuons = []
 	charges = []
 	for i, l in enumerate(leps):
-		if l.Pt() < 30 and l.Pt() > 5 and abs(l.Eta()) < eta:# and miniIsos[i] < 0.5 and miniIsos[i] * l.Pt() < 5:
+		if miniIsos[i] < 0.5 and miniIsos[i] * l.Pt() < 5:# l.Pt() < 30 and l.Pt() > 5:# and abs(l.Eta()) < eta:# and 
 			passed += 1
 			passedMuons.append(l)
 			charges.append(lcharges[i])
 	return passedMuons, charges
+	
+	
 
-def muonAcceptence(c):
-	#and c.Muons_charge[0] * c.Muons_charge[1] < 0
-	return passedLep(c.Muons, c.Muons_MiniIso, c.Muons_tightID, 2.4, c) #and passedLep(c.Electrons, c.Electrons_MiniIso, c.Electrons_tightID, 2.5) == 0
+def twoMuons(c):
+	if len(c.Electrons) == 0 and len(c.Muons) == 2:
+		if c.Muons[0].Pt() > c.Muons[1].Pt():
+			return [0,1]
+		else:
+			return [1,0]
+	return None	
 
 for ientry in range(nentries) :
 	if ientry % 10000 == 0 :
@@ -131,72 +138,139 @@ for ientry in range(nentries) :
 	histList["HT"].Fill(c.HT)
 	# two muons
 	i=1
-	muons, muonsCharges = passedLep(c.Muons, c.Muons_MiniIso, c.Muons_tightID, 2.4, c.Muons_charge)
-	elecs, elecCharges = passedLep(c.Electrons, c.Electrons_MiniIso, c.Electrons_tightID, 2.5, c.Electrons_charge)
-	if len(muons) >= 2:# and len(elecs) == 0:
-		cutValues[i] += 1
-		i +=1
-		l1 = muons[0]
-		l2 = muons[1]
-		#Ptt > 3
-		if muonsCharges[0] * muonsCharges[1] < 0:
-			cutValues[i] += 1
-			i += 1
-			if abs((l1 + l2).Pt()) > 3:
-				cutValues[i] += 1
-				i +=1
-				invMass = (l1 + l2).M()
-				# Mll in [4,50]
-				if invMass > 4 and invMass < 50:
-					#Mll veto [9,10.5]
-					if not (invMass > 9 and invMass < 10.5):
-						cutValues[i] += 1
-						i +=1
-						nj, btags, ljet = analysis_ntuples.numberOfJets25Pt2_4Eta_Loose(c)
-						#ISR Jet
-						if nj >= 1:
-							cutValues[i] += 1
-							i +=1
-							if DileptonLepCorMET(c):
-								cutValues[i] += 1
-								i +=1
-								if c.HT > 100:
-									cutValues[i] += 1
-									i +=1
-									metDHt = c.MET / c.HT
-									if metDHt > 0.6 and metDHt < 1.4:
-										cutValues[i] += 1
-										i +=1
-										if btags == 0:
-											cutValues[i] += 1
-											i +=1
-											pt = TLorentzVector()
-											pt.SetPtEtaPhiE(c.MET,0,c.METPhi,c.MET)
-											mtautau = analysis_tools.Mtautau(pt, l1, l2)
-											if not (mtautau > 0 and mtautau < 160):
-												cutValues[i] += 1
-												i +=1
-												mt1 = analysis_tools.MT(c.MET, pt, l1)
-												mt2 = analysis_tools.MT(c.MET, pt, l2)
-												if mt1 < 70 and mt2 < 70:
-													cutValues[i] += 1
-													i +=1
-													histList["HTWeight"].Fill(c.HT, c.CrossSection)
-													histList["MDuoLepCanInvMassGT1J"].Fill(invMass, c.CrossSection)
-													if c.MET > 125 and c.MET < 200:
-														histList["DuoLepCanInvMassGT1JMET125-200"].Fill(invMass, c.CrossSection)
-													elif c.MET > 200 and c.MET < 250:
-														histList["DuoLepCanInvMassGT1JMET200-250"].Fill(invMass, c.CrossSection)
-													elif c.MET > 250:
-														histList["DuoLepCanInvMassGT1JMET250"].Fill(invMass, c.CrossSection)
-										
+	#muons, muonsCharges = passedLep(c.Muons, c.Muons_MiniIso, c.Muons_tightID, 2.4, c.Muons_charge)
+	#elecs, elecCharges = passedLep(c.Electrons, c.Electrons_MiniIso, c.Electrons_tightID, 2.5, c.Electrons_charge)
+	muons = twoMuons(c)
+	#2mu
+	if muons is None:# and len(elecs) == 0:
+		continue
+	cutValues[i] += 1
+	i +=1
+	l1 = c.Muons[muons[0]]
+	l2 = c.Muons[muons[1]]
+	#leplepPt
+	if not (l1.Pt() > 5 and l1.Pt() < 30):
+		continue
+	cutValues[i] += 1
+	i += 1
+	#pt5sublep
+	if not l2.Pt() > 5:
+		continue
+	cutValues[i] += 1
+	i +=1
+	#opposite-sign
+	if not (c.Muons_charge[0] * c.Muons_charge[1] < 1):
+		continue
+	cutValues[i] += 1
+	i +=1
+	#dilepPt
+	if not (l1 + l2).Pt() > 3:
+		continue
+	cutValues[i] += 1
+	i +=1
+	#Mll>4
+	invMass = (l1 + l2).M()
+	if not invMass > 4:
+		continue
+	cutValues[i] += 1
+	i +=1
+	#Mll<50
+	if not invMass < 50:
+		continue
+	cutValues[i] += 1
+	i +=1
+	#Upsilon_veto
+	#Mll veto [9,10.5]
+	if (invMass > 9 and invMass < 10.5):
+		continue		
+	cutValues[i] += 1
+	i +=1
+	#lowMET
+	if not (c.MET > 250 and analysis_tools.pt3(l1.Pt(),l1.Phi(),l2.Pt(),l2.Phi(),c.MET,c.METPhi) > 250):
+		continue
+	cutValues[i] += 1
+	i +=1
+	
+		
+	#HT
+	HT = analysis_ntuples.htJet25(c)
+	if not (HT - l1.Pt() - l2.Pt() > 100):
+		continue
+	cutValues[i] += 1
+	i +=1
+	
+	#METovHT
+	if not ((c.MET / HT) > (2/3) and (c.MET / HT) < 1.4):
+		continue
+	cutValues[i] += 1
+	i +=1
+	
+	#bveto
+	nj, btags, ljet = analysis_ntuples.numberOfJets25Pt2_4Eta_Loose2(c)
+	if not (btags == 0):
+		continue
+	cutValues[i] += 1
+	i +=1
+	
+	#mtautau
+	mtautau = analysis_tools.PreciseMtautau(c.MET, c.METPhi, l1, l2)
+	if not (mtautau < 0. or mtautau > 160.):
+		continue
+	cutValues[i] += 1
+	i +=1
+	#MT
+	mt1 = analysis_tools.MT2(c.MET, c.METPhi, l1)
+	mt2 = analysis_tools.MT2(c.MET, c.METPhi, l2)
+	if not (mt1 < 70.0 and mt2 < 70.0):
+		continue
+	cutValues[i] += 1
+	i +=1
+	
+# 	if nj >= 1:
+# 		cutValues[i] += 1
+# 		i +=1
+# 		if DileptonLepCorMET(c):
+# 			cutValues[i] += 1
+# 			i +=1
+# 			if c.HT > 100:
+# 				cutValues[i] += 1
+# 				i +=1
+# 				metDHt = c.MET / c.HT
+# 				if metDHt > 0.6 and metDHt < 1.4:
+# 					cutValues[i] += 1
+# 					i +=1
+# 					if btags == 0:
+# 						cutValues[i] += 1
+# 						i +=1
+# 						pt = TLorentzVector()
+# 						pt.SetPtEtaPhiE(c.MET,0,c.METPhi,c.MET)
+# 						mtautau = analysis_tools.Mtautau(pt, l1, l2)
+# 						if not (mtautau > 0 and mtautau < 160):
+# 							cutValues[i] += 1
+# 							i +=1
+# 							mt1 = analysis_tools.MT(c.MET, pt, l1)
+# 							mt2 = analysis_tools.MT(c.MET, pt, l2)
+# 							if mt1 < 70 and mt2 < 70:
+# 								cutValues[i] += 1
+# 								i +=1
+# 								histList["HTWeight"].Fill(c.HT, c.CrossSection)
+# 								histList["MDuoLepCanInvMassGT1J"].Fill(invMass, c.CrossSection)
+# 								if c.MET > 125 and c.MET < 200:
+# 									histList["DuoLepCanInvMassGT1JMET125-200"].Fill(invMass, c.CrossSection)
+# 								elif c.MET > 200 and c.MET < 250:
+# 									histList["DuoLepCanInvMassGT1JMET200-250"].Fill(invMass, c.CrossSection)
+# 								elif c.MET > 250:
+# 									histList["DuoLepCanInvMassGT1JMET250"].Fill(invMass, c.CrossSection)
+					
 
 
-weight = 0.01 * 172004.0 / cutValues[0]
-#weight = 209.4 / cutValues[1]
+#weight = 0.1 * 172004.0 / cutValues[0]
+#weight = 10757.0 / 42312.0
+#weight = 10757.0 / cutValues[1]
+weight = 10757.0 / cutValues[1]
 
-for i in cutValues:
-	print cutNames[i] + " " str(i * weight)
+for i, val in enumerate(cutValues):
+	print cutNames[i] + " " + str(val * weight)
 
 fnew = TFile(output_file, "recreate")
 utils.writeHistograms(histList)

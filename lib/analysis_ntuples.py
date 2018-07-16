@@ -13,6 +13,7 @@ from ROOT import *
 
 BTAG_CSV_LOOSE = 0.5426
 BTAG_CSV_MEDIUM = 0.8484
+BTAG_CSV_LOOSE2 = 0.46
 
 # def printTree(event, pId, space=0):
 # 	particle = event.GenParticles[l1]
@@ -48,12 +49,21 @@ def numberOfJets30Pt2_4Eta_Loose(event):
 def numberOfJets25Pt2_4Eta_Loose(event):
 	return numberOfJets(event, 25, 2.4, BTAG_CSV_LOOSE)
 
+def numberOfJets25Pt2_4Eta_Loose2(event):
+	return numberOfJets(event, 25, 2.4, BTAG_CSV_LOOSE2)
+
 def numberOfLooseBTags(event):
 	loose = 0
 	for ijet in range(event.Jets_bDiscriminatorCSV.size()):
 		if event.Jets_bDiscriminatorCSV[ijet] > BTAG_CSV_LOOSE:
 			loose+=1
 	return loose
+	
+def htJet25(event):
+	leps = [l for l in event.Electrons] + [m for m in event.Muons]
+	cleanJets = [ j for j in event.Jets if min(j.DeltaR(l) for l in leps) > 0.4 ]
+	objects25 = [ j for j in cleanJets if j.Pt() > 25 ] + leps
+	return sum([x.Pt() for x in objects25])
 
 def numberOfMediumBTags(event):
 	#./analyzer_x1x2x1.py -bg -i /pnfs/desy.de/cms/tier2/store/user/sbein/CommonNtuples/Summer16.QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_24_RA2AnalysisTree.root -o test.root | tee output

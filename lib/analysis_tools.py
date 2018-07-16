@@ -15,6 +15,13 @@ from math import *
 def MT(MET, pt, l):
 	return sqrt(2 * MET * l.Pt() * (1 - cos(l.DeltaPhi(pt))))
 
+def MT2(MET, MetPhi, l):
+	return sqrt(2 * MET * l.Pt() * (1 - cos(MetPhi - l.Phi())))
+	
+def mt_2(pt1, phi1, pt2, phi2):
+	return sqrt(2*pt1*pt2*(1-cos(phi1-phi2)))
+
+
 def Mtautau(pt, l1, l2):
 	xi1 = (pt.Px() * l2.Py() - pt.Py() * l2.Px()) / (l1.Px() * l2.Py() - l2.Px() * l1.Py())
 	xi2 = (pt.Py() * l1.Px() - pt.Px() * l1.Py()) / (l1.Px() * l2.Py() - l2.Px() * l1.Py())
@@ -37,6 +44,37 @@ def Mtautau(pt, l1, l2):
 	if m < 0:
 		m = -1
 	return m
+
+# Sam Bein (samuel.bein@gmail.com)
+# gROOT.ProcessLine(open('src/UsefulJet.cc').read())
+# exec('from ROOT import *')
+
+def PreciseMtautau(MetPt, MetPhi,  L1, L2 ):
+  Met = TLorentzVector()
+  Met.SetPtEtaPhiE(MetPt,0,MetPhi,0)
+  
+  #L1 = TLorentzVector( l1.Px(), l1.Py(), l1.Pz(), sqrt((l1.Px())**2 + (l1.Py())**2 + (l1.Py())**2 + 0.106**2))
+  #L2 = TLorentzVector( l2.Px(), l2.Py(), l2.Pz(), sqrt((l2.Px())**2 + (l2.Py())**2 + (l2.Py())**2 + 0.106**2))  
+  
+  #print "Masses: ",str(L1.M()),str(L2.M())                                                                                                                                                
+  #float A00,A01,A10,A11,  C0,C1,  X0,X1,  inv_det;     // Define A:2x2 matrix, C,X 2x1 vectors & det[A]^-1                                                                                                                    
+  inv_det = 1./( L1.Px()*L2.Py() - L2.Px()*L1.Py())
+  A00 = inv_det*L2.Py();     A01 =-inv_det*L2.Px()
+  A10 =-inv_det*L1.Py();     A11 = inv_det*L1.Px()
+  C0  = (Met+L1+L2).Px();    C1  = (Met+L1+L2).Py()
+  X0  = A00*C0 + A01*C1;     X1  = A10*C0 + A11*C1
+  
+  T1 = TLorentzVector( L1.Px()*X0 , L1.Py()*X0 , L1.Pz()*X0 , sqrt((L1.Px()*X0)**2 + (L1.Py()*X0)**2 + (L1.Py()*X0)**2 + 1.777**2) )    # 1.777 tau mass                                                                                                                                     
+  T2 = TLorentzVector( L2.Px()*X1 , L2.Py()*X1 , L2.Pz()*X1 , sqrt((L2.Px()*X0)**2 + (L2.Py()*X0)**2 + (L2.Py()*X0)**2 + 1.777**2) )
+  if X0>0. and X1>0.:
+  	return  (T1+T2).M() 
+  return -(T1+T2).M()
+
+def pt3(pt1, phi1, pt2, phi2, pt3, phi3):
+    phi2 -= phi1;
+    phi3 -= phi1;
+    return hypot(pt1 + pt2 * cos(phi2) + pt3 * cos(phi3), pt2*sin(phi2) + pt3*sin(phi3));
+
 
 def Mtautau2(pt, l1, l2, t1, t2, n1, n2):
 	xi1 = (pt.Px() * l2.Py() - pt.Py() * l2.Px()) / (l1.Px() * l2.Py() - l2.Px() * l1.Py())
