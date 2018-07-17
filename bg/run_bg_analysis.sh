@@ -63,10 +63,21 @@ i=0
 
 for fullname in "${files[@]}"; do
 	#cmd="qsub -cwd -l h_vmem=2G -o $STD_OUTPUT/$(basename $fullname .root).output  -e $ERR_OUTPUT/$(basename $fullname .root).err $SCRIPTS_WD/run_bg_analysis_single.sh -i $fullname &"
-	cmd="qsub -o $STD_OUTPUT/$(basename $fullname .root).output  -e $ERR_OUTPUT/$(basename $fullname .root).err $SCRIPTS_WD/run_bg_analysis_single.sh -i $fullname &"
-    	echo -e "\nRunning command:\n$cmd"
+	#cmd="condor_qsub -o $STD_OUTPUT/$(basename $fullname .root).output  -e $ERR_OUTPUT/$(basename $fullname .root).err $SCRIPTS_WD/run_bg_analysis_single.sh -i $fullname &"
+read -r -d '' CMD << EOM
+universe = vanilla
+should_transfer_files = IF_NEEDED
+executable = /bin/bash
+arguments = $SCRIPTS_WD/run_bg_analysis_single.sh -i $fullname 
+error = $ERR_OUTPUT/$(basename $fullname .root).err
+output = $STD_OUTPUT/$(basename $fullname .root).output
+notification = Never
+priority = 0
+Queue
+EOM
+    	echo -e "\nRunning file:\n$fullname"
     	#echo $fullname
-    	eval $cmd
+    	echo "$CMD" | condor_submit &
 	if [ $file_limit -gt 0 ]; then
 		#check limit
 		((i+=1)) 
@@ -77,15 +88,39 @@ for fullname in "${files[@]}"; do
 done
 
 for fullname in "${madHtFilesGt600[@]}"; do
-	cmd="qsub -o $STD_OUTPUT/$(basename $fullname .root).output  -e $ERR_OUTPUT/$(basename $fullname .root).err $SCRIPTS_WD/run_bg_analysis_single.sh --madHTgt 600 -i $fullname &"
-    	echo -e "\nRunning command:\n$cmd"
-    	
-    	eval $cmd
+
+read -r -d '' CMD << EOM
+universe = vanilla
+should_transfer_files = IF_NEEDED
+executable = /bin/bash
+arguments = $SCRIPTS_WD/run_bg_analysis_single.sh --madHTgt 600 -i $fullname 
+error = $ERR_OUTPUT/$(basename $fullname .root).err
+output = $STD_OUTPUT/$(basename $fullname .root).output
+notification = Never
+priority = 0
+Queue
+EOM
+
+	echo -e "\nRunning file:\n$fullname"
+    	#echo $fullname
+    	echo "$CMD" | condor_submit &
 done
 
 for fullname in "${madHtFilesLt600[@]}"; do
-	cmd="qsub -o $STD_OUTPUT/$(basename $fullname .root).output  -e $ERR_OUTPUT/$(basename $fullname .root).err $SCRIPTS_WD/run_bg_analysis_single.sh --madHTlt 600 -i $fullname &"
-    	echo -e "\nRunning command:\n$cmd"
-    	
-    	eval $cmd
+
+read -r -d '' CMD << EOM
+universe = vanilla
+should_transfer_files = IF_NEEDED
+executable = /bin/bash
+arguments = $SCRIPTS_WD/run_bg_analysis_single.sh --madHTlt 600 -i $fullname 
+error = $ERR_OUTPUT/$(basename $fullname .root).err
+output = $STD_OUTPUT/$(basename $fullname .root).output
+notification = Never
+priority = 0
+Queue
+EOM
+
+	echo -e "\nRunning file:\n$fullname"
+    	#echo $fullname
+    	echo "$CMD" | condor_submit &
 done

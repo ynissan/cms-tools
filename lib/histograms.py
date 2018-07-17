@@ -357,18 +357,6 @@ cutsDefs = {
 	
 		   }, "once" : True, "params" : { "met" : 125 }, "aod" : [cuts.MetCut], "ntuples" : [cuts.MetCut]},
 	
-	"BTAGS" : {"title" : "No BTags", "histDef" : {}, "once" : True, "params" : {}, "aod" : [cuts.NoBTags], "ntuples" : [cuts.NoBTags]},
-		   
-	"MET125_METDHT_BTAGS" : {"title" : "MET >= 125GeV,0.6<MetDHt<1.4,BTags", "histDef" : {
-			"MET" : {"minX" : 125, "maxX" : 700},
-			"MET1J" : {"minX" : 125, "maxX" : 700},
-			"MET2J" : {"minX" : 125, "maxX" : 700},
-			"METDHT" : { "minX" : 0.6, "maxX" : 1.4 },
-			"METDHT1J" : { "minX" : 0.6, "maxX" : 1.4 },
-			"METDHTGT1J" : { "minX" : 0.6, "maxX" : 1.4 },
-			"METDHT2J": { "minX" : 0.6, "maxX" : 1.4 },
-		   }, "once" : True, "params" : { "met" : 125, "minMetDHt" : 0.6, "maxMetDHt" : 1.4 },
-		      "aod" : [cuts.MetCut, cuts.MetDHt, cuts.NoBTags], "ntuples" : [cuts.MetCut, cuts.MetDHt, cuts.NoBTags]},
 	
 	"DILEPTON_DELTA_ETA_1_5" : {"title" : "Dilepton, Delta Eta <= 1.5, No BTags", "histDef" : {
 					"DeltaEtaCan" : {"maxX" : 1.5},
@@ -386,30 +374,7 @@ cutsDefs = {
 	
 				  }, "once" : True, "aod" : [cuts.NoBTags, cuts.DileptonDeltaEta], "ntuples" : [cuts.NoBTags, cuts.DileptonDeltaEta],
 				 "params" : { "deltaEta" : 1.5 }},
-	"DILEPTON_LEPPT_30" : {"title" : "Dilepton, Lepton Pt <= 30, No BTags", "histDef" : {
-				 	"LPT" : {"maxX" : 30},
-				 	"LPT1J" : {"maxX" : 30},
-				 	"LPTGT1J" : {"maxX" : 30},
-				 	"LPT2J" : {"maxX" : 30},
-				 	"EPT" : {"maxX" : 30},
-				 	"EPT1J" : {"maxX" : 30},
-				 	"EPTGT1J" : {"maxX" : 30},
-				 	"EPT2J" : {"maxX" : 30},
-				 	"MPT" : {"maxX" : 30},
-				 	"MPT1J" : {"maxX" : 30},
-				 	"MPTGT1J" : {"maxX" : 30},
-				 	"MPT2J" : {"maxX" : 30},
-				 }, "once" : True,
-				 "aod" : [cuts.NoBTags, cuts.Dilepton, cuts.LeptonPt], "ntuples" : [cuts.NoBTags, cuts.Dilepton, cuts.LeptonPt],
-				 "params" : { "pt" : 30 }},
-	"DILEPTON_MTT_0_160" : {"title" : "Dilepton, MTT veto [0,160], No BTags", "histDef" : {
-				 }, "once" : True,
-				 "aod" : [cuts.NoBTags, cuts.Dilepton, cuts.MtautauVeto], "ntuples" : [cuts.NoBTags, cuts.Dilepton, cuts.MtautauVeto],
-				 "params" : { "mTauTauVeto" : [0,160] }},
-	"DILEPTON_DELTA_R_1_5" : {"title" : "Dilepton, Delta R <= 1.5, No BTags", "histDef" : {
-				   }, "once" : True,
-				    "aod" : [cuts.NoBTags, cuts.DileptonDeltaR], "ntuples" : [cuts.NoBTags, cuts.DileptonDeltaR],
-				 "params" : { "deltaR" : 1.5 }},
+	
 	"ALL" : {"title" : "Dilepton, MET>=125, Pt<=30, DeltaR<=1.5, DeltaEta<=1.5, No BTags, 0.6<MetDHt<1.4, MT<70, 4<MLL<50 not 9<MLL<10.5, HT>100, ETAM<2.4,ETAE<2.5", "once" : True, 
 					     "aod" : [cuts.NoBTags, cuts.DileptonDeltaEta, cuts.DileptonDeltaR, cuts.MetCut, cuts.LeptonPt, 
 					     	      cuts.MetDHt, cuts.Mt, cuts.DileptonInvMass, cuts.Ht, cuts.Eta],
