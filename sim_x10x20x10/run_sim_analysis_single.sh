@@ -10,7 +10,9 @@ cd $CMS_WD
 . /etc/profile.d/modules.sh
 module use -a /afs/desy.de/group/cms/modulefiles/
 module load cmssw
-cmsenv
+#cmsenv
+
+module load root6
 
 $ANALYZER_PATH $@
 

@@ -79,15 +79,15 @@ def createPlots(rootfiles, outputFileName):
 		name = key.GetName()#histogram name
 		h = fhists0.Get(name).Clone()
 		numOfEvents = HT.Integral(-1,99999999)+0.000000000001
-		print "numOfEvents=" + str(numOfEvents)
+		#print "numOfEvents=" + str(numOfEvents)
 		weight = LUMINOSITY/numOfEvents
-		print "weight=" + str(weight)
+		#print "weight=" + str(weight)
 		#print "file=" +  rootfiles[0] + " key=" + name + " numOfEvents=" + str(numOfEvents) + " weight=" + str(weight)
 		if name != "HT":
-			print "scaling hist=" + name + " weight=" + str(weight)
+			#print "scaling hist=" + name + " weight=" + str(weight)
 			h.Scale(weight)
 		for fname in rootfiles[1:]:
-			print "******"
+			#print "******"
 			f_ = TFile(fname)
 			fhists0.cd()
 			h_ = f_.Get(name).Clone()

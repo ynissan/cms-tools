@@ -82,6 +82,9 @@ def numberOfMediumBTags(event):
 
 def isDuoTauEvent(event):
 	partSize = event.GenParticles.size()
+	if partSize == 0:
+		print "No Taus!"
+		return False
 	nT = 0
 	t1 = None
 	t2 = None

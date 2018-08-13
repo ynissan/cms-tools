@@ -4,8 +4,47 @@
 
 shopt -s nullglob
 
-qsub -cwd -l h_vmem=2G -o /tmp/dm7.output -e /tmp/dm7.err ./run_sim_analysis_single.sh -i /nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggsino/pMSSM_MCMC1_38_870285_dm7_m160.root -o ${SIM_DIR}/dm7.root
+read -r -d '' CMD << EOM
+universe = vanilla
+should_transfer_files = IF_NEEDED
+executable = /bin/bash
+arguments = ./run_sim_analysis_single.sh -i /nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggsino/pMSSM/pMSSM_MCMC1_38_870285_dm7_m160.root -o ${SIM_DIR}/dm7.root 
+error = ${SIM_DIR}/dm7.err
+output = ${SIM_DIR}/dm7.output
+notification = Never
+priority = 0
+Queue
+EOM
 
-qsub -cwd -l h_vmem=2G -o /tmp/dm13.output -e /tmp/dm13.err ./run_sim_analysis_single.sh -i /nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggsino/pMSSM_MCMC1_38_870285_dm13_chi1pmchi20.root -o ${SIM_DIR}/dm13.root
+echo "$CMD" | condor_submit &
 
-qsub -cwd -l h_vmem=2G -o /tmp/dm20.output -e /tmp/dm20.err ./run_sim_analysis_single.sh -i /nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggsino/pMSSM_MCMC1_38_870285_dm20_chi1pmchi20_m160.root -o ${SIM_DIR}/dm20.root
+read -r -d '' CMD << EOM
+universe = vanilla
+should_transfer_files = IF_NEEDED
+executable = /bin/bash
+arguments = ./run_sim_analysis_single.sh -i /nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggsino/pMSSM/pMSSM_MCMC1_38_870285_dm13_chi1pmchi20.root -o ${SIM_DIR}/dm13.root
+error = ${SIM_DIR}/dm13.err
+output = ${SIM_DIR}/dm13.output
+notification = Never
+priority = 0
+Queue
+EOM
+
+echo "$CMD" | condor_submit &
+  
+
+read -r -d '' CMD << EOM
+universe = vanilla
+should_transfer_files = IF_NEEDED
+executable = /bin/bash
+arguments = ./run_sim_analysis_single.sh -i /nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggsino/TChiZW/OfficialScan/TChiWZ_mNlsp150mLsp130.root -o ${SIM_DIR}/dm20.root
+error = ${SIM_DIR}/dm20.err
+output = ${SIM_DIR}/dm20.output
+notification = Never
+priority = 0
+Queue
+EOM
+
+echo "$CMD" | condor_submit &
+
+

@@ -122,6 +122,42 @@ commonHistDefs = {
 	"DuoLepCanInvMass2JMET250" : { "name" : "DuoLepCanInvMass2JMET250", "title" : "Invariant Mass - Dilepton Candidates - 2 Jets, MET > 250",
 				 "bins" : 4,  "binsArr" : [4,10,20,30,50], "xAxis" : "GeV" },
 				 
+	"DuoLepCanInvMassMET125-200Pt3" : { "name" : "DuoLepCanInvMassMET125-200Pt3", "title" : "Invariant Mass - Dilepton Candidates, 125 < MET < 200 - Pt3", "bins" : 4,
+			       "binsArr" : [4,10,20,30,50], "xAxis" : "GeV" },
+	
+	"DuoLepCanInvMass1JMET125-200Pt3" : { "name" : "DuoLepCanInvMass1JMET125-200Pt3", "title" : "Invariant Mass - Dilepton Candidates - 1 Jet, 125 < MET < 200 - Pt3",
+				 "bins" : 4,  "binsArr" : [4,10,20,30,50], "xAxis" : "GeV" },
+	
+	"DuoLepCanInvMassGT1JMET125-200Pt3" : { "name" : "DuoLepCanInvMassGT1JMET125-200Pt3", "title" : "Invariant Mass - Dilepton Candidates >= 1 Jet, 125 < MET < 200 - Pt3",
+				 "bins" : 4,  "binsArr" : [4,10,20,30,50], "xAxis" : "GeV" },
+	
+	"DuoLepCanInvMass2JMET125-200Pt3" : { "name" : "DuoLepCanInvMass2JMET125-200Pt3", "title" : "Invariant Mass - Dilepton Candidates - 2 Jets, 125 < MET < 200 - Pt3",
+				 "bins" : 4,  "binsArr" : [4,10,20,30,50], "xAxis" : "GeV" },
+				 
+	"DuoLepCanInvMassMET200-250Pt3" : { "name" : "DuoLepCanInvMassMET200-250Pt3", "title" : "Invariant Mass - Dilepton Candidates, 200 < MET < 250 - Pt3", "bins" : 4,
+			       "binsArr" : [4,10,20,30,50], "xAxis" : "GeV" },
+	
+	"DuoLepCanInvMass1JMET200-250Pt3" : { "name" : "DuoLepCanInvMass1JMET200-250Pt3", "title" : "Invariant Mass - Dilepton Candidates - 1 Jet, 200 < MET < 250 - Pt3",
+				 "bins" : 4,  "binsArr" : [4,10,20,30,50], "xAxis" : "GeV" },
+	
+	"DuoLepCanInvMassGT1JMET200-250Pt3" : { "name" : "DuoLepCanInvMassGT1JMET200-250Pt3", "title" : "Invariant Mass - Dilepton Candidates >= 1 Jet, 200 < MET < 250 - Pt3",
+				 "bins" : 4,  "binsArr" : [4,10,20,30,50], "xAxis" : "GeV" },
+	
+	"DuoLepCanInvMass2JMET200-250Pt3" : { "name" : "DuoLepCanInvMass2JMET200-250Pt3", "title" : "Invariant Mass - Dilepton Candidates - 2 Jets, 200 < MET < 250 - Pt3",
+				 "bins" : 4,  "binsArr" : [4,10,20,30,50], "xAxis" : "GeV" },
+				 
+	"DuoLepCanInvMassMET250Pt3" : { "name" : "DuoLepCanInvMassMET250Pt3", "title" : "Invariant Mass - Dilepton Candidates, MET > 250 - Pt3", "bins" : 4,
+			       "binsArr" : [4,10,20,30,50], "xAxis" : "GeV" },
+	
+	"DuoLepCanInvMass1JMET250Pt3" : { "name" : "DuoLepCanInvMass1JMET250Pt3", "title" : "Invariant Mass - Dilepton Candidates - 1 Jet, MET > 250 - Pt3",
+				 "bins" : 4,  "binsArr" : [4,10,20,30,50], "xAxis" : "GeV" },
+	
+	"DuoLepCanInvMassGT1JMET250Pt3" : { "name" : "DuoLepCanInvMassGT1JMET250Pt3", "title" : "Invariant Mass - Dilepton Candidates >= 1 Jet, MET > 250 - Pt3",
+				 "bins" : 4,  "binsArr" : [4,10,20,30,50], "xAxis" : "GeV" },
+	
+	"DuoLepCanInvMass2JMET250Pt3" : { "name" : "DuoLepCanInvMass2JMET250Pt3", "title" : "Invariant Mass - Dilepton Candidates - 2 Jets, MET > 250 - Pt3",
+				 "bins" : 4,  "binsArr" : [4,10,20,30,50], "xAxis" : "GeV" },
+	
 	"EDuoLepCanInvMass" : { "name" : "EDuoLepCanInvMass", "title" : "Invariant Mass - Di Electrons Candidates", "bins" : 100,
 			       "minX" : 0, "maxX" : 70, "xAxis" : "GeV" },
 	
@@ -345,9 +381,7 @@ genHistDefs = {
 	"X2PT" : { "name" : "X2PT", "title" : "Generated X20 Pt", "bins" : 200, "minX" : 0, "maxX" : 600, "xAxis" : "GeV" }
 }
 
-cutsOrder = ["none", "MET125", "BTAGS", "MET125_METDHT_BTAGS", "DILEPTON_DELTA_ETA_1_5", 
-	     "DILEPTON_LEPPT_30", "DILEPTON_MTT_0_160", "DILEPTON_DELTA_R_1_5",
-	     "ALL", "PAPER"]
+cutsOrder = ["none", "MET125", "DILEPTON_DELTA_ETA_1_5", "ALL", "PAPER"]
 cutsDefs = {
 	"none" : {"title" : "No Cuts", "histDef" : {}},
 	"MET125" : {"title" : "MET >= 125GeV", "histDef" : {
@@ -438,7 +472,7 @@ cutsDefs = {
 					     "ntuples" : [cuts.TwoMu, cuts.LeplepPt, cuts.Pt5sublep, cuts.OppositeSign,
 					     		  cuts.DileptonPt, cuts.DileptonInvMassMin, cuts.DileptonInvMassMax,
 					     		  cuts.DileptonInvMassRange,
-					     		  cuts.LowMET, cuts.Ht,
+					     		  cuts.Ht,
 					     		  cuts.MetDHt, cuts.NoBTags, cuts.MtautauVeto, 
 					     		  cuts.Mt],
 # MiniAnalyzer

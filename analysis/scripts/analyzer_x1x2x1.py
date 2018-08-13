@@ -214,10 +214,16 @@ def handleX10X20X10DiLepton(l1, l2, event, nj, weight, params, type, cutFlow):
 	
 	if params["met"] >= 125 and params["met"] <= 200:
 		utils.fillHistWithCuts("DuoLepCanInvMassMET125-200", invMass, histList, cutsDef, "ntuples", event, weight, params)
+		if params["pt3"] >= 125 and params["pt3"] <= 200:
+			utils.fillHistWithCuts("DuoLepCanInvMassMET125-200Pt3", invMass, histList, cutsDef, "ntuples", event, weight, params)
 	elif params["met"] >= 200 and params["met"] <= 250:
 		utils.fillHistWithCuts("DuoLepCanInvMassMET200-250", invMass, histList, cutsDef, "ntuples", event, weight, params)
+		if params["pt3"] >= 200 and params["pt3"] <= 250:
+			utils.fillHistWithCuts("DuoLepCanInvMassMET200-250Pt3", invMass, histList, cutsDef, "ntuples", event, weight, params)
 	elif params["met"] >= 250:
 		utils.fillHistWithCuts("DuoLepCanInvMassMET250", invMass, histList, cutsDef, "ntuples", event, weight, params)
+		if params["pt3"] >= 250:
+			utils.fillHistWithCuts("DuoLepCanInvMassMET250Pt3", invMass, histList, cutsDef, "ntuples", event, weight, params)
 	
 	if nj == 1:
 		utils.fillHistWithCuts("MTauTau1J", mtautau, histList, cutsDef, "ntuples", event, weight, params)
@@ -238,10 +244,16 @@ def handleX10X20X10DiLepton(l1, l2, event, nj, weight, params, type, cutFlow):
 		
 		if params["met"] >= 125 and params["met"] <= 200:
 			utils.fillHistWithCuts("DuoLepCanInvMass1JMET125-200", invMass, histList, cutsDef, "ntuples", event, weight, params)
+			if params["pt3"] >= 125 and params["pt3"] <= 200:
+				utils.fillHistWithCuts("DuoLepCanInvMass1JMET125-200Pt3", invMass, histList, cutsDef, "ntuples", event, weight, params)
 		elif params["met"] >= 200 and params["met"] <= 250:
 			utils.fillHistWithCuts("DuoLepCanInvMass1JMET200-250", invMass, histList, cutsDef, "ntuples", event, weight, params)
+			if params["pt3"] >= 200 and params["pt3"] <= 250:
+				utils.fillHistWithCuts("DuoLepCanInvMass1JMET200-250Pt3", invMass, histList, cutsDef, "ntuples", event, weight, params)
 		elif params["met"] >= 250:
 			utils.fillHistWithCuts("DuoLepCanInvMass1JMET250", invMass, histList, cutsDef, "ntuples", event, weight, params)
+			if params["pt3"] >= 250:
+				utils.fillHistWithCuts("DuoLepCanInvMass1JMET250Pt3", invMass, histList, cutsDef, "ntuples", event, weight, params)
 		
 	elif nj ==2:
 		utils.fillHistWithCuts("MTauTau2J", mtautau, histList, cutsDef, "ntuples", event, weight, params)
@@ -262,10 +274,16 @@ def handleX10X20X10DiLepton(l1, l2, event, nj, weight, params, type, cutFlow):
 		
 		if params["met"] >= 125 and params["met"] <= 200:
 			utils.fillHistWithCuts("DuoLepCanInvMass2JMET125-200", invMass, histList, cutsDef, "ntuples", event, weight, params)
+			if params["pt3"] >= 125 and params["pt3"] <= 200:
+				utils.fillHistWithCuts("DuoLepCanInvMass2JMET125-200Pt3", invMass, histList, cutsDef, "ntuples", event, weight, params)
 		elif params["met"] >= 200 and params["met"] <= 250:
 			utils.fillHistWithCuts("DuoLepCanInvMass2JMET200-250", invMass, histList, cutsDef, "ntuples", event, weight, params)
+			if params["pt3"] >= 200 and params["pt3"] <= 250:
+				utils.fillHistWithCuts("DuoLepCanInvMass2JMET200-250Pt3", invMass, histList, cutsDef, "ntuples", event, weight, params)
 		elif params["met"] >= 250:
 			utils.fillHistWithCuts("DuoLepCanInvMass2JMET250", invMass, histList, cutsDef, "ntuples", event, weight, params)
+			if params["pt3"] >= 250:
+				utils.fillHistWithCuts("DuoLepCanInvMass2JMET250Pt3", invMass, histList, cutsDef, "ntuples", event, weight, params)
 	if nj >= 1:
 		utils.fillHistWithCuts("MTauTauGT1J", mtautau, histList, cutsDef, "ntuples", event, weight, params)
 		utils.fillHistWithCuts("MTGT1J", params["mt1"], histList, cutsDef, "ntuples", event, weight, params)
@@ -285,10 +303,16 @@ def handleX10X20X10DiLepton(l1, l2, event, nj, weight, params, type, cutFlow):
 		
 		if params["met"] >= 125 and params["met"] <= 200:
 			utils.fillHistWithCuts("DuoLepCanInvMassGT1JMET125-200", invMass, histList, cutsDef, "ntuples", event, weight, params)
+			if params["pt3"] >= 125 and params["pt3"] <= 200:
+				utils.fillHistWithCuts("DuoLepCanInvMassGT1JMET125-200Pt3", invMass, histList, cutsDef, "ntuples", event, weight, params)
 		elif params["met"] >= 200 and params["met"] <= 250:
 			utils.fillHistWithCuts("DuoLepCanInvMassGT1JMET200-250", invMass, histList, cutsDef, "ntuples", event, weight, params)
+			if params["pt3"] >= 200 and params["pt3"] <= 250:
+				utils.fillHistWithCuts("DuoLepCanInvMassGT1JMET200-250Pt3", invMass, histList, cutsDef, "ntuples", event, weight, params)
 		elif params["met"] >= 250:
 			utils.fillHistWithCuts("DuoLepCanInvMassGT1JMET250", invMass, histList, cutsDef, "ntuples", event, weight, params)
+			if params["pt3"] >= 250:
+				utils.fillHistWithCuts("DuoLepCanInvMassGT1JMET250Pt3", invMass, histList, cutsDef, "ntuples", event, weight, params)
 	
 
 def handleX10X20X10NLGen(event, weight, params, nj):
