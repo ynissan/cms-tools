@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#! /usr/bin/env python
 
 from ROOT import *
 from glob import glob
@@ -8,6 +8,13 @@ from array import array
 import argparse
 import sys
 import numpy as np
+
+# load FWLite C++ libraries
+#gSystem.Load("libFWCoreFWLite.so");
+#gSystem.Load("libDataFormatsFWLite.so");
+#FWLiteEnabler.enable()
+
+gROOT.LoadMacro("TLorentzVectorDict.h")
 
 sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
 from lib import histograms
@@ -54,32 +61,141 @@ if (bg and signal) or not (bg or signal):
 	
 ######## END OF CMDLINE ARGUMENTS ########
 
+chain = TChain('TreeMaker2/PreSelection')
+chain.Add(input_file)
+c = chain.CloneTree()
+chain = None
+
 fnew = TFile(output_file,'recreate')
 
 hHt = TH1F('hHt','hHt',100,0,3000)
+hHtWeighted = TH1F('hHtWeighted','hHtWeighted',100,0,3000)
 hHt.Sumw2()
-#hHtWeighted = TH1F('hHtWeighted','hHtWeighted',100,0,3000).Sumw2()
 
 var_Met = np.zeros(1,dtype=float)
+var_CrossSection = np.zeros(1,dtype=float)
+var_NJets = np.zeros(1,dtype=int)
+var_BTags = np.zeros(1,dtype=int)
+var_NLeptons = np.zeros(1,dtype=int)
+var_Ht = np.zeros(1,dtype=float)
+var_Mht = np.zeros(1,dtype=float)
+var_Mt2 = np.zeros(1,dtype=float)
+var_MetDHt = np.zeros(1,dtype=float)
+var_LeptonsType = np.zeros(1,dtype=int)
+var_Leptons = ROOT.std.vector(TLorentzVector)(2)
+var_HtJet25 = np.zeros(1,dtype=float)
+### CALCULATED FROM DILEPTON - MIGHT NOT BE NEEDED
+var_InvMass = np.zeros(1,dtype=float)
+var_DileptonPt = np.zeros(1,dtype=float)
+var_DeltaPhi = np.zeros(1,dtype=float)
+var_DeltaEta = np.zeros(1,dtype=float)
+var_DeltaR = np.zeros(1,dtype=float)
+var_Pt3 = np.zeros(1,dtype=float)
+var_Mt1 = np.zeros(1,dtype=float)
+var_Mt2 = np.zeros(1,dtype=float)
+var_Mtautau = np.zeros(1,dtype=float)
 
 tEvent = TTree('tEvent','tEvent')
 tEvent.Branch('Met', var_Met,'Met/D')
-
-c = TChain('TreeMaker2/PreSelection')
-c.Add(input_file)
+tEvent.Branch('CrossSection', var_CrossSection,'CrossSection/D')
+tEvent.Branch('NJets', var_NJets,'NJets/I')
+tEvent.Branch('BTags', var_BTags,'BTags/I')
+tEvent.Branch('NLeptons', var_NLeptons,'NLeptons/I')
+tEvent.Branch('Ht', var_Ht,'Ht/D')
+tEvent.Branch('Mht', var_Mht,'Mht/D')
+tEvent.Branch('Mt2', var_Mt2,'Mt2/D')
+tEvent.Branch('MetDHt', var_MetDHt,'Mt2/D')
+tEvent.Branch('LeptonsType', var_LeptonsType,'LeptonsType/I')
+tEvent.Branch('Leptons', 'std::vector<TLorentzVector>', var_Leptons)
+tEvent.Branch('HtJet25', var_HtJet25,'HtJet25/D')
+### CALCULATED FROM DILEPTON - MIGHT NOT BE NEEDED
+tEvent.Branch('InvMass', var_InvMass,'InvMass/D')
+tEvent.Branch('DileptonPt', var_DileptonPt,'DileptonPt/D')
+tEvent.Branch('DeltaPhi', var_DeltaPhi,'DeltaPhi/D')
+tEvent.Branch('DeltaEta', var_DeltaEta,'DeltaEta/D')
+tEvent.Branch('DeltaR', var_DeltaR,'DeltaR/D')
+tEvent.Branch('Pt3', var_Pt3,'Pt3/D')
+tEvent.Branch('Mt1', var_Mt1,'Mt1/D')
+tEvent.Branch('Mt2', var_Mt2,'Mt2/D')
+tEvent.Branch('Mtautau', var_Mtautau,'Mtautau/D')
 
 nentries = c.GetEntries()
 print 'Analysing', nentries, "entries"
 
 for ientry in range(nentries):
+	if ientry % 1000 == 0:
+		print "Processing " + str(ientry)
 	c.GetEntry(ientry)
-	var_Met[0] = c.MET
+	weight = c.CrossSection
 	hHt.Fill(c.madHT)
+	hHtWeighted.Fill(c.madHT, weight)
+	nj, btags, ljet = analysis_ntuples.numberOfJets25Pt2_4Eta_Loose(c)
+	
+	nL = c.Electrons.size() + c.Muons.size()
+	leptonType = 0
+	duoLepton = False
+	
+	if c.Electrons.size() == 2 and c.Electrons_charge[0] * c.Electrons_charge[1] < 0:
+		if c.Electrons[0].Pt() > c.Electrons[1].Pt():
+			var_Leptons[0] = c.Electrons[0]
+			var_Leptons[1] = c.Electrons[1]
+		else:
+			var_Leptons[0] = c.Electrons[1]
+			var_Leptons[1] = c.Electrons[0]
+		leptonType = 0
+		duoLepton = True
+	elif c.Muons.size() == 2 and c.Muons_charge[0] * c.Muons_charge[1] < 0:
+		if c.Muons[0].Pt() > c.Muons[1].Pt():
+			var_Leptons[0] = c.Muons[0]
+			var_Leptons[1] = c.Muons[1]
+		else:
+			var_Leptons[0] = c.Muons[1]
+			var_Leptons[1] = c.Muons[0]
+		leptonType = 1
+		duoLepton = True
+	#### PRECUTS ###
+	if c.MET < 120: continue
+	if btags > 0: continue
+	if nj < 1: continue
+	if not duoLepton: continue
+	## END PRECUTS##
+	
+	var_Met[0] = c.MET
+	var_Mht[0] = c.MHT    
+	var_Mt2[0] = c.MT2	
+	var_Ht[0] = c.HT
+	metDHt = 9999999
+	if c.HT != 0:
+		metDHt = c.MET / c.HT
+	var_MetDHt[0] = metDHt
+	
+	var_Met[0] = c.MET
+	var_CrossSection[0] = c.CrossSection
+	var_NJets[0] = nj
+	var_BTags[0] = btags
+
+	var_NLeptons[0] = nL
+	var_LeptonsType[0] = leptonType
+	var_HtJet25[0] = analysis_ntuples.htJet25(c)
+	
+	l1 = var_Leptons[0]
+	l2 = var_Leptons[1]
+	var_InvMass[0] = (l1 + l2).M()
+	var_DileptonPt[0] = abs((l1 + l2).Pt())
+	var_DeltaPhi[0] = abs(l1.DeltaPhi(l2))
+	var_DeltaEta[0] = abs(l1.Eta() - l2.Eta())
+	var_DeltaR[0] = abs(l1.DeltaR(l2))
+	var_Pt3[0] = analysis_tools.pt3(l1.Pt(),l1.Phi(),l2.Pt(),l2.Phi(),event.MET,event.METPhi)
+	var_Mt1[0] = analysis_tools.MT2(c.MET, c.METPhi, l1)
+	var_Mt2[0] = analysis_tools.MT2(c.MET, c.METPhi, l2)
+	var_Mtautau[0] = analysis_tools.PreciseMtautau(c.MET, c.METPhi, l1, l2)
+
+	
 	tEvent.Fill()
 
 fnew.cd()
 tEvent.Write()
 print 'just created', fnew.GetName()
 hHt.Write()
-#hHtWeighted.Write()
+hHtWeighted.Write()
 fnew.Close()

@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 from ROOT import *
 
 # load FWLite C++ libraries
