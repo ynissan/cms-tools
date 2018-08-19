@@ -45,12 +45,12 @@ done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 #---------- END OPTIONS ------------
 
+echo "EXTRA PARAMS: ${POSITIONAL[@]}"
+
 if [ -z "$INPUT_FILE" ]; then
 	print_help
 	exit 0
 fi
-
-echo "EXTRA PARAMS: ${POSITIONAL[@]}"
 
 # CMS ENV
 cd $CMS_WD

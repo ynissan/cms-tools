@@ -3,14 +3,19 @@
 from ROOT import *
 from math import *
 
-# load FWLite C++ libraries
-# gSystem.Load("libFWCoreFWLite.so");
-# gSystem.Load("libDataFormatsFWLite.so");
-# FWLiteEnabler.enable()
-
-# load FWlite python libraries
-# from DataFormats.FWLite import Handle, Events
-# import FWCore.ParameterSet.Config as cms
+def isSusy(pdgId):
+	pdgId = abs(pdgId)
+	if pdgId >= 1000001 and pdgId <= 1000006:
+		return True
+	if pdgId >= 1000011 and pdgId <= 1000016:
+		return True
+	if pdgId >= 2000001 and pdgId <= 2000006:
+		return True
+	if pdgId >= 1000021 and pdgId <= 1000025:
+		return True
+	if pdgId == 2000011 or pdgId == 2000013 or pdgId == 2000015 or pdgId == 1000035 or pdgId == 1000037 or pdgId == 1000039:
+		return True
+	return False
 
 def MT(MET, pt, l):
 	return sqrt(2 * MET * l.Pt() * (1 - cos(l.DeltaPhi(pt))))

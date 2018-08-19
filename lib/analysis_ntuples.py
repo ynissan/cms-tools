@@ -1,13 +1,7 @@
 from ROOT import *
-
-# load FWLite C++ libraries
-# gSystem.Load("libFWCoreFWLite.so");
-# gSystem.Load("libDataFormatsFWLite.so");
-# FWLiteEnabler.enable()
-
-# load FWlite python libraries
-# from DataFormats.FWLite import Handle, Events
-# import FWCore.ParameterSet.Config as cms
+import sys
+sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
+from lib import analysis_tools
 
 BTAG_CSV_LOOSE = 0.5426
 BTAG_CSV_MEDIUM = 0.8484
@@ -24,7 +18,7 @@ BTAG_CSV_LOOSE2 = 0.46
 # 	for p in range(particle.numberOfDaughters()):
 # 		printTree(particle.daughter(p), space + 1)
 
-#Jets_bDiscriminatorCSV
+
 def numberOfJets(event, pt, eta, csv):
 	nj = 0
 	btags = 0
@@ -107,7 +101,7 @@ def isX1X2X1Process(event):
 			#print "Found x10"
 			if event.GenParticles_ParentId[ipart] == 1000023:
 				#print "Mother x20"
-				if not isSusy(event.GenParticles_ParentId[event.GenParticles_ParentIdx[ipart]]):
+				if not analysis_tools.isSusy(event.GenParticles_ParentId[event.GenParticles_ParentIdx[ipart]]):
 					#print "Found!!!"
 					return True
 	return False	

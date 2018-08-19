@@ -21,6 +21,15 @@ colorPalette = [
 	{ "name" : "lightgreen", "fillColor" : "#42f498", "lineColor" : "#28a363", "fillStyle" : 3444 },
 ]
 
+crossSections = {
+	"dm7"  : 1.21547,
+	"dm13" : 1.21547,
+	"dm20" : 1.21547
+}
+
+LUMINOSITY = 35900.
+CMS_WD="/afs/desy.de/user/n/nissanuv/CMSSW_9_2_7_patch1/src"
+
 epsilon = 0.00001
 
 #For solid fill use fillStyle=1001

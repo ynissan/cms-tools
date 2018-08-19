@@ -49,7 +49,6 @@ BG_OUTPUT_SUM = BG_OUTPUT + "/sum"
 BG_OUTPOUT_TYPE_SUM = BG_OUTPUT_SUM + "/type_sum"
 BG_OUTPOUT_PROCESSED = BG_OUTPUT_SUM + "/processed"
 BG_OUTPOUT_STACK = BG_OUTPUT_SUM + "/stack"
-LUMINOSITY = 35900.
 
 if not os.path.isdir(BG_OUTPUT_SUM):
 	os.mkdir(BG_OUTPUT_SUM)
@@ -84,7 +83,7 @@ def createPlots(rootfiles, outputFileName):
 		h = fhists0.Get(name).Clone()
 		numOfEvents = HT.Integral(-1,99999999)+0.000000000001
 		#print "numOfEvents=" + str(numOfEvents)
-		weight = LUMINOSITY/numOfEvents
+		weight = utils.LUMINOSITY/numOfEvents
 		#print "weight=" + str(weight)
 		#print "file=" +  rootfiles[0] + " key=" + name + " numOfEvents=" + str(numOfEvents) + " weight=" + str(weight)
 		if name != "HT":
@@ -97,7 +96,7 @@ def createPlots(rootfiles, outputFileName):
 			h_ = f_.Get(name).Clone()
 			hHT_ = f_.Get("HT").Clone()
 			numOfEvents = hHT_.Integral(-1,99999999)+0.000000000001
-			weight = LUMINOSITY/numOfEvents
+			weight = utils.LUMINOSITY/numOfEvents
 			#print "file=" +  fname + " key=" + name + " numOfEvents=" + str(numOfEvents) + " weight=" + str(weight)
 			if name != "HT":
 				print "scaling hist=" + name + " weight=" + str(weight)

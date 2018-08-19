@@ -8,6 +8,7 @@ from array import array
 import argparse
 import sys
 import numpy as np
+import os
 
 # load FWLite C++ libraries
 #gSystem.Load("libFWCoreFWLite.so");
@@ -157,17 +158,20 @@ for ientry in range(nentries):
 	
 	### MADHT ###
 	rightProcess = True
-	weight = 1
+	crossSection = 1
 	if signal:
 		rightProcess = analysis_ntuples.isX1X2X1Process(c)
+		filename = os.path.basename(input_file).split(".")[0]
+		if utils.crossSections.get(filename) is not None:
+			crossSection = utils.crossSections.get(filename)
 	if rightProcess:
 		if bg:
+			crossSection = c.CrossSection
 			if (madHTgt is not None and c.madHT < madHTgt) or (madHTlt is not None and c.madHT > madHTlt):
 				rightProcess = False
-			weight = c.CrossSection
 
 	hHt.Fill(c.madHT)
-	hHtWeighted.Fill(c.madHT, weight)
+	hHtWeighted.Fill(c.madHT, crossSection)
 	
 	if not rightProcess:
 		continue
@@ -215,7 +219,7 @@ for ientry in range(nentries):
 	var_MetDHt[0] = metDHt
 	
 	var_Met[0] = c.MET
-	var_CrossSection[0] = c.CrossSection
+	var_CrossSection[0] = crossSection
 	var_NJets[0] = nj
 	var_BTags[0] = btags
 
