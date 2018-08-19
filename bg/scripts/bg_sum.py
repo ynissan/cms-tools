@@ -22,18 +22,34 @@ from lib import utils
 # from DataFormats.FWLite import Handle, Events
 # import FWCore.ParameterSet.Config as cms
 
-BG_OUTPUT = "/afs/desy.de/user/n/nissanuv/cms-tools/bg/output"
-BG_SINGLE_OUTPUT = "/afs/desy.de/user/n/nissanuv/cms-tools/bg/output/single"
+COMPOUND_TYPES = {
+	"Rare" : ["WZZ", "WWZ", "ZZZ"],
+	"DiBoson" : ["WZ", "WW", "ZZ"]
+}
+	
+parser = argparse.ArgumentParser(description='Sum BG histograms.')
+parser.add_argument('-hadd', '--hadd', dest='hadd', help='Add histogram', action='store_true')
+parser.add_argument('-cp', '--create_plots', dest='cp', help='Create plots', action='store_true')
+parser.add_argument('-a', '--all', dest='all', help='Perform all', action='store_true')
+parser.add_argument('-s', '--stack', dest='stack', help='Perform stack', action='store_true')
+parser.add_argument('-skim', '--skim', dest='skim', help='Work on skim', action='store_true')
+args = parser.parse_args()
+
+hadd = args.hadd
+cp = args.cp
+all = args.all
+stack = args.stack
+skim = args.skim
+
+BG_OUTPUT = "/afs/desy.de/user/n/nissanuv/work/x1x2x1/bg/hist"
+if skim:
+	BG_OUTPUT = "/afs/desy.de/user/n/nissanuv/work/x1x2x1/bg/skim"	
+BG_SINGLE_OUTPUT = BG_OUTPUT + "/single"
 BG_OUTPUT_SUM = BG_OUTPUT + "/sum"
 BG_OUTPOUT_TYPE_SUM = BG_OUTPUT_SUM + "/type_sum"
 BG_OUTPOUT_PROCESSED = BG_OUTPUT_SUM + "/processed"
 BG_OUTPOUT_STACK = BG_OUTPUT_SUM + "/stack"
 LUMINOSITY = 35900.
-
-COMPOUND_TYPES = {
-	"Rare" : ["WZZ", "WWZ", "ZZZ"],
-	"DiBoson" : ["WZ", "WW", "ZZ"]
-}
 
 if not os.path.isdir(BG_OUTPUT_SUM):
 	os.mkdir(BG_OUTPUT_SUM)
@@ -46,18 +62,6 @@ if not os.path.isdir(BG_OUTPOUT_PROCESSED):
 
 if not os.path.isdir(BG_OUTPOUT_STACK):
 	os.mkdir(BG_OUTPOUT_STACK)
-	
-parser = argparse.ArgumentParser(description='Sum BG histograms.')
-parser.add_argument('-hadd', '--hadd', dest='hadd', help='Add histogram', action='store_true')
-parser.add_argument('-cp', '--create_plots', dest='cp', help='Create plots', action='store_true')
-parser.add_argument('-a', '--all', dest='all', help='Perform all', action='store_true')
-parser.add_argument('-s', '--stack', dest='stack', help='Perform stack', action='store_true')
-args = parser.parse_args()
-
-hadd = args.hadd
-cp = args.cp
-all = args.all
-stack = args.stack
 	
 bgTypes = {}
 

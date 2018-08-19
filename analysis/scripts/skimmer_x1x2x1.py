@@ -14,7 +14,7 @@ import numpy as np
 #gSystem.Load("libDataFormatsFWLite.so");
 #FWLiteEnabler.enable()
 
-gROOT.LoadMacro("TLorentzVectorDict.h")
+#gROOT.LoadMacro("TLorentzVectorDict.h")
 
 sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
 from lib import histograms
@@ -70,6 +70,7 @@ fnew = TFile(output_file,'recreate')
 
 hHt = TH1F('hHt','hHt',100,0,3000)
 hHtWeighted = TH1F('hHtWeighted','hHtWeighted',100,0,3000)
+hHtAfterMadHt = TH1F('hHtAfterMadHt','hHtAfterMadHt',100,0,3000)
 hHt.Sumw2()
 
 var_Met = np.zeros(1,dtype=float)
@@ -95,6 +96,20 @@ var_Mt1 = np.zeros(1,dtype=float)
 var_Mt2 = np.zeros(1,dtype=float)
 var_Mtautau = np.zeros(1,dtype=float)
 
+var_Eta1 = np.zeros(1,dtype=float)
+var_Eta2 = np.zeros(1,dtype=float)
+
+var_Phi1 = np.zeros(1,dtype=float)
+var_Phi2 = np.zeros(1,dtype=float)
+
+var_Pt1 = np.zeros(1,dtype=float)
+var_Pt2 = np.zeros(1,dtype=float)
+
+########### END OF DILEPTON ###########
+var_DeltaEtaLeadingJetDilepton = np.zeros(1,dtype=float)
+var_LeadingJetPartonFlavor = np.zeros(1,dtype=float)
+var_LeadingJetQgLikelihood = np.zeros(1,dtype=float)
+
 tEvent = TTree('tEvent','tEvent')
 tEvent.Branch('Met', var_Met,'Met/D')
 tEvent.Branch('CrossSection', var_CrossSection,'CrossSection/D')
@@ -119,6 +134,19 @@ tEvent.Branch('Mt1', var_Mt1,'Mt1/D')
 tEvent.Branch('Mt2', var_Mt2,'Mt2/D')
 tEvent.Branch('Mtautau', var_Mtautau,'Mtautau/D')
 
+tEvent.Branch('Eta1', var_Mt1,'Eta1/D')
+tEvent.Branch('Eta2', var_Mt2,'Eta2/D')
+
+tEvent.Branch('Phi1', var_Mt1,'Phi1/D')
+tEvent.Branch('Phi2', var_Mt2,'Phi2/D')
+
+tEvent.Branch('Pt1', var_Mt1,'Pt1/D')
+tEvent.Branch('Pt2', var_Mt2,'Pt2/D')
+########### END OF DILEPTON ###########
+tEvent.Branch('DeltaEtaLeadingJetDilepton', var_DeltaEtaLeadingJetDilepton,'DeltaEtaLeadingJetDilepton/D')
+tEvent.Branch('LeadingJetPartonFlavor', var_LeadingJetPartonFlavor,'LeadingJetPartonFlavor/D')
+tEvent.Branch('LeadingJetQgLikelihood', var_LeadingJetQgLikelihood,'LeadingJetQgLikelihood/D')
+
 nentries = c.GetEntries()
 print 'Analysing', nentries, "entries"
 
@@ -126,9 +154,26 @@ for ientry in range(nentries):
 	if ientry % 1000 == 0:
 		print "Processing " + str(ientry)
 	c.GetEntry(ientry)
-	weight = c.CrossSection
+	
+	### MADHT ###
+	rightProcess = True
+	weight = 1
+	if signal:
+		rightProcess = analysis_ntuples.isX1X2X1Process(c)
+	if rightProcess:
+		if bg:
+			if (madHTgt is not None and c.madHT < madHTgt) or (madHTlt is not None and c.madHT > madHTlt):
+				rightProcess = False
+			weight = c.CrossSection
+
 	hHt.Fill(c.madHT)
 	hHtWeighted.Fill(c.madHT, weight)
+	
+	if not rightProcess:
+		continue
+	
+	hHtAfterMadHt.Fill(c.madHT)
+	
 	nj, btags, ljet = analysis_ntuples.numberOfJets25Pt2_4Eta_Loose(c)
 	
 	nL = c.Electrons.size() + c.Muons.size()
@@ -185,12 +230,23 @@ for ientry in range(nentries):
 	var_DeltaPhi[0] = abs(l1.DeltaPhi(l2))
 	var_DeltaEta[0] = abs(l1.Eta() - l2.Eta())
 	var_DeltaR[0] = abs(l1.DeltaR(l2))
-	var_Pt3[0] = analysis_tools.pt3(l1.Pt(),l1.Phi(),l2.Pt(),l2.Phi(),event.MET,event.METPhi)
+	var_Pt3[0] = analysis_tools.pt3(l1.Pt(),l1.Phi(),l2.Pt(),l2.Phi(),c.MET,c.METPhi)
 	var_Mt1[0] = analysis_tools.MT2(c.MET, c.METPhi, l1)
 	var_Mt2[0] = analysis_tools.MT2(c.MET, c.METPhi, l2)
 	var_Mtautau[0] = analysis_tools.PreciseMtautau(c.MET, c.METPhi, l1, l2)
-
+	var_DeltaEtaLeadingJetDilepton[0] = abs((l1 + l2).Eta() - c.Jets[ljet].Eta())	
+	var_LeadingJetPartonFlavor[0] = c.Jets_partonFlavor[ljet]
+	var_LeadingJetQgLikelihood[0] = c.Jets_qgLikelihood[ljet]
 	
+	var_Eta1[0] = l1.Eta()
+	var_Eta2[0] = l2.Eta()
+
+	var_Phi1[0] = l1.Phi()
+	var_Phi2[0] = l2.Phi()
+
+	var_Pt1[0] = l1.Pt()
+	var_Pt2[0] = l2.Pt()
+
 	tEvent.Fill()
 
 fnew.cd()
@@ -198,4 +254,5 @@ tEvent.Write()
 print 'just created', fnew.GetName()
 hHt.Write()
 hHtWeighted.Write()
+hHtAfterMadHt.Write()
 fnew.Close()

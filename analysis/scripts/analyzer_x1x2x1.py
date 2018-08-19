@@ -413,20 +413,7 @@ def handleX10X20X10GenDiLepton(event, l1, l2, weight, params):
 	deltaEta = abs(l1v.Eta() - l2v.Eta())
 	utils.fillHistWithCuts("DeltaPhiGen", deltaPhi, histList, cutsDef, "ntuples", event, weight, params)
 	utils.fillHistWithCuts("DeltaRGen", deltaR, histList, cutsDef, "ntuples", event, weight, params)
-	utils.fillHistWithCuts("DeltaEtaGen", deltaEta, histList, cutsDef, "ntuples", event, weight, params)
-
-def isRightProcess(event):
-	partSize = event.GenParticles.size()
-	for ipart in range(partSize):
-		if event.GenParticles_PdgId[ipart] == 1000022:
-			#print "Found x10"
-			if event.GenParticles_ParentId[ipart] == 1000023:
-				#print "Mother x20"
-				if not isSusy(event.GenParticles_ParentId[event.GenParticles_ParentIdx[ipart]]):
-					#print "Found!!!"
-					return True
-	return False
-	
+	utils.fillHistWithCuts("DeltaEtaGen", deltaEta, histList, cutsDef, "ntuples", event, weight, params)	
 
 parser = argparse.ArgumentParser(description='Create histograms for x1x2x1 process.')
 parser.add_argument('-i', '--input_file', nargs=1, help='Input Filename', required=False)
@@ -484,7 +471,7 @@ if cf:
 			rightProcess = True
 			c.GetEntry(ientry)
 			if signal:
-				rightProcess = isRightProcess(c)
+				rightProcess = analysis_ntuples.isX1X2X1Process(c)
 			if rightProcess:
 				params = {}
 				handleX10X20X10Cand(c, 1, params, True)
@@ -517,7 +504,7 @@ for ientry in range(nentries) :
 	c.GetEntry(ientry)
 	rightProcess = True
 	if signal:
-		rightProcess = isRightProcess(c)
+		rightProcess = analysis_ntuples.isX1X2X1Process(c)
 		#if rightProcess: 
 			#print "*******"
 	if rightProcess:

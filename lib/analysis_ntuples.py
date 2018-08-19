@@ -100,5 +100,15 @@ def isDuoTauEvent(event):
 		return True
 	return False
 	
-		
+def isX1X2X1Process(event):
+	partSize = event.GenParticles.size()
+	for ipart in range(partSize):
+		if event.GenParticles_PdgId[ipart] == 1000022:
+			#print "Found x10"
+			if event.GenParticles_ParentId[ipart] == 1000023:
+				#print "Mother x20"
+				if not isSusy(event.GenParticles_ParentId[event.GenParticles_ParentIdx[ipart]]):
+					#print "Found!!!"
+					return True
+	return False	
 		
