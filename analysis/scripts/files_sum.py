@@ -12,27 +12,15 @@ import sys
 
 sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
 from lib import utils
-
-# load FWLite C++ libraries
-# gSystem.Load("libFWCoreFWLite.so");
-# gSystem.Load("libDataFormatsFWLite.so");
-# FWLiteEnabler.enable()
-
-# load FWlite python libraries
-# from DataFormats.FWLite import Handle, Events
-# import FWCore.ParameterSet.Config as cms
-
-COMPOUND_TYPES = {
-	"Rare" : ["WZZ", "WWZ", "ZZZ"],
-	"DiBoson" : ["WZ", "WW", "ZZ"]
-}
 	
-parser = argparse.ArgumentParser(description='Sum BG histograms.')
+parser = argparse.ArgumentParser(description='Sum histograms and trees.')
 parser.add_argument('-hadd', '--hadd', dest='hadd', help='Add histogram', action='store_true')
 parser.add_argument('-cp', '--create_plots', dest='cp', help='Create plots', action='store_true')
 parser.add_argument('-a', '--all', dest='all', help='Perform all', action='store_true')
 parser.add_argument('-s', '--stack', dest='stack', help='Perform stack', action='store_true')
 parser.add_argument('-skim', '--skim', dest='skim', help='Work on skim', action='store_true')
+parser.add_argument('-bg', '--background', dest='bg', help='Signal', action='store_true')
+parser.add_argument('-sig', '--signal', dest='sig', help='Background', action='store_true')
 args = parser.parse_args()
 
 hadd = args.hadd
@@ -40,33 +28,48 @@ cp = args.cp
 all = args.all
 stack = args.stack
 skim = args.skim
+signal = args.sig
+bg = args.bg
 
-BG_OUTPUT = "/afs/desy.de/user/n/nissanuv/work/x1x2x1/bg/hist"
-if skim:
-	BG_OUTPUT = "/afs/desy.de/user/n/nissanuv/work/x1x2x1/bg/skim"	
-BG_SINGLE_OUTPUT = BG_OUTPUT + "/single"
-BG_OUTPUT_SUM = BG_OUTPUT + "/sum"
-BG_OUTPOUT_TYPE_SUM = BG_OUTPUT_SUM + "/type_sum"
-BG_OUTPOUT_PROCESSED = BG_OUTPUT_SUM + "/processed"
-BG_OUTPOUT_STACK = BG_OUTPUT_SUM + "/stack"
+if (bg and signal) or not (bg or signal):
+	signal = True
+	bg = False
 
-if not os.path.isdir(BG_OUTPUT_SUM):
-	os.mkdir(BG_OUTPUT_SUM)
+WORK_DIR = None
+if bg:
+	if skim:
+		WORK_DIR = "/afs/desy.de/user/n/nissanuv/work/x1x2x1/bg/skim"
+	else:
+		WORK_DIR = "/afs/desy.de/user/n/nissanuv/work/x1x2x1/bg/hist"		
+else:
+	if skim:
+		WORK_DIR = "/afs/desy.de/user/n/nissanuv/work/x1x2x1/signal/skim"
+	else:
+		WORK_DIR = "/afs/desy.de/user/n/nissanuv/work/x1x2x1/signal/hist"
+		
+SINGLE_OUTPUT = WORK_DIR + "/single"
+OUTPUT_SUM = WORK_DIR + "/sum"
+OUTPOUT_TYPE_SUM = OUTPUT_SUM + "/type_sum"
+OUTPOUT_PROCESSED = OUTPUT_SUM + "/processed"
+OUTPOUT_STACK = OUTPUT_SUM + "/stack"
+
+if not os.path.isdir(OUTPUT_SUM):
+	os.mkdir(OUTPUT_SUM)
 	
-if not os.path.isdir(BG_OUTPOUT_TYPE_SUM):
-	os.mkdir(BG_OUTPOUT_TYPE_SUM)
+if not os.path.isdir(OUTPOUT_TYPE_SUM):
+	os.mkdir(OUTPOUT_TYPE_SUM)
 
-if not os.path.isdir(BG_OUTPOUT_PROCESSED):
-	os.mkdir(BG_OUTPOUT_PROCESSED)
+if not os.path.isdir(OUTPOUT_PROCESSED):
+	os.mkdir(OUTPOUT_PROCESSED)
 
-if not os.path.isdir(BG_OUTPOUT_STACK):
-	os.mkdir(BG_OUTPOUT_STACK)
+if not os.path.isdir(OUTPOUT_STACK):
+	os.mkdir(OUTPOUT_STACK)
 	
-bgTypes = {}
+sumTypes = {}
 
 def existsInCoumpoundType(key):
-	for cType in COMPOUND_TYPES:
-		if key in COMPOUND_TYPES[cType]:
+	for cType in utils.compoundTypes:
+		if key in utils.compoundTypes[cType]:
 			return True
 	return False
 	
@@ -74,7 +77,7 @@ def createPlots(rootfiles, outputFileName):
 
 	print rootfiles
 
-	fnew = TFile(BG_OUTPOUT_PROCESSED + "/" + outputFileName +'.root','recreate')
+	fnew = TFile(OUTPOUT_PROCESSED + "/" + outputFileName +'.root','recreate')
 	fhists0 = TFile(rootfiles[0])
 	keys = fhists0.GetListOfKeys()
 	HT = fhists0.Get("HT").Clone()
@@ -110,35 +113,46 @@ def createPlots(rootfiles, outputFileName):
 
 def getCompoundTypeFiles(cType):
 	rootFiles = []
-	for type in COMPOUND_TYPES[cType]:
-		rootFiles.extend(glob(BG_OUTPOUT_TYPE_SUM + "/*" + type + "*.root"))
+	for type in utils.compoundTypes[cType]:
+		rootFiles.extend(glob(OUTPOUT_TYPE_SUM + "/*" + type + "*.root"))
 	return rootFiles
 
 
 # Add the histograms
 if hadd or all:
 	print "Adding histograms."
-	fileList = glob(BG_SINGLE_OUTPUT + "/Summer16*");
-	for f in fileList : 
-		filename = os.path.basename(f).split(".")[1]
+	fileList = glob(SINGLE_OUTPUT + "/*");
+	for f in fileList :
+		filename = None
+		if bg:
+			filename = os.path.basename(f).split(".")[1]
+		else:
+			filename = os.path.basename(f).split(".")[0]
 		types = filename.split("_")
 		type = types[0]
-		if type not in bgTypes:
-			bgTypes[type] = {}
-		if type == "DYJetsToLL":
-			bgTypes[type][types[2]] = True
-		else:
-			bgTypes[type][types[1]] = True
-
-	print bgTypes 
-
-	for bgType in bgTypes:
-		for bgTypeRange in bgTypes[bgType]:
-			command = None
-			if bgType == "DYJetsToLL":
-				command = "hadd -f " + BG_OUTPOUT_TYPE_SUM + "/" + bgType + "_" + bgTypeRange + ".root " + BG_SINGLE_OUTPUT + "/Summer16." + bgType + "_*" + bgTypeRange + "*.root"
+		if type not in sumTypes:
+			sumTypes[type] = {}
+		if bg:
+			if type == "DYJetsToLL":
+				sumTypes[type][types[2]] = True
 			else:
-				command = "hadd -f " + BG_OUTPOUT_TYPE_SUM + "/" + bgType + "_" + bgTypeRange + ".root " + BG_SINGLE_OUTPUT + "/Summer16." + bgType + "_" + bgTypeRange + "*.root"
+				sumTypes[type][types[1]] = True
+
+	print sumTypes 
+
+	for type in sumTypes:
+		print type
+		if bg:
+			for typeRange in types[type]:
+				command = None
+				if type == "DYJetsToLL":
+					command = "hadd -f " + OUTPOUT_TYPE_SUM + "/" + type + "_" + typeRange + ".root " + SINGLE_OUTPUT + "/Summer16." + type + "_*" + typeRange + "*.root"
+				else:
+					command = "hadd -f " + OUTPOUT_TYPE_SUM + "/" + type + "_" + typeRange + ".root " + SINGLE_OUTPUT + "/Summer16." + type + "_" + typeRange + "*.root"
+				print "Perorming:", command 
+				system(command)
+		else:
+			command = "hadd -f " + OUTPOUT_TYPE_SUM + "/" + type + ".root " + SINGLE_OUTPUT + "/" + type + "_*.root"
 			print "Perorming:", command 
 			system(command)
 
@@ -146,24 +160,24 @@ if cp or all:
 
 	print "Creating plots."
 
-	bgTypes = {}
-	fileList = glob(BG_OUTPOUT_TYPE_SUM + "/*")
+	sumTypes = {}
+	fileList = glob(OUTPOUT_TYPE_SUM + "/*")
 	for f in fileList : 
 		filename = os.path.basename(f).split(".")[0]
 		types = filename.split("_")
-		if types[0] not in bgTypes:
-			bgTypes[types[0]] = {}
-		bgTypes[types[0]][types[1]] = True
+		if types[0] not in sumTypes:
+			sumTypes[types[0]] = {}
+		sumTypes[types[0]][types[1]] = True
 
-	print bgTypes
+	print sumTypes
 
-	for bgType in bgTypes:
-		if existsInCoumpoundType(bgType):
+	for type in sumTypes:
+		if existsInCoumpoundType(type):
 			continue
-		print "Summing type", bgType
-		rootfiles = glob(BG_OUTPOUT_TYPE_SUM + "/*" + bgType + "*.root")
-		createPlots(rootfiles, bgType)
-	for cType in COMPOUND_TYPES:
+		print "Summing type", type
+		rootfiles = glob(OUTPOUT_TYPE_SUM + "/*" + type + "*.root")
+		createPlots(rootfiles, type)
+	for cType in utils.compoundTypes:
 		print "Creating compound type", cType
 		rootFiles = getCompoundTypeFiles(cType)
 		if len(rootFiles):
@@ -174,8 +188,8 @@ print "Stack " + str(stack)
 
 if stack or all:
 	print "Creating Stacks."
-	rtstacks___ = TFile(BG_OUTPOUT_STACK + "/stacked_histograms.root",'recreate')
-	rootfiles = utils.orderBgFiles(glob(BG_OUTPOUT_PROCESSED + "/*"))
+	rtstacks___ = TFile(OUTPOUT_STACK + "/stacked_histograms.root",'recreate')
+	rootfiles = utils.orderBgFiles(glob(OUTPOUT_PROCESSED + "/*"))
 	files = []
 	for i,file in enumerate(rootfiles):
 		files.append(TFile(rootfiles[i]))

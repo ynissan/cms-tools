@@ -10,13 +10,6 @@ import sys
 import numpy as np
 import os
 
-# load FWLite C++ libraries
-#gSystem.Load("libFWCoreFWLite.so");
-#gSystem.Load("libDataFormatsFWLite.so");
-#FWLiteEnabler.enable()
-
-#gROOT.LoadMacro("TLorentzVectorDict.h")
-
 sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
 from lib import histograms
 from lib import utils
@@ -161,7 +154,7 @@ for ientry in range(nentries):
 	crossSection = 1
 	if signal:
 		rightProcess = analysis_ntuples.isX1X2X1Process(c)
-		filename = os.path.basename(input_file).split(".")[0]
+		filename = os.path.basename(input_file).split("_")[0]
 		if utils.crossSections.get(filename) is not None:
 			crossSection = utils.crossSections.get(filename)
 	if rightProcess:

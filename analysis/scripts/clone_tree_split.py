@@ -36,7 +36,10 @@ if args.output_file:
 print "About to clone tree"
 
 chain = TChain('TreeMaker2/PreSelection')
+print "Going to open the file"
+print input_file
 chain.Add(input_file)
+print "After opening"
 tree = chain.CloneTree(0)
 
 nentries = chain.GetEntriesFast()
@@ -46,32 +49,30 @@ max_per_file = 50000
 filenum = 1
 
 fnew = TFile(output_file + "_" + str(filenum) + ".root",'recreate')
-fnew.cd()
+fnew.mkdir("TreeMaker2");
+fnew.cd("TreeMaker2")
 new_entries = False
 
 for ientry in range(nentries):
 	if ientry % 5000 == 0:
 		print "Processing " + str(ientry)
 	if ientry != 0 and ientry % max_per_file == 0:
-		print "Done coping. Writing to file"
-		tree.Write()
+		print "Done copying. Writing to file"
+		tree.Write('PreSelection')
 		print "Done writing to file."
 		tree.Reset()
 		fnew.Close()
 		filenum +=1
 		fnew = TFile(output_file + "_" + str(filenum) + ".root",'recreate')
-		fnew.cd()
+		fnew.mkdir("TreeMaker2");
+		fnew.cd("TreeMaker2")
 		new_entries = False
 	chain.GetEntry(ientry)
 	tree.Fill()
 	new_entries = True
 
-
-#fnew.mkdir("TreeMaker2");
-#fnew.cd("TreeMaker2")
-#tree.Write('PreSelection')
 if new_entries:
-	print "Done coping. Writing to file"
-	tree.Write()
+	print "Done copying. Writing to file"
+	tree.Write('PreSelection')
 	print "Done writing to file."
 	fnew.Close()

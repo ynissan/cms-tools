@@ -39,6 +39,11 @@ signalCp = [
 	{ "name" : "black", "fillColor" : "#012a6d", "lineColor" : "#01173a", "fillStyle" : 0 },
 ]
 
+compoundTypes = {
+	"Rare" : ["WZZ", "WWZ", "ZZZ"],
+	"DiBoson" : ["WZ", "WW", "ZZ"]
+}
+
 bgOrder = {
 	"Rare" : 0,
 	"TTWJetsToLNu" : 1,

@@ -3,6 +3,7 @@
 . "/afs/desy.de/user/n/nissanuv/cms-tools/bg/def.sh"
 
 shopt -s nullglob
+shopt -s expand_aliases
 
 #---------- GET OPTIONS ------------
 POSITIONAL=()
@@ -55,21 +56,17 @@ if [ ! -d "$OUTPUT_DIR/stderr" ]; then
   mkdir "$OUTPUT_DIR/stderr"
 fi
 
-for sim in "${!SIMS[@]}"; do
-	echo "$sim - ${SIMS[$sim]}";
-	INPUT_FILE=${SIMS[$sim]}
-	if [ -n "$SKIM" ]; then
-		INPUT_FILE=${SIG_DUP_OUTPUT_DIR}/single/${sim}.root
-	fi
+for sim in ${SIG_DUP_OUTPUT_DIR}/single/*; do
+	filename=$(basename $sim .root)
 	echo "Will run:"
-	echo $SIM_DIR/run_sim_analysis_single.sh -i $INPUT_FILE -o ${OUTPUT_DIR}/single/${sim}.root ${POSITIONAL[@]}
+	echo $SIM_DIR/run_sim_analysis_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root ${POSITIONAL[@]}
 read -r -d '' CMD << EOM
 universe = vanilla
 should_transfer_files = IF_NEEDED
 executable = /bin/bash
-arguments = $SIM_DIR/run_sim_analysis_single.sh -i $INPUT_FILE -o ${OUTPUT_DIR}/single/${sim}.root ${POSITIONAL[@]}
-error = ${OUTPUT_DIR}/stderr/${sim}.err
-output = ${OUTPUT_DIR}/stdout/${sim}.output
+arguments = $SIM_DIR/run_sim_analysis_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root ${POSITIONAL[@]}
+error = ${OUTPUT_DIR}/stderr/${filename}.err
+output = ${OUTPUT_DIR}/stdout/${filename}.output
 notification = Never
 priority = 0
 Queue
