@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 from ROOT import *
 from glob import glob
@@ -24,9 +24,9 @@ sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
 from lib import histograms
 from lib import utils
 
-SIG_FILES = [	"/afs/desy.de/user/n/nissanuv/cms-tools/sim_x10x20x10/dm20.root",
-		"/afs/desy.de/user/n/nissanuv/cms-tools/sim_x10x20x10/dm13.root",
-		"/afs/desy.de/user/n/nissanuv/cms-tools/sim_x10x20x10/dm7.root",
+SIG_FILES = [	"/afs/desy.de/user/n/nissanuv/work/x1x2x1/signal/hist/single/dm20.root",
+		"/afs/desy.de/user/n/nissanuv/work/x1x2x1/signal/hist/single/dm13.root",
+		"/afs/desy.de/user/n/nissanuv/work/x1x2x1/signal/hist/single/dm7.root",
 	     ]
 
 SIG_NAMES = ["dm20", "dm13", "dm7"]

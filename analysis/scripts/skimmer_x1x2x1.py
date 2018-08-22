@@ -2,7 +2,6 @@
 
 from ROOT import *
 from glob import glob
-from math import *
 from sys import exit
 from array import array
 import argparse

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 from ROOT import *
 from glob import glob
@@ -7,15 +7,6 @@ from sys import exit
 import array
 import argparse
 import sys
-
-# load FWLite C++ libraries
-#gSystem.Load("libFWCoreFWLite.so");
-#gSystem.Load("libDataFormatsFWLite.so");
-#FWLiteEnabler.enable()
-
-# load FWlite python libraries
-#from DataFormats.FWLite import Handle, Events
-#import FWCore.ParameterSet.Config as cms
 
 sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
 from lib import analysis_ntuples
