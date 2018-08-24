@@ -61,6 +61,8 @@ files=()
 for type in ${BG_TYPES[@]}; do 
 	if [ "$type" = "DYJetsToLL" ]; then
 		files=("${files[@]}" ${NEWEST_SIM_DIR}/Summer16.${type}_M-50_HT-*)
+	elif [ "$type" = "WJetsToLNu" ]; then
+		files=("${files[@]}" ${NEWEST_SIM_DIR}/Summer16.${type}_HT*)
 	else
 		files=("${files[@]}" ${NEWEST_SIM_DIR}/Summer16.${type}_*)
 	fi
@@ -75,25 +77,30 @@ done
 
 file_limit=0
 i=0
-count=0
+#count=0
 
-for fullname in "${files[@]}"; do
-	#cmd="qsub -cwd -l h_vmem=2G -o $STD_OUTPUT/$(basename $fullname .root).output  -e $ERR_OUTPUT/$(basename $fullname .root).err $SCRIPTS_WD/run_bg_analysis_single.sh -i $fullname &"
-	#cmd="condor_qsub -o $STD_OUTPUT/$(basename $fullname .root).output  -e $ERR_OUTPUT/$(basename $fullname .root).err $SCRIPTS_WD/run_bg_analysis_single.sh -i $fullname &"
-read -r -d '' CMD << EOM
+timestamp=$(date +%Y%m%d_%H%M%S%N)
+output_file="${WORK_DIR}/condor_submut.${timestamp}"
+echo "output file: $output_file"
+
+cat << EOM > $output_file
 universe = vanilla
 should_transfer_files = IF_NEEDED
 executable = /bin/bash
-arguments = $SCRIPTS_WD/run_bg_analysis_single.sh -i $fullname ${POSITIONAL[@]}
-error = $ERR_OUTPUT/$(basename $fullname .root).err
-output = $STD_OUTPUT/$(basename $fullname .root).output
 notification = Never
 priority = 0
+EOM
+
+for fullname in "${files[@]}"; do
+	#cmd="qsub -cwd -l h_vmem=2G -o $STD_OUTPUT/$(basename $fullname .root).output  -e $ERR_OUTPUT/$(basename $fullname .root).err $BG_SCRIPTS/run_bg_analysis_single.sh -i $fullname &"
+	#cmd="condor_qsub -o $STD_OUTPUT/$(basename $fullname .root).output  -e $ERR_OUTPUT/$(basename $fullname .root).err $BG_SCRIPTS/run_bg_analysis_single.sh -i $fullname &"
+
+cat << EOM >> $output_file
+arguments = $BG_SCRIPTS/run_bg_analysis_single.sh -i $fullname ${POSITIONAL[@]}
+error = $ERR_OUTPUT/$(basename $fullname .root).err
+output = $STD_OUTPUT/$(basename $fullname .root).output
 Queue
 EOM
-    	echo -e "\nRunning cmd:\n$SCRIPTS_WD/run_bg_analysis_single.sh -i $fullname ${POSITIONAL[@]}"
-    	#echo $fullname
-    	echo "$CMD" | condor_submit &
 	if [ $file_limit -gt 0 ]; then
 		#check limit
 		((i+=1)) 
@@ -101,68 +108,32 @@ EOM
 			break
 		fi
 	fi
-	((count+=1))
-	if ! ((count % 200)); then
-		sleep 2
-	fi
 done
+
+if [ $file_limit -gt 0 ]; then
+	#condor_submit $output_file
+	exit 0
+fi
 
 for fullname in "${madHtFilesGt600[@]}"; do
 
-read -r -d '' CMD << EOM
-universe = vanilla
-should_transfer_files = IF_NEEDED
-executable = /bin/bash
-arguments = $SCRIPTS_WD/run_bg_analysis_single.sh --madHTgt 600 -i $fullname ${POSITIONAL[@]}
+cat << EOM >> $output_file
+arguments = $BG_SCRIPTS/run_bg_analysis_single.sh --madHTgt 600 -i $fullname ${POSITIONAL[@]}
 error = $ERR_OUTPUT/$(basename $fullname .root).err
 output = $STD_OUTPUT/$(basename $fullname .root).output
-notification = Never
-priority = 0
 Queue
 EOM
-
-    	echo -e "\nRunning cmd:\n$SCRIPTS_WD/run_bg_analysis_single.sh --madHTgt 600 -i $fullname ${POSITIONAL[@]}"
-    	#echo $fullname
-    	echo "$CMD" | condor_submit &
-    	if [ $file_limit -gt 0 ]; then
-		#check limit
-		((i+=1)) 
-		if [ $i -ge $file_limit ]; then
-			break
-		fi
-	fi
-	((count+=1))
-	if ! ((count % 200)); then
-		sleep 2
-	fi
 done
 
 for fullname in "${madHtFilesLt600[@]}"; do
 
-read -r -d '' CMD << EOM
-universe = vanilla
-should_transfer_files = IF_NEEDED
-executable = /bin/bash
-arguments = $SCRIPTS_WD/run_bg_analysis_single.sh --madHTlt 600 -i $fullname ${POSITIONAL[@]}
+cat << EOM >> $output_file
+arguments = $BG_SCRIPTS/run_bg_analysis_single.sh --madHTlt 600 -i $fullname ${POSITIONAL[@]}
 error = $ERR_OUTPUT/$(basename $fullname .root).err
 output = $STD_OUTPUT/$(basename $fullname .root).output
-notification = Never
-priority = 0
 Queue
 EOM
-
-    	echo -e "\nRunning cmd:\n$SCRIPTS_WD/run_bg_analysis_single.sh --madHTlt 600 -i $fullname ${POSITIONAL[@]}"
-    	#echo $fullname
-    	echo "$CMD" | condor_submit &
-    	if [ $file_limit -gt 0 ]; then
-		#check limit
-		((i+=1)) 
-		if [ $i -ge $file_limit ]; then
-			break
-		fi
-	fi
-	((count+=1))
-	if ! ((count % 200)); then
-		sleep 2
-	fi
 done
+
+condor_submit $output_file
+rm $output_file

@@ -36,9 +36,9 @@ else:
 ######## END OF CMDLINE ARGUMENTS ########
 
 gROOT.SetBatch(1)
-ROOT.TMVA.Tools.Instance()
+TMVA.Tools.Instance()
 outputFile = TFile(output_file_name,'RECREATE')
-factory = ROOT.TMVA.Factory("TMVAClassification", outputFile,
+factory = TMVA.Factory("TMVAClassification", outputFile,
                             ":".join([
                                 "!V",
                                 "!Silent",
@@ -47,61 +47,58 @@ factory = ROOT.TMVA.Factory("TMVAClassification", outputFile,
                                 "Transformations=I;D;P;G,D",
                                 "AnalysisType=Classification"]
                                      ))
-
-
-factory.SetWeightExpression("Weight")
-fsignal = TFile(input_file, 'recreate')
+                                     
+dataloader = TMVA.DataLoader("dataset")
+dataloader.SetWeightExpression("Weight")
+fsignal = TFile(input_file, "update")
 sTree = fsignal.Get("tEvent")
-factory.AddSignalTree(sTree, 1);
+dataloader.AddSignalTree(sTree, 1);
 bgFiles = []
 bTrees = []
 bFileNames =  glob(bg_dir + "/*");
 for f in bFileNames:
-	bFile = TFile(f, 'recreate')
+	bFile = TFile(f, "update")
 	bgFiles.append(bFile)
 	bTree = bFile.Get("tEvent")
 	bTrees.append(bTree)
-	factory.AddBackgroundTree(bTree, 1)
+	dataloader.AddBackgroundTree(bTree, 1)
 
 # Variables
 
-factory.AddVariable('Met', 'F')
-factory.AddVariable('NJets', 'I')
-factory.AddVariable('Ht', 'F')
-factory.AddVariable('Mht', 'F')
-factory.AddVariable('Mt2', 'F')
-factory.AddVariable('MetDHt', 'F')
-factory.AddVariable('HtJet25', 'F')
-factory.AddVariable('DileptonPt', 'F')
-factory.AddVariable('DeltaPhi', 'F')
-factory.AddVariable('DeltaEta', 'F')
-factory.AddVariable('DeltaR', 'F')
-factory.AddVariable('Pt3', 'F')
-factory.AddVariable('Mt1', 'F')
-factory.AddVariable('Mt2', 'F')
-factory.AddVariable('Mtautau', 'F')
+dataloader.AddVariable('Met', 'F')
+dataloader.AddVariable('NJets', 'I')
+dataloader.AddVariable('Ht', 'F')
+dataloader.AddVariable('Mht', 'F')
+dataloader.AddVariable('MetDHt', 'F')
+dataloader.AddVariable('MetDHt2', 'F')
+dataloader.AddVariable('DilepHt', 'F')
+dataloader.AddVariable('DileptonPt', 'F')
+dataloader.AddVariable('DeltaPhi', 'F')
+dataloader.AddVariable('DeltaEta', 'F')
+dataloader.AddVariable('DeltaR', 'F')
+dataloader.AddVariable('Mt1', 'F')
+dataloader.AddVariable('Mt2', 'F')
+dataloader.AddVariable('Mtautau', 'F')
 
-factory.AddVariable('Eta1', 'F')
-factory.AddVariable('Eta2', 'F')
-
-factory.AddVariable('Phi1', 'F')
-factory.AddVariable('Phi2', 'F')
-
-factory.AddVariable('Pt1', 'F')
-factory.AddVariable('Pt2', 'F')
-
-factory.AddVariable('DeltaEtaLeadingJetDilepton', var_DeltaEtaLeadingJetDilepton,'DeltaEtaLeadingJetDilepton/D')
-factory.AddVariable('LeadingJetPartonFlavor', var_LeadingJetPartonFlavor,'LeadingJetPartonFlavor/D')
-factory.AddVariable('LeadingJetQgLikelihood', var_LeadingJetQgLikelihood,'LeadingJetQgLikelihood/D')
+dataloader.AddVariable('Pt1', 'F')
 
 # Spectators
-factory.AddSpectator('LeptonsType','I')
-factory.AddSpectator('InvMass', 'F')
+dataloader.AddSpectator('LeptonsType','I')
+dataloader.AddSpectator('InvMass', 'F')
+dataloader.AddSpectator('Pt3', 'F')
+dataloader.AddSpectator('DeltaEtaLeadingJetDilepton', 'F')
+dataloader.AddSpectator('LeadingJetPartonFlavor', 'I')
+dataloader.AddSpectator('LeadingJetQgLikelihood', 'F')
+dataloader.AddSpectator('Phi1', 'F')
+dataloader.AddSpectator('Phi2', 'F')
+dataloader.AddSpectator('Pt2', 'F')
+dataloader.AddSpectator('Eta1', 'F')
+dataloader.AddSpectator('Eta2', 'F')
 
 # cuts defining the signal and background sample
-preselectionCut = ROOT.TCut("Mtautau < 0 || Mtautau > 160")
-factory.PrepareTrainingAndTestTree(preselectionCut, "SplitMode=random:!V")
-factory.BookMethod(ROOT.TMVA.Types.kBDT, "BDT", "NTrees=200:MaxDepth=4")
+preselectionCut = TCut("(Mtautau < 0 || Mtautau > 160) && ((LeptonsType == 0 && abs(Eta1) < 2.5 && abs(Eta2) < 2.5) || (LeptonsType == 1 && abs(Eta1) < 2.4 && abs(Eta2) < 2.4))")
+dataloader.PrepareTrainingAndTestTree(preselectionCut, "SplitMode=random:!V")
+factory.BookMethod(dataloader, TMVA.Types.kBDT, "BDT", "NTrees=200:MaxDepth=4")
 factory.TrainAllMethods()
 factory.TestAllMethods()
 factory.EvaluateAllMethods()

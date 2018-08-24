@@ -1,16 +1,3 @@
-#!/usr/bin/python
-
-from ROOT import *
-
-# load FWLite C++ libraries
-# gSystem.Load("libFWCoreFWLite.so");
-# gSystem.Load("libDataFormatsFWLite.so");
-# FWLiteEnabler.enable()
-
-# load FWlite python libraries
-# from DataFormats.FWLite import Handle, Events
-# import FWCore.ParameterSet.Config as cms
-
 def applyCut(cut, event, eventParams, type, cutName):
 	if cut.get(type) is None:
 		return True

@@ -56,21 +56,29 @@ if [ ! -d "$OUTPUT_DIR/stderr" ]; then
   mkdir "$OUTPUT_DIR/stderr"
 fi
 
+timestamp=$(date +%Y%m%d_%H%M%S%N)
+output_file="${WORK_DIR}/condor_submut.${timestamp}"
+echo "output file: $output_file"
+
+cat << EOM > $output_file
+universe = vanilla
+should_transfer_files = IF_NEEDED
+executable = /bin/bash
+notification = Never
+priority = 0
+EOM
+
 for sim in ${SIG_DUP_OUTPUT_DIR}/single/*; do
 	filename=$(basename $sim .root)
 	echo "Will run:"
 	echo $SIM_DIR/run_sim_analysis_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root ${POSITIONAL[@]}
-read -r -d '' CMD << EOM
-universe = vanilla
-should_transfer_files = IF_NEEDED
-executable = /bin/bash
+cat << EOM >> $output_file
 arguments = $SIM_DIR/run_sim_analysis_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root ${POSITIONAL[@]}
 error = ${OUTPUT_DIR}/stderr/${filename}.err
 output = ${OUTPUT_DIR}/stdout/${filename}.output
-notification = Never
-priority = 0
 Queue
 EOM
-
-	echo "$CMD" | condor_submit &
 done
+
+condor_submit $output_file
+rm $output_file

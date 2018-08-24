@@ -23,22 +23,30 @@ fi
 
 module load root6
 
+timestamp=$(date +%Y%m%d_%H%M%S%N)
+output_file="${WORK_DIR}/condor_submut.${timestamp}"
+echo "output file: $output_file"
+
+cat << EOM > $output_file
+universe = vanilla
+should_transfer_files = IF_NEEDED
+executable = /bin/bash
+notification = Never
+priority = 0
+EOM
+
 for sim in "${!SIMS[@]}"; do
 	echo "$sim - ${SIMS[$sim]}";
 	echo "Will run:"
 	echo $CLONE_SINGLE -i ${SIMS[$sim]} -o ${SIG_DUP_OUTPUT_DIR}/single/${sim}
-read -r -d '' CMD << EOM
-universe = vanilla
-should_transfer_files = IF_NEEDED
-executable = /bin/bash
+cat << EOM >> $output_file
 arguments = $CLONE_SINGLE -i ${SIMS[$sim]} -o ${SIG_DUP_OUTPUT_DIR}/single/${sim}
 error = ${SIG_DUP_OUTPUT_DIR}/stderr/${sim}.err
 output = ${SIG_DUP_OUTPUT_DIR}/stdout/${sim}.output
-notification = Never
-priority = 0
 Queue
 EOM
-
-	echo "$CMD" | condor_submit &
 done
+
+condor_submit $output_file
+rm $output_file
         
