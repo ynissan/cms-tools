@@ -57,6 +57,25 @@ def htJet25(event):
 	objects25 = [ j for j in cleanJets if j.Pt() > 25 ] + leps
 	return sum([x.Pt() for x in objects25])
 
+def minDeltaPhiMetJets(event, pt, eta):
+	jets = [ j for j in event.Jets if j.Pt() > pt and abs(j.Eta()) <= eta ]
+	metvec = TLorentzVector()
+	metvec.SetPtEtaPhiE(event.MET, 0, event.METPhi, event.MET)
+	return min([abs(j.DeltaPhi(metvec)) for j in jets])
+	
+def minDeltaPhiMhtJets(event, pt, eta):
+	jets = [ j for j in event.Jets if j.Pt() > pt and abs(j.Eta()) <= eta ]
+	mhtvec = TLorentzVector()
+	mhtvec.SetPtEtaPhiE(event.MHT, 0, event.MHTPhi, event.MHT)
+	return min([abs(j.DeltaPhi(mhtvec)) for j in jets])
+
+def minDeltaPhiMetJets25Pt2_4Eta(event):
+	return minDeltaPhiMetJets(event, 25, 2.4)
+
+def minDeltaPhiMhtJets25Pt2_4Eta(event):
+	return minDeltaPhiMhtJets(event, 25, 2.4)
+	
+
 def numberOfMediumBTags(event):
 	#./analyzer_x1x2x1.py -bg -i /pnfs/desy.de/cms/tier2/store/user/sbein/CommonNtuples/Summer16.QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_24_RA2AnalysisTree.root -o test.root | tee output
 	medium = 0

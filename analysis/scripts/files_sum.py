@@ -143,7 +143,7 @@ if hadd or all:
 	for type in sumTypes:
 		print type
 		if bg:
-			for typeRange in types[type]:
+			for typeRange in sumTypes[type]:
 				command = None
 				if type == "DYJetsToLL":
 					command = "hadd -f " + OUTPOUT_TYPE_SUM + "/" + type + "_" + typeRange + ".root " + SINGLE_OUTPUT + "/Summer16." + type + "_*" + typeRange + "*.root"
