@@ -1,13 +1,12 @@
-Met >=
-NJets >=
-Ht >=
-Mht >=
-MetDHt >=
-Mt2 >=
-LeadingJetPartonFlavor 
-LeadingJetQgLikelihood
-MinDeltaPhiMetJets
-MinDeltaPhiMhtJets
+Met <>
+NJets <=
+Ht <>
+#Mht <>
+MetDHt <>
+Mt2 <>
+LeadingJetQgLikelihood <=
+MinDeltaPhiMetJets <>
+MinDeltaPhiMhtJets <>
 
 
 

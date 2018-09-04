@@ -18,23 +18,39 @@ NAME = "x10x20x10"
 ####### CMDLINE ARGUMENTS #########
 
 parser = argparse.ArgumentParser(description='Train RGS for x1x2x1 process.')
-parser.add_argument('-i', '--input_file', nargs=1, help='Input Filename', required=False)
-parser.add_argument('-o', '--output_file', nargs=1, help='Output Filename', required=False)
+parser.add_argument('-s', '--signal', nargs=1, help='Input Signal', required=False)
+parser.add_argument('-i', '--input_dir', nargs=1, help='Input Directory', required=False)
+parser.add_argument('-c', '--cuts', nargs=1, help='Cuts File', required=False)
 args = parser.parse_args()
 
 sigfilename = None
-if args.input_file:
-	sigfilename = args.input_file[0]
+if args.signal:
+	sigfilename = args.signal[0]
 else:
 	sigfilename = "/afs/desy.de/user/n/nissanuv/work/x1x2x1/signal/skim/sum/type_sum/dm20.root"
-output_file = None
-if args.output_file:
-	output_file = args.output_file[0]
-else:
-	output_file = "%s.root" % NAME
+input_dir = None
+if args.input_dir:
+	input_dir = args.input_dir[0]
+cuts_files = None
+if args.cuts:
+	cuts_files = args.cuts[0]
 ######## END OF CMDLINE ARGUMENTS ########
 
-varfilename = "%s.cuts" % NAME
+dir = None
+cuts_name = None
+if input_dir:
+	dir = os.path.realpath(input_dir)
+	cuts_name = os.path.basename(dir)
+else:
+	dir = os.path.dirname(os.path.realpath(sys.argv[0]))
+	cuts_name = NAME
+
+print dir
+print cuts_name
+
+varfilename  = dir + "/" + "%s.cuts" % cuts_name
+resultsfilename= dir + "/" + "%s.root" % cuts_name
+
 if not os.path.exists(varfilename):
 	error("unable to open variables file %s" % varfilename)
 
@@ -45,7 +61,8 @@ bkgfiledir = "/afs/desy.de/user/n/nissanuv/work/x1x2x1/bg/skim/sum/type_sum"
 if not os.path.exists(bkgfiledir):
 	error("unable to open background dir %s" % bkgfiledir)
 
-cutdatafilename = sigfilename
+cutdatafilename = cuts_files or sigfilename
+print "cutdatafilename" + "=" + cutdatafilename
 start      = 0           # start row 
 maxcuts    = -1          # maximum number of cut-points to consider
 treename   = "tEvent"    # name of Root tree 
@@ -68,5 +85,5 @@ for bgFile in bgFiles:
 
 rgs.run(varfilename)
 # Write to a root file
-rgs.save(output_file)
+rgs.save(resultsfilename)
 	

@@ -5,9 +5,22 @@ from string import *
 from rgsutil import *
 from time import sleep
 from ROOT import *
+import argparse
 
 NAME = 'x10x20x10'
 bkgfiledir = "/afs/desy.de/user/n/nissanuv/work/x1x2x1/bg/skim/sum/type_sum"
+
+####### CMDLINE ARGUMENTS #########
+
+parser = argparse.ArgumentParser(description='Create skims for x1x2x1 process.')
+parser.add_argument('-i', '--input_dir', nargs=1, help='Input Directory', required=False)
+args = parser.parse_args()
+
+input_dir = None
+if args.input_dir:
+	input_dir = args.input_dir[0]
+	
+######## END OF CMDLINE ARGUMENTS ########
 
 def main():
     global cut
@@ -16,16 +29,34 @@ def main():
     print "\t=== %s: find best cuts ===" % NAME
     print "="*80
     
+    dir = None
+    cuts_name = None
+    if input_dir:
+    	dir = os.path.realpath(input_dir)
+    	cuts_name = os.path.basename(dir)
+    else:
+    	dir = os.path.dirname(os.path.realpath(sys.argv[0]))
+    	cuts_name = NAME
+    
+    #print dir
+    #print cuts_name
+    
     treename = "RGS"
-    varfilename  = "%s.cuts" % NAME
-    resultsfilename= "%s.root" % NAME
+    varfilename  = None
+    resultsfilename = None
+    
+    
+    varfilename  = dir + "/" + "%s.cuts" % cuts_name
+    resultsfilename= dir + "/" + "%s.root" % cuts_name
 
     print "\n\topen RGS file: %s"  % resultsfilename
     ntuple = Ntuple(resultsfilename, treename)
     
     variables = ntuple.variables()
+    var_count = {}
     for name, count in variables:
-        print "\t\t%-30s\t%5d" % (name, count)        
+        print "\t\t%-30s\t%5d" % (name, count)
+        var_count[name] = count
     print "\tnumber of cut-points: ", ntuple.size()
 
     setStyle()
@@ -59,8 +90,8 @@ def main():
     bestRow = -1    # row with best cut-point
     totals = ntuple.totals()
 
-    #print "totals", totals
-    #print "len(totals)", len(totals)
+    print "totals", totals
+    print "len(totals)", len(totals)
 
     # get background totals
     tb = 0
@@ -68,13 +99,20 @@ def main():
         tb += totals[i][0]
 
     ts = totals[0][0]
-    
+    print "Totals:"
+    print "Signal: " + str(ts)
+    print "Background: " + str(tb)
     for row, cuts in enumerate(ntuple):
+    	#print "Row " + str(row)
+    	#print "Cuts: "
+    	#print cuts
         b  = 0 #  background count        
         s  = cuts.count_signal #  signal count
-        
+        #print cuts
         for name, count in variables:
         	if "count_" in name and name != "count_signal" :
+        		#print "Adding name: " + name
+        		#print "value: " + str(cuts(name))
         		b += cuts(name)
         
         fs = s / ts
@@ -92,13 +130,13 @@ def main():
         
     
     print "\t== plot ROC ==="	
-    croc = TCanvas("h_%s_ROC" % NAME, "ROC", 520, 10, 500, 500)
+    croc = TCanvas("h_%s_ROC" % cuts_name, "ROC", 520, 10, 500, 500)
     croc.cd()
-    croc.SetLogx()
+    #croc.SetLogx()
     hroc.Draw()
     croc.Update()
     gSystem.ProcessEvents()    
-    croc.SaveAs(".pdf")  
+    croc.SaveAs(dir + "/" + cuts_name + ".pdf")  
     
     print "\t=== %s: best cut ===" % NAME
     print "Best Z: " + str(bestZ)
@@ -111,11 +149,17 @@ def main():
 	if "count_" in name and name != "count_signal" :
 		b += ntuple(name)
 	elif "fraction_" not in name:
-		print name + "=" + str(ntuple(name))
+		if var_count[name] > 1:
+			print name + "=(" + str(ntuple(name)[0]) + "," + str(ntuple(name)[1]) + ")"
+		else:
+			print name + "=" + str(ntuple(name))
     fs = s / ts
     fb = b / tb
     print "-------------"
     print "(fs,fb)=("+str(fs)+","+str(fb)+")"
+    print "-------------"
+    print "b=" + str(b)
+    print "s=" + str(s)
     
     
     
