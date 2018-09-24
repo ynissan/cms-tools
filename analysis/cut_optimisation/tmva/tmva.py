@@ -68,7 +68,6 @@ for f in bFileNames:
 dataloader.AddVariable('Met', 'F')
 dataloader.AddVariable('NJets', 'I')
 dataloader.AddVariable('Ht', 'F')
-dataloader.AddVariable('Mht', 'F')
 dataloader.AddVariable('MetDHt', 'F')
 #dataloader.AddVariable('MetDHt2', 'F')
 # dataloader.AddVariable('DilepHt', 'F')
@@ -81,7 +80,6 @@ dataloader.AddVariable('Mt2', 'F')
 #dataloader.AddVariable('Mtautau', 'F')
 dataloader.AddVariable('LeadingJetQgLikelihood', 'F')
 dataloader.AddVariable('MinDeltaPhiMetJets', 'F')
-dataloader.AddVariable('MinDeltaPhiMhtJets', 'F')
 
 #dataloader.AddVariable('Pt1', 'F')
 
@@ -97,16 +95,19 @@ dataloader.AddVariable('MinDeltaPhiMhtJets', 'F')
 # dataloader.AddSpectator('Pt2', 'F')
 # dataloader.AddSpectator('Eta1', 'F')
 # dataloader.AddSpectator('Eta2', 'F')
+dataloader.AddSpectator('Mht', 'F')
 dataloader.AddSpectator('NL','I')
 dataloader.AddSpectator('NLGen','I')
 dataloader.AddSpectator('NLGenZ','I')
 dataloader.AddSpectator('LeadingJetPartonFlavor', 'I')
+dataloader.AddSpectator('MinDeltaPhiMhtJets', 'F')
 
 # cuts defining the signal and background sample
 preselectionCut = TCut("")
 dataloader.PrepareTrainingAndTestTree(preselectionCut, "SplitMode=random:!V")
 factory.BookMethod(dataloader, TMVA.Types.kBDT, "BDT", "NTrees=200:MaxDepth=4")
-factory.BookMethod(dataloader, TMVA.Types.kMLP, "MLP_ANN", "" );
+factory.BookMethod(dataloader, TMVA.Types.kMLP, "MLP", "H:!V:NeuronType=tanh:VarTransform=N:NCycles=600:HiddenLayers=N+5:TestRate=5:!UseRegulator" )
+#factory.BookMethod(dataloader, TMVA.Types.kMLP, "MLP_ANN", "" );
 factory.TrainAllMethods()
 factory.TestAllMethods()
 factory.EvaluateAllMethods()

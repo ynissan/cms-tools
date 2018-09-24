@@ -21,19 +21,24 @@ parser = argparse.ArgumentParser(description='Train RGS for x1x2x1 process.')
 parser.add_argument('-s', '--signal', nargs=1, help='Input Signal', required=False)
 parser.add_argument('-i', '--input_dir', nargs=1, help='Input Directory', required=False)
 parser.add_argument('-c', '--cuts', nargs=1, help='Cuts File', required=False)
+parser.add_argument('-f', '--file', nargs=1, help='Train single File', required=False)
 args = parser.parse_args()
+
+if args.signal and args.file:
+	error("Can train only a single file")
 
 sigfilename = None
 if args.signal:
 	sigfilename = args.signal[0]
-else:
-	sigfilename = "/afs/desy.de/user/n/nissanuv/work/x1x2x1/signal/skim/sum/type_sum/dm20.root"
 input_dir = None
 if args.input_dir:
 	input_dir = args.input_dir[0]
 cuts_files = None
 if args.cuts:
 	cuts_files = args.cuts[0]
+train_file = None
+if args.file:
+	train_file = args.file[0]
 ######## END OF CMDLINE ARGUMENTS ########
 
 dir = None
@@ -49,13 +54,9 @@ print dir
 print cuts_name
 
 varfilename  = dir + "/" + "%s.cuts" % cuts_name
-resultsfilename= dir + "/" + "%s.root" % cuts_name
 
 if not os.path.exists(varfilename):
 	error("unable to open variables file %s" % varfilename)
-
-if not os.path.exists(sigfilename):
-	error("unable to open signal file %s" % sigfilename)
       
 bkgfiledir = "/afs/desy.de/user/n/nissanuv/work/x1x2x1/bg/skim/sum/type_sum"
 if not os.path.exists(bkgfiledir):
@@ -74,16 +75,26 @@ rgs = RGS(cutdatafilename, start, maxcuts, treename, weightname, selection)
 
 start   =  0                   # start row
 numrows = -1                   # read all rows
-    
-rgs.add(sigfilename, start, numrows, "_signal")
 
-bgFiles = glob(bkgfiledir + "/*.root")
-for bgFile in bgFiles:
-	filename = os.path.basename(bgFile).split(".")[0].replace("-", "_")
+outputFilename = None
+
+if sigfilename:
+	outputFilename = "signal"
+	rgs.add(sigfilename, start, numrows, "_signal")
+if train_file:
+	filename = os.path.basename(train_file).split(".")[0].replace("-", "_")
 	print "Name: " + filename
-	rgs.add(bgFile, start, numrows, "_" + filename)
+	outputFilename = filename
+	rgs.add(train_file, start, numrows, "_" + filename)
+
+# bgFiles = glob(bkgfiledir + "/*.root")
+# for bgFile in bgFiles:
+# 	filename = os.path.basename(bgFile).split(".")[0].replace("-", "_")
+# 	print "Name: " + filename
+# 	rgs.add(bgFile, start, numrows, "_" + filename)
 
 rgs.run(varfilename)
 # Write to a root file
+resultsfilename= dir + "/single/" + "%s.root" % outputFilename
 rgs.save(resultsfilename)
 	

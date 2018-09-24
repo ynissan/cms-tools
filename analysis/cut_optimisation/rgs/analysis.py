@@ -5,7 +5,11 @@ from string import *
 from rgsutil import *
 from time import sleep
 from ROOT import *
+from glob import glob
 import argparse
+import pickle
+
+gROOT.SetBatch(1)
 
 NAME = 'x10x20x10'
 bkgfiledir = "/afs/desy.de/user/n/nissanuv/work/x1x2x1/bg/skim/sum/type_sum"
@@ -14,11 +18,14 @@ bkgfiledir = "/afs/desy.de/user/n/nissanuv/work/x1x2x1/bg/skim/sum/type_sum"
 
 parser = argparse.ArgumentParser(description='Create skims for x1x2x1 process.')
 parser.add_argument('-i', '--input_dir', nargs=1, help='Input Directory', required=False)
+parser.add_argument('-p', '--pickle', dest='pickle', help='Use Pickle', action='store_true')
 args = parser.parse_args()
 
 input_dir = None
 if args.input_dir:
 	input_dir = args.input_dir[0]
+
+data_pickle = args.pickle
 	
 ######## END OF CMDLINE ARGUMENTS ########
 
@@ -38,37 +45,16 @@ def main():
     	dir = os.path.dirname(os.path.realpath(sys.argv[0]))
     	cuts_name = NAME
     
-    #print dir
-    #print cuts_name
-    
-    treename = "RGS"
-    varfilename  = None
-    resultsfilename = None
-    
-    
-    varfilename  = dir + "/" + "%s.cuts" % cuts_name
-    resultsfilename= dir + "/" + "%s.root" % cuts_name
-
-    print "\n\topen RGS file: %s"  % resultsfilename
-    ntuple = Ntuple(resultsfilename, treename)
-    
-    variables = ntuple.variables()
-    var_count = {}
-    for name, count in variables:
-        print "\t\t%-30s\t%5d" % (name, count)
-        var_count[name] = count
-    print "\tnumber of cut-points: ", ntuple.size()
-
-    setStyle()
+    #setStyle()
     
     # Create a 2-D histogram for ROC plot
-    msize = 0.30  # marker size for points in ROC plot
+    msize = 0.20  # marker size for points in ROC plot
     
     xbins =  10000   # number of bins in x (background)
     xmin  =  0.0    # lower bound of x
     xmax  =  1.0    # upper bound of y
 
-    ybins =  50
+    ybins =  10000
     ymin  =  0.0
     ymax  =  1.0
 
@@ -81,44 +67,107 @@ def main():
                     color=color)
     hroc.SetMinimum(0)
     hroc.SetMarkerSize(msize)
-
+    
+    hrocrej  = mkhist2("hrocrej",
+                    "#font[12]{Signal Efficiency}",
+                    "#font[12]{Background Rejection}",
+                    xbins, xmin, 0.5,
+                    ybins, 0.8, ymax,
+                    color=color)
+    hrocrej.SetMinimum(0)
+    hrocrej.SetMarkerSize(msize)
+    
     # loop over all cut-points, compute a significance measure Z
     # for each cut-point, and find the cut-point with the highest
     # significance and the associated cuts.
 
     bestZ   = -1    # best Z value
     bestRow = -1    # row with best cut-point
-    totals = ntuple.totals()
-
-    print "totals", totals
-    print "len(totals)", len(totals)
-
-    # get background totals
+    
+    treename = "RGS"
+    varfilename  = None
+    var_count = None
+    
+    ts = 0
     tb = 0
-    for i in range(1, len(totals)):
-        tb += totals[i][0]
+    
+    sCount = None
+    bCount = None
+    
+    varfilename  = dir + "/" + "%s.cuts" % cuts_name
+    
+    if data_pickle:
+    	print "Opening pickle!"
+	with open(dir + "/output.pickle", "rb") as f:
+    		data = pickle.load(f)
+    		ts = data[0]
+    		tb = data[1]
+    		sCount = data[2]
+    		bCount = data[3]
+    else:
+    
+    	resultsfilenames = glob(dir + "/single/*")
 
-    ts = totals[0][0]
+    	numFiles = 0
+
+    	for resultsfilename in resultsfilenames:
+		print "\n\topen RGS file: %s"  % resultsfilename
+		filename = os.path.basename(resultsfilename).split(".")[0].replace("-", "_")
+		print "\n\tFilename: " + filename
+		ntuple = Ntuple(resultsfilename, treename)
+		variables = ntuple.variables()
+		if var_count is None:
+		    var_count = {}
+		    for name, count in variables:
+			print "\t\t%-30s\t%5d" % (name, count)
+			var_count[name] = count
+		print "\tnumber of cut-points: ", ntuple.size()
+
+		if sCount is None:
+			sCount = [0] * ntuple.size()
+			bCount = [0] * ntuple.size()
+
+		totals = ntuple.totals()
+
+		# get the totals
+
+		print "totals", totals
+		print "len(totals)", len(totals)
+
+		if filename == "signal":
+			ts = totals[0][0]
+		else:
+			tb += totals[0][0]
+
+		for row, cuts in enumerate(ntuple):
+			if row % 100000 == 0:
+				print "In row:", row
+			if filename == "signal":
+				sCount[row] = cuts.count_signal
+			else:
+				bCount[row] += cuts("count_" + filename)
+
+		numFiles += 1
+		print "Number of files:", numFiles
+    
+    	with open(dir + "/output.pickle", "wb") as f:
+    		pickle.dump((ts, tb, sCount, bCount), f)
+    
     print "Totals:"
     print "Signal: " + str(ts)
     print "Background: " + str(tb)
-    for row, cuts in enumerate(ntuple):
+    for row, b in enumerate(bCount):
     	#print "Row " + str(row)
     	#print "Cuts: "
     	#print cuts
-        b  = 0 #  background count        
-        s  = cuts.count_signal #  signal count
-        #print cuts
-        for name, count in variables:
-        	if "count_" in name and name != "count_signal" :
-        		#print "Adding name: " + name
-        		#print "value: " + str(cuts(name))
-        		b += cuts(name)
+        b  = bCount[row] #  background count        
+        s  = sCount[row] #  signal count
         
         fs = s / ts
         fb = b / tb
         
         hroc.Fill(fb, fs)
+        hrocrej.Fill(fs, 1-fb)
         #print "----------------------------"
         #print "Fraction Signal: " + str(fs)
         #print "Fraction Background: " + str(fb)
@@ -136,31 +185,24 @@ def main():
     hroc.Draw()
     croc.Update()
     gSystem.ProcessEvents()    
-    croc.SaveAs(dir + "/" + cuts_name + ".pdf")  
+    croc.SaveAs(dir + "/" + cuts_name + "_eff.pdf")
+    hrocrej.Draw()
+    croc.Update()
+    croc.SaveAs(dir + "/" + cuts_name + "_rej.pdf")
     
     print "\t=== %s: best cut ===" % NAME
     print "Best Z: " + str(bestZ)
-    ntuple.read(bestRow)
     
-    b  = 0 #  background count        
-    s  = ntuple("count_signal") #  signal count
-        
-    for name, count in variables:	
-	if "count_" in name and name != "count_signal" :
-		b += ntuple(name)
-	elif "fraction_" not in name:
-		if var_count[name] > 1:
-			print name + "=(" + str(ntuple(name)[0]) + "," + str(ntuple(name)[1]) + ")"
-		else:
-			print name + "=" + str(ntuple(name))
+    b  = bCount[bestRow]     
+    s  = sCount[bestRow]
+
     fs = s / ts
     fb = b / tb
     print "-------------"
-    print "(fs,fb)=("+str(fs)+","+str(fb)+")"
+    print "(fs,fb,1-fb)=("+str(fs)+","+str(fb)+","+str(1-fb)+")"
     print "-------------"
     print "b=" + str(b)
     print "s=" + str(s)
-    
     
     
 # ---------------------------------------------------------------------
