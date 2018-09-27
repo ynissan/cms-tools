@@ -31,7 +31,7 @@ if [ -n "$SKIM" ]; then
 	OUTPUT_DIR=$SKIM_OUTPUT_DIR	
 fi
 
-STD_OUTPUT="${OUTPUT_DIR}/stdoutput"
+STD_OUTPUT="${OUTPUT_DIR}/stdout"
 ERR_OUTPUT="${OUTPUT_DIR}/stderr"
 FILE_OUTPUT="${OUTPUT_DIR}/single"
 

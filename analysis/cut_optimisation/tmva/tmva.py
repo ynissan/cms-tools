@@ -10,9 +10,11 @@ import sys
 ####### CMDLINE ARGUMENTS #########
 
 parser = argparse.ArgumentParser(description='Run TMVA.')
-parser.add_argument('-i', '--input_file', nargs=1, help='Input Signal Filename', required=False)
-parser.add_argument('-o', '--output_file', nargs=1, help='Output Filename', required=False)
+parser.add_argument('-i', '--input_file', nargs=1, help='Input Signal Filename', required=True)
+parser.add_argument('-o', '--output_file', nargs=1, help='Output Filename', required=True)
 parser.add_argument('-bg', '--bg', nargs=1, help='Input Background Directory', required=False)
+parser.add_argument('-nn', '--no_norm', dest='no_norm', help='No renormalization of weights', action='store_true')
+parser.add_argument('-all', '--all', dest='all', help='All methods', action='store_true')
 args = parser.parse_args()
 
 
@@ -31,6 +33,11 @@ if args.bg:
 	bg_dir = args.bg[0]
 else:
 	bg_dir = "/afs/desy.de/user/n/nissanuv/work/x1x2x1/bg/skim/sum/type_sum"
+no_norm = args.no_norm
+all = args.all
+
+print "No norm=" + str(no_norm)
+print "All=" + str(all)
 
 	
 ######## END OF CMDLINE ARGUMENTS ########
@@ -80,6 +87,8 @@ dataloader.AddVariable('Mt2', 'F')
 #dataloader.AddVariable('Mtautau', 'F')
 dataloader.AddVariable('LeadingJetQgLikelihood', 'F')
 dataloader.AddVariable('MinDeltaPhiMetJets', 'F')
+dataloader.AddVariable('MinDeltaPhiMhtJets', 'F')
+dataloader.AddVariable('Mht', 'F')
 
 #dataloader.AddVariable('Pt1', 'F')
 
@@ -95,18 +104,20 @@ dataloader.AddVariable('MinDeltaPhiMetJets', 'F')
 # dataloader.AddSpectator('Pt2', 'F')
 # dataloader.AddSpectator('Eta1', 'F')
 # dataloader.AddSpectator('Eta2', 'F')
-dataloader.AddSpectator('Mht', 'F')
 dataloader.AddSpectator('NL','I')
 dataloader.AddSpectator('NLGen','I')
 dataloader.AddSpectator('NLGenZ','I')
 dataloader.AddSpectator('LeadingJetPartonFlavor', 'I')
-dataloader.AddSpectator('MinDeltaPhiMhtJets', 'F')
 
 # cuts defining the signal and background sample
 preselectionCut = TCut("")
-dataloader.PrepareTrainingAndTestTree(preselectionCut, "SplitMode=random:!V")
+if no_norm:
+	dataloader.PrepareTrainingAndTestTree(preselectionCut, "SplitMode=random:!V:NormMode=None")
+else:
+	dataloader.PrepareTrainingAndTestTree(preselectionCut, "SplitMode=random:!V")
 factory.BookMethod(dataloader, TMVA.Types.kBDT, "BDT", "NTrees=200:MaxDepth=4")
-factory.BookMethod(dataloader, TMVA.Types.kMLP, "MLP", "H:!V:NeuronType=tanh:VarTransform=N:NCycles=600:HiddenLayers=N+5:TestRate=5:!UseRegulator" )
+if all:
+	factory.BookMethod(dataloader, TMVA.Types.kMLP, "MLP", "H:!V:NeuronType=tanh:VarTransform=N:NCycles=600:HiddenLayers=N+5:TestRate=5:!UseRegulator" )
 #factory.BookMethod(dataloader, TMVA.Types.kMLP, "MLP_ANN", "" );
 factory.TrainAllMethods()
 factory.TestAllMethods()

@@ -253,6 +253,9 @@ def main():
 		if nj < 1: continue
 		afterNj += 1
 		#if not duoLepton: continue
+		var_MinDeltaPhiMetJets[0] = analysis_ntuples.minDeltaPhiMetJets25Pt2_4Eta(c)
+		var_MinDeltaPhiMhtJets[0] = analysis_ntuples.minDeltaPhiMhtJets25Pt2_4Eta(c)
+		if var_MinDeltaPhiMetJets[0] < 1: continue
 		## END PRECUTS##
 	
 		afterPreselection += 1
@@ -309,9 +312,6 @@ def main():
 # 		var_DeltaEtaLeadingJetDilepton[0] = abs((l1 + l2).Eta() - c.Jets[ljet].Eta())	
 		var_LeadingJetPartonFlavor[0] = c.Jets_partonFlavor[ljet]
 		var_LeadingJetQgLikelihood[0] = c.Jets_qgLikelihood[ljet]
-		
-		var_MinDeltaPhiMetJets[0] = analysis_ntuples.minDeltaPhiMetJets25Pt2_4Eta(c)
-		var_MinDeltaPhiMhtJets[0] = analysis_ntuples.minDeltaPhiMhtJets25Pt2_4Eta(c)
 		
 		tEvent.Fill()
 
