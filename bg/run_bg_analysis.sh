@@ -31,7 +31,7 @@ if [ -n "$SKIM" ]; then
 	OUTPUT_DIR=$SKIM_OUTPUT_DIR	
 fi
 
-STD_OUTPUT="${OUTPUT_DIR}/stdout"
+STD_OUTPUT="${OUTPUT_DIR}/stdoutput"
 ERR_OUTPUT="${OUTPUT_DIR}/stderr"
 FILE_OUTPUT="${OUTPUT_DIR}/single"
 
@@ -62,6 +62,8 @@ for type in ${BG_TYPES[@]}; do
 	if [ "$type" = "DYJetsToLL" ]; then
 		files=("${files[@]}" ${NEWEST_SIM_DIR}/Summer16.${type}_M-50_HT-*)
 	elif [ "$type" = "WJetsToLNu" ]; then
+		files=("${files[@]}" ${NEWEST_SIM_DIR}/Summer16.${type}_HT*)
+	elif [ "$type" = "ZJetsToNuNu" ]; then
 		files=("${files[@]}" ${NEWEST_SIM_DIR}/Summer16.${type}_HT*)
 	else
 		files=("${files[@]}" ${NEWEST_SIM_DIR}/Summer16.${type}_*)
