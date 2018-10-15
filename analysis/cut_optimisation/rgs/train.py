@@ -22,6 +22,7 @@ parser.add_argument('-s', '--signal', nargs=1, help='Input Signal', required=Fal
 parser.add_argument('-i', '--input_dir', nargs=1, help='Input Directory', required=False)
 parser.add_argument('-c', '--cuts', nargs=1, help='Cuts File', required=False)
 parser.add_argument('-f', '--file', nargs=1, help='Train single File', required=False)
+parser.add_argument('-m', '--max_cuts', nargs=1, help='Maximum Number Of Cut Points', required=False)
 args = parser.parse_args()
 
 if args.signal and args.file:
@@ -39,6 +40,9 @@ if args.cuts:
 train_file = None
 if args.file:
 	train_file = args.file[0]
+maxcuts = -1 # maximum number of cut-points to consider
+if args.max_cuts:
+	maxcuts = args.max_cuts[0]
 ######## END OF CMDLINE ARGUMENTS ########
 
 dir = None
@@ -65,7 +69,6 @@ if not os.path.exists(bkgfiledir):
 cutdatafilename = cuts_files or sigfilename
 print "cutdatafilename" + "=" + cutdatafilename
 start      = 0           # start row 
-maxcuts    = -1          # maximum number of cut-points to consider
 treename   = "tEvent"    # name of Root tree 
 weightname = "Weight"    # name of event weight variable
 
