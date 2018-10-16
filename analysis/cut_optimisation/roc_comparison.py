@@ -13,7 +13,7 @@ import os
 gROOT.SetBatch(True)
 gStyle.SetOptStat(0)
 
-colors = [kBlack, kBlue-4, kRed+1, kGreen+1, kRed-7, kOrange+1, kTeal-7, kViolet-1, 28, kBlue+1, kMagenta, kYellow, kRed]
+colors = [kBlack, kBlue-4, kRed+1, kGreen+1, kRed-7, kOrange+1, kTeal-7, kViolet-1, 28, kBlue+1, kMagenta, kYellow, kRed, kSpring, kTeal, kTeal+1, kTeal+2,kTeal+3,kTeal+4,kTeal+5,kTeal+6,kTeal+7,kTeal+8]
 mstyles = [20,21,22,23,29,33,34,47,43,45]
 mstyles*=3
 lstyles = [1, kDashed, kDotted]
@@ -152,9 +152,9 @@ def plot_rocs():
 	# Create canvas
 	canvas = TCanvas("roc", "roc", 520, 10, 1000, 1000)
 	canvas.SetTopMargin(0.5 * canvas.GetTopMargin())
-	canvas.SetBottomMargin(0.9 * canvas.GetBottomMargin())
-	canvas.SetLeftMargin(1.0 * canvas.GetLeftMargin())
-	canvas.SetRightMargin(0.3 * canvas.GetRightMargin())
+	canvas.SetBottomMargin(1 * canvas.GetBottomMargin())
+	canvas.SetLeftMargin(1 * canvas.GetLeftMargin())
+	canvas.SetRightMargin(0.5 * canvas.GetRightMargin())
 	
 	setStyle()
 
@@ -163,7 +163,7 @@ def plot_rocs():
 	xmin  =  0.0
 	xmax  =  1
 	ybins =   1000
-	ymin  =  0.0
+	ymin  =  0
 	ymax  =  1
 	hist  = mkhist2("hroc",
 		    "#font[12]{#epsilon_{S}}",
@@ -174,6 +174,12 @@ def plot_rocs():
 	
 	hist.SetMinimum(0)
 	hist.SetMarkerSize(0.2)
+	hist.SetLabelSize(0.02, "x")
+	hist.SetLabelSize(0.02, "y")
+	hist.SetTitleSize(0.02, "x")
+	hist.SetTitleSize(0.02, "y")
+	hist.GetXaxis().SetTitleOffset(2)
+	hist.GetYaxis().SetTitleOffset(3)
 	
 	hist.Draw("p")
 	hist.GetYaxis().SetTitleOffset(2.0)

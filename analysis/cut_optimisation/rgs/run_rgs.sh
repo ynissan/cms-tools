@@ -77,7 +77,7 @@ EOM
 #
 #for bg_file in ~/work/x1x2x1/bg/skim_no_mht/sum/type_sum/WJetsToLNu_HT-200To400.root ~//work/x1x2x1/bg/skim_no_mht/sum/type_sum/ZJetsToNuNu_HT-200To400.root; do
 #for bg_file in /afs/desy.de/user/n/nissanuv/work/x1x2x1/bg/skim_no_mht/sum/type_sum_split/*; do
-for bg_file in `cat /afs/desy.de/user/n/nissanuv/work/x1x2x1/cut_optimisation/rgs/total_bg/sstderr/error`; do
+for bg_file in `cat /afs/desy.de/user/n/nissanuv/work/x1x2x1/cut_optimisation/rgs/total_bg_less_cuts/sstderr/error`; do
 	filename=$(basename $bg_file .root)
 	echo "Will run:"
 	echo $RGS_DIR/run_on_grid.sh -i $OUTPUT_DIR -c  /afs/desy.de/user/n/nissanuv/work/x1x2x1/bg_sig.root -f /afs/desy.de/user/n/nissanuv/work/x1x2x1/bg/skim_no_mht/sum/type_sum_split/$bg_file

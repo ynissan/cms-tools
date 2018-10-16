@@ -71,7 +71,6 @@ for f in bFileNames:
 	dataloader.AddBackgroundTree(bTree, 1)
 
 # Variables
-dataloader.AddVariable('Met', 'F')
 dataloader.AddVariable('NJets', 'I')
 dataloader.AddVariable('Ht', 'F')
 #dataloader.AddVariable('MetDHt2', 'F')
@@ -107,6 +106,7 @@ dataloader.AddSpectator('NLGen','I')
 dataloader.AddSpectator('NLGenZ','I')
 dataloader.AddSpectator('LeadingJetPartonFlavor', 'I')
 dataloader.AddSpectator('MetDHt', 'F')
+dataloader.AddSpectator('Met', 'F')
 
 # cuts defining the signal and background sample
 preselectionCut = TCut("")
