@@ -80,12 +80,11 @@ dataloader.AddVariable('Ht', 'F')
 # dataloader.AddVariable('DeltaEta', 'F')
 # dataloader.AddVariable('DeltaR', 'F')
 # dataloader.AddVariable('Mt1', 'F')
-dataloader.AddVariable('Mt2', 'F')
 #dataloader.AddVariable('Mtautau', 'F')
 dataloader.AddVariable('LeadingJetQgLikelihood', 'F')
-dataloader.AddVariable('MinDeltaPhiMetJets', 'F')
 dataloader.AddVariable('MinDeltaPhiMhtJets', 'F')
 dataloader.AddVariable('Mht', 'F')
+dataloader.AddVariable('LeadingJetPt', 'F')
 
 #dataloader.AddVariable('Pt1', 'F')
 
@@ -107,6 +106,8 @@ dataloader.AddSpectator('NLGenZ','I')
 dataloader.AddSpectator('LeadingJetPartonFlavor', 'I')
 dataloader.AddSpectator('MetDHt', 'F')
 dataloader.AddSpectator('Met', 'F')
+dataloader.AddSpectator('MinDeltaPhiMetJets', 'F')
+dataloader.AddSpectator('Mt2', 'F')
 
 # cuts defining the signal and background sample
 preselectionCut = TCut("")

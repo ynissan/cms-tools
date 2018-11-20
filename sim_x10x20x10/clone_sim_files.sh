@@ -35,14 +35,14 @@ notification = Never
 priority = 0
 EOM
 
-for sim in "${!SIMS[@]}"; do
-	echo "$sim - ${SIMS[$sim]}";
+for sim in $NEWESTEST_SIM_DIR/*; do
+	echo "$sim";
 	echo "Will run:"
-	echo $CLONE_SINGLE -i ${SIMS[$sim]} -o ${SIG_DUP_OUTPUT_DIR}/single/${sim}
+	echo $CLONE_SINGLE -i $sim -o ${SIG_DUP_OUTPUT_DIR}/single/`basename ${sim}`
 cat << EOM >> $output_file
-arguments = $CLONE_SINGLE -i ${SIMS[$sim]} -o ${SIG_DUP_OUTPUT_DIR}/single/${sim}
-error = ${SIG_DUP_OUTPUT_DIR}/stderr/${sim}.err
-output = ${SIG_DUP_OUTPUT_DIR}/stdout/${sim}.output
+arguments = $CLONE_SINGLE -i $sim -o ${SIG_DUP_OUTPUT_DIR}/single/`basename ${sim}`
+error = ${SIG_DUP_OUTPUT_DIR}/stderr/`basename ${sim}`.err
+output = ${SIG_DUP_OUTPUT_DIR}/stdout/`basename ${sim}`.output
 Queue
 EOM
 done

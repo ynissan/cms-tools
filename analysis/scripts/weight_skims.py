@@ -24,6 +24,7 @@ force = args.force
 
 fileList = glob(input_dir + "/*");
 for f in fileList:
+	if os.path.isdir(f): continue
 	print "processing file " + f 
 	f = TFile(f, "update")
 	h = f.Get("hHt")

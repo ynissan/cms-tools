@@ -68,7 +68,8 @@ notification = Never
 priority = 0
 EOM
 
-for sim in ${SIG_DUP_OUTPUT_DIR}/single/*; do
+#for sim in ${SIG_DUP_OUTPUT_DIR}/single/*; do
+for sim in ${NEWESTEST_SIM_DIR}/*; do
 	filename=$(basename $sim .root)
 	echo "Will run:"
 	echo $SIM_DIR/run_sim_analysis_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root ${POSITIONAL[@]}

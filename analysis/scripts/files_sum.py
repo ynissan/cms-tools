@@ -38,14 +38,14 @@ if (bg and signal) or not (bg or signal):
 WORK_DIR = None
 if bg:
 	if skim:
-		WORK_DIR = "/afs/desy.de/user/n/nissanuv/work/x1x2x1/bg/skim"
+		WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim"
 	else:
-		WORK_DIR = "/afs/desy.de/user/n/nissanuv/work/x1x2x1/bg/hist"		
+		WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/hist"		
 else:
 	if skim:
-		WORK_DIR = "/afs/desy.de/user/n/nissanuv/work/x1x2x1/signal/skim"
+		WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim"
 	else:
-		WORK_DIR = "/afs/desy.de/user/n/nissanuv/work/x1x2x1/signal/hist"
+		WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/hist"
 		
 SINGLE_OUTPUT = WORK_DIR + "/single"
 OUTPUT_SUM = WORK_DIR + "/sum"

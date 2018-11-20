@@ -73,7 +73,15 @@ def main():
 	#var_MetDHt2 = np.zeros(1,dtype=float)
 	var_Mt2 = np.zeros(1,dtype=float)
 	var_Electrons = ROOT.std.vector(TLorentzVector)()
+	var_Electrons_charge = ROOT.std.vector(int)()
 	var_Muons = ROOT.std.vector(TLorentzVector)()
+	var_Muons_charge    = ROOT.std.vector(int)()
+	var_GenParticles    = ROOT.std.vector(TLorentzVector)()
+  	var_GenParticles_ParentId = ROOT.std.vector(int)()
+  	var_GenParticles_ParentIdx = ROOT.std.vector(int)()
+ 	var_GenParticles_PdgId = ROOT.std.vector(int)()
+  	var_GenParticles_Status = ROOT.std.vector(int)()
+  	var_LeadingJetPt = np.zeros(1,dtype=float)
 	var_NL = np.zeros(1,dtype=int)
  	var_NLGen = np.zeros(1,dtype=int)
  	var_NLGenZ = np.zeros(1,dtype=int)
@@ -105,6 +113,21 @@ def main():
 	var_LeadingJetQgLikelihood = np.zeros(1,dtype=float)
 	var_MinDeltaPhiMetJets = np.zeros(1,dtype=float)
 	var_MinDeltaPhiMhtJets = np.zeros(1,dtype=float)
+	
+	#### TRACKS ####
+	
+	var_tracks          = ROOT.std.vector(TLorentzVector)()
+	var_tracks_charge   = ROOT.std.vector(int)()
+	var_tracks_chi2perNdof = ROOT.std.vector(double)()
+	var_tracks_dxyVtx   = ROOT.std.vector(double)()
+	var_tracks_dzVtx    = ROOT.std.vector(double)()
+	var_tracks_trackQualityHighPurity = ROOT.std.vector(bool)()
+	var_tracks_trackJetIso = ROOT.std.vector(double)()
+	var_tracks_trackLeptonIso = ROOT.std.vector(double)()
+	var_tracks_trkMiniRelIso = ROOT.std.vector(double)()
+	var_tracks_trkRelIso = ROOT.std.vector(double)()
+	var_LeadingJet = TLorentzVector()
+	
 
 	tEvent = TTree('tEvent','tEvent')
 	tEvent.Branch('Met', var_Met,'Met/D')
@@ -121,7 +144,15 @@ def main():
 	tEvent.Branch('Mt2', var_Mt2,'Mt2/D')
 	
 	tEvent.Branch('Electrons', 'std::vector<TLorentzVector>', var_Electrons)
+	tEvent.Branch('Electrons_charge', 'std::vector<int>', var_Electrons_charge)
 	tEvent.Branch('Muons', 'std::vector<TLorentzVector>', var_Muons)
+	tEvent.Branch('Muons_charge', 'std::vector<int>', var_Muons_charge)
+	
+	tEvent.Branch('GenParticles', 'std::vector<TLorentzVector>', var_GenParticles)
+	tEvent.Branch('GenParticles_ParentId', 'std::vector<int>', var_GenParticles_ParentId)
+	tEvent.Branch('GenParticles_ParentIdx', 'std::vector<int>', var_GenParticles_ParentIdx)
+	tEvent.Branch('GenParticles_PdgId', 'std::vector<int>', var_GenParticles_PdgId)
+	tEvent.Branch('GenParticles_Status', 'std::vector<int>', var_GenParticles_Status)
 	
 	### CALCULATED FROM DILEPTON - MIGHT NOT BE NEEDED
 # 	tEvent.Branch('DilepHt', var_DilepHt,'DilepHt/D')
@@ -152,7 +183,21 @@ def main():
 	tEvent.Branch('LeadingJetQgLikelihood', var_LeadingJetQgLikelihood,'LeadingJetQgLikelihood/D')
 	tEvent.Branch('MinDeltaPhiMetJets', var_MinDeltaPhiMetJets,'MinDeltaPhiMetJets/D')
 	tEvent.Branch('MinDeltaPhiMhtJets', var_MinDeltaPhiMhtJets,'MinDeltaPhiMhtJets/D')
+	tEvent.Branch('LeadingJetPt', var_LeadingJetPt,'LeadingJetPt/D')
 
+		###### Tracks #######
+	tEvent.Branch('tracks', 'std::vector<TLorentzVector>', var_tracks)
+	tEvent.Branch('tracks_charge', 'std::vector<int>', var_tracks_charge)
+	tEvent.Branch('tracks_chi2perNdof', 'std::vector<double>', var_tracks_chi2perNdof)
+	tEvent.Branch('tracks_dxyVtx', 'std::vector<double>', var_tracks_dxyVtx)
+	tEvent.Branch('tracks_dzVtx', 'std::vector<double>', var_tracks_dzVtx)
+	tEvent.Branch('tracks_trackQualityHighPurity', 'std::vector<bool>', var_tracks_trackQualityHighPurity)
+	tEvent.Branch('tracks_trackJetIso', 'std::vector<double>', var_tracks_trackJetIso)
+	tEvent.Branch('tracks_trackLeptonIso', 'std::vector<double>', var_tracks_trackLeptonIso)
+	tEvent.Branch('tracks_trkMiniRelIso', 'std::vector<double>', var_tracks_trkMiniRelIso)
+	tEvent.Branch('tracks_trkRelIso', 'std::vector<double>', var_tracks_trkRelIso)
+	tEvent.Branch('LeadingJet', 'TLorentzVector', var_LeadingJet)
+	
 	nentries = c.GetEntries()
 	print 'Analysing', nentries, "entries"
 
@@ -178,6 +223,8 @@ def main():
 			filename = os.path.basename(input_file).split("_")[0]
 			if utils.crossSections.get(filename) is not None:
 				crossSection = utils.crossSections.get(filename)
+			else:
+				crossSection = 1.21547
 		else:
 			crossSection = c.CrossSection
 			if (madHTgt is not None and c.madHT < madHTgt) or (madHTlt is not None and c.madHT > madHTlt):
@@ -255,7 +302,8 @@ def main():
 		#if not duoLepton: continue
 		var_MinDeltaPhiMetJets[0] = analysis_ntuples.minDeltaPhiMetJets25Pt2_4Eta(c)
 		var_MinDeltaPhiMhtJets[0] = analysis_ntuples.minDeltaPhiMhtJets25Pt2_4Eta(c)
-		if var_MinDeltaPhiMetJets[0] < 1: continue
+		if var_MinDeltaPhiMetJets[0] < 0.5: continue
+ 		if c.MHT < 100: continue
 		## END PRECUTS##
 	
 		afterPreselection += 1
@@ -267,13 +315,54 @@ def main():
 		var_CrossSection[0] = crossSection
 		var_NJets[0] = nj
 		var_BTags[0] = btags
+		var_LeadingJetPt[0] = c.Jets[ljet].Pt()
+		var_LeadingJet = c.Jets[ljet]
 		
 		var_Electrons = c.Electrons
+		var_Electrons_charge= c.Electrons_charge
 		var_Muons = c.Muons
+		var_Muons_charge = c.Muons_charge
+		
+		var_GenParticles = c.GenParticles
+		var_GenParticles_ParentId = c.GenParticles_ParentId
+		var_GenParticles_ParentIdx = c.GenParticles_ParentIdx
+		var_GenParticles_PdgId = c.GenParticles_PdgId
+		var_GenParticles_Status = c.GenParticles_Status
+		
+		###### Tracks ######
+		var_tracks = c.tracks
+		var_tracks_charge = c.tracks_charge
+		var_tracks_chi2perNdof = c.tracks_chi2perNdof
+		var_tracks_dxyVtx = c.tracks_dxyVtx
+		var_tracks_dzVtx = c.tracks_dzVtx
+		var_tracks_trackQualityHighPurity = c.tracks_trackQualityHighPurity
+		var_tracks_trackJetIso = c.tracks_trackJetIso
+		var_tracks_trackLeptonIso = c.tracks_trackLeptonIso
+		var_tracks_trkMiniRelIso = c.tracks_trkMiniRelIso
+		var_tracks_trkRelIso = c.tracks_trkRelIso
 		
 		tEvent.SetBranchAddress('Electrons', var_Electrons)
+		tEvent.SetBranchAddress('Electrons_charge', var_Electrons_charge)
 		tEvent.SetBranchAddress('Muons', var_Muons)
-	
+		tEvent.SetBranchAddress('Muons_charge', var_Muons_charge)
+		tEvent.SetBranchAddress('GenParticles', var_GenParticles)
+		tEvent.SetBranchAddress('GenParticles_ParentId', var_GenParticles_ParentId)
+		tEvent.SetBranchAddress('GenParticles_Status', var_GenParticles_Status)
+		tEvent.SetBranchAddress('GenParticles_ParentIdx', var_GenParticles_ParentIdx)
+		tEvent.SetBranchAddress('GenParticles_PdgId', var_GenParticles_PdgId)
+		
+		tEvent.SetBranchAddress('tracks', var_tracks)
+		tEvent.SetBranchAddress('tracks_charge', var_tracks_charge)
+		tEvent.SetBranchAddress('tracks_chi2perNdof', var_tracks_chi2perNdof)
+		tEvent.SetBranchAddress('tracks_dxyVtx', var_tracks_dxyVtx)
+		tEvent.SetBranchAddress('tracks_dzVtx', var_tracks_dzVtx)
+		tEvent.SetBranchAddress('tracks_trackQualityHighPurity', var_tracks_trackQualityHighPurity)
+		tEvent.SetBranchAddress('tracks_trackJetIso', var_tracks_trackJetIso)
+		tEvent.SetBranchAddress('tracks_trackLeptonIso', var_tracks_trackLeptonIso)
+		tEvent.SetBranchAddress('tracks_trkMiniRelIso', var_tracks_trkMiniRelIso)
+		tEvent.SetBranchAddress('tracks_trkRelIso', var_tracks_trkRelIso)
+		tEvent.SetBranchAddress('LeadingJet', var_LeadingJet)
+
 		# l1 = var_Leptons[0]
 # 		l2 = var_Leptons[1]
 # 	
@@ -312,6 +401,8 @@ def main():
 # 		var_DeltaEtaLeadingJetDilepton[0] = abs((l1 + l2).Eta() - c.Jets[ljet].Eta())	
 		var_LeadingJetPartonFlavor[0] = c.Jets_partonFlavor[ljet]
 		var_LeadingJetQgLikelihood[0] = c.Jets_qgLikelihood[ljet]
+		
+		
 		
 		tEvent.Fill()
 

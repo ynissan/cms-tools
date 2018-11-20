@@ -26,7 +26,7 @@ crossSections = {
 }
 
 LUMINOSITY = 35900.
-CMS_WD="/afs/desy.de/user/n/nissanuv/CMSSW_9_2_7_patch1/src"
+CMS_WD="/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src"
 
 epsilon = 0.00001
 
