@@ -39,6 +39,9 @@ outputFile = "roc_comparison.pdf"
 if args.output:
 	outputFile = args.output[0]
 
+if rgs_files is None:
+	rgs_files = ()
+
 ######## END OF CMDLINE ARGUMENTS ########
 
 def get_TMVA_effs(tmva_output_file):
