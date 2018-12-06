@@ -78,8 +78,9 @@ def get_method_hists(folders, method, gtestBGHists=None, gtrainBGHists=None, gte
 		else:
 			return (gtestBGHists, gtrainBGHists, gtestSignalHists, gtrainSignalHists, gmethods, gnames)
 	for dir in folders:
-		
-		names.append(os.path.basename(dir))
+		name = os.path.basename(dir)
+		print "name=" + name
+		names.append(name)
 		
 		inputFile = dir + "/output.root"
 		print "Opening file", inputFile
@@ -187,7 +188,7 @@ def plot_rocs():
 	hist.Draw("p")
 	hist.GetYaxis().SetTitleOffset(2.0)
 	
-	legend = TLegend(0.2, 0.2, 0.89, 0.7)
+	legend = TLegend(0.2, 0.2, 0.89, 0.45)
 
 	for inx in range(len(testBGHists)):
 		
@@ -247,8 +248,9 @@ def plot_rocs():
  
 		hHighestZ = TGraph()
 		hHighestZ.SetPoint(0, highestS/ST, 1-highestB/BT)
-		color = colors[colorInx]
-		colorInx += 1
+		#color = colors[colorInx]
+		#colorInx += 1
+		hHighestZ.SetLineColor(color)
 		hHighestZ.SetMarkerColor(color)
 		hHighestZ.SetMarkerSize(2)
 		hHighestZ.SetFillColor(0)
@@ -256,8 +258,8 @@ def plot_rocs():
  		
  		memory.append(hHighestZ)
  		
- 		legend.AddEntry(h, method + " " + name, "l")
- 		legend.AddEntry(hHighestZ, method + " " + name + " " + "(highest S/#sqrt{S+B})=" + str(highestZ), "p")
+ 		#legend.AddEntry(h, method + " " + name, "l")
+ 		legend.AddEntry(hHighestZ, method + " " + name + " " + "(highest S/#sqrt{S+B})=" + str(highestZ), "lp")
 	
 	hi = 0
 	
@@ -344,8 +346,8 @@ def plot_rocs():
 
 		hHighestRgsZ = TGraph()
 		hHighestRgsZ.SetPoint(0, bestRgsFs, 1-bestRgsFb)
-		color = colors[colorInx]
-		colorInx += 1
+		#color = colors[colorInx]
+		#colorInx += 1
 		hHighestRgsZ.SetMarkerColor(color)
 		hHighestRgsZ.SetMarkerSize(2)
 		hHighestRgsZ.SetFillColor(0)
@@ -353,7 +355,7 @@ def plot_rocs():
 		
 		memory.append(hHighestRgsZ)
 		
-		legend.AddEntry(h, "RGS - " + name, "p")
+		#legend.AddEntry(h, "RGS - " + name, "p")
 		legend.AddEntry(hHighestRgsZ, "RGS -" + name + "- (highest S/#sqrt{S+B})=" + str(bestRgsZ), "p")
 	
 

@@ -68,21 +68,35 @@ executable = /bin/bash
 notification = Never
 priority = 0
 +RequestRuntime = 86400
-#arguments = $RGS_DIR/run_on_grid.sh -s ~/work/x1x2x1/signal/skim_no_mht/sum/type_sum/total.root -i $OUTPUT_DIR -c  ~/work/x1x2x1/signal/skim_no_mht/sum/type_sum/total.root
-#error = ${OUTPUT_DIR}/sstderr/signal.err
-#output = ${OUTPUT_DIR}/sstdout/signal.output
-#Queue
+arguments = $RGS_DIR/run_on_grid.sh -s /afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/total_sig.root -i $OUTPUT_DIR -c  /afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/total_sig.root
+error = ${OUTPUT_DIR}/sstderr/signal.err
+output = ${OUTPUT_DIR}/sstdout/signal.output
+Queue
 EOM
 
 #
 #for bg_file in ~/work/x1x2x1/bg/skim_no_mht/sum/type_sum/WJetsToLNu_HT-200To400.root ~//work/x1x2x1/bg/skim_no_mht/sum/type_sum/ZJetsToNuNu_HT-200To400.root; do
 #for bg_file in /afs/desy.de/user/n/nissanuv/work/x1x2x1/bg/skim_no_mht/sum/type_sum_split/*; do
-for bg_file in `cat /afs/desy.de/user/n/nissanuv/work/x1x2x1/cut_optimisation/rgs/total_bg_less_cuts/sstderr/error`; do
+#for bg_file in `cat /afs/desy.de/user/n/nissanuv/work/x1x2x1/cut_optimisation/rgs/total_bg_less_cuts/sstderr/error`; do
+
+# for bg_file in `ls -1 /afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum/ | grep -vE 'WJetsToLNu_HT-200To400|ZJetsToNuNu_HT-200To400'`; do
+# 	filename=$(basename $bg_file .root)
+# 	echo "Will run:"
+# 	echo $RGS_DIR/run_on_grid.sh -i $OUTPUT_DIR -c  /afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/total_sig.root -f /afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum/$bg_file
+# cat << EOM >> $output_file
+# arguments = $RGS_DIR/run_on_grid.sh -i $OUTPUT_DIR -c  /afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/total_sig.root -f /afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum/$bg_file
+# error = ${OUTPUT_DIR}/sstderr/${filename}.err
+# output = ${OUTPUT_DIR}/sstdout/${filename}.output
+# Queue
+# EOM
+# done
+
+for bg_file in /afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum_split/*; do
 	filename=$(basename $bg_file .root)
 	echo "Will run:"
-	echo $RGS_DIR/run_on_grid.sh -i $OUTPUT_DIR -c  /afs/desy.de/user/n/nissanuv/work/x1x2x1/bg_sig.root -f /afs/desy.de/user/n/nissanuv/work/x1x2x1/bg/skim_no_mht/sum/type_sum_split/$bg_file
+	echo $RGS_DIR/run_on_grid.sh -i $OUTPUT_DIR -c  /afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/total_sig.root -f $bg_file
 cat << EOM >> $output_file
-arguments = $RGS_DIR/run_on_grid.sh -i $OUTPUT_DIR -c  /afs/desy.de/user/n/nissanuv/work/x1x2x1/bg_sig.root -f /afs/desy.de/user/n/nissanuv/work/x1x2x1/bg/skim_no_mht/sum/type_sum_split/$bg_file
+arguments = $RGS_DIR/run_on_grid.sh -i $OUTPUT_DIR -c  /afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/total_sig.root -f $bg_file
 error = ${OUTPUT_DIR}/sstderr/${filename}.err
 output = ${OUTPUT_DIR}/sstdout/${filename}.output
 Queue

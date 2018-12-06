@@ -62,9 +62,9 @@ varfilename  = dir + "/" + "%s.cuts" % cuts_name
 if not os.path.exists(varfilename):
 	error("unable to open variables file %s" % varfilename)
       
-bkgfiledir = "/afs/desy.de/user/n/nissanuv/work/x1x2x1/bg/skim/sum/type_sum"
-if not os.path.exists(bkgfiledir):
-	error("unable to open background dir %s" % bkgfiledir)
+#bkgfiledir = "/afs/desy.de/user/n/nissanuv/work/x1x2x1/bg/skim/sum/type_sum"
+#if not os.path.exists(bkgfiledir):
+#	error("unable to open background dir %s" % bkgfiledir)
 
 cutdatafilename = cuts_files or sigfilename
 print "cutdatafilename" + "=" + cutdatafilename

@@ -302,7 +302,7 @@ def main():
 		#if not duoLepton: continue
 		var_MinDeltaPhiMetJets[0] = analysis_ntuples.minDeltaPhiMetJets25Pt2_4Eta(c)
 		var_MinDeltaPhiMhtJets[0] = analysis_ntuples.minDeltaPhiMhtJets25Pt2_4Eta(c)
-		if var_MinDeltaPhiMetJets[0] < 0.5: continue
+		if var_MinDeltaPhiMhtJets[0] < 0.5: continue
  		if c.MHT < 100: continue
 		## END PRECUTS##
 	
