@@ -1,5 +1,6 @@
 from ROOT import *
 import sys
+import numpy as np
 
 sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
 from lib import histograms
@@ -188,7 +189,20 @@ def getBgOrder(file):
 
 def orderBgFiles(files):
 	return sorted(files, key=getBgOrder)
-		
-	
-	
-	
+
+def addMemToTreeVarsDef(treeVarsDef):
+	for v in treeVarsDef:
+		if v.get("type2") is not None:
+			v["var"] = eval(v["type2"] + "()")
+		else:
+			if v["type"] == "D":
+				v["var"] = np.zeros(1,dtype=float)
+			elif v["type"] == "I":
+				v["var"] = np.zeros(1,dtype=int)
+
+def barchTreeFromVarsDef(tree, treeVarsDef):
+	for v in treeVarsDef:
+		if v.get("type2") is not None:
+			tree.Branch(v["name"], v["type2"], v["var"])
+		else:
+			tree.Branch(v["name"], v["var"], v["name"] + "/" + v["type"])
