@@ -56,8 +56,11 @@ factory = TMVA.Factory("TMVAClassification", outputFile,
 dataloader = TMVA.DataLoader("dataset")
 fsignal = TFile(input_file, "update")
 sTree = fsignal.Get("tEvent")
+print "Opening bg file=" + bg_file
 fbackground = TFile(bg_file, "update")
+print fbackground
 bTree = fbackground.Get("tEvent")
+print bTree
 dataloader.AddSignalTree(sTree, 1);
 dataloader.AddBackgroundTree(bTree, 1)
 
@@ -65,10 +68,9 @@ dataloader.AddBackgroundTree(bTree, 1)
 dataloader.AddVariable('track.Eta()', 'F')
 dataloader.AddVariable('track.Pt()', 'F')
 dataloader.AddVariable('track.Phi()', 'F')
-dataloader.AddVariable('track.R()', 'F')
 dataloader.AddVariable('dxyVtx', 'F')
 dataloader.AddVariable('dzVtx', 'F')
-dataloader.AddVariable('chi2perNdof', 'F')
+#dataloader.AddVariable('chi2perNdof', 'F')
 dataloader.AddVariable('deltaEtaLL', 'F')
 dataloader.AddVariable('deltaEtaLJ', 'F')
 dataloader.AddVariable('deltaRLL', 'F')

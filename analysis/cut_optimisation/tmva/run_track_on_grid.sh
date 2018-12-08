@@ -19,6 +19,10 @@ do
 	    shift # past argument
 	    shift
 	    ;;
+	    *)    # unknown option
+	    POSITIONAL+=("$1") # save it in an array for later
+	    shift # past argument
+	    ;;
 	esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
@@ -31,7 +35,10 @@ module use -a /afs/desy.de/group/cms/modulefiles/
 module load cmssw
 cmsenv
 
+echo "dir $OUTPUT_DIR"
 cd $OUTPUT_DIR
 
+
+echo "Running /afs/desy.de/user/n/nissanuv/cms-tools/analysis/cut_optimisation/tmva/track_tmva.py $@"
 /afs/desy.de/user/n/nissanuv/cms-tools/analysis/cut_optimisation/tmva/track_tmva.py $@
 

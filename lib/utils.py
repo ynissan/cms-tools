@@ -196,7 +196,7 @@ def addMemToTreeVarsDef(treeVarsDef):
 			v["var"] = eval(v["type2"] + "()")
 		else:
 			if v["type"] == "D":
-				v["var"] = np.zeros(1,dtype=float)
+				v["var"] = np.zeros(1,dtype=np.dtype(np.float64))
 			elif v["type"] == "I":
 				v["var"] = np.zeros(1,dtype=int)
 
