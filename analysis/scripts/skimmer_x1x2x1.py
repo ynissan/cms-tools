@@ -121,7 +121,6 @@ def main():
 	var_tracks_chi2perNdof = ROOT.std.vector(double)()
 	var_tracks_dxyVtx   = ROOT.std.vector(double)()
 	var_tracks_dzVtx    = ROOT.std.vector(double)()
-	var_tracks_trackQualityHighPurity = ROOT.std.vector(bool)()
 	var_tracks_trackJetIso = ROOT.std.vector(double)()
 	var_tracks_trackLeptonIso = ROOT.std.vector(double)()
 	var_tracks_trkMiniRelIso = ROOT.std.vector(double)()
@@ -191,7 +190,6 @@ def main():
 	tEvent.Branch('tracks_chi2perNdof', 'std::vector<double>', var_tracks_chi2perNdof)
 	tEvent.Branch('tracks_dxyVtx', 'std::vector<double>', var_tracks_dxyVtx)
 	tEvent.Branch('tracks_dzVtx', 'std::vector<double>', var_tracks_dzVtx)
-	tEvent.Branch('tracks_trackQualityHighPurity', 'std::vector<bool>', var_tracks_trackQualityHighPurity)
 	tEvent.Branch('tracks_trackJetIso', 'std::vector<double>', var_tracks_trackJetIso)
 	tEvent.Branch('tracks_trackLeptonIso', 'std::vector<double>', var_tracks_trackLeptonIso)
 	tEvent.Branch('tracks_trkMiniRelIso', 'std::vector<double>', var_tracks_trkMiniRelIso)
@@ -230,8 +228,8 @@ def main():
 			if (madHTgt is not None and c.madHT < madHTgt) or (madHTlt is not None and c.madHT > madHTlt):
 				rightProcess = False
 
-		hHt.Fill(c.madHT)
-		hHtWeighted.Fill(c.madHT, crossSection)
+		hHt.Fill(c.HT)
+		hHtWeighted.Fill(c.HT, crossSection)
 	
 		if not rightProcess:
 			continue
@@ -335,7 +333,6 @@ def main():
 		var_tracks_chi2perNdof = c.tracks_chi2perNdof
 		var_tracks_dxyVtx = c.tracks_dxyVtx
 		var_tracks_dzVtx = c.tracks_dzVtx
-		var_tracks_trackQualityHighPurity = c.tracks_trackQualityHighPurity
 		var_tracks_trackJetIso = c.tracks_trackJetIso
 		var_tracks_trackLeptonIso = c.tracks_trackLeptonIso
 		var_tracks_trkMiniRelIso = c.tracks_trkMiniRelIso
@@ -356,7 +353,6 @@ def main():
 		tEvent.SetBranchAddress('tracks_chi2perNdof', var_tracks_chi2perNdof)
 		tEvent.SetBranchAddress('tracks_dxyVtx', var_tracks_dxyVtx)
 		tEvent.SetBranchAddress('tracks_dzVtx', var_tracks_dzVtx)
-		tEvent.SetBranchAddress('tracks_trackQualityHighPurity', var_tracks_trackQualityHighPurity)
 		tEvent.SetBranchAddress('tracks_trackJetIso', var_tracks_trackJetIso)
 		tEvent.SetBranchAddress('tracks_trackLeptonIso', var_tracks_trackLeptonIso)
 		tEvent.SetBranchAddress('tracks_trkMiniRelIso', var_tracks_trkMiniRelIso)

@@ -2,6 +2,9 @@ from ROOT import *
 import sys
 import numpy as np
 import os
+import math
+import xml.etree.ElementTree as ET
+from array import array
 
 def get_method_hists(folders, method, gtestBGHists=None, gtrainBGHists=None, gtestSignalHists=None, gtrainSignalHists=None, gmethods=None, gnames=None):
 	testBGHists = []
@@ -93,3 +96,58 @@ def get_bdt_hists(folders, testBGHists=None, trainBGHists=None, testSignalHists=
 
 def get_mlp_hists(folders, testBGHists=None, trainBGHists=None, testSignalHists=None, trainSignalHists=None, methods=None, names=None):
 	return get_method_hists(folders, "MLP", testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names)
+
+def getHighestZ(trainSignalHist, trainBGHist, testSignalHist, testBGHist, h=None):
+	highestZ = 0
+	highestS = 0
+	highestB = 0
+	highestBDT = 0
+	
+	numOfBins = testBGHist.GetNbinsX()
+	#print "numOfBins=" , numOfBins
+
+	ST = trainSignalHist.Integral() + testSignalHist.Integral()
+	BT = trainBGHist.Integral() + testBGHist.Integral()
+	#print "=================="
+	#print "Signal: " + str(ST)
+	#print "Background: " + str(BT)
+
+	for i in range(numOfBins):
+		S = trainSignalHist.Integral(i,numOfBins+1) + testSignalHist.Integral(i,numOfBins+1)
+		B = trainBGHist.Integral(i,numOfBins+1) + testBGHist.Integral(i,numOfBins+1)
+		if h is not None:
+			h.SetPoint(i,S/ST, 1 - B/BT)
+		if S + B:
+			Z = 1.0 * S/math.sqrt(S+B)
+			if Z > highestZ:
+				highestZ = Z
+				highestS = S
+				highestB = B
+				highestMVA = trainSignalHist.GetBinCenter(i)
+	
+	#print "=================="
+	
+	return highestZ, highestS, highestB, highestMVA, ST, BT
+
+def getVariablesFromXMLWeightsFile(file):
+	tree = ET.parse(file)
+	root = tree.getroot()
+	vars = root.find('Variables')
+	varsFromFile = []
+	for var in vars.iter('Variable'):
+		varsFromFile.append({"name" : var.get('Expression'), "type" : var.get('Type')})
+	return varsFromFile
+
+def getVariablesMemMap(vars):
+	memMap = {}
+	for var in vars:
+		memMap[var["name"]] = array('f', [0])
+	return memMap
+
+def prepareReader(xmlfilename, vars, varsMap):
+	reader = TMVA.Reader()
+	for var in vars:
+		print "AddVar=" + var["name"]
+		reader.AddVariable(var["name"], varsMap[var["name"]])
+	reader.BookMVA("BDT", xmlfilename)
+	return reader

@@ -129,31 +129,8 @@ def plot_rocs():
 			h = TGraph()
 			h.SetTitle(name)
 			memory.append(h)
-	
-			highestZ = 0
-			highestS = 0
-			highestB = 0
 			
-			numOfBins = testBGHist.GetNbinsX()
-			#print "numOfBins=" , numOfBins
-	
-			ST = trainSignalHist.Integral() + testSignalHist.Integral()
-			BT = trainBGHist.Integral() + testBGHist.Integral()
-			print "=================="
-			print method + " " + name
-			print "Signal: " + str(ST)
-			print "Background: " + str(BT)
-	
-			for i in range(numOfBins):
-				S = trainSignalHist.Integral(i,numOfBins+1) + testSignalHist.Integral(i,numOfBins+1)
-				B = trainBGHist.Integral(i,numOfBins+1) + testBGHist.Integral(i,numOfBins+1)
-				h.SetPoint(i,S/ST, 1 - B/BT)
-				if S + B:
-					Z = 1.0 * S/math.sqrt(S+B)
-					if Z > highestZ:
-						highestZ = Z
-						highestS = S
-						highestB = B
+			highestZ, highestS, highestB, highestMVA, ST, BT = cut_optimisation.getHighestZ(trainSignalHist, trainBGHist, testSignalHist, testBGHist, h)
 
 			color = colors[colorInx]
 			colorInx += 1
