@@ -1,0 +1,222 @@
+#!/usr/bin/env python
+
+from ROOT import *
+from glob import glob
+from sys import exit
+import argparse
+import sys
+import math
+import os
+
+sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib")
+import cut_optimisation
+
+gROOT.SetBatch(True)
+gStyle.SetOptStat(0)
+
+colors = [kBlue-4, kRed+1, kGreen+1, kRed-7, kOrange+1, kTeal-7, kViolet-1, 28, kBlue+1, kMagenta, kYellow, kRed, kSpring, kTeal, kTeal+1, kTeal+2,kTeal+3,kTeal+4,kTeal+5,kTeal+6,kTeal+7,kTeal+8]
+mstyles = [20,21,22,23,29,33,34,47,43,45]
+mstyles*=3
+lstyles = [1, kDashed, kDotted]
+lstyles*=5
+
+colorInx = 0
+
+####### CMDLINE ARGUMENTS #########
+
+parser = argparse.ArgumentParser(description='ROC Comparison.')
+parser.add_argument('-i', '--input_dir', nargs=1, help='Input Dir', required=True)
+parser.add_argument('-o', '--output_file', nargs=1, help='Output File', required=True)
+args = parser.parse_args()
+
+outputFile = "roc_comparison.pdf"
+inputDir = None
+if args.output_file:
+	outputFile = args.output_file[0]
+if args.input_dir:
+	inputDir = args.input_dir[0]
+
+######## END OF CMDLINE ARGUMENTS ########
+
+memory = []
+
+def plot_rocs():
+	dirs = glob(inputDir + "/*")
+	
+	c2 = TCanvas("c2")
+	c1 = TCanvas("c1")
+
+	titlePad = TPad("titlePad", "titlePad",0.0,0.93,1.0,1.0)
+	memory.append(titlePad)
+	histPad = TPad("histPad", "histPad",0.0,0.0,1.0,0.93)
+
+	titlePad.Draw()
+	t = TPaveText(0.0,0.93,1.0,1.0,"NB")
+	t.SetFillStyle(0)
+	t.SetLineColor(0)
+	t.SetTextFont(40);
+	t.AddText("Track Selection ROC Comparison")
+	t.Draw()
+
+	histPad.Draw()
+	histPad.Divide(2,2)
+	c1.Print(outputFile + "[");
+	
+	needToDraw = False
+	
+	t.Draw();
+	titlePad.Update()
+	
+	pId = 1
+	
+	rocIndx = 0
+	
+	count = 0
+	
+	for dir in dirs:
+	
+		count += 1
+		#if count > 2:
+		#	break
+		
+		
+		name = os.path.basename(dir)
+		
+		print "Processing " + name
+		
+		file = [dir]
+		c2.cd()
+		(testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names) = cut_optimisation.get_bdt_hists(file)
+		cut_optimisation.get_mlp_hists(file, testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names)
+		c1.cd()
+		
+		t.Draw();
+		titlePad.Update()
+		
+		pad = histPad.cd(pId)
+		
+		memory.extend(testBGHists)
+		memory.extend(trainBGHists)
+		memory.extend(testSignalHists)
+		memory.extend(trainSignalHists)
+		
+		legend = TLegend(0.2, 0.2, 0.7, 0.45)
+		memory.append(legend)
+		
+		colorInx = 0
+		
+		hist = TH1F("hroc" + str(rocIndx), name, 1000, 0, 1)
+		hist.SetMinimum(0)
+		hist.SetMaximum(1)
+		hist.GetXaxis().SetTitle("#font[12]{#epsilon_{S}}")
+		hist.GetYaxis().SetTitle("background rejection (1 - #font[12]{#epsilon_{B}})")
+
+		rocIndx += 1
+		hist.Draw("p")
+		
+		pt = TPaveText(.15,.45,.5,.85, "NDC")
+		pt.SetFillColor(0)
+		pt.SetTextAlign(11)
+		pt.SetBorderSize(0)
+		
+		memory.append(hist)
+		memory.append(pt)
+		
+		for inx in range(len(testBGHists)):
+			
+			testBGHist, trainBGHist, testSignalHist, trainSignalHist, method, name = testBGHists[inx], trainBGHists[inx], testSignalHists[inx], trainSignalHists[inx], methods[inx], names[inx]
+
+			h = TGraph()
+			h.SetTitle(name)
+			memory.append(h)
+	
+			highestZ = 0
+			highestS = 0
+			highestB = 0
+			
+			numOfBins = testBGHist.GetNbinsX()
+			#print "numOfBins=" , numOfBins
+	
+			ST = trainSignalHist.Integral() + testSignalHist.Integral()
+			BT = trainBGHist.Integral() + testBGHist.Integral()
+			print "=================="
+			print method + " " + name
+			print "Signal: " + str(ST)
+			print "Background: " + str(BT)
+	
+			for i in range(numOfBins):
+				S = trainSignalHist.Integral(i,numOfBins+1) + testSignalHist.Integral(i,numOfBins+1)
+				B = trainBGHist.Integral(i,numOfBins+1) + testBGHist.Integral(i,numOfBins+1)
+				h.SetPoint(i,S/ST, 1 - B/BT)
+				if S + B:
+					Z = 1.0 * S/math.sqrt(S+B)
+					if Z > highestZ:
+						highestZ = Z
+						highestS = S
+						highestB = B
+
+			color = colors[colorInx]
+			colorInx += 1
+		
+			h.SetLineColor(color)
+			h.SetMarkerSize(0.2)
+			#hbdt.SetFillColor(kRed)
+
+			h.Draw("same")
+		
+			print "highestZ=" + str(highestZ)
+			print "highestS=" + str(highestS)
+			print "highestB=" + str(highestB)
+ 
+			hHighestZ = TGraph()
+			hHighestZ.SetPoint(0, highestS/ST, 1-highestB/BT)
+			#color = colors[colorInx]
+			#colorInx += 1
+			hHighestZ.SetLineColor(color)
+			hHighestZ.SetMarkerColor(color)
+			hHighestZ.SetMarkerStyle(kFullCircle)
+			#hHighestZ.SetMarkerSize(0.75)
+			hHighestZ.SetFillColor(0)
+			hHighestZ.Draw("p same")
+		
+			memory.append(hHighestZ)
+		
+			#legend.AddEntry(h, method + " " + name, "l")
+ 			legend.AddEntry(hHighestZ, method + " "  + "(highest S/#sqrt{S+B})=" + str(highestZ), "lp")
+ 			
+ 			pt.AddText(method + " ST=" + str(ST))
+ 			pt.AddText(method + " BT=" + str(BT))
+ 			pt.AddText(method + " Highest S=" + str(highestS))
+ 			pt.AddText(method + " Highest B=" + str(highestB))
+ 			
+ 		
+ 		legend.SetBorderSize(0)
+		legend.SetFillStyle(0)
+		legend.SetNColumns(1)
+		legend.Draw()
+		
+		pt.Draw()
+		
+		c1.Update()
+		
+		needToDraw = True
+				
+		pId += 1
+		if pId > 4:
+			pId = 1
+			c1.Print(outputFile);
+			needToDraw = False;
+		
+	if needToDraw:
+		print "HERE"
+		for id in range(pId, 5):
+			print "Clearing pad " + str(id)
+			pad = histPad.cd(id)
+			pad.Clear()
+		c1.Print(outputFile);
+		
+	c1.Print(outputFile+"]");	
+
+
+if __name__ == "__main__":
+	plot_rocs()

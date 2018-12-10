@@ -10,6 +10,10 @@ import math
 import pickle
 import os
 
+sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib")
+
+import cut_optimisation
+
 gROOT.SetBatch(True)
 gStyle.SetOptStat(0)
 
@@ -23,7 +27,7 @@ colorInx = 0
 
 ####### CMDLINE ARGUMENTS #########
 
-parser = argparse.ArgumentParser(description='Run TMVA.')
+parser = argparse.ArgumentParser(description='ROC Comparison.')
 parser.add_argument('-bdt', '--bdt', nargs='*', help='BDT Input File', required=False)
 parser.add_argument('-mlp', '--mlp', nargs='*', help='MLP Input File', required=False)
 parser.add_argument('-rgs', '--rgs', nargs='*', help='RGS Input File', required=False)
@@ -65,93 +69,13 @@ def get_TMVA_effs(tmva_output_file):
 	fin.Close()
 	return list_classifier, list_sg_eff, list_bg_eff
 
-def get_method_hists(folders, method, gtestBGHists=None, gtrainBGHists=None, gtestSignalHists=None, gtrainSignalHists=None, gmethods=None, gnames=None):
-	testBGHists = []
-	trainBGHists = []
-	testSignalHists = []
-	trainSignalHists = []
-	methods=[]
-	names=[]
-	if not folders:
-		if not gtestBGHists:
-			return (testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names)
-		else:
-			return (gtestBGHists, gtrainBGHists, gtestSignalHists, gtrainSignalHists, gmethods, gnames)
-	for dir in folders:
-		name = os.path.basename(dir)
-		print "name=" + name
-		names.append(name)
-		
-		inputFile = dir + "/output.root"
-		print "Opening file", inputFile
-		fin = TFile(inputFile)
-		
-		trainTree = fin.Get("dataset/TrainTree")
-		testTree = fin.Get("dataset/TestTree")
-		
-		testTree.Draw(method + ">>hsqrt(10000)", "weight * (classID==0)")
-		testSignalHist = testTree.GetHistogram().Clone()
-		testSignalHist.SetDirectory(0)
-		testTree.Draw(method + ">>hsqrt(10000)", "weight * (classID==1)")
-		testBgHist = testTree.GetHistogram().Clone()
-		testBgHist.SetDirectory(0)
-		trainTree.Draw(method + ">>hsqrt(10000)", "weight * (classID==0)")
-		trainSignalHist = trainTree.GetHistogram().Clone()
-		trainSignalHist.SetDirectory(0)
-		trainTree.Draw(method + ">>hsqrt(10000)", "weight * (classID==1)")
-		trainBgHist = trainTree.GetHistogram().Clone()
-		trainBgHist.SetDirectory(0)
-	
-		minX = max(testBgHist.GetXaxis().GetXmin(), testSignalHist.GetXaxis().GetXmin(), trainSignalHist.GetXaxis().GetXmin(), trainBgHist.GetXaxis().GetXmin())
-		maxX = min(testBgHist.GetXaxis().GetXmax(), testSignalHist.GetXaxis().GetXmax(), trainSignalHist.GetXaxis().GetXmax(), trainBgHist.GetXaxis().GetXmax())
-	
-		#print minX, maxX
-	
-		testTree.Draw(method + ">>hsqrt(10000," + str(minX) + "," + str(maxX) + ")", "weight * (classID==0)")
-		testSignalHist = testTree.GetHistogram().Clone()
-		testSignalHist.SetDirectory(0)
-		testTree.Draw(method + ">>hsqrt(10000," + str(minX) + "," + str(maxX) + ")", "weight * (classID==1)")
-		testBgHist = testTree.GetHistogram().Clone()
-		testBgHist.SetDirectory(0)
-		trainTree.Draw(method + ">>hsqrt(10000," + str(minX) + "," + str(maxX) + "", "weight * (classID==0)")
-		trainSignalHist = trainTree.GetHistogram().Clone()
-		trainSignalHist.SetDirectory(0)
-		trainTree.Draw(method + ">>hsqrt(10000," + str(minX) + "," + str(maxX) + "", "weight * (classID==1)")
-		trainBgHist = trainTree.GetHistogram().Clone()
-		trainBgHist.SetDirectory(0)
-		
-		testBGHists.append(testBgHist)
-		trainBGHists.append(trainBgHist)
-		testSignalHists.append(testSignalHist)
-		trainSignalHists.append(trainSignalHist)
-		methods.append(method)
-		
-		fin.Close()
-	if gtestBGHists is None:
-		return (testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names)
-	else:
-		gtestBGHists.extend(testBGHists)
-		gtrainBGHists.extend(trainBGHists)
-		gtestSignalHists.extend(testSignalHists)
-		gtrainSignalHists.extend(trainSignalHists)
-		gmethods.extend(methods)
-		gnames.extend(names)
-		return (gtestBGHists, gtrainBGHists, gtestSignalHists, gtrainSignalHists, gmethods, gnames)
-	
-
-def get_bdt_hists(folders, testBGHists=None, trainBGHists=None, testSignalHists=None, trainSignalHists=None, methods=None, names=None):
-	return get_method_hists(folders, "BDT", testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names)
-
-def get_mlp_hists(folders, testBGHists=None, trainBGHists=None, testSignalHists=None, trainSignalHists=None, methods=None, names=None):
-	return get_method_hists(folders, "MLP", testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names)
-
 #needed for the legend
 memory = []
 
 def plot_rocs():
 	
-	(testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names) = get_bdt_hists(bdt_files)
-	get_mlp_hists(mlp_files, testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names)
+	(testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names) = cut_optimisation.get_bdt_hists(bdt_files)
+	cut_optimisation.get_mlp_hists(mlp_files, testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names)
 	
 	# Create canvas
 	canvas = TCanvas("roc", "roc", 520, 10, 1000, 1000)
@@ -356,7 +280,7 @@ def plot_rocs():
 		memory.append(hHighestRgsZ)
 		
 		#legend.AddEntry(h, "RGS - " + name, "p")
-		legend.AddEntry(hHighestRgsZ, "RGS -" + name + "- (highest S/#sqrt{S+B})=" + str(bestRgsZ), "p")
+		legend.AddEntry(hHighestRgsZ, "RGS " + name + "- (highest S/#sqrt{S+B})=" + str(bestRgsZ), "p")
 	
 
 	legend.SetBorderSize(0)
