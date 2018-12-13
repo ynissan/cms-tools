@@ -66,12 +66,6 @@ if not os.path.isdir(OUTPOUT_STACK):
 	os.mkdir(OUTPOUT_STACK)
 	
 sumTypes = {}
-
-def existsInCoumpoundType(key):
-	for cType in utils.compoundTypes:
-		if key in utils.compoundTypes[cType]:
-			return True
-	return False
 	
 def createPlots(rootfiles, outputFileName):
 
@@ -172,7 +166,7 @@ if cp or all:
 	print sumTypes
 
 	for type in sumTypes:
-		if existsInCoumpoundType(type):
+		if utils.existsInCoumpoundType(type):
 			continue
 		print "Summing type", type
 		rootfiles = glob(OUTPOUT_TYPE_SUM + "/*" + type + "*.root")

@@ -17,6 +17,8 @@ from lib import cuts
 from lib import analysis_ntuples
 from lib import analysis_tools
 
+from utils import UOFlowTH1F
+
 gROOT.SetBatch(1)
 
 ####### CMDLINE ARGUMENTS #########
@@ -53,14 +55,6 @@ def minRecDeltaR(l, c):
 		if min is None or deltaR < min:
 			min = deltaR
 	return min
-
-
-class UOFlowTH1F(TH1F):
-	epsilon = 0.0000000001
-	def Fill(self, x):
-		#print "Called UOFlowTH1F Fill"
-		super(UOFlowTH1F, self).Fill(min(max(x,self.GetXaxis().GetBinLowEdge(1)+self.epsilon),self.GetXaxis().GetBinLowEdge(self.GetXaxis().GetNbins()+1)-self.epsilon))
-
 
 def trackCuts(c, ti):
 	if c.tracks_trackJetIso[ti] < 1:

@@ -123,6 +123,7 @@ def main():
 	
 	totalTracks = 0
 	totalSurvivedTracks = 0
+	eventsWithGreaterThanOneOppSignTracks = 0
 	
 	for ientry in range(nentries):
 		if ientry % 1000 == 0:
@@ -178,8 +179,8 @@ def main():
 		
 		#print "survivedTracks=" + str(len(survivedTracks))
 		
-		if len(survivedTracks) != 1:
-			continue
+		numberOfOppositeChargeTracks = 0
+		oppositeChargeTrack = 0
 		
 		leptonCharge = 0
 		if c.Electrons.size() == 1:
@@ -187,36 +188,51 @@ def main():
 		elif c.Muons.size() == 1:
 			leptonCharge = c.Muons_charge[0]
 		
+		for i in survivedTracks:
+			if c.tracks_charge[survivedTracks[i]] * leptonCharge < 0:
+				numberOfOppositeChargeTracks +=1
+				oppositeChargeTrack = i
+		
+		if numberOfOppositeChargeTracks > 1:
+			eventsWithGreaterThanOneOppSignTracks += 1
+			
+		if numberOfOppositeChargeTracks != 1:
+			continue
+		
 		#print "Track charge=" + str(c.tracks_charge[survivedTracks[0]])
 		#print "Lepton charge=" + str(leptonCharge)
 		
-		if c.tracks_charge[survivedTracks[0]] * leptonCharge > 0:
-			continue
+		#if c.tracks_charge[survivedTracks[0]] * leptonCharge > 0:
+		#	continue
 		
 		afterMonoTrack += 1
 		
 		tracksMem = {}
 		tracksMem["tracks"] = ROOT.std.vector(TLorentzVector)()
-		tracksMem["tracks"].push_back(c.tracks[survivedTracks[0]])
+		tracksMem["tracks"].push_back(c.tracks[survivedTracks[oppositeChargeTrack]])
 		tree.SetBranchAddress('tracks', tracksMem["tracks"])
 
 		for v in tracksVars:
 			tracksMem[v["name"]] = eval("ROOT.std.vector(" + v["type"] + ")()")
 			#print eval("c.tracks_" + v["name"] + "[survivedTracks[0]]")
-			tracksMem[v["name"]].push_back(eval("c.tracks_" + v["name"] + "[survivedTracks[0]]"))
+			tracksMem[v["name"]].push_back(eval("c.tracks_" + v["name"] + "[survivedTracks[oppositeChargeTrack]]"))
 			tree.SetBranchAddress('tracks_' + v["name"], tracksMem[v["name"]])
 		
 		tree.Fill()
 	
-	fnew = TFile(output_file,'recreate')
-	tree.Write()
-	hHt.Write()
-	fnew.Close()
+	if tree.GetEntries() != 0:
+		fnew = TFile(output_file,'recreate')
+		tree.Write()
+		hHt.Write()
+		fnew.Close()
+	else:
+		print "*** RESULT EMPTY"
 	iFile.Close()
 	
 	print "nentries=" + str(nentries)
 	print "totalTracks=" + str(totalTracks)
 	print "totalSurvivedTracks=" + str(totalSurvivedTracks)
+	print "eventsWithGreaterThanOneOppSignTracks=" + str(eventsWithGreaterThanOneOppSignTracks)
 	print "afterMonoLepton=" + str(afterMonoLepton)
 	print "afterUniversalBdt=" + str(afterUniversalBdt)
 	print "afterMonoTrack=" + str(afterMonoTrack)

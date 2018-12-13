@@ -54,6 +54,19 @@ bgOrder = {
 	"WJetsToLNu" : 7
 }
 
+class UOFlowTH1F(TH1F):
+	epsilon = 0.0000000001
+	def Fill(self, x, weight=1):
+		#print "Called UOFlowTH1F Fill"
+		super(UOFlowTH1F, self).Fill(min(max(x,self.GetXaxis().GetBinLowEdge(1)+self.epsilon),self.GetXaxis().GetBinLowEdge(self.GetXaxis().GetNbins()+1)-self.epsilon),weight)
+
+
+def existsInCoumpoundType(key):
+	for cType in compoundTypes:
+		if key in compoundTypes[cType]:
+			return True
+	return False
+
 def createHistograms(definitions, cutsDef) :
 	histograms = {}
 	for name, definition in definitions.items():
@@ -143,7 +156,7 @@ def pause(str_='push enter key when ready'):
 def fillth1(h,x, weight=1):
 	h.Fill(min(max(x,h.GetXaxis().GetBinLowEdge(1)+epsilon),h.GetXaxis().GetBinLowEdge(h.GetXaxis().GetNbins()+1)-epsilon),weight)
 
-def styledStackFromStack(bgHist, memory, legend=None, title=""):
+def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None):
 	newStack = THStack(bgHist.GetName(), title)
 	memory.append(newStack)
 	
@@ -152,7 +165,10 @@ def styledStackFromStack(bgHist, memory, legend=None, title=""):
 	for i, hist in enumerate(bgHists):
 		newHist = hist.Clone()
 		memory.append(newHist)
-		formatHist(newHist, colorPalette[i])
+		colorI = i
+		if colorInx is not None:
+			colorI = colorInx[i]
+		formatHist(newHist, colorPalette[colorI])
  		newStack.Add(newHist)
  		if legend is not None:
  			legend.AddEntry(newHist, hist.GetName(), 'F')
