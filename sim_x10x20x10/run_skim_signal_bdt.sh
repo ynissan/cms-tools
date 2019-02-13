@@ -15,6 +15,8 @@ cmsenv
 
 OUTPUT_DIR=$SKIM_SIG_BDT_OUTPUT_DIR
 
+OUTPUT_DIR="$OUTPUT_WD/signal/skim_signal_bdt_allow_more_tracks"
+
 #check output directory
 if [ ! -d "$OUTPUT_DIR" ]; then
   mkdir $OUTPUT_DIR

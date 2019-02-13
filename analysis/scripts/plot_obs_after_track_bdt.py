@@ -33,11 +33,10 @@ if args.background:
 	bg_dir = args.background[0]
 ######## END OF CMDLINE ARGUMENTS ########
 
-
-def createPlots(rootfiles, type, memory, weight=None):
+def createPlots(hist_index, rootfiles, type, memory, weight=None):
 	print "Processing "
 	print rootfiles
-	mll = utils.UOFlowTH1F(type, "M_{ll}", 50, 0, 30)
+	mll = utils.UOFlowTH1F(type + str(hist_index), "M_{ll}", 50, 0, 30)
 	memory.append(mll)
 	for f in rootfiles:
 		print "***"
@@ -50,8 +49,8 @@ def createPlots(rootfiles, type, memory, weight=None):
 			if ientry % 1000 == 0:
 				print "Processing " + str(ientry)
 			c.GetEntry(ientry)
-			#if c.Met < 200:
-			#	continue
+			if c.Met < 200:
+				continue
 			t = c.tracks[0]
 			l = None
 			if c.Electrons.size():
@@ -95,6 +94,7 @@ def main():
 	
 	signal_files = glob(signal_dir + "/*")
 	signal_files.sort()
+	hist_index = 0
 	for signal_file in signal_files:
 		needToDraw = True
 		pad = histPad.cd(pId)
@@ -122,7 +122,8 @@ def main():
 				continue
 			print "Summing type", type
 			rootfiles = glob(bg_files_dir + "/*" + type + "*.root")
-			mll = createPlots(rootfiles, type, memory)
+			mll = createPlots(hist_index, rootfiles, type, memory)
+			hist_index += 1
 			histograms[type] = mll
 		for cType in utils.compoundTypes:
 			print "Creating compound type", cType
@@ -130,14 +131,16 @@ def main():
 			for type in utils.compoundTypes[cType]:
 				rootFiles.extend(glob(bg_files_dir + "/*" + type + "*.root"))
 			if len(rootFiles):
-				mll = createPlots(rootFiles, cType, memory)
+				mll = createPlots(hist_index, rootFiles, cType, memory)
+				hist_index += 1
 				histograms[type] = mll
 			else:
 				print "**Couldn't find file for " + cType
 
 		print histograms
 		
-		sigHist = createPlots([signal_file], "signal", memory, 4.0)
+		sigHist = createPlots(hist_index, [signal_file], "signal", memory, 4.0)
+		hist_index += 1
 		utils.formatHist(sigHist, utils.signalCp[0], 0.8)
 		
 		hs = THStack("invMass","")

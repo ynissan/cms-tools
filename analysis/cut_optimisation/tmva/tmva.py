@@ -77,6 +77,7 @@ dataloader.AddVariable('LeadingJetQgLikelihood', 'F')
 dataloader.AddVariable('MinDeltaPhiMhtJets', 'F')
 dataloader.AddVariable('Mht', 'F')
 dataloader.AddVariable('LeadingJetPt', 'F')
+dataloader.AddVariable('LeadingJet.Eta()', 'F')
 
 # Spectators
 #dataloader.AddSpectator('NL','I')

@@ -189,7 +189,7 @@ def main():
 			leptonCharge = c.Muons_charge[0]
 		
 		for i in survivedTracks:
-			if c.tracks_charge[survivedTracks[i]] * leptonCharge < 0:
+			if c.tracks_charge[i] * leptonCharge < 0:
 				numberOfOppositeChargeTracks +=1
 				oppositeChargeTrack = i
 		
@@ -209,13 +209,13 @@ def main():
 		
 		tracksMem = {}
 		tracksMem["tracks"] = ROOT.std.vector(TLorentzVector)()
-		tracksMem["tracks"].push_back(c.tracks[survivedTracks[oppositeChargeTrack]])
+		tracksMem["tracks"].push_back(c.tracks[oppositeChargeTrack])
 		tree.SetBranchAddress('tracks', tracksMem["tracks"])
 
 		for v in tracksVars:
 			tracksMem[v["name"]] = eval("ROOT.std.vector(" + v["type"] + ")()")
 			#print eval("c.tracks_" + v["name"] + "[survivedTracks[0]]")
-			tracksMem[v["name"]].push_back(eval("c.tracks_" + v["name"] + "[survivedTracks[oppositeChargeTrack]]"))
+			tracksMem[v["name"]].push_back(eval("c.tracks_" + v["name"] + "[oppositeChargeTrack]"))
 			tree.SetBranchAddress('tracks_' + v["name"], tracksMem[v["name"]])
 		
 		tree.Fill()

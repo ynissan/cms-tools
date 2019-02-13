@@ -15,6 +15,8 @@ cmsenv
 
 OUTPUT_DIR=$SKIM_BG_SIG_BDT_OUTPUT_DIR
 
+OUTPUT_DIR="$OUTPUT_WD/bg/skim_signal_bdt_allow_more_tracks"
+
 timestamp=$(date +%Y%m%d_%H%M%S%N)
 output_file="${WORK_DIR}/condor_submut.${timestamp}"
 echo "output file: $output_file"
