@@ -95,6 +95,8 @@ def main():
 			continue
 		#if len(genNonZL) == 0:
 			#print "genNonZL is None"
+		if len(genZL) != 2:
+			print "What:", len(genZL)
 		
 		ll = analysis_ntuples.leadingLepton(c)
 		
@@ -122,6 +124,7 @@ def main():
 			elif minNZ is None or minZ < minNZ:
 				if c.tracks_charge[ti] * c.GenParticles_PdgId[minCanZ] < 0:
 					result = "Zl"
+					#print "Found!"
 				else:
 					result = "MM"
 			else:

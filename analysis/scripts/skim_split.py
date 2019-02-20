@@ -21,15 +21,12 @@ from lib import analysis_tools
 
 parser = argparse.ArgumentParser(description='Clones trees.')
 parser.add_argument('-i', '--input_file', nargs=1, help='Input Filename', required=False)
-parser.add_argument('-o', '--output_file', nargs=1, help='Output Filename', required=False)
 args = parser.parse_args()
 
 input_file = None
 if args.input_file:
 	input_file = args.input_file[0]
-output_file = None
-if args.output_file:
-	output_file = args.output_file[0]
+
 	
 ######## END OF CMDLINE ARGUMENTS ########
 
@@ -43,8 +40,9 @@ tree = chain.CloneTree(0)
 nentries = chain.GetEntriesFast()
 print 'Analysing', nentries, "entries"
 
-max_per_file = 50000
+max_per_file = 80000
 filenum = 1
+output_file = os.path.splitext(input_file)[0]
 
 fnew = TFile(output_file + "_" + str(filenum) + ".root",'recreate')
 new_entries = False
@@ -70,3 +68,5 @@ if new_entries:
 	tree.Write('tEvent')
 	print "Done writing to file."
 	fnew.Close()
+
+os.remove(input_file)

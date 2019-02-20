@@ -13,8 +13,7 @@ module use -a /afs/desy.de/group/cms/modulefiles/
 module load cmssw
 cmsenv
 
-OUTPUT_DIR=$SKIM_SIG_BDT_OUTPUT_DIR
-#OUTPUT_DIR="$OUTPUT_WD/signal/skim_signal_bdt_tighter"
+OUTPUT_DIR=$SKIM_SIG_DILEPTON_BDT_OUTPUT_DIR
 
 #check output directory
 if [ ! -d "$OUTPUT_DIR" ]; then
@@ -49,12 +48,12 @@ notification = Never
 priority = 0
 EOM
 
-for sim in ${SKIM_SIG_OUTPUT_DIR}/single/*; do
+for sim in ${SKIM_SIG_BDT_OUTPUT_DIR}/single/*; do
 	filename=$(basename $sim .root)
 	echo "Will run:"
-	echo $SCRIPTS_WD/run_skim_signal_bdt_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename  -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt_no_norm_full_skim_no_spectator_lj_eta_correct_weight
+	echo $SCRIPTS_WD/run_skim_signal_dilepton_bdt_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$filename
 cat << EOM >> $output_file
-arguments = $SCRIPTS_WD/run_skim_signal_bdt_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename  -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt_no_norm_full_skim_no_spectator_lj_eta_correct_weight
+arguments = $SCRIPTS_WD/run_skim_signal_dilepton_bdt_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$filename
 error = ${OUTPUT_DIR}/stderr/${filename}.err
 output = ${OUTPUT_DIR}/stdout/${filename}.output
 Queue

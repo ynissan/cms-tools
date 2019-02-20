@@ -18,27 +18,29 @@ input_dir = args.input_dir[0]
 ######## END OF CMDLINE ARGUMENTS ########
 
 gROOT.SetBatch(1)
-
+#print "input_dir:", input_dir
 bFileNames =  glob(input_dir + "/*");
+#print bFileNames
 origNumberOfEvents = 0
 origWeightedNumberOfEvents = 0
 count = 0
 weightedCount = 0
 for f in bFileNames:
+	print "going to open ", f
 	rootFile = TFile(f, "update")
-	h = rootFile.Get("hHt")
-	oN = h.Integral(-1,99999999)+0.000000000001
-	origNumberOfEvents += oN
+	#h = rootFile.Get("hHt")
+	#oN = h.Integral(-1,99999999)+0.000000000001
+	#origNumberOfEvents += oN
 	t = rootFile.Get("tEvent")
 	c = t.GetEntries()
 	count += c
 	t.GetEntry(0)
 	weight = t.Weight
 	weightedCount += weight * c
-	origWeightedNumberOfEvents += oN * weight
+	#origWeightedNumberOfEvents += oN * weight
 	rootFile.Close()
 
-print "origNumberOfEvents", origNumberOfEvents
-print "origWeightedNumberOfEvents", origWeightedNumberOfEvents
+#print "origNumberOfEvents", origNumberOfEvents
+#print "origWeightedNumberOfEvents", origWeightedNumberOfEvents
 print "count", count
 print "weightedCount", weightedCount

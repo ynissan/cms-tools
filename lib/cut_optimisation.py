@@ -104,17 +104,24 @@ def getHighestZ(trainSignalHist, trainBGHist, testSignalHist, testBGHist, h=None
 	highestBDT = 0
 	
 	numOfBins = testBGHist.GetNbinsX()
+	#print "These are all the bins:"
+	#print testBGHist.GetNbinsX(), trainBGHist.GetNbinsX(), testSignalHist.GetNbinsX(), testBGHist.GetNbinsX()
 	#print "numOfBins=" , numOfBins
 
 	ST = trainSignalHist.Integral() + testSignalHist.Integral()
 	BT = trainBGHist.Integral() + testBGHist.Integral()
-	#print "=================="
-	#print "Signal: " + str(ST)
-	#print "Background: " + str(BT)
+	print "=================="
+	print "Signal: " + str(ST)
+	print "Background: " + str(BT)
 
 	for i in range(numOfBins):
 		S = trainSignalHist.Integral(i,numOfBins+1) + testSignalHist.Integral(i,numOfBins+1)
 		B = trainBGHist.Integral(i,numOfBins+1) + testBGHist.Integral(i,numOfBins+1)
+		# print "S=", S
+# 		print "B=", B
+# 		print "BDT=", trainSignalHist.GetBinCenter(i)
+# 		print "(" + str(S/ST) + "," + str(1 - B/BT) + ")"
+# 		print "--------"
 		if h is not None:
 			h.SetPoint(i,S/ST, 1 - B/BT)
 		if S + B:
@@ -124,6 +131,7 @@ def getHighestZ(trainSignalHist, trainBGHist, testSignalHist, testBGHist, h=None
 				highestS = S
 				highestB = B
 				highestMVA = trainSignalHist.GetBinCenter(i)
+				#print trainSignalHist.GetBinCenter(i), testSignalHist.GetBinCenter(i), trainBGHist.GetBinCenter(i), testBGHist.GetBinCenter(i)
 	
 	#print "=================="
 	

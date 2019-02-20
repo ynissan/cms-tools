@@ -67,12 +67,46 @@ tracksVars = (
 
 def main():
 	iFile = TFile(input_file)
-	hHt = iFile.Get('hHt')
+	#hHt = iFile.Get('hHt')
 	c = iFile.Get('tEvent')
 	
 	tree = c.CloneTree(0)
 	tree.SetDirectory(0)
 	
+	var_univBDT = np.zeros(1,dtype=float)
+	tree.Branch('univBDT', var_univBDT,'univBDT/D')
+	
+	var_l1 = TLorentzVector()
+	var_l2 = TLorentzVector()
+	
+	tree.Branch('l1', 'TLorentzVector', var_l1)
+	tree.Branch('l2', 'TLorentzVector', var_l2)
+	
+	var_invMass = np.zeros(1,dtype=float)
+	var_dileptonPt = np.zeros(1,dtype=float)
+	var_deltaPhi = np.zeros(1,dtype=float)
+	var_deltaEta = np.zeros(1,dtype=float)
+	var_deltaR = np.zeros(1,dtype=float)
+	var_pt3 = np.zeros(1,dtype=float)
+	var_mtautau = np.zeros(1,dtype=float)
+	var_mt1 = np.zeros(1,dtype=float)
+	var_mt2 = np.zeros(1,dtype=float)
+	var_DeltaEtaLeadingJetDilepton = np.zeros(1,dtype=float)
+	var_dilepHt = np.zeros(1,dtype=float)
+	
+	tree.Branch('invMass', var_invMass,'invMass/D')
+	tree.Branch('dileptonPt', var_dileptonPt,'dileptonPt/D')
+	tree.Branch('deltaPhi', var_deltaPhi,'deltaPhi/D')
+	tree.Branch('deltaEta', var_deltaEta,'deltaEta/D')
+	tree.Branch('deltaR', var_deltaR,'deltaR/D')
+	tree.Branch('pt3', var_pt3,'pt3/D')
+	tree.Branch('mtautau', var_mtautau,'mtautau/D')
+	tree.Branch('mt1', var_mt1,'mt1/D')
+	tree.Branch('mt2', var_mt2,'mt2/D')
+	tree.Branch('DeltaEtaLeadingJetDilepton', var_DeltaEtaLeadingJetDilepton,'DeltaEtaLeadingJetDilepton/D')
+	tree.Branch('dilepHt', var_dilepHt,'dilepHt/D')
+	
+
 	nentries = c.GetEntries()
 	print 'Analysing', nentries, "entries"
 	
@@ -120,10 +154,12 @@ def main():
 	afterMonoLepton = 0
 	afterUniversalBdt = 0
 	afterMonoTrack = 0
+	afterAtLeastOneTrack = 0
 	
 	totalTracks = 0
 	totalSurvivedTracks = 0
 	eventsWithGreaterThanOneOppSignTracks = 0
+	noSurvivingTracks = 0
 	
 	for ientry in range(nentries):
 		if ientry % 1000 == 0:
@@ -139,8 +175,9 @@ def main():
 		for k, v in univ_bdt_vars_map.items():
 			v[0] = eval("c." + k)
 		univ_tmva_value = univ_bdt_reader.EvaluateMVA("BDT")
-		if univ_tmva_value < univ_highestMVA:
-			continue
+		var_univBDT[0] = univ_tmva_value
+		#if univ_tmva_value < univ_highestMVA:
+		#	continue
 		
 		afterUniversalBdt += 1
 		
@@ -178,6 +215,12 @@ def main():
 		#print "Passed Tracks=" + str(len(survivedTracks))
 		
 		#print "survivedTracks=" + str(len(survivedTracks))
+		
+		if len(survivedTracks) == 0:
+			noSurvivingTracks += 1
+			continue
+		
+		afterAtLeastOneTrack += 1
 		
 		numberOfOppositeChargeTracks = 0
 		oppositeChargeTrack = 0
@@ -218,12 +261,48 @@ def main():
 			tracksMem[v["name"]].push_back(eval("c.tracks_" + v["name"] + "[oppositeChargeTrack]"))
 			tree.SetBranchAddress('tracks_' + v["name"], tracksMem[v["name"]])
 		
+		
+		l1 = None
+		l2 = None
+		if ll.Pt() > c.tracks[oppositeChargeTrack].Pt():
+			l1 = ll
+			l2 = c.tracks[oppositeChargeTrack]
+		else:
+			l1 = c.tracks[oppositeChargeTrack]
+			l2 = ll
+		
+		var_l1 = l1
+		var_l2 = l2
+		
+		tree.SetBranchAddress('l1', var_l1)
+		tree.SetBranchAddress('l2', var_l2)
+		
+		var_invMass[0] = (l1 + l2).M()
+		var_dileptonPt[0] = abs((l1 + l2).Pt())
+		var_deltaPhi[0] = abs(l1.DeltaPhi(l2))
+		var_deltaEta[0] = abs(l1.Eta() - l2.Eta())
+		var_deltaR[0] = abs(l1.DeltaR(l2))
+	
+		var_pt3[0] = analysis_tools.pt3(l1.Pt(),l1.Phi(),l2.Pt(),l2.Phi(),c.Met,c.METPhi)
+	
+		pt = TLorentzVector()
+		pt.SetPtEtaPhiE(c.Met,0,c.METPhi,c.Met)
+	
+		var_mt1[0] = analysis_tools.MT2(c.Met, c.METPhi, l1)
+		var_mt2[0] = analysis_tools.MT2(c.Met, c.METPhi, l2)
+	
+		var_mtautau[0] = analysis_tools.PreciseMtautau(c.Met, c.METPhi, l1, l2)
+		
+		var_DeltaEtaLeadingJetDilepton[0] = abs((l1 + l2).Eta() - c.LeadingJet.Eta())
+		
+		var_dilepHt[0] = analysis_ntuples.htJet25(c)
+
 		tree.Fill()
 	
 	if tree.GetEntries() != 0:
 		fnew = TFile(output_file,'recreate')
 		tree.Write()
-		hHt.Write()
+		#hHt.Write()
 		fnew.Close()
 	else:
 		print "*** RESULT EMPTY"
@@ -233,6 +312,8 @@ def main():
 	print "totalTracks=" + str(totalTracks)
 	print "totalSurvivedTracks=" + str(totalSurvivedTracks)
 	print "eventsWithGreaterThanOneOppSignTracks=" + str(eventsWithGreaterThanOneOppSignTracks)
+	print "noSurvivingTracks=" + str(noSurvivingTracks)
+	print "afterAtLeastOneTrack=" + str(afterAtLeastOneTrack)
 	print "afterMonoLepton=" + str(afterMonoLepton)
 	print "afterUniversalBdt=" + str(afterUniversalBdt)
 	print "afterMonoTrack=" + str(afterMonoTrack)

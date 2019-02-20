@@ -13,7 +13,7 @@ from lib import utils
 
 ####### CMDLINE ARGUMENTS #########
 
-parser = argparse.ArgumentParser(description='Create skims for x1x2x1 process.')
+parser = argparse.ArgumentParser(description='Weight skims for x1x2x1 process.')
 parser.add_argument('-i', '--input_dir', nargs=1, help='Input Directory', required=True)
 parser.add_argument('-f', '--Force', dest='force', help='Force Update', action='store_true')
 args = parser.parse_args()

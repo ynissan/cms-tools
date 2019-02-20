@@ -64,6 +64,7 @@ def main():
 	hHt.Sumw2()
 
 	var_Met = np.zeros(1,dtype=float)
+	var_METPhi = np.zeros(1,dtype=float)
 	var_CrossSection = np.zeros(1,dtype=float)
 	var_NJets = np.zeros(1,dtype=int)
 	var_BTags = np.zeros(1,dtype=int)
@@ -85,29 +86,8 @@ def main():
 	var_NL = np.zeros(1,dtype=int)
  	var_NLGen = np.zeros(1,dtype=int)
  	var_NLGenZ = np.zeros(1,dtype=int)
-	### CALCULATED FROM DILEPTON - MIGHT NOT BE NEEDED
-	# var_DilepHt = np.zeros(1,dtype=float)
-# 	var_InvMass = np.zeros(1,dtype=float)
-# 	var_DileptonPt = np.zeros(1,dtype=float)
-# 	var_DeltaPhi = np.zeros(1,dtype=float)
-# 	var_DeltaEta = np.zeros(1,dtype=float)
-# 	var_DeltaR = np.zeros(1,dtype=float)
-# 	var_Pt3 = np.zeros(1,dtype=float)
-# 	var_Mt1 = np.zeros(1,dtype=float)
-# 	var_Mt2 = np.zeros(1,dtype=float)
-# 	var_Mtautau = np.zeros(1,dtype=float)
-# 
-# 	var_Eta1 = np.zeros(1,dtype=float)
-# 	var_Eta2 = np.zeros(1,dtype=float)
-#  
-# 	var_Phi1 = np.zeros(1,dtype=float)
-# 	var_Phi2 = np.zeros(1,dtype=float)
-# 
-# 	var_Pt1 = np.zeros(1,dtype=float)
-# 	var_Pt2 = np.zeros(1,dtype=float)
-# 	
-# 	var_DeltaEtaLeadingJetDilepton = np.zeros(1,dtype=float)
-	########### END OF DILEPTON ###########
+	
+	var_Jets = ROOT.std.vector(TLorentzVector)()
 	
 	var_LeadingJetPartonFlavor = np.zeros(1,dtype=int)
 	var_LeadingJetQgLikelihood = np.zeros(1,dtype=float)
@@ -130,6 +110,7 @@ def main():
 
 	tEvent = TTree('tEvent','tEvent')
 	tEvent.Branch('Met', var_Met,'Met/D')
+	tEvent.Branch('METPhi', var_METPhi,'METPhi/D')
 	tEvent.Branch('CrossSection', var_CrossSection,'CrossSection/D')
 	tEvent.Branch('NJets', var_NJets,'NJets/I')
 	tEvent.Branch('BTags', var_BTags,'BTags/I')
@@ -152,32 +133,9 @@ def main():
 	tEvent.Branch('GenParticles_ParentIdx', 'std::vector<int>', var_GenParticles_ParentIdx)
 	tEvent.Branch('GenParticles_PdgId', 'std::vector<int>', var_GenParticles_PdgId)
 	tEvent.Branch('GenParticles_Status', 'std::vector<int>', var_GenParticles_Status)
-	
-	### CALCULATED FROM DILEPTON - MIGHT NOT BE NEEDED
-# 	tEvent.Branch('DilepHt', var_DilepHt,'DilepHt/D')
-# 	tEvent.Branch('InvMass', var_InvMass,'InvMass/D')
-# 	tEvent.Branch('DileptonPt', var_DileptonPt,'DileptonPt/D')
-# 	tEvent.Branch('DeltaPhi', var_DeltaPhi,'DeltaPhi/D')
-# 	tEvent.Branch('DeltaEta', var_DeltaEta,'DeltaEta/D')
-# 	tEvent.Branch('DeltaR', var_DeltaR,'DeltaR/D')
-# 	tEvent.Branch('Pt3', var_Pt3,'Pt3/D')
-# 	tEvent.Branch('Mt1', var_Mt1,'Mt1/D')
-# 	tEvent.Branch('Mt2', var_Mt2,'Mt2/D')
-# 	tEvent.Branch('Mtautau', var_Mtautau,'Mtautau/D')
-# 	
-# 
-# 	tEvent.Branch('Eta1', var_Eta1,'Eta1/D')
-# 	tEvent.Branch('Eta2', var_Eta2,'Eta2/D')
-# 
-# 	tEvent.Branch('Phi1', var_Phi1,'Phi1/D')
-# 	tEvent.Branch('Phi2', var_Phi2,'Phi2/D')
-# 
-# 	tEvent.Branch('Pt1', var_Pt1,'Pt1/D')
-# 	tEvent.Branch('Pt2', var_Pt2,'Pt2/D')
-# 	
-# 	tEvent.Branch('DeltaEtaLeadingJetDilepton', var_DeltaEtaLeadingJetDilepton,'DeltaEtaLeadingJetDilepton/D')
-	########### END OF DILEPTON ###########
 
+	tEvent.Branch('Jets', 'std::vector<TLorentzVector>', var_Jets)
+	
 	tEvent.Branch('LeadingJetPartonFlavor', var_LeadingJetPartonFlavor,'LeadingJetPartonFlavor/I')
 	tEvent.Branch('LeadingJetQgLikelihood', var_LeadingJetQgLikelihood,'LeadingJetQgLikelihood/D')
 	tEvent.Branch('MinDeltaPhiMetJets', var_MinDeltaPhiMetJets,'MinDeltaPhiMetJets/D')
@@ -207,6 +165,16 @@ def main():
 	nLMap = {}
 	nLGenMap = {}
 	nLGenMapZ = {}
+	
+	crossSection = 1
+	if signal:
+		filename = os.path.basename(input_file).split("Chi20Chipm.root")[0]
+		crossSection = utils.getCrossSection(filename)
+		if crossSection is None:			
+			if utils.crossSections.get(filename) is not None:
+				crossSection = utils.crossSections.get(filename)
+			else:
+				crossSection = 1.21547
 
 	for ientry in range(nentries):
 		if ientry % 1000 == 0:
@@ -215,14 +183,9 @@ def main():
 	
 		### MADHT ###
 		rightProcess = True
-		crossSection = 1
+		
 		if signal:
 			rightProcess = analysis_ntuples.isX1X2X1Process(c)
-			filename = os.path.basename(input_file).split("_")[0]
-			if utils.crossSections.get(filename) is not None:
-				crossSection = utils.crossSections.get(filename)
-			else:
-				crossSection = 1.21547
 		else:
 			crossSection = c.CrossSection
 			if (madHTgt is not None and c.madHT < madHTgt) or (madHTlt is not None and c.madHT > madHTlt):
@@ -307,6 +270,7 @@ def main():
 		afterPreselection += 1
 	
 		var_Met[0] = c.MET
+		var_METPhi[0] = c.METPhi
 		var_Mht[0] = c.MHT    	
 		var_Ht[0] = c.HT
 		var_Mt2[0] = c.MT2
@@ -320,6 +284,7 @@ def main():
 		var_Electrons_charge= c.Electrons_charge
 		var_Muons = c.Muons
 		var_Muons_charge = c.Muons_charge
+		var_Jets = c.Jets
 		
 		var_GenParticles = c.GenParticles
 		var_GenParticles_ParentId = c.GenParticles_ParentId
@@ -347,6 +312,7 @@ def main():
 		tEvent.SetBranchAddress('GenParticles_Status', var_GenParticles_Status)
 		tEvent.SetBranchAddress('GenParticles_ParentIdx', var_GenParticles_ParentIdx)
 		tEvent.SetBranchAddress('GenParticles_PdgId', var_GenParticles_PdgId)
+		tEvent.SetBranchAddress('Jets', var_Jets)
 		
 		tEvent.SetBranchAddress('tracks', var_tracks)
 		tEvent.SetBranchAddress('tracks_charge', var_tracks_charge)

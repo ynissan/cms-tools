@@ -5,7 +5,7 @@ import numpy as np
 sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
 from lib import histograms
 from lib import cuts
-import os
+import os, re
 
 import array
 
@@ -26,8 +26,9 @@ crossSections = {
 	"dm20" : 1.21547
 }
 
-LUMINOSITY = 35900.
+LUMINOSITY = 35900. #pb^-1
 CMS_WD="/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src"
+CS_DIR="/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/cs/stdout"
 
 epsilon = 0.00001
 
@@ -160,6 +161,9 @@ def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None):
 	newStack = THStack(bgHist.GetName(), title)
 	memory.append(newStack)
 	
+	if bgHist is None or bgHist.GetNhists() == 0:
+		return newStack
+	
 	bgHists = bgHist.GetHists()
 	
 	for i, hist in enumerate(bgHists):
@@ -222,3 +226,24 @@ def barchTreeFromVarsDef(tree, treeVarsDef):
 			tree.Branch(v["name"], v["type2"], v["var"])
 		else:
 			tree.Branch(v["name"], v["var"], v["name"] + "/" + v["type"])
+
+def getCrossSection(filename):
+	cs = 0
+	p = re.compile("^NLO\+NLL.*")
+	for m in ("","-"):
+		f = CS_DIR + "/" + filename + m + ".output"
+		print "Checking ", f
+		fh = open(f, "r")
+		for line in fh.readlines():
+        		if p.match(line):
+            			print line
+            			crossSection = float(line.split("(")[1].split(" ")[0])
+            			print "CrossSection: ", crossSection
+            			fh.close()
+            			cs += crossSection
+            			break
+            	fh.close()
+        print "Summed cs:", cs
+        if cs > 0:
+        	return cs
+        return None

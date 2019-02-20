@@ -13,7 +13,7 @@ module use -a /afs/desy.de/group/cms/modulefiles/
 module load cmssw
 cmsenv
 
-OUTPUT_DIR=$SKIM_BG_SIG_BDT_OUTPUT_DIR
+OUTPUT_DIR=$SKIM_BG_SIG_DILEPTON_BDT_OUTPUT_DIR
 
 timestamp=$(date +%Y%m%d_%H%M%S%N)
 output_file="${WORK_DIR}/condor_submut.${timestamp}"
@@ -24,8 +24,8 @@ echo $OUTPUT_DIR
 if [ ! -d "$OUTPUT_DIR" ]; then
   mkdir $OUTPUT_DIR
 else
-  rm -rf $OUTPUT_DIR
-  mkdir $OUTPUT_DIR
+   rm -rf $OUTPUT_DIR
+   mkdir $OUTPUT_DIR
 fi
 
 cat << EOM > $output_file
@@ -36,8 +36,8 @@ notification = Never
 priority = 0
 EOM
 
-for sim in $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
-	filename=$(basename $sim .root)
+for sim in $SKIM_BG_SIG_BDT_OUTPUT_DIR/*; do
+	filename=$(basename $sim)
 	
 	if [ ! -d "$OUTPUT_DIR/$filename" ]; then
 	  mkdir $OUTPUT_DIR/$filename
@@ -56,12 +56,12 @@ for sim in $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
 	  mkdir "$OUTPUT_DIR/$filename/stderr"
 	fi
 
-	for bg_file in $SKIM_OUTPUT_DIR/sum/type_sum/*; do
+	for bg_file in $SKIM_BG_SIG_BDT_OUTPUT_DIR/$filename/single/*; do
 		echo "Will run:"
 		bg_file_name=$(basename $bg_file .root)
-		echo $SCRIPTS_WD/run_skim_signal_bdt_single.sh -i $bg_file -o ${OUTPUT_DIR}/$filename/single/${bg_file_name}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt_no_norm_full_skim_no_spectator_lj_eta_correct_weight
+		echo $SCRIPTS_WD/run_skim_signal_dilepton_bdt_single.sh -i $bg_file -o ${OUTPUT_DIR}/$filename/single/${bg_file_name}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$filename 
 cat << EOM >> $output_file
-arguments = $SCRIPTS_WD/run_skim_signal_bdt_single.sh -i $bg_file -o ${OUTPUT_DIR}/$filename/single/${bg_file_name}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt_no_norm_full_skim_no_spectator_lj_eta_correct_weight
+arguments = $SCRIPTS_WD/run_skim_signal_dilepton_bdt_single.sh -i $bg_file -o ${OUTPUT_DIR}/$filename/single/${bg_file_name}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$filename 
 error = ${OUTPUT_DIR}/$filename/stderr/${bg_file_name}.err
 output = ${OUTPUT_DIR}/$filename/stdout/${bg_file_name}.output
 Queue

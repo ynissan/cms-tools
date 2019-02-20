@@ -36,8 +36,10 @@ if args.background:
 def createPlots(hist_index, rootfiles, type, memory, weight=None):
 	print "Processing "
 	print rootfiles
-	mll = utils.UOFlowTH1F(type + str(hist_index), "M_{ll}", 50, 0, 30)
+	mll = utils.UOFlowTH1F(type + str(hist_index), "M_{ll}", 30, 0, 30)
+	#mll = utils.UOFlowTH1F(type, "M_{ll}", 30, 0, 30)
 	memory.append(mll)
+	sum = 0
 	for f in rootfiles:
 		print "***"
 		filename = os.path.basename(f).split(".")[0]
@@ -49,8 +51,8 @@ def createPlots(hist_index, rootfiles, type, memory, weight=None):
 			if ientry % 1000 == 0:
 				print "Processing " + str(ientry)
 			c.GetEntry(ientry)
-			if c.Met < 200:
-				continue
+			#if c.Met < 200:
+			#	continue
 			t = c.tracks[0]
 			l = None
 			if c.Electrons.size():
@@ -58,16 +60,19 @@ def createPlots(hist_index, rootfiles, type, memory, weight=None):
 			else:
 				l = c.Muons[0]
 			if weight is not None:
+				print "****"
+				sum += c.Weight * weight
 				mll.Fill((t + l).M(), c.Weight * weight)
 			else:
+				sum += c.Weight
 				mll.Fill((t + l).M(), c.Weight)
+	print "Filled total of sum:", sum
 	return mll
 
 def main():
 
 	print "Plotting observable"
-	#print os.path.normpath("a/b/c")
-	#print os.path.normpath("a/b/c/")
+
 	c1 = TCanvas("c1")
 
 	titlePad = TPad("titlePad", "",0.0,0.93,1.0,1.0)
@@ -136,10 +141,9 @@ def main():
 				histograms[type] = mll
 			else:
 				print "**Couldn't find file for " + cType
-
-		print histograms
 		
-		sigHist = createPlots(hist_index, [signal_file], "signal", memory, 4.0)
+		sigHist = createPlots(hist_index, [signal_file], "signal", memory)
+
 		hist_index += 1
 		utils.formatHist(sigHist, utils.signalCp[0], 0.8)
 		
@@ -149,33 +153,40 @@ def main():
 		types = sorted(types, key=lambda a: utils.bgOrder[a])
 		typesInx = []
 		i = 0
+		foundBg = False
 		for type in types:
 			if histograms.get(type) is not None:
 				hs.Add(histograms[type])
 				typesInx.append(i)
+				foundBg = True
 			i += 1
 		
-		bgMax = hs.GetMaximum()
 		sigMax = sigHist.GetMaximum()
-		
-		maximum = max(bgMax, sigMax)
+		maximum = sigMax
+		if foundBg:
+			bgMax = hs.GetMaximum()
+			maximum = max(bgMax, sigMax)
 		
 		legend = TLegend(.69,.55,.89,.89)
 		memory.append(legend)
-		newBgHist = utils.styledStackFromStack(hs, memory, legend, "", typesInx)
-		newBgHist.SetMaximum(maximum)
-		newBgHist.SetMinimum(0.01)
-		#hFrame.Draw()
+		if foundBg:
+			newBgHist = utils.styledStackFromStack(hs, memory, legend, "", typesInx)
+			newBgHist.SetMaximum(maximum)
+			newBgHist.SetMinimum(0.01)
 		
-		newBgHist.Draw("hist")
-		newBgHist.SetTitle(signal_name)
- 		newBgHist.GetXaxis().SetTitle("GeV")
+			newBgHist.Draw("hist")
+			newBgHist.SetTitle(signal_name)
  		
+ 		sigHist.SetTitle(signal_name)
  		legend.AddEntry(sigHist, "signal", 'l')
-		sigHist.SetMaximum(maximum)
+ 		if foundBg:
+			sigHist.SetMaximum(maximum)
 		sigHist.SetMinimum(0.01)
-			
-		sigHist.Draw("HIST SAME")
+		sigHist.GetXaxis().SetTitle("GeV")
+		if foundBg:
+			sigHist.Draw("HIST SAME")
+		else:
+			sigHist.Draw("HIST")
 		legend.Draw("SAME")
 		
 		#pad.SetLogy()

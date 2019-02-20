@@ -5,6 +5,9 @@
 shopt -s nullglob
 shopt -s expand_aliases
 
+OUTPUT_DIR=$LEPTON_TRACK_SPLIT_DIR
+
+echo "output dir:" $OUTPUT_DIR
 
 #check output directory
 
@@ -19,10 +22,6 @@ fi
 if [ ! -d "$OUTPUT_DIR/single" ]; then
   mkdir "$OUTPUT_DIR/stderr"
 fi
-
-OUTPUT_DIR=$LEPTON_TRACK_SPLIT_DIR
-
-echo "output dir:" $OUTPUT_DIR
 
 timestamp=$(date +%Y%m%d_%H%M%S%N)
 output_file="${WORK_DIR}/condor_submut.${timestamp}"
