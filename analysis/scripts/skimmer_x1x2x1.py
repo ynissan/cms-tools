@@ -102,7 +102,7 @@ def main():
 	var_tracks_dxyVtx   = ROOT.std.vector(double)()
 	var_tracks_dzVtx    = ROOT.std.vector(double)()
 	var_tracks_trackJetIso = ROOT.std.vector(double)()
-	var_tracks_trackLeptonIso = ROOT.std.vector(double)()
+	#var_tracks_trackLeptonIso = ROOT.std.vector(double)()
 	var_tracks_trkMiniRelIso = ROOT.std.vector(double)()
 	var_tracks_trkRelIso = ROOT.std.vector(double)()
 	var_LeadingJet = TLorentzVector()
@@ -149,7 +149,7 @@ def main():
 	tEvent.Branch('tracks_dxyVtx', 'std::vector<double>', var_tracks_dxyVtx)
 	tEvent.Branch('tracks_dzVtx', 'std::vector<double>', var_tracks_dzVtx)
 	tEvent.Branch('tracks_trackJetIso', 'std::vector<double>', var_tracks_trackJetIso)
-	tEvent.Branch('tracks_trackLeptonIso', 'std::vector<double>', var_tracks_trackLeptonIso)
+	#tEvent.Branch('tracks_trackLeptonIso', 'std::vector<double>', var_tracks_trackLeptonIso)
 	tEvent.Branch('tracks_trkMiniRelIso', 'std::vector<double>', var_tracks_trkMiniRelIso)
 	tEvent.Branch('tracks_trkRelIso', 'std::vector<double>', var_tracks_trkRelIso)
 	tEvent.Branch('LeadingJet', 'TLorentzVector', var_LeadingJet)
@@ -168,7 +168,7 @@ def main():
 	
 	crossSection = 1
 	if signal:
-		filename = os.path.basename(input_file).split("Chi20Chipm.root")[0]
+		filename = (os.path.basename(input_file).split("Chi20Chipm")[0]).replace("p", ".")
 		crossSection = utils.getCrossSection(filename)
 		if crossSection is None:			
 			if utils.crossSections.get(filename) is not None:
@@ -299,7 +299,7 @@ def main():
 		var_tracks_dxyVtx = c.tracks_dxyVtx
 		var_tracks_dzVtx = c.tracks_dzVtx
 		var_tracks_trackJetIso = c.tracks_trackJetIso
-		var_tracks_trackLeptonIso = c.tracks_trackLeptonIso
+		#var_tracks_trackLeptonIso = c.tracks_trackLeptonIso
 		var_tracks_trkMiniRelIso = c.tracks_trkMiniRelIso
 		var_tracks_trkRelIso = c.tracks_trkRelIso
 		
@@ -320,7 +320,7 @@ def main():
 		tEvent.SetBranchAddress('tracks_dxyVtx', var_tracks_dxyVtx)
 		tEvent.SetBranchAddress('tracks_dzVtx', var_tracks_dzVtx)
 		tEvent.SetBranchAddress('tracks_trackJetIso', var_tracks_trackJetIso)
-		tEvent.SetBranchAddress('tracks_trackLeptonIso', var_tracks_trackLeptonIso)
+		#tEvent.SetBranchAddress('tracks_trackLeptonIso', var_tracks_trackLeptonIso)
 		tEvent.SetBranchAddress('tracks_trkMiniRelIso', var_tracks_trkMiniRelIso)
 		tEvent.SetBranchAddress('tracks_trkRelIso', var_tracks_trkRelIso)
 		tEvent.SetBranchAddress('LeadingJet', var_LeadingJet)
