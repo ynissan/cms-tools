@@ -54,29 +54,29 @@ def Mtautau(pt, l1, l2):
 # gROOT.ProcessLine(open('src/UsefulJet.cc').read())
 # exec('from ROOT import *')
 
-def PreciseMtautau(MetPt, MetPhi,  L1, L2 ):
-  Met = TLorentzVector()
-  Met.SetPtEtaPhiE(MetPt,0,MetPhi,0)
-  
-  #L1 = TLorentzVector( l1.Px(), l1.Py(), l1.Pz(), sqrt((l1.Px())**2 + (l1.Py())**2 + (l1.Py())**2 + 0.106**2))
-  #L2 = TLorentzVector( l2.Px(), l2.Py(), l2.Pz(), sqrt((l2.Px())**2 + (l2.Py())**2 + (l2.Py())**2 + 0.106**2))  
-  
-  #print "Masses: ",str(L1.M()),str(L2.M())                                                                                                                                                
-  #float A00,A01,A10,A11,  C0,C1,  X0,X1,  inv_det;     // Define A:2x2 matrix, C,X 2x1 vectors & det[A]^-1   
-  if ( L1.Px()*L2.Py() - L2.Px()*L1.Py()) == 0:
-  	print "*********WTF!!!!"
-  	return -1                                                                                                             
-  inv_det = 1./( L1.Px()*L2.Py() - L2.Px()*L1.Py())
-  A00 = inv_det*L2.Py();     A01 =-inv_det*L2.Px()
-  A10 =-inv_det*L1.Py();     A11 = inv_det*L1.Px()
-  C0  = (Met+L1+L2).Px();    C1  = (Met+L1+L2).Py()
-  X0  = A00*C0 + A01*C1;     X1  = A10*C0 + A11*C1
-  
-  T1 = TLorentzVector( L1.Px()*X0 , L1.Py()*X0 , L1.Pz()*X0 , sqrt((L1.Px()*X0)**2 + (L1.Py()*X0)**2 + (L1.Py()*X0)**2 + 1.777**2) )    # 1.777 tau mass                                                                                                                                     
-  T2 = TLorentzVector( L2.Px()*X1 , L2.Py()*X1 , L2.Pz()*X1 , sqrt((L2.Px()*X0)**2 + (L2.Py()*X0)**2 + (L2.Py()*X0)**2 + 1.777**2) )
-  if X0>0. and X1>0.:
-  	return  (T1+T2).M() 
-  return -(T1+T2).M()
+def PreciseMtautau(MetPt, MetPhi,  l1, l2 ):
+    Met = TLorentzVector()
+    Met.SetPtEtaPhiE(MetPt,0,MetPhi,0)
+    L1 = TLorentzVector()
+    L2 = TLorentzVector()
+    L1.SetPtEtaPhiE(l1.Pt(), l1.Eta(), l1.Phi(), 0.106)
+    L2.SetPtEtaPhiE(l2.Pt(), l2.Eta(), l2.Phi(), 0.106)
+                                                                                                        
+    inv_det = 1./( L1.Px()*L2.Py() - L2.Px()*L1.Py())
+    A00 = inv_det*L2.Py();
+    A01 =-inv_det*L2.Px()
+    A10 =-inv_det*L1.Py();
+    A11 = inv_det*L1.Px()
+    C0  = (Met+L1+L2).Px();
+    C1  = (Met+L1+L2).Py()
+    X0  = A00*C0 + A01*C1;
+    X1  = A10*C0 + A11*C1
+
+    T1 = TLorentzVector( L1.Px()*X0 , L1.Py()*X0 , L1.Pz()*X0 , 1.777 )    # 1.777 tau mass                                                                                                                                     
+    T2 = TLorentzVector( L2.Px()*X1 , L2.Py()*X1 , L2.Pz()*X1 , 1.777 )
+    if X0>0. and X1>0.:
+        return  (T1+T2).M() 
+    return -(T1+T2).M()
 
 def pt3(pt1, phi1, pt2, phi2, pt3, phi3):
     phi2 -= phi1;

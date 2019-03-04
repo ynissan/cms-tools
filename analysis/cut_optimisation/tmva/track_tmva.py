@@ -66,16 +66,16 @@ dataloader.AddBackgroundTree(bTree, 1)
 
 # Variables
 dataloader.AddVariable('track.Eta()', 'F')
-dataloader.AddVariable('track.Pt()', 'F')
+#dataloader.AddVariable('track.Pt()', 'F')
 dataloader.AddVariable('track.Phi()', 'F')
-dataloader.AddVariable('dxyVtx', 'F')
-dataloader.AddVariable('dzVtx', 'F')
+#dataloader.AddVariable('dxyVtx', 'F')
+#dataloader.AddVariable('dzVtx', 'F')
 dataloader.AddVariable('deltaEtaLL', 'F')
 dataloader.AddVariable('deltaEtaLJ', 'F')
 dataloader.AddVariable('deltaRLL', 'F')
 dataloader.AddVariable('deltaRLJ', 'F')
-dataloader.AddVariable('trkMiniRelIso', 'F')
-dataloader.AddVariable('trkRelIso', 'F')
+#dataloader.AddVariable('trkMiniRelIso', 'F')
+#dataloader.AddVariable('trkRelIso', 'F')
 
 # cuts defining the signal and background sample
 preselectionCut = TCut("")
@@ -83,7 +83,7 @@ if no_norm:
 	dataloader.PrepareTrainingAndTestTree(preselectionCut, "SplitMode=random:!V:NormMode=None")
 else:
 	dataloader.PrepareTrainingAndTestTree(preselectionCut, "SplitMode=random:!V")
-factory.BookMethod(dataloader, TMVA.Types.kBDT, "BDT", "NTrees=200:MaxDepth=4")
+factory.BookMethod(dataloader, TMVA.Types.kBDT, "BDT", "NTrees=200:MaxDepth=3")
 if all:
 	factory.BookMethod(dataloader, TMVA.Types.kMLP, "MLP", "H:!V:NeuronType=tanh:VarTransform=N:NCycles=600:HiddenLayers=N+5:TestRate=5:!UseRegulator" )
 #factory.BookMethod(dataloader, TMVA.Types.kMLP, "MLP_ANN", "" );

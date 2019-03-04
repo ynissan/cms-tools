@@ -11,6 +11,10 @@ echo "output dir:" $OUTPUT_DIR
 
 #check output directory
 
+if [ ! -d "$OUTPUT_DIR" ]; then
+  mkdir "$OUTPUT_DIR"
+fi
+
 if [ ! -d "$OUTPUT_DIR/stdout" ]; then
   mkdir "$OUTPUT_DIR/stdout"
 fi
@@ -20,7 +24,7 @@ if [ ! -d "$OUTPUT_DIR/stderr" ]; then
 fi
 
 if [ ! -d "$OUTPUT_DIR/single" ]; then
-  mkdir "$OUTPUT_DIR/stderr"
+  mkdir "$OUTPUT_DIR/single"
 fi
 
 timestamp=$(date +%Y%m%d_%H%M%S%N)
@@ -36,7 +40,7 @@ priority = 0
 +RequestRuntime = 86400
 EOM
 
-for f in /afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/single/*; do
+for f in /afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/*; do
 	filename=$(basename $f .root)
 	echo "Will run:"
 	echo $LEPTON_TRACK_DIR/split_sig_bg_tracks_single.sh -i $f -o  $OUTPUT_DIR/single/${filename}

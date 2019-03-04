@@ -1,0 +1,113 @@
+#!/usr/bin/env python
+
+from ROOT import *
+from glob import glob
+from sys import exit
+import argparse
+import sys
+import math
+import os
+
+sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib")
+import cut_optimisation
+import utils
+
+gROOT.SetBatch(True)
+gStyle.SetOptStat(0)
+
+colors = [kBlue-4, kRed+1, kGreen+1, kRed-7, kOrange+1, kTeal-7, kViolet-1, 28, kBlue+1, kMagenta, kYellow, kRed, kSpring, kTeal, kTeal+1, kTeal+2,kTeal+3,kTeal+4,kTeal+5,kTeal+6,kTeal+7,kTeal+8]
+mstyles = [20,21,22,23,29,33,34,47,43,45]
+mstyles*=3
+lstyles = [1, kDashed, kDotted]
+lstyles*=5
+
+colorInx = 0
+
+####### CMDLINE ARGUMENTS #########
+
+parser = argparse.ArgumentParser(description='ROC Comparison.')
+parser.add_argument('-i', '--input_file', nargs=1, help='Input File', required=True)
+parser.add_argument('-o', '--output_file', nargs=1, help='Output File', required=True)
+args = parser.parse_args()
+
+outputFile = "roc_comparison.pdf"
+inputFile = None
+if args.output_file:
+    outputFile = args.output_file[0]
+if args.input_file:
+    inputFile = args.input_file[0]
+    
+print "inputFile=", inputFile
+
+######## END OF CMDLINE ARGUMENTS ########
+
+memory = []
+
+def plot_rocs():
+    # Create canvas
+    canvas = TCanvas("roc", "roc", 520, 10, 1000, 1000)
+    canvas.SetTopMargin(0.5 * canvas.GetTopMargin())
+    canvas.SetBottomMargin(1 * canvas.GetBottomMargin())
+    canvas.SetLeftMargin(1 * canvas.GetLeftMargin())
+    canvas.SetRightMargin(0.5 * canvas.GetRightMargin())
+    inx = 0
+    (testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names) = cut_optimisation.get_bdt_hists([inputFile], None, None, None, None, None, None, 40)
+    testBGHist, trainBGHist, testSignalHist, trainSignalHist, method, name = testBGHists[inx], trainBGHists[inx], testSignalHists[inx], trainSignalHists[inx], methods[inx], names[inx]
+    legend = TLegend(0.7, 0.7, 0.9, 0.9)
+    
+    cpBlue = utils.colorPalette[2]
+    cpRed = utils.colorPalette[6]
+
+    trainBGHist.SetTitle(name)
+    trainBGHist.GetXaxis().SetTitle("BDT Output")
+    trainBGHist.GetYaxis().SetTitle("Arbitrary Units")
+
+    fillC = TColor.GetColor(cpRed["fillColor"])
+    lineC = TColor.GetColor(cpRed["lineColor"])
+    trainBGHist.SetFillStyle(cpRed["fillStyle"])
+    trainBGHist.SetFillColorAlpha(fillC, 0.35)
+    trainBGHist.SetLineColor(lineC)
+    trainBGHist.SetLineWidth(1)
+    trainBGHist.SetOption("HIST")
+    trainBGHist.Draw("HIST")
+
+    legend.AddEntry(trainBGHist, "B (train)", 'F')
+
+    fillC = TColor.GetColor(cpBlue["fillColor"])
+    lineC = TColor.GetColor(cpBlue["lineColor"])
+    trainSignalHist.SetFillStyle(cpBlue["fillStyle"])
+    trainSignalHist.SetFillColorAlpha(fillC, 0.35)
+    trainSignalHist.SetLineColor(lineC)
+    trainSignalHist.SetLineWidth(1)
+    trainSignalHist.SetOption("HIST")
+    trainSignalHist.Draw("SAME")
+    
+    legend.AddEntry(trainSignalHist, "S (train)", 'F')
+    
+    testBGHist.SetMarkerColor(kRed)
+    testBGHist.SetMarkerSize(0.5)
+    testBGHist.SetMarkerStyle(20)
+    testBGHist.SetOption("p E1")
+    testBGHist.SetLineColor(kRed)
+    testBGHist.Draw("SAME p E1")
+    
+    legend.AddEntry(testBGHist, "B (test)", "p e2")
+    
+    testSignalHist.SetMarkerColor(kBlue)
+    testSignalHist.SetMarkerSize(0.5)
+    testSignalHist.SetMarkerStyle(20)
+    testSignalHist.SetOption("p E1")
+    testSignalHist.SetLineColor(kBlue)
+    testSignalHist.Draw("SAME p E1")
+    
+    legend.AddEntry(testSignalHist, "S (test)", "p e2")
+    legend.SetBorderSize(0)
+    legend.SetFillStyle(0)
+    legend.SetNColumns(1)
+    legend.Draw()
+    canvas.Update()
+    canvas.SaveAs(outputFile)
+
+
+if __name__ == "__main__":
+    plot_rocs()

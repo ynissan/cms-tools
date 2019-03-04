@@ -71,7 +71,7 @@ for f in bFileNames:
 	dataloader.AddBackgroundTree(bTree, 1)
 
 # Variables
-dataloader.AddVariable('NJets', 'I')
+#dataloader.AddVariable('NJets', 'I')
 dataloader.AddVariable('Ht', 'F')
 dataloader.AddVariable('LeadingJetQgLikelihood', 'F')
 dataloader.AddVariable('MinDeltaPhiMhtJets', 'F')
@@ -88,6 +88,7 @@ if no_norm:
 	dataloader.PrepareTrainingAndTestTree(preselectionCut, "SplitMode=random:!V:NormMode=None")
 else:
 	dataloader.PrepareTrainingAndTestTree(preselectionCut, "SplitMode=random:!V")
+#
 factory.BookMethod(dataloader, TMVA.Types.kBDT, "BDT", "NTrees=200:MaxDepth=4")
 if all:
 	factory.BookMethod(dataloader, TMVA.Types.kMLP, "MLP", "H:!V:NeuronType=tanh:VarTransform=N:NCycles=600:HiddenLayers=N+5:TestRate=5:!UseRegulator" )

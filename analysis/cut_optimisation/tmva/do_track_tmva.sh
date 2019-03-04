@@ -18,14 +18,22 @@ priority = 0
 +RequestRuntime = 86400
 EOM
 
+if [ ! -d "$LEPTON_TRACK_SPLIT_DIR/cut_optimisation" ]; then
+  mkdir "$LEPTON_TRACK_SPLIT_DIR/cut_optimisation"
+fi
+
+if [ ! -d "$LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva" ]; then
+  mkdir "$LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva"
+fi
+
 for sig in $LEPTON_TRACK_SPLIT_DIR/single/*_sig.root; do
 	filename=$(basename $sig _sig.root)
 	dir="$LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/${filename}"
 	mkdir $dir
 	echo "Will run:"
-	echo $CMS_TOOLS/analysis/cut_optimisation/tmva/run_track_on_grid.sh -i $sig -bg  $LEPTON_TRACK_SPLIT_DIR/single/${filename}_bg.root --no_norm --all -o $dir/${filename}.root
+	echo $CMS_TOOLS/analysis/cut_optimisation/tmva/run_track_on_grid.sh -i $sig -bg  $LEPTON_TRACK_SPLIT_DIR/single/${filename}_bg.root --no_norm -o $dir/${filename}.root
 cat << EOM >> $output_file
-arguments = $CMS_TOOLS/analysis/cut_optimisation/tmva/run_track_on_grid.sh -i $sig -bg  $LEPTON_TRACK_SPLIT_DIR/single/${filename}_bg.root --no_norm --all -o $dir/${filename}.root
+arguments = $CMS_TOOLS/analysis/cut_optimisation/tmva/run_track_on_grid.sh -i $sig -bg  $LEPTON_TRACK_SPLIT_DIR/single/${filename}_bg.root --no_norm  -o $dir/${filename}.root
 error = ${dir}/${filename}.err
 output = ${dir}/${filename}.output
 Queue

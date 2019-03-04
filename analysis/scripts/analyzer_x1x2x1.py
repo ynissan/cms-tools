@@ -164,6 +164,9 @@ def handleX10X20X10DiLepton(l1, l2, event, nj, weight, params, type, cutFlow):
 	params["mt2"] = analysis_tools.MT2(event.MET, event.METPhi, l2)
 	
 	mtautau = analysis_tools.PreciseMtautau(event.MET, event.METPhi, l1, l2)
+	print "ver1=", mtautau
+	print "ver2=", analysis_tools.PreciseMtautau(event.MET, event.METPhi, l2, l1)
+	print "Mine=", analysis_tools.Mtautau(pt, l1, l2)
 	params["mtautau"] = mtautau
 	
 	if cutFlow:

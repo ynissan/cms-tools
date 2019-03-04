@@ -42,6 +42,7 @@ memory = []
 
 def plot_rocs():
 	dirs = glob(inputDir + "/*")
+	dirs.sort()
 	
 	c2 = TCanvas("c2")
 	c1 = TCanvas("c1")
@@ -87,7 +88,7 @@ def plot_rocs():
 		file = [dir]
 		c2.cd()
 		(testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names) = cut_optimisation.get_bdt_hists(file)
-		cut_optimisation.get_mlp_hists(file, testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names)
+		#cut_optimisation.get_mlp_hists(file, testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names)
 		c1.cd()
 		
 		t.Draw();
