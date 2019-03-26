@@ -3,6 +3,14 @@
 from ROOT import *
 from math import *
 
+def minDeltaR(v, vs):
+    min = None
+    for l in vs:
+        d = abs(v.DeltaR(l))
+        if min is None or d < min:
+            min = d
+    return min
+
 def isSusy(pdgId):
 	pdgId = abs(pdgId)
 	if pdgId >= 1000001 and pdgId <= 1000006:

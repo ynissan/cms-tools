@@ -24,7 +24,7 @@ echo $OUTPUT_DIR
 if [ ! -d "$OUTPUT_DIR" ]; then
   mkdir $OUTPUT_DIR
 else
-  rm -rf $OUTPUT_DIR
+  #rm -rf $OUTPUT_DIR
   mkdir $OUTPUT_DIR
 fi
 
@@ -59,9 +59,9 @@ for sim in $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
 	for bg_file in $SKIM_OUTPUT_DIR/sum/type_sum/*; do
 		echo "Will run:"
 		bg_file_name=$(basename $bg_file .root)
-		echo $SCRIPTS_WD/run_skim_signal_bdt_single.sh -i $bg_file -o ${OUTPUT_DIR}/$filename/single/${bg_file_name}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt_no_norm_full_skim_no_spectator_lj_eta_correct_weight
+		echo $SCRIPTS_WD/run_skim_signal_bdt_single.sh -i $bg_file -o ${OUTPUT_DIR}/$filename/single/${bg_file_name}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt_own_skims_no_njets
 cat << EOM >> $output_file
-arguments = $SCRIPTS_WD/run_skim_signal_bdt_single.sh -i $bg_file -o ${OUTPUT_DIR}/$filename/single/${bg_file_name}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt_no_norm_full_skim_no_spectator_lj_eta_correct_weight
+arguments = $SCRIPTS_WD/run_skim_signal_bdt_single.sh -i $bg_file -o ${OUTPUT_DIR}/$filename/single/${bg_file_name}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt_own_skims_no_njets
 error = ${OUTPUT_DIR}/$filename/stderr/${bg_file_name}.err
 output = ${OUTPUT_DIR}/$filename/stdout/${bg_file_name}.output
 Queue
@@ -69,5 +69,5 @@ EOM
 	done
 done
 
-condor_submit $output_file
+#condor_submit $output_file
 rm $output_file

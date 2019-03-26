@@ -24,7 +24,7 @@ echo $OUTPUT_DIR
 if [ ! -d "$OUTPUT_DIR" ]; then
   mkdir $OUTPUT_DIR
 else
-   rm -rf $OUTPUT_DIR
+   #rm -rf $OUTPUT_DIR
    mkdir $OUTPUT_DIR
 fi
 
@@ -36,37 +36,59 @@ notification = Never
 priority = 0
 EOM
 
-for sim in $SKIM_BG_SIG_BDT_OUTPUT_DIR/*; do
-	filename=$(basename $sim)
-	
-	if [ ! -d "$OUTPUT_DIR/$filename" ]; then
-	  mkdir $OUTPUT_DIR/$filename
-	fi
+#for sim in $SKIM_BG_SIG_BDT_OUTPUT_DIR/*; do
+for sim in /afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_signal_bdt/single/*; do    
+    filename=`echo $(basename $sim .root) | awk -F"_" '{print $1"_"$2"_"$3}'`
+    echo $filename
+    echo here
+    tb=$filename
+    for group in "${!SIM_GROUP[@]}"; do
+        echo checking group $group
+        value=${SIM_GROUP[$group]}
+        found=false
+        for pattern in $value; do
+            echo checking pattern $pattern
+            if [[ $filename == *"$pattern"* ]]; then
+                echo Found!
+                tb=$group
+                found=true
+                break
+            fi
+        done
+        if [[ "$found" = "true" ]]; then
+            break
+        fi
+    done
 
-	#check output directory
-	if [ ! -d "$OUTPUT_DIR/$filename/single" ]; then
-	  mkdir "$OUTPUT_DIR/$filename/single"
-	fi
+    if [ ! -d "$OUTPUT_DIR/$tb" ]; then
+      mkdir $OUTPUT_DIR/$tb
+    fi
 
-	if [ ! -d "$OUTPUT_DIR/$filename/stdout" ]; then
-	  mkdir "$OUTPUT_DIR/$filename/stdout" 
-	fi
+    #check output directory
+    if [ ! -d "$OUTPUT_DIR/$tb/single" ]; then
+      mkdir "$OUTPUT_DIR/$tb/single"
+    fi
 
-	if [ ! -d "$OUTPUT_DIR/$filename/stderr" ]; then
-	  mkdir "$OUTPUT_DIR/$filename/stderr"
-	fi
+    if [ ! -d "$OUTPUT_DIR/$tb/stdout" ]; then
+      mkdir "$OUTPUT_DIR/$tb/stdout" 
+    fi
 
-	for bg_file in $SKIM_BG_SIG_BDT_OUTPUT_DIR/$filename/single/*; do
-		echo "Will run:"
-		bg_file_name=$(basename $bg_file .root)
-		echo $SCRIPTS_WD/run_skim_signal_dilepton_bdt_single.sh -i $bg_file -o ${OUTPUT_DIR}/$filename/single/${bg_file_name}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$filename 
+    if [ ! -d "$OUTPUT_DIR/$tb/stderr" ]; then
+      mkdir "$OUTPUT_DIR/$tb/stderr"
+    fi
+
+    for bg_file in $SKIM_BG_SIG_BDT_OUTPUT_DIR/$tb/single/*; do
+        echo "Will run:"
+        echo "error=${OUTPUT_DIR}/$tb/stderr/${bg_file_name}.err" 
+        bg_file_name=$(basename $bg_file .root)
+        echo $SCRIPTS_WD/run_skim_signal_dilepton_bdt_single.sh -i $bg_file -o ${OUTPUT_DIR}/$tb/single/${bg_file_name}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$tb 
 cat << EOM >> $output_file
-arguments = $SCRIPTS_WD/run_skim_signal_dilepton_bdt_single.sh -i $bg_file -o ${OUTPUT_DIR}/$filename/single/${bg_file_name}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$filename 
-error = ${OUTPUT_DIR}/$filename/stderr/${bg_file_name}.err
-output = ${OUTPUT_DIR}/$filename/stdout/${bg_file_name}.output
+arguments = $SCRIPTS_WD/run_skim_signal_dilepton_bdt_single.sh -i $bg_file -o ${OUTPUT_DIR}/$tb/single/${bg_file_name}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$tb 
+error = ${OUTPUT_DIR}/$tb/stderr/${bg_file_name}.err
+output = ${OUTPUT_DIR}/$tb/stdout/${bg_file_name}.output
 Queue
 EOM
-	done
+    done
 done
 
 condor_submit $output_file

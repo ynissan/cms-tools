@@ -18,6 +18,7 @@ colorPalette = [
 	{ "name" : "orange", "fillColor" : "#ffbb00", "lineColor" : "#b78b12", "fillStyle" : 3444 },
 	{ "name" : "red", "fillColor" : "#e60000", "lineColor" : "#c60000", "fillStyle" : 3444 },
 	{ "name" : "lightgreen", "fillColor" : "#42f498", "lineColor" : "#28a363", "fillStyle" : 3444 },
+	{ "name" : "black", "fillColor" : kBlack, "lineColor" : kBlack, "fillStyle" : 3444 },
 ]
 
 crossSections = {

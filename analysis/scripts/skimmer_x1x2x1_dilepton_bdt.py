@@ -35,73 +35,82 @@ bg = args.bg
 
 input_file = None
 if args.input_file:
-	input_file = args.input_file[0]
+    input_file = args.input_file[0]
 output_file = None
 if args.output_file:
-	output_file = args.output_file[0]
+    output_file = args.output_file[0]
 
 if (bg and signal) or not (bg or signal):
-	signal = True
-	bg = False
-	
+    signal = True
+    bg = False
+
 univ_bdt = None
 if args.bdt:
-	univ_bdt = args.bdt[0]
-	
+    univ_bdt = args.bdt[0]
+
 ######## END OF CMDLINE ARGUMENTS ########
 
 
 def main():
-	iFile = TFile(input_file)
-	hHt = iFile.Get('hHt')
-	c = iFile.Get('tEvent')
-	
-	tree = c.CloneTree(0)
-	tree.SetDirectory(0)
+    iFile = TFile(input_file)
+    #hHt = iFile.Get('hHt')
+    c = iFile.Get('tEvent')
 
-	nentries = c.GetEntries()
-	print 'Analysing', nentries, "entries"
-	
-	(univ_testBGHists, univ_trainBGHists, univ_testSignalHists, univ_trainSignalHists, univ_methods, univ_names) = cut_optimisation.get_bdt_hists([univ_bdt])
-	univ_trainSignalHist, univ_trainBGHist, univ_testSignalHist, univ_testBGHist = univ_trainSignalHists[0], univ_trainBGHists[0], univ_testSignalHists[0], univ_testBGHists[0]
-	univ_highestZ, univ_highestS, univ_highestB, univ_highestMVA, univ_ST, univ_BT = cut_optimisation.getHighestZ(univ_trainSignalHist, univ_trainBGHist, univ_testSignalHist, univ_testBGHist)
-	
-	univ_bdt_weights = univ_bdt + "/dataset/weights/TMVAClassification_BDT.weights.xml"
-	univ_bdt_vars = cut_optimisation.getVariablesFromXMLWeightsFile(univ_bdt_weights)
-	univ_bdt_vars_map = cut_optimisation.getVariablesMemMap(univ_bdt_vars)
-	univ_bdt_reader = cut_optimisation.prepareReader(univ_bdt_weights, univ_bdt_vars, univ_bdt_vars_map)
-	
-	print "-------------------"
-	
-	print "univ_highestZ=" + str(univ_highestZ)
-	print "univ_highestS=" + str(univ_highestS)
-	print "univ_highestB=" + str(univ_highestB)
-	print "univ_highestMVA=" + str(univ_highestMVA)
-	print "univ_ST=" + str(univ_ST)
-	print "univ_BT=" + str(univ_BT)
-	
-	print "-------------------"
-	
-	for ientry in range(nentries):
-		if ientry % 1000 == 0:
-			print "Processing " + str(ientry)
-		c.GetEntry(ientry)
-		
-		for k, v in univ_bdt_vars_map.items():
-			v[0] = eval("c." + k)
-		univ_tmva_value = univ_bdt_reader.EvaluateMVA("BDT")
-		if univ_tmva_value < univ_highestMVA:
-			continue
+    tree = c.CloneTree(0)
+    tree.SetDirectory(0)
+    var_dilepBDT = np.zeros(1,dtype=float)
+    tree.Branch('dilepBDT', var_dilepBDT,'dilepBDT/D')
 
-		tree.Fill()
-	
-	if tree.GetEntries() != 0:
-		fnew = TFile(output_file,'recreate')
-		tree.Write()
-		hHt.Write()
-		fnew.Close()
-	else:
-		print "*** RESULT EMPTY"
-	iFile.Close()
+    nentries = c.GetEntries()
+    print 'Analysing', nentries, "entries"
+
+    (univ_testBGHists, univ_trainBGHists, univ_testSignalHists, univ_trainSignalHists, univ_methods, univ_names) = cut_optimisation.get_bdt_hists([univ_bdt])
+    univ_trainSignalHist, univ_trainBGHist, univ_testSignalHist, univ_testBGHist = univ_trainSignalHists[0], univ_trainBGHists[0], univ_testSignalHists[0], univ_testBGHists[0]
+    univ_highestZ, univ_highestS, univ_highestB, univ_highestMVA, univ_ST, univ_BT = cut_optimisation.getHighestZ(univ_trainSignalHist, univ_trainBGHist, univ_testSignalHist, univ_testBGHist)
+
+    univ_bdt_weights = univ_bdt + "/dataset/weights/TMVAClassification_BDT.weights.xml"
+    univ_bdt_vars = cut_optimisation.getVariablesFromXMLWeightsFile(univ_bdt_weights)
+    univ_bdt_vars_map = cut_optimisation.getVariablesMemMap(univ_bdt_vars)
+    univ_bdt_specs = cut_optimisation.getSpecSpectatorFromXMLWeightsFile(univ_bdt_weights)
+    univ_bdt_specs_map = cut_optimisation.getSpectatorsMemMap(univ_bdt_specs)
+    print univ_bdt_vars
+    print univ_bdt_vars_map
+    print univ_bdt_specs
+    print univ_bdt_specs_map
+    univ_bdt_reader = cut_optimisation.prepareReader(univ_bdt_weights, univ_bdt_vars, univ_bdt_vars_map, univ_bdt_specs, univ_bdt_specs_map)
+
+    print "-------------------"
+
+    print "univ_highestZ=" + str(univ_highestZ)
+    print "univ_highestS=" + str(univ_highestS)
+    print "univ_highestB=" + str(univ_highestB)
+    print "univ_highestMVA=" + str(univ_highestMVA)
+    print "univ_ST=" + str(univ_ST)
+    print "univ_BT=" + str(univ_BT)
+
+    print "-------------------"
+
+    for ientry in range(nentries):
+        if ientry % 1000 == 0:
+            print "Processing " + str(ientry)
+        c.GetEntry(ientry)
+    
+        for k, v in univ_bdt_vars_map.items():
+            v[0] = eval("c." + k)
+        univ_tmva_value = univ_bdt_reader.EvaluateMVA("BDT")
+        if univ_tmva_value < 0.0:
+            continue
+        var_dilepBDT[0] = univ_tmva_value
+
+        tree.Fill()
+
+    if tree.GetEntries() != 0:
+        fnew = TFile(output_file,'recreate')
+        tree.Write()
+        #hHt.Write()
+        fnew.Close()
+    else:
+        print "*** RESULT EMPTY"
+    iFile.Close()
 
 main()

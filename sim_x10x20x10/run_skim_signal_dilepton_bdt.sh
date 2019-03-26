@@ -49,11 +49,30 @@ priority = 0
 EOM
 
 for sim in ${SKIM_SIG_BDT_OUTPUT_DIR}/single/*; do
-	filename=$(basename $sim .root)
-	echo "Will run:"
-	echo $SCRIPTS_WD/run_skim_signal_dilepton_bdt_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$filename
+    filename=`echo $(basename $sim .root) | awk -F"_" '{print $1"_"$2"_"$3}'`
+    echo $filename
+    tb=$filename
+    for group in "${!SIM_GROUP[@]}"; do
+        echo checking group $group
+        value=${SIM_GROUP[$group]}
+        found=false
+        for pattern in $value; do
+            echo checking pattern $pattern
+            if [[ $filename == *"$pattern"* ]]; then
+                echo Found!
+                tb=$group
+                found=true
+                break
+            fi
+        done
+        if [[ "$found" = "true" ]]; then
+            break
+        fi
+    done
+    echo "Will run:"
+    echo $SCRIPTS_WD/run_skim_signal_dilepton_bdt_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$tb
 cat << EOM >> $output_file
-arguments = $SCRIPTS_WD/run_skim_signal_dilepton_bdt_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$filename
+arguments = $SCRIPTS_WD/run_skim_signal_dilepton_bdt_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$tb
 error = ${OUTPUT_DIR}/stderr/${filename}.err
 output = ${OUTPUT_DIR}/stdout/${filename}.output
 Queue

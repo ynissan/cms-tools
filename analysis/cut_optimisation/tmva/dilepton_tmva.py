@@ -10,7 +10,7 @@ import sys
 ####### CMDLINE ARGUMENTS #########
 
 parser = argparse.ArgumentParser(description='Run TMVA.')
-parser.add_argument('-i', '--input_file', nargs=1, help='Input Signal Filename', required=True)
+parser.add_argument('-i', '--input', nargs='*', help='Signal Files', required=True)
 parser.add_argument('-o', '--output_file', nargs=1, help='Output Filename', required=True)
 parser.add_argument('-bg', '--bg', nargs=1, help='Input Background Directory', required=False)
 parser.add_argument('-nn', '--no_norm', dest='no_norm', help='No renormalization of weights', action='store_true')
@@ -18,18 +18,16 @@ parser.add_argument('-all', '--all', dest='all', help='All methods', action='sto
 args = parser.parse_args()
 
 
-input_file = None
-if args.input_file:
-	input_file = args.input_file[0]
+input_files = args.input
 
 output_file_name = None
 if args.output_file:
-	output_file_name = args.output_file[0]
+    output_file_name = args.output_file[0]
 else:
-	output_file_name = "tmva_output.root"
+    output_file_name = "tmva_output.root"
 bg_dir = None
 if args.bg:
-	bg_dir = args.bg[0]
+    bg_dir = args.bg[0]
 
 no_norm = args.no_norm
 all = args.all
@@ -37,7 +35,7 @@ all = args.all
 print "No norm=" + str(no_norm)
 print "All=" + str(all)
 
-	
+
 ######## END OF CMDLINE ARGUMENTS ########
 
 gROOT.SetBatch(1)
@@ -54,41 +52,68 @@ factory = TMVA.Factory("TMVAClassification", outputFile,
                                      ))
                                      
 dataloader = TMVA.DataLoader("dataset")
-dataloader.SetWeightExpression("Weight")
-fsignal = TFile(input_file, "update")
-sTree = fsignal.Get("tEvent")
-dataloader.AddSignalTree(sTree, 1);
+
 bgFiles = []
 bTrees = []
+sFiles = []
+sTrees = []
+
+totalEvents = 0
+weights = 0
+
+for input_file in input_files:
+    print "Opening File " + input_file
+    fsignal = TFile(input_file, "update")
+    sTree = fsignal.Get("tEvent")
+    nEvents = sTree.GetEntries()
+    if nEvents == 0:
+        print "Emtpy. Skipping"
+        continue
+    totalEvents += nEvents
+    sTree.GetEntry(0)
+    weight = sTree.Weight
+    weights += weight * nEvents
+    print "nEvents=" + str(nEvents) + " weight=" + str(weight)
+    sFiles.append(fsignal)
+    sTrees.append(sTree)
+
+signalWeight = weights / totalEvents
+print "Average weight=" + str(signalWeight)
+
+for sTree in sTrees:
+    dataloader.AddSignalTree(sTree, signalWeight);
+
+dataloader.SetBackgroundWeightExpression("Weight")
 bFileNames =  glob(bg_dir + "/*");
 for f in bFileNames:
-	bFile = TFile(f, "update")
-	bgFiles.append(bFile)
-	bTree = bFile.Get("tEvent")
-	bTrees.append(bTree)
-	dataloader.AddBackgroundTree(bTree, 1)
+    bFile = TFile(f, "update")
+    bgFiles.append(bFile)
+    bTree = bFile.Get("tEvent")
+    bTrees.append(bTree)
+    dataloader.AddBackgroundTree(bTree, 1)
 
 # Variables
 dataloader.AddVariable('univBDT', 'F')
-dataloader.AddVariable('dileptonPt', 'F')
+dataloader.AddVariable('trackBDT', 'F')
+#dataloader.AddVariable('dileptonPt', 'F')
 dataloader.AddVariable('deltaPhi', 'F')
 dataloader.AddVariable('deltaEta', 'F')
 dataloader.AddVariable('deltaR', 'F')
-dataloader.AddVariable('pt3', 'F')
-dataloader.AddVariable('mtautau', 'F')
-dataloader.AddVariable('mt1', 'F')
+#dataloader.AddVariable('pt3', 'F')
+#dataloader.AddVariable('mtautau', 'F')
+#dataloader.AddVariable('mt1', 'F')
 dataloader.AddVariable('mt2', 'F')
 dataloader.AddVariable('DeltaEtaLeadingJetDilepton', 'F')
 dataloader.AddVariable('dilepHt', 'F')
-# dataloader.AddVariable('l1.Pt()', 'F')
-# dataloader.AddVariable('l2.Pt()', 'F')
-# dataloader.AddVariable('l1.Eta()', 'F')
-# dataloader.AddVariable('l2.Eta()', 'F')
-# dataloader.AddVariable('l1.Phi()', 'F')
-# dataloader.AddVariable('l2.Phi()', 'F')
+#dataloader.AddVariable('l1.Pt()', 'F')
+#dataloader.AddVariable('l2.Pt()', 'F')
+dataloader.AddVariable('l1.Eta()', 'F')
+dataloader.AddVariable('l2.Eta()', 'F')
+dataloader.AddVariable('l1.Phi()', 'F')
+dataloader.AddVariable('l2.Phi()', 'F')
 
 # Spectators
-#dataloader.AddSpectator('NL','I')
+dataloader.AddSpectator('invMass','F')
 
 # cuts defining the signal and background sample
 preselectionCut = TCut("")

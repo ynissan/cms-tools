@@ -55,12 +55,23 @@ def plot_rocs():
     testBGHist, trainBGHist, testSignalHist, trainSignalHist, method, name = testBGHists[inx], trainBGHists[inx], testSignalHists[inx], trainSignalHists[inx], methods[inx], names[inx]
     legend = TLegend(0.7, 0.7, 0.9, 0.9)
     
+    ST = trainSignalHist.Integral() + testSignalHist.Integral()
+    BT = trainBGHist.Integral() + testBGHist.Integral()
+
+    trainSignalHist.Scale(1./ST)
+    testSignalHist.Scale(1./ST)
+    testBGHist.Scale(1./BT)
+    trainBGHist.Scale(1./BT)
+    
+    maxY = max(trainSignalHist.GetMaximum(), testSignalHist.GetMaximum(), testBGHist.GetMaximum(), trainBGHist.GetMaximum())
+    
     cpBlue = utils.colorPalette[2]
     cpRed = utils.colorPalette[6]
 
     trainBGHist.SetTitle(name)
     trainBGHist.GetXaxis().SetTitle("BDT Output")
     trainBGHist.GetYaxis().SetTitle("Arbitrary Units")
+    trainBGHist.SetMaximum(maxY + 0.02)
 
     fillC = TColor.GetColor(cpRed["fillColor"])
     lineC = TColor.GetColor(cpRed["lineColor"])
@@ -80,7 +91,7 @@ def plot_rocs():
     trainSignalHist.SetLineColor(lineC)
     trainSignalHist.SetLineWidth(1)
     trainSignalHist.SetOption("HIST")
-    trainSignalHist.Draw("SAME")
+    trainSignalHist.Draw("SAME HIST")
     
     legend.AddEntry(trainSignalHist, "S (train)", 'F')
     
