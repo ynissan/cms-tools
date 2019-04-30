@@ -25,7 +25,7 @@ fi
 if [ ! -d "$LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva" ]; then
     mkdir "$LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva"
 else
-    rm -rf "$LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva"
+    #rm -rf "$LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva"
     mkdir "$LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva"
 fi
 

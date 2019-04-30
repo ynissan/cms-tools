@@ -107,6 +107,10 @@ def main():
         for ti in range(c.tracks.size()):
             if c.tracks_trkRelIso[ti] > 0.1:
                 continue 
+            if c.tracks_dxyVtx[ti] > 0.02:
+                continue
+            if c.tracks_dzVtx[ti] > 0.05:
+                continue
 
             t = c.tracks[ti]
             elecMin = analysis_tools.minDeltaR(t, c.Electrons)

@@ -94,7 +94,9 @@ def main():
     var_mt1 = np.zeros(1,dtype=float)
     var_mt2 = np.zeros(1,dtype=float)
     var_DeltaEtaLeadingJetDilepton = np.zeros(1,dtype=float)
+    var_DeltaPhiLeadingJetDilepton = np.zeros(1,dtype=float)
     var_dilepHt = np.zeros(1,dtype=float)
+    var_NTracks = np.zeros(1,dtype=int)
 
     tree.Branch('invMass', var_invMass,'invMass/D')
     tree.Branch('dileptonPt', var_dileptonPt,'dileptonPt/D')
@@ -106,7 +108,9 @@ def main():
     tree.Branch('mt1', var_mt1,'mt1/D')
     tree.Branch('mt2', var_mt2,'mt2/D')
     tree.Branch('DeltaEtaLeadingJetDilepton', var_DeltaEtaLeadingJetDilepton,'DeltaEtaLeadingJetDilepton/D')
+    tree.Branch('DeltaPhiLeadingJetDilepton', var_DeltaPhiLeadingJetDilepton,'DeltaPhiLeadingJetDilepton/D')
     tree.Branch('dilepHt', var_dilepHt,'dilepHt/D')
+    tree.Branch('NTracks', var_NTracks,'NTracks/I')
 
 
     nentries = c.GetEntries()
@@ -192,12 +196,16 @@ def main():
             leptonCharge = c.Electrons_charge[0]
         elif c.Muons.size() == 1:
             leptonCharge = c.Muons_charge[0]
-    
+        ntracks = 0
         for ti in range(c.tracks.size()):
             t = c.tracks[ti]
             tcharge = c.tracks_charge[ti]
             if c.tracks_trkRelIso[ti] > 0.1:
                 continue 
+            if c.tracks_dxyVtx[ti] > 0.02:
+                continue
+            if c.tracks_dzVtx[ti] > 0.05:
+                continue
             if tcharge * leptonCharge > 0:
                 continue
             
@@ -206,10 +214,10 @@ def main():
             deltaRLL = abs(t.DeltaR(ll))
             if deltaRLL < 0.1:
                 continue
-            
+            ntracks += 1
         
-            track_bdt_vars_map["deltaEtaLL"][0] = abs(t.Eta()-ll.Eta()) 
-            track_bdt_vars_map["deltaRLL"][0] = deltaRLL
+            #track_bdt_vars_map["deltaEtaLL"][0] = abs(t.Eta()-ll.Eta()) 
+            #track_bdt_vars_map["deltaRLL"][0] = deltaRLL
             track_bdt_vars_map["deltaEtaLJ"][0] = abs(t.Eta() - c.LeadingJet.Eta())
             track_bdt_vars_map["deltaRLJ"][0] = abs(t.DeltaR(c.LeadingJet))
             track_bdt_vars_map["track.Phi()"][0] = t.Phi()
@@ -291,6 +299,7 @@ def main():
         var_deltaPhi[0] = abs(l1.DeltaPhi(l2))
         var_deltaEta[0] = abs(l1.Eta() - l2.Eta())
         var_deltaR[0] = abs(l1.DeltaR(l2))
+        var_NTracks[0] = ntracks
 
         var_pt3[0] = analysis_tools.pt3(l1.Pt(),l1.Phi(),l2.Pt(),l2.Phi(),c.Met,c.METPhi)
 
@@ -303,8 +312,9 @@ def main():
         var_mtautau[0] = analysis_tools.Mtautau(pt, l1, l2)
     
         var_DeltaEtaLeadingJetDilepton[0] = abs((l1 + l2).Eta() - c.LeadingJet.Eta())
+        var_DeltaPhiLeadingJetDilepton[0] = abs((l1 + l2).Phi() - c.LeadingJet.Phi())
     
-        var_dilepHt[0] = analysis_ntuples.htJet25(c)
+        var_dilepHt[0] = analysis_ntuples.htJet25Leps(c, [l1,l2])
 
         tree.Fill()
 

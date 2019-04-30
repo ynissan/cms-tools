@@ -71,9 +71,9 @@ for sim in ${SKIM_SIG_OUTPUT_DIR}/sum/*; do
         fi
     done
     echo "Will run:"
-    echo $SCRIPTS_WD/run_skim_signal_bdt_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$tb  -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt_own_skims_no_njets
+    echo $SCRIPTS_WD/run_skim_signal_bdt_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$tb  -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt
 cat << EOM >> $output_file
-arguments = $SCRIPTS_WD/run_skim_signal_bdt_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$tb  -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt_own_skims_no_njets
+arguments = $SCRIPTS_WD/run_skim_signal_bdt_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$tb  -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt
 error = ${OUTPUT_DIR}/stderr/${filename}.err
 output = ${OUTPUT_DIR}/stdout/${filename}.output
 Queue

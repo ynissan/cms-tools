@@ -14,14 +14,15 @@ declare -A SIM_GROUP=(["low"]="dm2p dm3p dm4p"\
 
 NEW_SIM_DIR="/pnfs/desy.de/cms/tier2/store/user/sbein/CommonNtuples"
 NEWEST_SIM_DIR="/pnfs/desy.de/cms/tier2/store/user/sbein/NtupleHub/Production2016v2"
+BG_NTUPLES="/pnfs/desy.de/cms/tier2/store/user/vormwald/NtupleHub/ProductionRun2v3"
 NEWESTEST_SIM_DIR="/nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggsino/M1M2Scan/ntuple_sidecar/"
 SIM_NTUPLES_DIR="/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/ntuples_sum"
-BG_TYPES=(QCD DYJetsToLL WJetsToLNu ZJetsToNuNu WZZ WWZ WW WZ ZZZ ZZ TTWJetsToLNu)
-#BG_TYPES=(WJetsToLNu)
+#BG_TYPES=(QCD DYJetsToLL WJetsToLNu ZJetsToNuNu WZZ WWZ WW WZ ZZZ ZZ TTWJetsToLNu TTJets)
+BG_TYPES=(TTJets)
 RARE=(WZZ WWZ ZZZ)
 DiBoson=(WZ WW ZZ)
-MAD_HT_SPLIT_TYPES=(TTJets)
-#MAD_HT_SPLIT_TYPES=()
+#MAD_HT_SPLIT_TYPES=(TTJets)
+MAD_HT_SPLIT_TYPES=()
 WORK_DIR="/tmp"
 CMS_WD="/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src"
 CMS_TOOLS="/afs/desy.de/user/n/nissanuv/cms-tools"

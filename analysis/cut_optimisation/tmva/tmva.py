@@ -64,11 +64,12 @@ bgFiles = []
 bTrees = []
 bFileNames =  glob(bg_dir + "/*");
 for f in bFileNames:
-	bFile = TFile(f, "update")
-	bgFiles.append(bFile)
-	bTree = bFile.Get("tEvent")
-	bTrees.append(bTree)
-	dataloader.AddBackgroundTree(bTree, 1)
+    print "Adding file " + f
+    bFile = TFile(f, "update")
+    bgFiles.append(bFile)
+    bTree = bFile.Get("tEvent")
+    bTrees.append(bTree)
+    dataloader.AddBackgroundTree(bTree, 1)
 
 # Variables
 #dataloader.AddVariable('NJets', 'I')

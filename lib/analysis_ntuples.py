@@ -57,6 +57,11 @@ def htJet25(event):
 	objects25 = [ j for j in cleanJets if j.Pt() > 25 ] + leps
 	return sum([x.Pt() for x in objects25])
 
+def htJet25Leps(event, leps):
+	cleanJets = [ j for j in event.Jets if min(j.DeltaR(l) for l in leps) > 0.4 ]
+	objects25 = [ j for j in cleanJets if j.Pt() > 25 ] + leps
+	return sum([x.Pt() for x in objects25])
+
 def minDeltaPhiMetJets(event, pt, eta):
 	jets = [ j for j in event.Jets if j.Pt() > pt and abs(j.Eta()) <= eta ]
 	metvec = TLorentzVector()

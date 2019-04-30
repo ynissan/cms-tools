@@ -97,10 +97,11 @@ def main():
     
         for k, v in univ_bdt_vars_map.items():
             v[0] = eval("c." + k)
-        univ_tmva_value = univ_bdt_reader.EvaluateMVA("BDT")
-        if univ_tmva_value < 0.0:
+        dilep_tmva_value = univ_bdt_reader.EvaluateMVA("BDT")
+        # Selection
+        if dilep_tmva_value < -0.3 or c.Met < 200 or c.univBDT < -0.4 or c.tracks[0].Pt() < 3 or c.tracks[0].Pt() > 15 or c.tracks_dzVtx[0] > 0.1 or c.tracks_dxyVtx[0] > 0.1 or abs(c.tracks[0].Eta()) > 2.4:
             continue
-        var_dilepBDT[0] = univ_tmva_value
+        var_dilepBDT[0] = dilep_tmva_value
 
         tree.Fill()
 

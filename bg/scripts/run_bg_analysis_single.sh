@@ -7,8 +7,8 @@
 shopt -s expand_aliases
 
 print_help() {
-	echo "$0 -i input_file [-s|--simulation]"
-	echo -e "\t-s simulation: will not run command"
+    echo "$0 -i input_file [-s|--simulation]"
+    echo -e "\t-s simulation: will not run command"
 } 
 
 
@@ -16,40 +16,40 @@ print_help() {
 POSITIONAL=()
 while [[ $# -gt 0 ]]
 do
-	key="$1"
+    key="$1"
 
-	case $key in
-	    -i|--input)
-	    INPUT_FILE="$2"
-	    shift # past argument
-	    shift # past value
-	    ;;
-	    -h|--help)
-	    print_help
-	    exit 0
-	    ;;
-	    -skim|--skim)
-	    SKIM=true
-	    shift # past argument
-	    ;;
-	    -s|--simulation)
-	    SIMULATION=true
-	    shift # past argument
-	    ;;
-	    *)    # unknown option
-	    POSITIONAL+=("$1") # save it in an array for later
-	    shift # past argument
-	    ;;
-	esac
+    case $key in
+        -i|--input)
+        INPUT_FILES="$2"
+        shift # past argument
+        shift # past value
+        ;;
+        -h|--help)
+        print_help
+        exit 0
+        ;;
+        -skim|--skim)
+        SKIM=true
+        shift # past argument
+        ;;
+        -s|--simulation)
+        SIMULATION=true
+        shift # past argument
+        ;;
+        *)    # unknown option
+        POSITIONAL+=("$1") # save it in an array for later
+        shift # past argument
+        ;;
+    esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 #---------- END OPTIONS ------------
 
 echo "EXTRA PARAMS: ${POSITIONAL[@]}"
 
-if [ -z "$INPUT_FILE" ]; then
-	print_help
-	exit 0
+if [ -z "$INPUT_FILES" ]; then
+    print_help
+    exit 0
 fi
 
 # CMS ENV
@@ -61,9 +61,9 @@ cmsenv
 
 SCRIPT_PATH=$ANALYZER_PATH
 if [ -n "$SKIM" ]; then
-	echo "GOT SKIM"
-	SCRIPT_PATH=$SKIMMER_PATH
-	OUTPUT_DIR=$SKIM_OUTPUT_DIR
+    echo "GOT SKIM"
+    SCRIPT_PATH=$SKIMMER_PATH
+    OUTPUT_DIR=$SKIM_OUTPUT_DIR
 fi
 
 FILE_OUTPUT="${OUTPUT_DIR}/single"
@@ -81,22 +81,28 @@ fi
 
 # RUN ANALYSIS
 cd $WORK_DIR
-timestamp=$(date +%Y%m%d_%H%M%S%N)
 
-output_file="${WORK_DIR}/${timestamp}/$(basename $INPUT_FILE)"
-command="$SCRIPT_PATH -i ${INPUT_FILE} -o $output_file -bg ${POSITIONAL[@]}"
+echo INTPUT_FILES=$INPUT_FILES
 
-echo "Running command: $command"
+for INPUT_FILE in $INPUT_FILES; do
 
-if [ -n "$SIMULATION" ]; then
-	echo "IN SIMULATION: NOT RUNNING COMMANDS"
-fi
+    timestamp=$(date +%Y%m%d_%H%M%S%N)
 
-if [ -z "$SIMULATION" ]; then
-	mkdir $timestamp
-	eval $command
-	mv $output_file "${FILE_OUTPUT}/"
-	rm -rf $timestamp
-fi
+    output_file="${WORK_DIR}/${timestamp}/$(basename $INPUT_FILE)"
+    command="$SCRIPT_PATH -i ${INPUT_FILE} -o $output_file -bg ${POSITIONAL[@]}"
+
+    echo "Running command: $command"
+
+    if [ -n "$SIMULATION" ]; then
+        echo "IN SIMULATION: NOT RUNNING COMMANDS"
+    fi
+
+    if [ -z "$SIMULATION" ]; then
+        mkdir $timestamp
+        eval $command
+        mv $output_file "${FILE_OUTPUT}/"
+        rm -rf $timestamp
+    fi
+done
 
 exit 0
