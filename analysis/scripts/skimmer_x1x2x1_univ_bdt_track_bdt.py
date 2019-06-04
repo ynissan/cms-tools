@@ -312,7 +312,7 @@ def main():
         var_mtautau[0] = analysis_tools.Mtautau(pt, l1, l2)
     
         var_DeltaEtaLeadingJetDilepton[0] = abs((l1 + l2).Eta() - c.LeadingJet.Eta())
-        var_DeltaPhiLeadingJetDilepton[0] = abs((l1 + l2).Phi() - c.LeadingJet.Phi())
+        var_DeltaPhiLeadingJetDilepton[0] = abs((l1 + l2).DeltaPhi(c.LeadingJet))
     
         var_dilepHt[0] = analysis_ntuples.htJet25Leps(c, [l1,l2])
 

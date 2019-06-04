@@ -15,6 +15,9 @@ import utils
 gROOT.SetBatch(True)
 gStyle.SetOptStat(0)
 
+lumi = 5746.370
+weight = lumi / utils.LUMINOSITY
+
 
 ####### CMDLINE ARGUMENTS #########
 
@@ -22,12 +25,14 @@ parser = argparse.ArgumentParser(description='Plot skims for x1x2x1 process with
 parser.add_argument('-o', '--output_file', nargs=1, help='Output Filename', required=False)
 args = parser.parse_args()
 
+plot_data = True
 
 output_file = None
 # signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm3p28Chi20Chipm.root"
 # bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_dilepton_signal_bdt/low/single"
 signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm7p39Chi20Chipm.root"
 bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_dilepton_signal_bdt/dm7/single"
+data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_dilepton_signal_bdt/dm7/single"
 
 #signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm12p84Chi20Chipm.root"
 #bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_dilepton_signal_bdt/high/single"
@@ -40,7 +45,7 @@ bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_dilepton_signal_bdt/dm
 if args.output_file:
     output_file = args.output_file[0]
 else:
-    output_file = "obs.pdf"
+    output_file = "obs_data_overflow.pdf"
 ######## END OF CMDLINE ARGUMENTS ########
 
 def trackBDT(c):
@@ -70,6 +75,8 @@ def step(c):
 def step3(c):
     return c.Met > 200 and c.tracks[0].Pt() < 10 and c.tracks_dzVtx[0] <= 0.01 and c.tracks_dxyVtx[0] <= 0.01 and c.univBDT >= 0.1 and c.pt3 >= 225 and c.dilepBDT >= 0.15 and c.trackBDT >= 0.1 and abs(c.tracks[0].Eta()) < 1.8 and c.tracks[0].Pt() > 5 and c.deltaR <= 1
 
+def invMass(c):
+    return c.invMass < 30
 
 #and c.dilepHt >= 250 and c.NJets <= 3 and c.mt1 <= 50
 
@@ -100,14 +107,15 @@ histograms_defs = [
 ]
 
 cuts = [{"name":"none", "title": "No Cuts"},
+        {"name":"invMass", "title": "Inv Mass < 30", "funcs" : [invMass]},
 #         {"name":"trackBDT", "title": "trackBDT >= 0.2", "funcs":[trackBDT]},
 #         {"name":"univBDT", "title": "univBDT >= 0", "funcs":[univBDT]},
 #         {"name":"dilepBDT", "title": "dilepBDT >= 0.1", "funcs":[dilepBDT]}
         #{"name":"custom", "title": "No Cuts", "funcs" : [custom]},
         #{"name":"custom_dpg", "title": "No Cuts", "funcs" : [custom_dpg]},
-        {"name":"step", "title": "No Cuts", "funcs" : [step]},
-        {"name":"step2", "title": "No Cuts", "funcs" : [step2]},
-        {"name":"step3", "title": "No Cuts", "funcs" : [step3]},
+        #{"name":"step", "title": "No Cuts", "funcs" : [step]},
+        #{"name":"step2", "title": "No Cuts", "funcs" : [step2]},
+        #{"name":"step3", "title": "No Cuts", "funcs" : [step3]},
         ]
 
 def createPlots(rootfiles, type, histograms):
@@ -115,8 +123,7 @@ def createPlots(rootfiles, type, histograms):
     print rootfiles
     
     for f in rootfiles:
-        print "***"
-        filename = os.path.basename(f).split(".")[0]
+        print f
         rootFile = TFile(f)
         c = rootFile.Get('tEvent')
         nentries = c.GetEntries()
@@ -138,7 +145,10 @@ def createPlots(rootfiles, type, histograms):
                 for hist_def in histograms_defs:
                     histName =  cut["name"] + "_" + hist_def["obs"] + "_" + type
                     hist = histograms[histName]
-                    hist.Fill(eval('c.' + hist_def["obs"]), c.Weight)
+                    if type != "data":
+                        hist.Fill(eval('c.' + hist_def["obs"]), c.Weight * weight)
+                    else:
+                        hist.Fill(eval('c.' + hist_def["obs"]), 1)
             
 def main():
     
@@ -153,17 +163,24 @@ def main():
     for f in bg_files: 
         filename = os.path.basename(f).split(".")[0]
         types = filename.split("_")
-        if types[0] not in sumTypes:
-            sumTypes[types[0]] = {}
-        sumTypes[types[0]][types[1]] = True
+        if types[0] == "TTJets" or types[0] == "ST":
+            if types[0] not in sumTypes:
+                sumTypes[filename] = {}
+            sumTypes[filename][""] = True
+        else:
+            if types[0] not in sumTypes:
+                sumTypes[types[0]] = {}
+            sumTypes[types[0]][types[1]] = True
 
     print sumTypes
-    
+    #exit(0)
     for cut in cuts:
         for hist_def in histograms_defs:
             baseName = cut["name"] + "_" + hist_def["obs"]
             sigName = baseName + "_signal"
+            dataName = baseName + "_data"
             histograms[sigName] = utils.UOFlowTH1F(sigName, "", hist_def["bins"], hist_def["minX"], hist_def["maxX"])
+            histograms[dataName] = utils.UOFlowTH1F(dataName, "", hist_def["bins"], hist_def["minX"], hist_def["maxX"])
             utils.formatHist(histograms[sigName], utils.signalCp[0], 0.8)
             for type in sumTypes:
                 if utils.existsInCoumpoundType(type):
@@ -173,7 +190,11 @@ def main():
             for type in utils.compoundTypes:
                 bgName = baseName + "_" + type
                 histograms[bgName] = utils.UOFlowTH1F(bgName, "", hist_def["bins"], hist_def["minX"], hist_def["maxX"])
-
+    
+    createPlots([signal_dir], "signal", histograms)
+    dataFiles = glob(data_dir + "/*")
+    createPlots(dataFiles, "data", histograms)
+    
     for type in sumTypes:
         if utils.existsInCoumpoundType(type):
             continue
@@ -192,8 +213,6 @@ def main():
             createPlots(rootFiles, cType, histograms)
         else:
             print "**Couldn't find file for " + cType
-    
-    createPlots([signal_dir], "signal", histograms)
     
     print "Plotting observable"
 
@@ -285,6 +304,14 @@ def main():
                 sigHist.Draw("HIST SAME")
             else:
                 sigHist.Draw("HIST")
+            
+            dataHistName = cut["name"] + "_" + hist_def["obs"] + "_data"
+            dataHist = histograms[dataHistName]
+            dataHist.SetMinimum(0.01)
+            dataHist.SetMarkerStyle(kFullCircle)
+            dataHist.Draw("P SAME")
+            legend.AddEntry(dataHist, "data", 'p')
+            
             legend.Draw("SAME")
             pad.SetLogy()
             c1.Update()
@@ -303,6 +330,7 @@ def main():
             pad.SetLogy(0)
             linBgHist.Draw("hist")
             sigHist.Draw("HIST SAME")
+            dataHist.Draw("P e SAME")
             legend.Draw("SAME")
             
             pId += 1

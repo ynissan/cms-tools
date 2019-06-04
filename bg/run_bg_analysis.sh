@@ -158,4 +158,4 @@ fi
 echo SUBMITTING JOBS....
 
 condor_submit $output_file
-rm $output_file
+#rm $output_file

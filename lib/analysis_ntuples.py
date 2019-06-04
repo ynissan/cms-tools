@@ -176,4 +176,16 @@ def leadingLepton(c):
 			ll = v
 	return ll
 
-		
+def passed2016BTrigger(t, data=False):
+    if not t.globalSuperTightHalo2016Filter: return False
+    if not t.HBHENoiseFilter: return False    
+    if not t.HBHEIsoNoiseFilter: return False
+    if not t.eeBadScFilter: return False      
+    if not t.BadChargedCandidateFilter: return False
+    if not t.BadPFMuonFilter: return False
+    if not t.CSCTightHaloFilter: return False 
+    if not t.EcalDeadCellTriggerPrimitiveFilter: return False
+    #if data:
+    #    if not t.ecalBadCalibReducedExtraFilter: return False
+    #    if not t.ecalBadCalibReducedFilter: return False
+    return True

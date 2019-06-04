@@ -23,7 +23,10 @@ parser.add_argument('-madHTlt', '--madHTlt', nargs=1, help='madHT uppper bound',
 
 parser.add_argument('-s', '--signal', dest='signal', help='Signal', action='store_true')
 parser.add_argument('-bg', '--background', dest='bg', help='Background', action='store_true')
+parser.add_argument('-data', '--data', dest='data', help='Data', action='store_true')
 args = parser.parse_args()
+
+print args
 
 madHTgt = None
 madHTlt = None
@@ -37,6 +40,7 @@ if args.madHTlt:
 
 signal = args.signal
 bg = args.bg
+data = args.data
 
 input_file = None
 if args.input_file:
@@ -45,7 +49,7 @@ output_file = None
 if args.output_file:
     output_file = args.output_file[0]
 
-if (bg and signal) or not (bg or signal):
+if (bg and signal):
     signal = True
     bg = False
 
@@ -55,7 +59,7 @@ def main():
     chain.Add(input_file)
     c = chain.CloneTree()
     chain = None
-
+    print "Creating " + output_file
     fnew = TFile(output_file,'recreate')
 
     hHt = TH1F('hHt','hHt',100,0,3000)
@@ -186,18 +190,20 @@ def main():
     
         if signal:
             rightProcess = analysis_ntuples.isX1X2X1Process(c)
-        else:
+        elif bg:
             crossSection = c.CrossSection
             if (madHTgt is not None and c.madHT < madHTgt) or (madHTlt is not None and c.madHT > madHTlt):
                 rightProcess = False
 
         hHt.Fill(c.HT)
+        #print "crossSection=" + str(crossSection)
         hHtWeighted.Fill(c.HT, crossSection)
 
         if not rightProcess:
             continue
         count += 1
-        hHtAfterMadHt.Fill(c.madHT)
+        if not data:
+            hHtAfterMadHt.Fill(c.madHT)
 
         nj, btags, ljet = analysis_ntuples.numberOfJets25Pt2_4Eta_Loose(c)
         nL = c.Electrons.size() + c.Muons.size()
@@ -205,26 +211,27 @@ def main():
         #### GEN LEVEL STUFF ####
         nLGen = 0
         nLGenZ = 0
-        partSize = c.GenParticles.size()
-        for ipart in range(partSize):
-            if c.GenParticles_Status[ipart] == 1 and (abs(c.GenParticles_PdgId[ipart]) == 11 or abs(c.GenParticles_PdgId[ipart]) == 13):
-                nLGen += 1
-                if c.GenParticles_ParentId[ipart] == 1000023 or c.GenParticles_ParentId[ipart] == 23:
-                    nLGenZ += 1
+        if not data:
+            partSize = c.GenParticles.size()
+            for ipart in range(partSize):
+                if c.GenParticles_Status[ipart] == 1 and (abs(c.GenParticles_PdgId[ipart]) == 11 or abs(c.GenParticles_PdgId[ipart]) == 13):
+                    nLGen += 1
+                    if c.GenParticles_ParentId[ipart] == 1000023 or c.GenParticles_ParentId[ipart] == 23:
+                        nLGenZ += 1
     
     
-        if nLMap.get(nL) is not None:
-            nLMap[nL] += 1
-        else:
-            nLMap[nL] = 1
-        if nLGenMap.get(nLGen) is not None:
-            nLGenMap[nLGen] += 1
-        else:
-            nLGenMap[nLGen] = 1
-        if nLGenMapZ.get(nLGenZ) is not None:
-            nLGenMapZ[nLGenZ] += 1
-        else:
-            nLGenMapZ[nLGenZ] = 1
+            if nLMap.get(nL) is not None:
+                nLMap[nL] += 1
+            else:
+                nLMap[nL] = 1
+            if nLGenMap.get(nLGen) is not None:
+                nLGenMap[nLGen] += 1
+            else:
+                nLGenMap[nLGen] = 1
+            if nLGenMapZ.get(nLGenZ) is not None:
+                nLGenMapZ[nLGenZ] += 1
+            else:
+                nLGenMapZ[nLGenZ] = 1
         #### END OF GEN LEVEL STUFF ####
     
         var_NL[0] = nL
@@ -232,6 +239,8 @@ def main():
         var_NLGenZ[0] = nLGenZ
     
         #### PRECUTS ###
+        if not signal:
+            if not analysis_ntuples.passed2016BTrigger(c, data): continue
         if c.MET < 120: continue
         afterMET += 1
         if btags > 0: continue
@@ -263,12 +272,19 @@ def main():
         var_Muons = c.Muons
         var_Muons_charge = c.Muons_charge
         var_Jets = c.Jets
-    
-        var_GenParticles = c.GenParticles
-        var_GenParticles_ParentId = c.GenParticles_ParentId
-        var_GenParticles_ParentIdx = c.GenParticles_ParentIdx
-        var_GenParticles_PdgId = c.GenParticles_PdgId
-        var_GenParticles_Status = c.GenParticles_Status
+        
+        if data:
+            var_GenParticles = ROOT.std.vector(TLorentzVector)()
+            var_GenParticles_ParentId = ROOT.std.vector(int)()
+            var_GenParticles_ParentIdx = ROOT.std.vector(int)()
+            var_GenParticles_PdgId = ROOT.std.vector(int)()
+            var_GenParticles_Status = ROOT.std.vector(int)()
+        else:
+            var_GenParticles = c.GenParticles
+            var_GenParticles_ParentId = c.GenParticles_ParentId
+            var_GenParticles_ParentIdx = c.GenParticles_ParentIdx
+            var_GenParticles_PdgId = c.GenParticles_PdgId
+            var_GenParticles_Status = c.GenParticles_Status
     
         ###### Tracks ######
         var_tracks = c.tracks

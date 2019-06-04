@@ -13,7 +13,7 @@ module use -a /afs/desy.de/group/cms/modulefiles/
 module load cmssw
 cmsenv
 
-OUTPUT_DIR=$SKIM_BG_SIG_DILEPTON_BDT_OUTPUT_DIR
+OUTPUT_DIR=$SKIM_DATA_SIG_DILEPTON_BDT_OUTPUT_DIR
 
 timestamp=$(date +%Y%m%d_%H%M%S%N)
 output_file="${WORK_DIR}/condor_submut.${timestamp}"
@@ -23,9 +23,6 @@ echo $OUTPUT_DIR
 #check output directory
 if [ ! -d "$OUTPUT_DIR" ]; then
   mkdir $OUTPUT_DIR
-else
-   #rm -rf $OUTPUT_DIR
-   mkdir $OUTPUT_DIR
 fi
 
 cat << EOM > $output_file
@@ -36,9 +33,9 @@ notification = Never
 priority = 0
 EOM
 
-for sim in $SKIM_BG_SIG_BDT_OUTPUT_DIR/*; do
-#for sim in /afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_signal_bdt/single/*; do    
-    filename=`echo $(basename $sim )`
+#for sim in $SKIM_BG_SIG_BDT_OUTPUT_DIR/*; do
+for sim in $SKIM_DATA_BDT_OUTPUT_DIR/*; do    
+    filename=`echo $(basename $sim)`
     echo $filename
     echo here
     tb=$filename
@@ -60,15 +57,14 @@ for sim in $SKIM_BG_SIG_BDT_OUTPUT_DIR/*; do
       mkdir "$OUTPUT_DIR/$tb/stderr"
     fi
 
-    for bg_file in $SKIM_BG_SIG_BDT_OUTPUT_DIR/$tb/single/*; do
+    for data_file in $SKIM_DATA_BDT_OUTPUT_DIR/$tb/single/*; do
         echo "Will run:"
-        echo "error=${OUTPUT_DIR}/$tb/stderr/${bg_file_name}.err" 
-        bg_file_name=$(basename $bg_file .root)
-        echo $SCRIPTS_WD/run_skim_signal_dilepton_bdt_single.sh -i $bg_file -o ${OUTPUT_DIR}/$tb/single/${bg_file_name}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$tb 
+        data_file_name=$(basename $data_file .root)
+        echo $SCRIPTS_WD/run_skim_signal_dilepton_bdt_single.sh -i $data_file -o ${OUTPUT_DIR}/$tb/single/${data_file_name}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$tb 
 cat << EOM >> $output_file
-arguments = $SCRIPTS_WD/run_skim_signal_dilepton_bdt_single.sh -i $bg_file -o ${OUTPUT_DIR}/$tb/single/${bg_file_name}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$tb 
-error = ${OUTPUT_DIR}/$tb/stderr/${bg_file_name}.err
-output = ${OUTPUT_DIR}/$tb/stdout/${bg_file_name}.output
+arguments = $SCRIPTS_WD/run_skim_signal_dilepton_bdt_single.sh -i $data_file -o ${OUTPUT_DIR}/$tb/single/${data_file_name}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$tb 
+error = ${OUTPUT_DIR}/$tb/stderr/${data_file_name}.err
+output = ${OUTPUT_DIR}/$tb/stdout/${data_file_name}.output
 Queue
 EOM
     done

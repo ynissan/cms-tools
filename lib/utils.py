@@ -16,8 +16,8 @@ colorPalette = [
     { "name" : "purple", "fillColor" : "#f442f1", "lineColor" : "#a82ba6", "fillStyle" : 3444 },
     { "name" : "tourq", "fillColor" : "#00ffe9", "lineColor" : "#2a8c83", "fillStyle" : 3444 },
     { "name" : "orange", "fillColor" : "#ffbb00", "lineColor" : "#b78b12", "fillStyle" : 3444 },
-    { "name" : "red", "fillColor" : "#e60000", "lineColor" : "#c60000", "fillStyle" : 3444 },
     { "name" : "lightgreen", "fillColor" : "#42f498", "lineColor" : "#28a363", "fillStyle" : 3444 },
+    { "name" : "red", "fillColor" : "#e60000", "lineColor" : "#c60000", "fillStyle" : 3444 },
     { "name" : "black", "fillColor" : kBlack, "lineColor" : kBlack, "fillStyle" : 3444 },
 ]
 
@@ -42,7 +42,8 @@ signalCp = [
 
 compoundTypes = {
     "Rare" : ["WZZ", "WWZ", "ZZZ"],
-    "DiBoson" : ["WZ", "WW", "ZZ"]
+    "DiBoson" : ["WZ", "WW", "ZZ"],
+    "TTJets": ["ST_t-channel_antitop", "ST_t-channel_top", "TTJets_DiLept", "TTJets_SingleLeptFromT", "TTJets_SingleLeptFromTbar"]
 }
 
 bgOrder = {
@@ -52,8 +53,8 @@ bgOrder = {
     "ZJetsToNuNu" : 3,
     "DYJetsToLL" : 4,
     "TTJets" : 5,
-    "QCD" : 6,
-    "WJetsToLNu" : 7
+#    "QCD" : 6,
+    "WJetsToLNu" : 6
 }
 
 tl = TLatex()
@@ -69,9 +70,9 @@ originalfont = tl.GetTextFont()
 
 class UOFlowTH1F(TH1F):
     epsilon = 0.0000000001
-    #def Fill(self, x, weight=1):
+    def Fill(self, x, weight=1):
         #print "Called UOFlowTH1F Fill"
-     #   super(UOFlowTH1F, self).Fill(min(max(x,self.GetXaxis().GetBinLowEdge(1)+self.epsilon),self.GetXaxis().GetBinLowEdge(self.GetXaxis().GetNbins()+1)-self.epsilon),weight)
+        super(UOFlowTH1F, self).Fill(min(max(x,self.GetXaxis().GetBinLowEdge(1)+self.epsilon),self.GetXaxis().GetBinLowEdge(self.GetXaxis().GetNbins()+1)-self.epsilon),weight)
 
 
 def existsInCoumpoundType(key):
