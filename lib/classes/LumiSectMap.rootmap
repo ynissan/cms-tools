@@ -1,0 +1,3 @@
+[ LumiSectMap_C.so ]
+class LumiSectMap
+header LumiSectMap.h

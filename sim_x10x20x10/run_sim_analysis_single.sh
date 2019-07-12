@@ -34,6 +34,8 @@ module use -a /afs/desy.de/group/cms/modulefiles/
 module load cmssw
 cmsenv
 
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/afs/desy.de/user/n/nissanuv/cms-tools/lib/classes
+
 SCRIPT_PATH=$ANALYZER_PATH
 if [ -n "$SKIM" ]; then
 	echo "GOT SKIM"

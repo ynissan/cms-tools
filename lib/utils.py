@@ -3,11 +3,17 @@ import sys
 import numpy as np
 
 sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
+sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib/classes")
 from lib import histograms
 from lib import cuts
 import os, re
-
+import json
+import time
 import array
+import commands
+
+gSystem.Load('LumiSectMap_C')
+from ROOT import LumiSectMap
 
 colorPalette = [
     { "name" : "green", "fillColor" : "#0bb200", "lineColor" : "#099300", "fillStyle" : 3444 },
@@ -26,6 +32,22 @@ crossSections = {
     "dm13" : 1.21547,
     "dm20" : 1.21547
 }
+
+dyCrossSections = {
+    "DYJetsToLL_M-5to50_HT-70to100" : 301.2,
+    "DYJetsToLL_M-5to50_HT-100to200" : 224.2,
+    "DYJetsToLL_M-5to50_HT-200to400" : 37.2,
+    "DYJetsToLL_M-5to50_HT-400to600" : 3.581,
+    "DYJetsToLL_M-5to50_HT-600toInf": 1.124
+}
+
+# dyCrossSections = {
+#     "DYJetsToLL_M-5to50_HT-70to100" : 301.0,
+#     "DYJetsToLL_M-5to50_HT-100to200" : 224.4,
+#     "DYJetsToLL_M-5to50_HT-200to400" : 37.87,
+#     "DYJetsToLL_M-5to50_HT-400to600" : 3.628,
+#     "DYJetsToLL_M-5to50_HT-600toInf": 1.107
+# }
 
 LUMINOSITY = 35900. #pb^-1
 CMS_WD="/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src"
@@ -53,8 +75,8 @@ bgOrder = {
     "ZJetsToNuNu" : 3,
     "DYJetsToLL" : 4,
     "TTJets" : 5,
-#    "QCD" : 6,
-    "WJetsToLNu" : 6
+    "WJetsToLNu" : 6,
+    "QCD" : 7,
 }
 
 tl = TLatex()
@@ -175,10 +197,13 @@ def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, n
 
     if bgHist is None or bgHist.GetNhists() == 0:
         return newStack
-
+    #print "Num of hists: " + str(bgHist.GetNhists())
     bgHists = bgHist.GetHists()
 
     for i, hist in enumerate(bgHists):
+        if hist.GetMaximum() == 0:
+            print "Skipping " + hist.GetName()
+            continue
         newHist = hist.Clone()
         memory.append(newHist)
         colorI = i
@@ -187,6 +212,7 @@ def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, n
         formatHist(newHist, colorPalette[colorI], 0.35, noFillStyle)
         newStack.Add(newHist)
         if legend is not None:
+            #print "Adding to legend " + hist.GetName().split("_")[-1]
             legend.AddEntry(newHist, hist.GetName().split("_")[-1], 'F')
 
     return newStack
@@ -323,3 +349,64 @@ def histoStyler(h):
     h.GetXaxis().SetTitleOffset(1.0)
     h.GetYaxis().SetTitleOffset(0.9)
     #h.Sumw2()
+
+def getJsonLumiSection(lumiSecs):
+    lumiSecsDict = {}
+    lumiMap = lumiSecs.getMap()
+    for k, v in lumiMap:
+        lumiSecsDict[k] = []
+        lumis = []
+        for a in v: 
+            lumis.append(a)
+        lumis.sort()
+        #print "Before:"
+        #print lumis
+        for lumisec in lumis:
+            if len(lumiSecsDict[k]) > 0 and lumisec == lumiSecsDict[k][-1][-1]+1:
+                lumiSecsDict[k][-1][-1] = lumisec
+            else:
+                lumiSecsDict[k].append([lumisec, lumisec])
+        #print "After:"
+        #print lumiSecsDict[k]
+    #print "End:"
+    return json.dumps(lumiSecsDict)
+
+def get_lumi_from_bril(json_file_name, cern_username, retry=False):
+    status, out = commands.getstatusoutput('ps axu | grep "itrac5117-v.cern.ch:1012" | grep -v grep')
+    if status != 0:
+        print "Opening SSH tunnel for brilcalc..."
+        os.system("ssh -f -N -L 10121:itrac5117-v.cern.ch:10121 %s@lxplus.cern.ch" % cern_username)
+    else:
+        print "Existing tunnel for brilcalc found"
+    print "Getting lumi for %s..." % json_file_name
+    status, out = commands.getstatusoutput("export PATH=$HOME/.local/bin:/cvmfs/cms-bril.cern.ch/brilconda/bin:$PATH; brilcalc lumi --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_PHYSICS.json -u /fb -c offsite -i %s > %s.briloutput; grep '|' %s.briloutput | tail -n1" % (json_file_name, json_file_name, json_file_name))
+    if status != 0:
+        if not retry:
+            print "Trying to re-establish the tunnel..."
+            os.system("pkill -f itrac5117")
+            get_lumi_from_bril(json_file_name, cern_username, retry=True)
+        else:
+            print "Error while running brilcalc!"
+            if cern_username == "ynissan":
+                print "Did you set your CERN username with '--cern_username'?"
+        lumi = -1
+    else:
+        lumi = float(out.split("|")[-2])
+    
+    print "lumi:", lumi
+    return lumi
+
+def calculateLumiFromLumiSecs(lumiSecs):
+    json = getJsonLumiSection(lumiSecs)
+    #print "Json:"
+    #print json
+    timestamp = int(time.time())
+    tmpJsonFile = "/tmp/tmp_json_" + str(timestamp) + ".json"
+    with open(tmpJsonFile, "w") as fo:
+        fo.write(json)
+    #print "Created json file: " + tmpJsonFile
+    lumi = get_lumi_from_bril(tmpJsonFile, 'ynissan')
+    os.remove(tmpJsonFile)
+    return lumi
+
+

@@ -127,22 +127,20 @@ if hadd or all:
         if type not in sumTypes:
             sumTypes[type] = {}
         if bg:
-            if type == "DYJetsToLL":
-                sumTypes[type][types[2]] = True
-            elif type == "ST":
+            if type == "DYJetsToLL" or type == "ST":
                 sumTypes[type][types[1] + "_" + types[2]] = True
             else:
                 sumTypes[type][types[1]] = True
 
     print sumTypes 
-    #exit(0)
+
     for type in sumTypes:
         print type
         if bg:
             for typeRange in sumTypes[type]:
                 command = None
-                if type == "DYJetsToLL":
-                    command = "hadd -f " + OUTPOUT_TYPE_SUM + "/" + type + "_" + typeRange + ".root " + SINGLE_OUTPUT + "/Summer16." + type + "_*" + typeRange + "*.root"
+                if "M-5to50" in typeRange:
+                    command = "hadd -f " + OUTPOUT_TYPE_SUM + "/" + type + "_" + typeRange + ".root " + SINGLE_OUTPUT + "/RunIISummer16MiniAODv3." + type + "_*" + typeRange + "*.root"
                 else:
                     command = "hadd -f " + OUTPOUT_TYPE_SUM + "/" + type + "_" + typeRange + ".root " + SINGLE_OUTPUT + "/Summer16." + type + "_" + typeRange + "_*.root"
                 print "Perorming:", command 

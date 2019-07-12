@@ -10,6 +10,7 @@ import os
 import xml.etree.ElementTree as ET
 
 sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
+sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib/classes")
 from lib import analysis_ntuples
 from lib import analysis_tools
 from lib import utils
@@ -17,6 +18,9 @@ from lib import cut_optimisation
 
 gROOT.SetBatch(True)
 gStyle.SetOptStat(0)
+
+gSystem.Load('LumiSectMap_C')
+from ROOT import LumiSectMap
 
 ####### CMDLINE ARGUMENTS #########
 
@@ -317,10 +321,14 @@ def main():
         var_dilepHt[0] = analysis_ntuples.htJet25Leps(c, [l1,l2])
 
         tree.Fill()
-
-    if tree.GetEntries() != 0:
+    
+    
+    if iFile.GetListOfKeys().Contains("lumiSecs") or tree.GetEntries() != 0:
         fnew = TFile(output_file,'recreate')
         tree.Write()
+        if iFile.GetListOfKeys().Contains("lumiSecs"):
+            lumiSecs = iFile.Get("lumiSecs")
+            lumiSecs.Write("lumiSecs")
         #hHt.Write()
         fnew.Close()
     else:

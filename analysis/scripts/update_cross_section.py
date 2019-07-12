@@ -23,8 +23,11 @@ input_dir = args.input_dir[0]
 force = args.force
 bg = args.bg
 ######## END OF CMDLINE ARGUMENTS ########
-
-fileList = glob(input_dir + "/*");
+fileList = None
+if bg:
+    fileList = glob(input_dir + "/DYJetsToLL_M-5to50_*");
+else:
+    fileList = glob(input_dir + "/*");
 for fileName in fileList:
     if os.path.isdir(fileName): continue
     print "processing file " + fileName 
@@ -36,14 +39,14 @@ for fileName in fileList:
     t = f.Get("tEvent")
     t.GetEntry(0)
     fileBasename = None
+    cs = 1
     if bg:
         fileBasename = os.path.basename(fileName).split(".root")[0]
-        print fileBasename
-        exit(0)
+        cs = utils.dyCrossSections.get(fileBasename)
     else:
         fileBasename = os.path.basename(fileName).split("Chi20Chipm.root")[0]
+        cs = utils.getCrossSection(fileBasename)
     print "Getting cross section for ", fileBasename
-    cs = utils.getCrossSection(fileBasename)
     print "CrossSection:", cs
     var_CrossSection = np.zeros(1,dtype=float)
     var_CrossSection[0] = cs

@@ -19,14 +19,16 @@ gStyle.SetOptStat(0)
 gSystem.Load('LumiSectMap_C')
 from ROOT import LumiSectMap
 
-#lumi = 5746.370
-#weight = lumi / utils.LUMINOSITY
+lumi = 5746.370
+weight = lumi / utils.LUMINOSITY
 
 ####### CMDLINE ARGUMENTS #########
 
 parser = argparse.ArgumentParser(description='Plot skims for x1x2x1 process with BDTs.')
 parser.add_argument('-o', '--output_file', nargs=1, help='Output Filename', required=False)
 args = parser.parse_args()
+
+plot_data = True
 
 output_file = None
 # signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm3p28Chi20Chipm.root"
@@ -35,18 +37,22 @@ signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signa
 bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_dilepton_signal_bdt/dm7/single"
 data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_dilepton_signal_bdt/dm7/single"
 
-#bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum"
-#data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/single"
+bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum"
+data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/single"
 
-signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_signal_bdt_no_new_dy/single/higgsino_mu100_dm7p39Chi20Chipm.root"
-bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_signal_bdt_no_new_dy/dm7/single"
-data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_signal_bdt_no_new_dy/dm7/single"
+bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum_5"
 
+plot_data = False
+plot_signal = False
 
+#signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm12p84Chi20Chipm.root"
+#bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_dilepton_signal_bdt/high/single"
 
-plot_data = True
-plot_signal = True
+# signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signal_bdt_no_preselection/single/higgsino_mu100_dm7p39Chi20Chipm.root"
+# bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_dilepton_signal_bdt_no_preselection/dm7/single"
 
+#skim_dilepton_signal_bdt
+#skim_signal_bdt
 if args.output_file:
     output_file = args.output_file[0]
 else:
@@ -95,29 +101,29 @@ def metMht(c):
 #and c.dilepHt >= 250 and c.NJets <= 3 and c.mt1 <= 50
 
 histograms_defs = [
-    { "obs" : "invMass", "minX" : 0, "maxX" : 30, "bins" : 30 },
-    { "obs" : "trackBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
-    { "obs" : "univBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
-    #{ "obs" : "dilepBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
-    { "obs" : "tracks[0].Eta()", "minX" : -3, "maxX" : 3, "bins" : 30 },
-    { "obs" : "tracks[0].Pt()", "minX" : 0, "maxX" : 30, "bins" : 30 },
-    { "obs" : "tracks_dxyVtx[0]", "minX" : 0, "maxX" : 0.05, "bins" : 30 },
-    { "obs" : "tracks_dzVtx[0]", "minX" : 0, "maxX" : 0.05, "bins" : 30 },
-    { "obs" : "dileptonPt", "minX" : 0, "maxX" : 100, "bins" : 30 },
-    { "obs" : "deltaPhi", "minX" : 0, "maxX" : 3.2, "bins" : 30 },
-    { "obs" : "deltaEta", "minX" : 0, "maxX" : 4, "bins" : 30 },
-    { "obs" : "deltaR", "minX" : 0, "maxX" : 4, "bins" : 30 },
-    { "obs" : "pt3", "minX" : 0, "maxX" : 300, "bins" : 30 },
-    { "obs" : "mtautau", "minX" : 0, "maxX" : 1000, "bins" : 30 },
-    { "obs" : "mt1", "minX" : 0, "maxX" : 100, "bins" : 30 },
-    { "obs" : "mt2", "minX" : 0, "maxX" : 100, "bins" : 30 },
-    { "obs" : "DeltaEtaLeadingJetDilepton", "minX" : 0, "maxX" : 4, "bins" : 30 },
-    { "obs" : "DeltaPhiLeadingJetDilepton", "minX" : 0, "maxX" : 4, "bins" : 30 },
-    { "obs" : "dilepHt", "minX" : 0, "maxX" : 400, "bins" : 30 },
-    { "obs" : "NJets", "minX" : 0, "maxX" : 7, "bins" : 7 },
-    { "obs" : "NTracks", "minX" : 0, "maxX" : 7, "bins" : 7 },
-    { "obs" : "Met", "minX" : 100, "maxX" : 700, "bins" : 30 },
-    { "obs" : "Mht", "minX" : 100, "maxX" : 700, "bins" : 30 },
+    { "obs" : "invMass", "minX" : 0, "maxX" : 91.19 + 10.0, "bins" : 80 },
+    # { "obs" : "trackBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
+#     { "obs" : "univBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
+#     { "obs" : "dilepBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
+#     { "obs" : "tracks[0].Eta()", "minX" : -3, "maxX" : 3, "bins" : 30 },
+#     { "obs" : "tracks[0].Pt()", "minX" : 0, "maxX" : 30, "bins" : 30 },
+#     { "obs" : "tracks_dxyVtx[0]", "minX" : 0, "maxX" : 0.05, "bins" : 30 },
+#     { "obs" : "tracks_dzVtx[0]", "minX" : 0, "maxX" : 0.05, "bins" : 30 },
+#     { "obs" : "dileptonPt", "minX" : 0, "maxX" : 100, "bins" : 30 },
+#     { "obs" : "deltaPhi", "minX" : 0, "maxX" : 3.2, "bins" : 30 },
+#     { "obs" : "deltaEta", "minX" : 0, "maxX" : 4, "bins" : 30 },
+#     { "obs" : "deltaR", "minX" : 0, "maxX" : 4, "bins" : 30 },
+#     { "obs" : "pt3", "minX" : 0, "maxX" : 300, "bins" : 30 },
+#     { "obs" : "mtautau", "minX" : 0, "maxX" : 1000, "bins" : 30 },
+#     { "obs" : "mt1", "minX" : 0, "maxX" : 100, "bins" : 30 },
+#     { "obs" : "mt2", "minX" : 0, "maxX" : 100, "bins" : 30 },
+#     { "obs" : "DeltaEtaLeadingJetDilepton", "minX" : 0, "maxX" : 4, "bins" : 30 },
+#     { "obs" : "DeltaPhiLeadingJetDilepton", "minX" : 0, "maxX" : 4, "bins" : 30 },
+#     { "obs" : "dilepHt", "minX" : 0, "maxX" : 400, "bins" : 30 },
+#     { "obs" : "NJets", "minX" : 0, "maxX" : 7, "bins" : 7 },
+#     { "obs" : "NTracks", "minX" : 0, "maxX" : 7, "bins" : 7 },
+#     { "obs" : "Met", "minX" : 100, "maxX" : 700, "bins" : 30 },
+#     { "obs" : "Mht", "minX" : 100, "maxX" : 700, "bins" : 30 },
 ]
 
 cuts = [{"name":"none", "title": "No Cuts"},
@@ -135,7 +141,7 @@ cuts = [{"name":"none", "title": "No Cuts"},
 #         {"name":"step3", "title": "No Cuts", "funcs" : [step3]},
         ]
 
-def createPlots(rootfiles, type, histograms, weight=1):
+def createPlots(rootfiles, type, histograms):
     print "Processing "
     print rootfiles
     lumiSecs = LumiSectMap()
@@ -144,12 +150,12 @@ def createPlots(rootfiles, type, histograms, weight=1):
         print f
         rootFile = TFile(f)
         c = rootFile.Get('tEvent')
-        # if type == "data":
-#             lumis = rootFile.Get('lumiSecs')
-#             lumiMap = lumis.getMap()
-#             for k, v in lumiMap:
-#                 for a in v:
-#                     lumiSecs.insert(k, a)
+        if type == "data":
+            lumis = rootFile.Get('lumiSecs')
+            lumiMap = lumis.getMap()
+            for k, v in lumiMap:
+                for a in v:
+                    lumiSecs.insert(k, a)
                     
         nentries = c.GetEntries()
         print 'Analysing', nentries, "entries"
@@ -172,15 +178,12 @@ def createPlots(rootfiles, type, histograms, weight=1):
                     histName =  cut["name"] + "_" + hist_def["obs"] + "_" + type
                     hist = histograms[histName]
                     if type != "data":
-                        #print "Weight=", c.Weight
-                        #print "weight=", weight
                         hist.Fill(eval('c.' + hist_def["obs"]), c.Weight * weight)
                     else:
                         hist.Fill(eval('c.' + hist_def["obs"]), 1)
     
     if type == "data":
-        return 3.939170474
-        #return utils.calculateLumiFromLumiSecs(lumiSecs)
+        return utils.calculateLumiFromLumiSecs(lumiSecs)
             
 def main():
     
@@ -226,17 +229,14 @@ def main():
                 bgName = baseName + "_" + type
                 histograms[bgName] = utils.UOFlowTH1F(bgName, "", hist_def["bins"], hist_def["minX"], hist_def["maxX"])
     
+    if plot_signal:
+        createPlots([signal_dir], "signal", histograms)
     calculated_lumi = None
-    weight=0
     if plot_data:
         dataFiles = glob(data_dir + "/*")
         calculated_lumi = createPlots(dataFiles, "data", histograms)
         print "Calculated Luminosity: ", calculated_lumi
         weight = calculated_lumi * 1000 / utils.LUMINOSITY
-        print "Weight=", weight
-    
-    if plot_signal:
-        createPlots([signal_dir], "signal", histograms, weight)
     
     for type in sumTypes:
         if utils.existsInCoumpoundType(type):
@@ -245,7 +245,7 @@ def main():
         #    continue
         print "Summing type", type
         rootfiles = glob(bg_dir + "/*" + type + "*.root")
-        createPlots(rootfiles, type, histograms, weight)
+        createPlots(rootfiles, type, histograms)
     
     for cType in utils.compoundTypes:
         print "Creating compound type", cType
@@ -255,7 +255,7 @@ def main():
                 continue
             rootFiles.extend(glob(bg_dir + "/*" + type + "*.root"))
         if len(rootFiles):
-            createPlots(rootFiles, cType, histograms, weight)
+            createPlots(rootFiles, cType, histograms)
         else:
             print "**Couldn't find file for " + cType
     

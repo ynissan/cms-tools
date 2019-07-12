@@ -2,6 +2,7 @@
 
 # CONSTS
 . "/afs/desy.de/user/n/nissanuv/cms-tools/bg/def.sh"
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/afs/desy.de/user/n/nissanuv/cms-tools/lib/classes
 
 # necessary for running cmsenv
 shopt -s expand_aliases

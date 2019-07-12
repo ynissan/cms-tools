@@ -58,26 +58,31 @@ if [ ! -d "$ERR_OUTPUT" ]; then
 fi
 
 files=()
-    for type in ${BG_TYPES[@]}; do 
+for type in ${BG_TYPES[@]}; do 
+    echo "Checking type $type"
     if [ "$type" = "DYJetsToLL" ]; then
         files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_M-50_HT-*)
-    elif [ "$type" = "WJetsToLNu" ]; then
-        files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_HT*)
-    elif [ "$type" = "ZJetsToNuNu" ]; then
-        files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_HT*)
-    elif [ "$type" = "TTJets" ]; then
-        files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_TuneCUETP8M1*)
+        files=("${files[@]}" ${BG_NTUPLES2}/RunIISummer16MiniAODv3.DYJetsToLL_M-5to50*)
     else
-        files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_*)
+        continue
     fi
+    # elif [ "$type" = "WJetsToLNu" ]; then
+#         files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_HT*)
+#     elif [ "$type" = "ZJetsToNuNu" ]; then
+#         files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_HT*)
+#     elif [ "$type" = "TTJets" ]; then
+#         files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_TuneCUETP8M1*)
+#     else
+#         files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_*)
+#     fi
 done
 
-madHtFilesGt600=()
-madHtFilesLt600=()
-for type in ${MAD_HT_SPLIT_TYPES[@]}; do 
-    madHtFilesGt600=("${madHtFilesGt600[@]}" ${BG_NTUPLES}/Summer16*${type}*_HT-*)
-    madHtFilesLt600=("${madHtFilesLt600[@]}" ${BG_NTUPLES}/Summer16*${type}_TuneCUETP8M1*)
-done
+# madHtFilesGt600=()
+# madHtFilesLt600=()
+# for type in ${MAD_HT_SPLIT_TYPES[@]}; do 
+#     madHtFilesGt600=("${madHtFilesGt600[@]}" ${BG_NTUPLES}/Summer16*${type}*_HT-*)
+#     madHtFilesLt600=("${madHtFilesLt600[@]}" ${BG_NTUPLES}/Summer16*${type}_TuneCUETP8M1*)
+# done
 
 timestamp=$(date +%Y%m%d_%H%M%S%N)
 output_file="${WORK_DIR}/condor_submut.${timestamp}"
@@ -130,32 +135,7 @@ Queue
 EOM
 fi
 
-# if [ $file_limit -gt 0 ]; then
-#     #condor_submit $output_file
-#     exit 0
-# fi
-
-# for fullname in "${madHtFilesGt600[@]}"; do
-# 
-# cat << EOM >> $output_file
-# arguments = $BG_SCRIPTS/run_bg_analysis_single.sh --madHTgt 600 -i $fullname ${POSITIONAL[@]}
-# error = $ERR_OUTPUT/$(basename $fullname .root).err
-# output = $STD_OUTPUT/$(basename $fullname .root).output
-# Queue
-# EOM
-# done
-# 
-# for fullname in "${madHtFilesLt600[@]}"; do
-# 
-# cat << EOM >> $output_file
-# arguments = $BG_SCRIPTS/run_bg_analysis_single.sh --madHTlt 600 -i $fullname ${POSITIONAL[@]}
-# error = $ERR_OUTPUT/$(basename $fullname .root).err
-# output = $STD_OUTPUT/$(basename $fullname .root).output
-# Queue
-# EOM
-# done
-
 echo SUBMITTING JOBS....
 
 condor_submit $output_file
-#rm $output_file
+rm $output_file

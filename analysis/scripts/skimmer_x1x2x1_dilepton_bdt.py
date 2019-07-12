@@ -10,6 +10,7 @@ import os
 import xml.etree.ElementTree as ET
 
 sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
+sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib/classes")
 from lib import analysis_ntuples
 from lib import analysis_tools
 from lib import utils
@@ -17,6 +18,9 @@ from lib import cut_optimisation
 
 gROOT.SetBatch(True)
 gStyle.SetOptStat(0)
+
+gSystem.Load('LumiSectMap_C')
+from ROOT import LumiSectMap
 
 ####### CMDLINE ARGUMENTS #########
 
@@ -99,15 +103,19 @@ def main():
             v[0] = eval("c." + k)
         dilep_tmva_value = univ_bdt_reader.EvaluateMVA("BDT")
         # Selection
-        if dilep_tmva_value < -0.3 or c.Met < 200 or c.univBDT < -0.4 or c.tracks[0].Pt() < 3 or c.tracks[0].Pt() > 15 or c.tracks_dzVtx[0] > 0.1 or c.tracks_dxyVtx[0] > 0.1 or abs(c.tracks[0].Eta()) > 2.4:
+        #if dilep_tmva_value < -0.3 or c.Met < 200 or c.univBDT < -0.4 or c.tracks[0].Pt() < 3 or c.tracks[0].Pt() > 15 or c.tracks_dzVtx[0] > 0.1 or c.tracks_dxyVtx[0] > 0.1 or abs(c.tracks[0].Eta()) > 2.4:
+        if dilep_tmva_value < -0.3 or c.Met < 200 or c.univBDT < -0.4 or c.tracks[0].Pt() < 3 or c.tracks[0].Pt() > 15 or abs(c.tracks[0].Eta()) > 2.4:
             continue
         var_dilepBDT[0] = dilep_tmva_value
 
         tree.Fill()
 
-    if tree.GetEntries() != 0:
+    if iFile.GetListOfKeys().Contains("lumiSecs") or tree.GetEntries() != 0:
         fnew = TFile(output_file,'recreate')
         tree.Write()
+        if iFile.GetListOfKeys().Contains("lumiSecs"):
+            lumiSecs = iFile.Get("lumiSecs")
+            lumiSecs.Write("lumiSecs")
         #hHt.Write()
         fnew.Close()
     else:

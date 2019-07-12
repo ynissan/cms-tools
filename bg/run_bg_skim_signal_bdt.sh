@@ -57,6 +57,7 @@ for sim in $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
     fi
 
     #for bg_file in $SKIM_OUTPUT_DIR/sum/type_sum/*ZJetsToNuNu_HT-100To200*; do
+    #for bg_file in $SKIM_OUTPUT_DIR/sum/type_sum/WW_TuneCUETP8M1*; do
     for bg_file in $SKIM_OUTPUT_DIR/sum/type_sum/*; do
         echo "Will run:"
         bg_file_name=$(basename $bg_file .root)
