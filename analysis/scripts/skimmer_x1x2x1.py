@@ -219,7 +219,8 @@ def main():
             hHtAfterMadHt.Fill(c.madHT)
 
         nj, btags, ljet = analysis_ntuples.numberOfJets25Pt2_4Eta_Loose(c)
-        if not ljet:
+        if ljet is None:
+            print "No ljet:",ljet 
             continue
         nL = c.Electrons.size() + c.Muons.size()
     
@@ -254,8 +255,8 @@ def main():
         var_NLGenZ[0] = nLGenZ
     
         #### PRECUTS ###
-        #if not signal:
-        #    if not analysis_ntuples.passed2016BTrigger(c, data): continue
+        if not signal:
+            if not analysis_ntuples.passed2016BTrigger(c, data): continue
         
         afterMET += 1
         if btags > 0: continue
@@ -266,8 +267,8 @@ def main():
         var_MinDeltaPhiMetJets[0] = analysis_ntuples.minDeltaPhiMetJets25Pt2_4Eta(c)
         var_MinDeltaPhiMhtJets[0] = analysis_ntuples.minDeltaPhiMhtJets25Pt2_4Eta(c)
         if var_MinDeltaPhiMhtJets[0] < 0.5: continue
-        #if nL < 1:
-        #    continue
+        if nL < 1:
+            continue
         if c.MHT < 100: continue
         if c.MET < 120: continue
         ## END PRECUTS##

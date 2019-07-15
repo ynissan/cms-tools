@@ -4,6 +4,7 @@ shopt -s nullglob
 shopt -s expand_aliases
 
 . "/afs/desy.de/user/n/nissanuv/cms-tools/bg/def.sh"
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/afs/desy.de/user/n/nissanuv/cms-tools/lib/classes
 
 #---------- GET OPTIONS ------------
 POSITIONAL=()

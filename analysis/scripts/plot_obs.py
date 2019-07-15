@@ -38,9 +38,9 @@ data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_dilepton_signal_bd
 #bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum"
 #data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/single"
 
-signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_signal_bdt_no_new_dy/single/higgsino_mu100_dm7p39Chi20Chipm.root"
-bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_signal_bdt_no_new_dy/dm7/single"
-data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_signal_bdt_no_new_dy/dm7/single"
+#signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_signal_bdt_no_new_dy/single/higgsino_mu100_dm7p39Chi20Chipm.root"
+#bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_signal_bdt_no_new_dy/dm7/single"
+#data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_signal_bdt_no_new_dy/dm7/single"
 
 
 
@@ -65,6 +65,9 @@ def dilepBDT(c):
 def custom_cool(c):
     return c.dilepBDT >= 0.1 and c.univBDT >= 0 and c.tracks_dzVtx[0] <= 0.2 and c.tracks_dxyVtx[0] < 0.2 and c.tracks[0].Pt() < 15 and c.tracks[0].Pt() > 3 and abs(c.tracks[0].Eta()) < 2.4
 
+def dilep_skim(c):
+    return c.dilepBDT >= -0.3 and c.Met >= 200 and c.univBDT >= -0.4 and c.tracks[0].Pt() >= 3 and c.tracks[0].Pt() < 15 and c.tracks_dzVtx[0] < 0.1 and c.tracks_dxyVtx[0] < 0.1 and abs(c.tracks[0].Eta()) <= 2.4
+    
 def custom(c):
     return c.Met > 200 and c.dilepBDT >= 0.1 and c.univBDT >= 0 and c.tracks_dzVtx[0] <= 0.03 and c.tracks_dxyVtx[0] <= 0.03 and c.tracks[0].Pt() < 10 and c.tracks[0].Pt() > 3 and abs(c.tracks[0].Eta()) < 2.4 and c.dileptonPt <= 35 and c.pt3 >= 100
 
@@ -98,7 +101,7 @@ histograms_defs = [
     { "obs" : "invMass", "minX" : 0, "maxX" : 30, "bins" : 30 },
     { "obs" : "trackBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
     { "obs" : "univBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
-    #{ "obs" : "dilepBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
+    { "obs" : "dilepBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
     { "obs" : "tracks[0].Eta()", "minX" : -3, "maxX" : 3, "bins" : 30 },
     { "obs" : "tracks[0].Pt()", "minX" : 0, "maxX" : 30, "bins" : 30 },
     { "obs" : "tracks_dxyVtx[0]", "minX" : 0, "maxX" : 0.05, "bins" : 30 },
@@ -121,13 +124,14 @@ histograms_defs = [
 ]
 
 cuts = [{"name":"none", "title": "No Cuts"},
-#        {"name":"invMass", "title": "Inv Mass < 30", "funcs" : [invMass]},
+        {"name":"dilep_skim", "title": "dilep_skim", "funcs" : [dilep_skim]},     
+        {"name":"invMass", "title": "Inv Mass < 30", "funcs" : [invMass]},
 #        {"name":"metMht", "title": "MET > 200, Mht > 100", "funcs" : [metMht]},
 #         {"name":"trackBDT", "title": "trackBDT >= 0.2", "funcs":[trackBDT]},
 #         {"name":"univBDT", "title": "univBDT >= 0", "funcs":[univBDT]},
 #         {"name":"dilepBDT", "title": "dilepBDT >= 0.1", "funcs":[dilepBDT]}
-#         {"name":"custom", "title": "No Cuts", "funcs" : [custom]},
-#         {"name":"custom_dpg", "title": "No Cuts", "funcs" : [custom_dpg]},
+         {"name":"custom", "title": "No Cuts", "funcs" : [custom]},
+         {"name":"custom_dpg", "title": "No Cuts", "funcs" : [custom_dpg]},
 #         {"name":"step", "title": "No Cuts", "funcs" : [step]},
 #         {"name":"step2", "title": "No Cuts", "funcs" : [step2]},
 #         {"name":"step2_200_250", "title": "No Cuts", "funcs" : [step2_200_250]},
@@ -144,12 +148,12 @@ def createPlots(rootfiles, type, histograms, weight=1):
         print f
         rootFile = TFile(f)
         c = rootFile.Get('tEvent')
-        # if type == "data":
-#             lumis = rootFile.Get('lumiSecs')
-#             lumiMap = lumis.getMap()
-#             for k, v in lumiMap:
-#                 for a in v:
-#                     lumiSecs.insert(k, a)
+        if type == "data":
+             lumis = rootFile.Get('lumiSecs')
+             lumiMap = lumis.getMap()
+             for k, v in lumiMap:
+                 for a in v:
+                     lumiSecs.insert(k, a)
                     
         nentries = c.GetEntries()
         print 'Analysing', nentries, "entries"
@@ -179,7 +183,8 @@ def createPlots(rootfiles, type, histograms, weight=1):
                         hist.Fill(eval('c.' + hist_def["obs"]), 1)
     
     if type == "data":
-        return 3.939170474
+        #return 3.939170474
+        return 5.746370
         #return utils.calculateLumiFromLumiSecs(lumiSecs)
             
 def main():
@@ -232,7 +237,7 @@ def main():
         dataFiles = glob(data_dir + "/*")
         calculated_lumi = createPlots(dataFiles, "data", histograms)
         print "Calculated Luminosity: ", calculated_lumi
-        weight = calculated_lumi * 1000 / utils.LUMINOSITY
+        weight = calculated_lumi * 1000
         print "Weight=", weight
     
     if plot_signal:

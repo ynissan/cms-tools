@@ -63,18 +63,15 @@ for type in ${BG_TYPES[@]}; do
     if [ "$type" = "DYJetsToLL" ]; then
         files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_M-50_HT-*)
         files=("${files[@]}" ${BG_NTUPLES2}/RunIISummer16MiniAODv3.DYJetsToLL_M-5to50*)
-    else
-        continue
-    fi
-    # elif [ "$type" = "WJetsToLNu" ]; then
-#         files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_HT*)
-#     elif [ "$type" = "ZJetsToNuNu" ]; then
-#         files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_HT*)
-#     elif [ "$type" = "TTJets" ]; then
-#         files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_TuneCUETP8M1*)
-#     else
-#         files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_*)
-#     fi
+        elif [ "$type" = "WJetsToLNu" ]; then
+            files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_HT*)
+        elif [ "$type" = "ZJetsToNuNu" ]; then
+            files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_HT*)
+        elif [ "$type" = "TTJets" ]; then
+            files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_TuneCUETP8M1*)
+        else
+            files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_*)
+        fi
 done
 
 # madHtFilesGt600=()

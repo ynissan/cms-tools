@@ -35,7 +35,7 @@ for f in fileList:
  	t.GetEntry(0)
  	cs = t.CrossSection
  	print "CrossSection:", cs
- 	weight = (utils.LUMINOSITY * cs)/numOfEvents
+ 	weight = cs/numOfEvents
  	print "weight:", weight
  	var_Weight = np.zeros(1,dtype=float)
  	var_Weight[0] = weight
