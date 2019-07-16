@@ -7,3 +7,5 @@ bg/output/sum/type_sum/**
 sim_x10x20x10/simData*
 analysis/output/**
 *.pyc
+*.pdf
+*.root

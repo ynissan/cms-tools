@@ -55,7 +55,7 @@ for sim in $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
     fi
 
     #for bg_file in $SKIM_OUTPUT_DIR/sum/type_sum/*ZJetsToNuNu_HT-100To200*; do
-    for data_file in $SKIM_DATA_OUTPUT_DIR/single/*; do
+    for data_file in $SKIM_DATA_OUTPUT_DIR/sum/*; do
         echo "Will run:"
         data_file_name=$(basename $data_file .root)
         echo $SCRIPTS_WD/run_skim_signal_bdt_single.sh -i $data_file -o ${OUTPUT_DIR}/$filename/single/${data_file_name}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt

@@ -62,7 +62,7 @@ for type in ${BG_TYPES[@]}; do
     echo "Checking type $type"
     if [ "$type" = "DYJetsToLL" ]; then
         files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_M-50_HT-*)
-        files=("${files[@]}" ${BG_NTUPLES2}/RunIISummer16MiniAODv3.DYJetsToLL_M-5to50*)
+        files=("${files[@]}" ${BG_NTUPLES}/RunIISummer16MiniAODv3.DYJetsToLL_M-5to50*)
         elif [ "$type" = "WJetsToLNu" ]; then
             files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_HT*)
         elif [ "$type" = "ZJetsToNuNu" ]; then
@@ -100,6 +100,12 @@ input_files=""
 files_per_job=20
 
 for fullname in "${files[@]}"; do
+    name=$(basename $fullname)
+    #echo "Checking $FILE_OUTPUT/$name"
+    if [ -f "$FILE_OUTPUT/$name" ]; then
+        #echo "$name exist. Skipping..."
+        continue
+    fi
     input_files="$input_files $fullname"
     ((count+=1))
     if [ $(($count % $files_per_job)) == 0 ]; then

@@ -125,13 +125,13 @@ histograms_defs = [
 
 cuts = [{"name":"none", "title": "No Cuts"},
         {"name":"dilep_skim", "title": "dilep_skim", "funcs" : [dilep_skim]},     
-        {"name":"invMass", "title": "Inv Mass < 30", "funcs" : [invMass]},
+        {"name":"invMass", "title": "Inv Mass < 30", "funcs" : [invMass, dilep_skim]},
 #        {"name":"metMht", "title": "MET > 200, Mht > 100", "funcs" : [metMht]},
 #         {"name":"trackBDT", "title": "trackBDT >= 0.2", "funcs":[trackBDT]},
 #         {"name":"univBDT", "title": "univBDT >= 0", "funcs":[univBDT]},
 #         {"name":"dilepBDT", "title": "dilepBDT >= 0.1", "funcs":[dilepBDT]}
-         {"name":"custom", "title": "No Cuts", "funcs" : [custom]},
-         {"name":"custom_dpg", "title": "No Cuts", "funcs" : [custom_dpg]},
+         {"name":"custom", "title": "No Cuts", "funcs" : [custom, dilep_skim]},
+         {"name":"custom_dpg", "title": "No Cuts", "funcs" : [custom_dpg, dilep_skim]},
 #         {"name":"step", "title": "No Cuts", "funcs" : [step]},
 #         {"name":"step2", "title": "No Cuts", "funcs" : [step2]},
 #         {"name":"step2_200_250", "title": "No Cuts", "funcs" : [step2_200_250]},
@@ -149,12 +149,10 @@ def createPlots(rootfiles, type, histograms, weight=1):
         rootFile = TFile(f)
         c = rootFile.Get('tEvent')
         if type == "data":
-             lumis = rootFile.Get('lumiSecs')
-             lumiMap = lumis.getMap()
-             for k, v in lumiMap:
-                 for a in v:
-                     lumiSecs.insert(k, a)
-                    
+            lumis = rootFile.Get('lumiSecs')
+            col = TList()
+            col.Add(lumis)
+            lumiSecs.Merge(col)
         nentries = c.GetEntries()
         print 'Analysing', nentries, "entries"
         for ientry in range(nentries):
@@ -181,10 +179,11 @@ def createPlots(rootfiles, type, histograms, weight=1):
                         hist.Fill(eval('c.' + hist_def["obs"]), c.Weight * weight)
                     else:
                         hist.Fill(eval('c.' + hist_def["obs"]), 1)
+        rootFile.Close()
     
     if type == "data":
         #return 3.939170474
-        return 5.746370
+        return 35.574589421
         #return utils.calculateLumiFromLumiSecs(lumiSecs)
             
 def main():

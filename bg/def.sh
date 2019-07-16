@@ -14,11 +14,10 @@ declare -A SIM_GROUP=(["low"]="dm2p dm3p dm4p"\
 
 NEW_SIM_DIR="/pnfs/desy.de/cms/tier2/store/user/sbein/CommonNtuples"
 NEWEST_SIM_DIR="/pnfs/desy.de/cms/tier2/store/user/sbein/NtupleHub/Production2016v2"
-BG_NTUPLES="/pnfs/desy.de/cms/tier2/store/user/vormwald/NtupleHub/ProductionRun2v3"
-BG_NTUPLES2="/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/ProductionRun2v3/"
+BG_NTUPLES="/pnfs/desy.de/cms/tier2/store/user/*/NtupleHub/ProductionRun2v*"
 NEWESTEST_SIM_DIR="/nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggsino/M1M2Scan/ntuple_sidecar/"
 SIM_NTUPLES_DIR="/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/ntuples_sum"
-DATA_NTUPLES_DIR="/pnfs/desy.de/cms/tier2/store/user/jarieger/NtupleHub/ProductionRun2v3"
+DATA_NTUPLES_DIR="/pnfs/desy.de/cms/tier2/store/user/*/NtupleHub/ProductionRun2v*"
 BG_TYPES=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays DYJetsToLL WJetsToLNu ZJetsToNuNu WZZ WWZ WW WZ ZZZ ZZ TTWJetsToLNu)
 #BG_TYPES=(QCD)
 RARE=(WZZ WWZ ZZZ)

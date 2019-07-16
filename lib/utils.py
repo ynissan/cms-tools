@@ -391,6 +391,7 @@ def get_lumi_from_bril(json_file_name, cern_username, retry=False):
                 print "Did you set your CERN username with '--cern_username'?"
         lumi = -1
     else:
+        print "Output: " + out
         lumi = float(out.split("|")[-2])
     
     print "lumi:", lumi
@@ -404,9 +405,9 @@ def calculateLumiFromLumiSecs(lumiSecs):
     tmpJsonFile = "/tmp/tmp_json_" + str(timestamp) + ".json"
     with open(tmpJsonFile, "w") as fo:
         fo.write(json)
-    #print "Created json file: " + tmpJsonFile
+    print "Created json file: " + tmpJsonFile
     lumi = get_lumi_from_bril(tmpJsonFile, 'ynissan')
-    os.remove(tmpJsonFile)
+    #os.remove(tmpJsonFile)
     return lumi
 
 

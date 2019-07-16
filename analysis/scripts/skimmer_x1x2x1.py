@@ -71,7 +71,7 @@ def main():
     hHtAfterMadHt = TH1F('hHtAfterMadHt','hHtAfterMadHt',100,0,3000)
     hHt.Sumw2()
     
-    runs = {}
+    lumiSecs = LumiSectMap()
     
     var_Met = np.zeros(1,dtype=float)
     var_METPhi = np.zeros(1,dtype=float)
@@ -201,12 +201,7 @@ def main():
             if (madHTgt is not None and c.madHT < madHTgt) or (madHTlt is not None and c.madHT > madHTlt):
                 rightProcess = False
         elif data:
-            runnum = c.RunNum
-            lumisec = c.LumiBlockNum
-            if runnum not in runs:
-                runs[runnum] = []
-            if lumisec not in runs[runnum]:
-                runs[runnum].append(lumisec)
+            lumiSecs.insert(c.RunNum, c.LumiBlockNum)
 
         hHt.Fill(c.HT)
         #print "crossSection=" + str(crossSection)
@@ -217,10 +212,11 @@ def main():
         count += 1
         if not data:
             hHtAfterMadHt.Fill(c.madHT)
-
+        
+        
         nj, btags, ljet = analysis_ntuples.numberOfJets25Pt2_4Eta_Loose(c)
         if ljet is None:
-            print "No ljet:",ljet 
+            #print "No ljet:",ljet 
             continue
         nL = c.Electrons.size() + c.Muons.size()
     
@@ -369,19 +365,6 @@ def main():
     hHtAfterMadHt.Write()
     
     if data:
-        lumiSecs = LumiSectMap()
-        print "*** " + lumiSecs.ClassName()
-        print "From python:"
-        print runs
-        for run in runs:
-            #print run
-            for lumi in runs[run]:
-                lumiSecs.insert(run, lumi)
-    
-        #lumiMap = lumiSecs.getMap()
-        #for k, v in lumiMap:
-        #    for a in v: 
-        #        print "Key: " + str(k) + " Val: " + str(a)
         lumiSecs.Write("lumiSecs") 
     
     fnew.Close()

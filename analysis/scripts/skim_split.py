@@ -11,11 +11,15 @@ import numpy as np
 import os
 
 sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
+sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib/classes")
 from lib import histograms
 from lib import utils
 from lib import cuts
 from lib import analysis_ntuples
 from lib import analysis_tools
+
+gSystem.Load('LumiSectMap_C')
+from ROOT import LumiSectMap
 
 ####### CMDLINE ARGUMENTS #########
 
