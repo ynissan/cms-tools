@@ -35,10 +35,10 @@ if args.input_dir:
 
 lumiSecs = LumiSectMap()
 
-data_files = glob(input_dir + "/Run2016B*MET*")
+data_files = glob(input_dir + "/*")
     
 for f in data_files: 
-    #print f
+    print f
     rootFile = TFile(f)
     if rootFile.GetListOfKeys().Contains("lumiSecs"):
         lumis = rootFile.Get('lumiSecs')

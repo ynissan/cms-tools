@@ -14,16 +14,16 @@ declare -A SIM_GROUP=(["low"]="dm2p dm3p dm4p"\
 
 NEW_SIM_DIR="/pnfs/desy.de/cms/tier2/store/user/sbein/CommonNtuples"
 NEWEST_SIM_DIR="/pnfs/desy.de/cms/tier2/store/user/sbein/NtupleHub/Production2016v2"
-BG_NTUPLES="/pnfs/desy.de/cms/tier2/store/user/*/NtupleHub/ProductionRun2v*"
+BG_NTUPLES="/pnfs/desy.de/cms/tier2/store/user/*/NtupleHub/ProductionRun2v[34]"
 NEWESTEST_SIM_DIR="/nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggsino/M1M2Scan/ntuple_sidecar/"
 SIM_NTUPLES_DIR="/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/ntuples_sum"
-DATA_NTUPLES_DIR="/pnfs/desy.de/cms/tier2/store/user/*/NtupleHub/ProductionRun2v*"
+DATA_NTUPLES_DIR="/pnfs/desy.de/cms/tier2/store/user/*/NtupleHub/ProductionRun2v[34]"
 BG_TYPES=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays DYJetsToLL WJetsToLNu ZJetsToNuNu WZZ WWZ WW WZ ZZZ ZZ TTWJetsToLNu)
-#BG_TYPES=(QCD)
 RARE=(WZZ WWZ ZZZ)
 DiBoson=(WZ WW ZZ)
 #MAD_HT_SPLIT_TYPES=(TTJets)
 MAD_HT_SPLIT_TYPES=()
+FILE_EXCLUDE_LIST=(-100to20_ -10to200_ -200to40_ -20to400_ -40to600_ -600to80_ -20To400_ -400To60_ -40To600_ HT100to1500_ HT1500to200_ HT200toInf_ -200toInf_ -80to1200_ -200To40_ -250toInf_ -1200to250_ -800to120_ -120to2500_ 1000to150_ -60ToInf_ 400to60_ 100To20_ HT150to2000_ HT200to30_ HT1000to150_ Run218 Run217 Run216)
 WORK_DIR="/tmp"
 CMS_WD="/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src"
 CMS_TOOLS="/afs/desy.de/user/n/nissanuv/cms-tools"

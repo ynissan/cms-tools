@@ -48,10 +48,10 @@ data = args.data
 
 input_file = None
 if args.input_file:
-    input_file = args.input_file[0]
+    input_file = args.input_file[0].strip()
 output_file = None
 if args.output_file:
-    output_file = args.output_file[0]
+    output_file = args.output_file[0].strip()
 
 if (bg and signal):
     signal = True
@@ -79,15 +79,22 @@ def main():
     var_NJets = np.zeros(1,dtype=int)
     var_BTags = np.zeros(1,dtype=int)
     var_Ht = np.zeros(1,dtype=float)
+    var_madHT = np.zeros(1,dtype=float)
     var_Mht = np.zeros(1,dtype=float)
     var_MetDHt = np.zeros(1,dtype=float)
     #var_MetDHt2 = np.zeros(1,dtype=float)
     var_Mt2 = np.zeros(1,dtype=float)
     var_Electrons = ROOT.std.vector(TLorentzVector)()
     var_Electrons_charge = ROOT.std.vector(int)()
+    var_Electrons_mediumID = ROOT.std.vector(bool)()
+    var_Electrons_passIso = ROOT.std.vector(bool)()
+    var_Electrons_tightID = ROOT.std.vector(bool)()
     var_Muons = ROOT.std.vector(TLorentzVector)()
-    var_Muons_charge    = ROOT.std.vector(int)()
-    var_GenParticles    = ROOT.std.vector(TLorentzVector)()
+    var_Muons_charge = ROOT.std.vector(int)()
+    var_Muons_mediumID = ROOT.std.vector(bool)()
+    var_Muons_passIso = ROOT.std.vector(bool)()
+    var_Muons_tightID = ROOT.std.vector(bool)()
+    var_GenParticles = ROOT.std.vector(TLorentzVector)()
     var_GenParticles_ParentId = ROOT.std.vector(int)()
     var_GenParticles_ParentIdx = ROOT.std.vector(int)()
     var_GenParticles_PdgId = ROOT.std.vector(int)()
@@ -96,6 +103,7 @@ def main():
     var_NL = np.zeros(1,dtype=int)
     var_NLGen = np.zeros(1,dtype=int)
     var_NLGenZ = np.zeros(1,dtype=int)
+    var_puWeight = np.zeros(1,dtype=float)
 
     var_Jets = ROOT.std.vector(TLorentzVector)()
 
@@ -128,6 +136,7 @@ def main():
     tEvent.Branch('NLGen', var_NLGen,'NLGen/I')
     tEvent.Branch('NLGenZ', var_NLGenZ,'NLGenZ/I')
     tEvent.Branch('Ht', var_Ht,'Ht/D')
+    tEvent.Branch('madHT', var_madHT,'madHT/D')
     tEvent.Branch('Mht', var_Mht,'Mht/D')
     tEvent.Branch('MetDHt', var_MetDHt,'MetDHt/D')
     #tEvent.Branch('MetDHt2', var_MetDHt2,'MetDHt2/D')
@@ -137,7 +146,14 @@ def main():
     tEvent.Branch('Electrons_charge', 'std::vector<int>', var_Electrons_charge)
     tEvent.Branch('Muons', 'std::vector<TLorentzVector>', var_Muons)
     tEvent.Branch('Muons_charge', 'std::vector<int>', var_Muons_charge)
-
+    
+    tEvent.Branch('Electrons_mediumID', 'std::vector<bool>', var_Electrons_mediumID)
+    tEvent.Branch('Electrons_passIso', 'std::vector<bool>', var_Electrons_passIso)
+    tEvent.Branch('Electrons_tightID', 'std::vector<bool>', var_Electrons_tightID)
+    tEvent.Branch('Muons_mediumID', 'std::vector<bool>', var_Muons_mediumID)
+    tEvent.Branch('Muons_passIso', 'std::vector<bool>', var_Muons_passIso)
+    tEvent.Branch('Muons_tightID', 'std::vector<bool>', var_Muons_tightID)
+    
     tEvent.Branch('GenParticles', 'std::vector<TLorentzVector>', var_GenParticles)
     tEvent.Branch('GenParticles_ParentId', 'std::vector<int>', var_GenParticles_ParentId)
     tEvent.Branch('GenParticles_ParentIdx', 'std::vector<int>', var_GenParticles_ParentIdx)
@@ -175,7 +191,7 @@ def main():
     nLMap = {}
     nLGenMap = {}
     nLGenMapZ = {}
-
+    baseFileName = os.path.basename(input_file)
     crossSection = 1
     if signal:
         filename = (os.path.basename(input_file).split("Chi20Chipm")[0]).replace("p", ".")
@@ -198,8 +214,7 @@ def main():
             rightProcess = analysis_ntuples.isX1X2X1Process(c)
         elif bg:
             crossSection = c.CrossSection
-            if (madHTgt is not None and c.madHT < madHTgt) or (madHTlt is not None and c.madHT > madHTlt):
-                rightProcess = False
+            rightProcess = utils.madHtCheck(baseFileName, c.madHT)
         elif data:
             lumiSecs.insert(c.RunNum, c.LumiBlockNum)
 
@@ -281,6 +296,13 @@ def main():
         var_BTags[0] = btags
         var_LeadingJetPt[0] = c.Jets[ljet].Pt()
         var_LeadingJet = c.Jets[ljet]
+        
+        if not data:
+            var_puWeight[0] = c.puWeight
+            var_madHT[0] = c.madHT
+        else:
+            var_puWeight[0] = 1
+            var_madHT[0] = 1
     
         var_Electrons = c.Electrons
         var_Electrons_charge= c.Electrons_charge
@@ -316,6 +338,14 @@ def main():
         tEvent.SetBranchAddress('Electrons_charge', var_Electrons_charge)
         tEvent.SetBranchAddress('Muons', var_Muons)
         tEvent.SetBranchAddress('Muons_charge', var_Muons_charge)
+        
+        tEvent.SetBranchAddress('Electrons_mediumID', var_Electrons_mediumID)
+        tEvent.SetBranchAddress('Electrons_passIso', var_Electrons_passIso)
+        tEvent.SetBranchAddress('Electrons_tightID', var_Electrons_tightID)
+        tEvent.SetBranchAddress('Muons_mediumID', var_Muons_mediumID)
+        tEvent.SetBranchAddress('Muons_passIso', var_Muons_passIso)
+        tEvent.SetBranchAddress('Muons_tightID', var_Muons_tightID)
+
         tEvent.SetBranchAddress('GenParticles', var_GenParticles)
         tEvent.SetBranchAddress('GenParticles_ParentId', var_GenParticles_ParentId)
         tEvent.SetBranchAddress('GenParticles_Status', var_GenParticles_Status)

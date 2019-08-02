@@ -39,10 +39,10 @@ bg = args.bg
 
 input_file = None
 if args.input_file:
-    input_file = args.input_file[0]
+    input_file = args.input_file[0].strip()
 output_file = None
 if args.output_file:
-    output_file = args.output_file[0]
+    output_file = args.output_file[0].strip()
 
 if (bg and signal) or not (bg or signal):
     signal = True
@@ -106,6 +106,8 @@ def main():
         #if dilep_tmva_value < -0.3 or c.Met < 200 or c.univBDT < -0.4 or c.tracks[0].Pt() < 3 or c.tracks[0].Pt() > 15 or c.tracks_dzVtx[0] > 0.1 or c.tracks_dxyVtx[0] > 0.1 or abs(c.tracks[0].Eta()) > 2.4:
         #if dilep_tmva_value < -0.3 or c.Met < 200 or c.univBDT < -0.4 or c.tracks[0].Pt() < 3 or c.tracks[0].Pt() > 15 or abs(c.tracks[0].Eta()) > 2.4:
         #    continue
+        if c.Mht < 200:
+            continue
         var_dilepBDT[0] = dilep_tmva_value
 
         tree.Fill()

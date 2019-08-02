@@ -44,10 +44,10 @@ data = args.data
 
 input_file = None
 if args.input_file:
-    input_file = args.input_file[0]
+    input_file = args.input_file[0].strip()
 output_file = None
 if args.output_file:
-    output_file = args.output_file[0]
+    output_file = args.output_file[0].strip()
 
 if (bg and signal):
     signal = True

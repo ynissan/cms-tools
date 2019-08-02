@@ -49,7 +49,7 @@ dyCrossSections = {
 #     "DYJetsToLL_M-5to50_HT-600toInf": 1.107
 # }
 
-LUMINOSITY = 35900. #pb^-1
+#LUMINOSITY = 35900. #pb^-1
 CMS_WD="/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src"
 CS_DIR="/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/cs/stdout"
 
@@ -68,15 +68,25 @@ compoundTypes = {
     "TTJets": ["ST_t-channel_antitop", "ST_t-channel_top", "TTJets_DiLept", "TTJets_SingleLeptFromT", "TTJets_SingleLeptFromTbar"]
 }
 
+# bgOrder = {
+#     "Rare" : 0,
+#     "TTWJetsToLNu" : 1,
+#     "DiBoson" : 2,
+#     "ZJetsToNuNu" : 3,
+#     "DYJetsToLL" : 4,
+#     "TTJets" : 5,
+#     "WJetsToLNu" : 6,
+#     "QCD" : 7,
+# }
+
 bgOrder = {
     "Rare" : 0,
-    "TTWJetsToLNu" : 1,
-    "DiBoson" : 2,
-    "ZJetsToNuNu" : 3,
-    "DYJetsToLL" : 4,
-    "TTJets" : 5,
-    "WJetsToLNu" : 6,
-    "QCD" : 7,
+    "DiBoson" : 5,
+    "ZJetsToNuNu" : 1,
+    "DYJetsToLL" : 6,
+    "TTJets" : 4,
+    "WJetsToLNu" : 3,
+    "QCD" : 2,
 }
 
 tl = TLatex()
@@ -409,5 +419,66 @@ def calculateLumiFromLumiSecs(lumiSecs):
     lumi = get_lumi_from_bril(tmpJsonFile, 'ynissan')
     #os.remove(tmpJsonFile)
     return lumi
+    
+def getStackSum(hist):
+    hists = hist.GetHists()
+    newHist = hists[0].Clone()
+    for i in range(1, len(hists)):
+        newHist.Add(hists[i])
+    return newHist
 
+def getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=True):
+    if tree.GetEntries() == 0:
+        return None
+    binsStr = ">>hsqrt(" + str(bins) + ","
+    tree.Draw(obs + binsStr + str(minX) + "," + str(maxX) + ")", condition)
+    hist = tree.GetHistogram().Clone(name)
+    hist.SetDirectory(0)
+    if overflow:
+        useCond = condition
+        if not useCond:
+            useCond = "1"
+        over = hist.GetBinContent(hist.GetXaxis().GetNbins() + 1) #tree.Draw(obs, "(" + useCond + ") && " + obs + ">" + str(maxX))
+        if over:
+            hist.Fill(hist.GetXaxis().GetBinCenter(hist.GetXaxis().GetNbins()), over)
+        under = hist.GetBinContent(0)# tree.Draw(obs, "(" + useCond + ") && " + obs + "<" + str(minX))
+        if under:
+            hist.Fill(hist.GetXaxis().GetBinCenter(1), under)
+    return hist
 
+def madHtCheck(current_file_name, madHT):
+    if (madHT>0) and \
+       ("DYJetsToLL_M-50_Tune" in current_file_name and madHT>100) or \
+       ("WJetsToLNu_TuneCUETP8M1_13TeV" in current_file_name and madHT>100) or \
+       ("HT-100to200_" in current_file_name and (madHT<100 or madHT>200)) or \
+       ("HT-200to300_" in current_file_name and (madHT<200 or madHT>300)) or \
+       ("HT-200to400_" in current_file_name and (madHT<200 or madHT>400)) or \
+       ("HT-300to500_" in current_file_name and (madHT<300 or madHT>500)) or \
+       ("HT-400to600_" in current_file_name and (madHT<400 or madHT>600)) or \
+       ("HT-600to800_" in current_file_name and (madHT<600 or madHT>800)) or \
+       ("HT-800to1200_" in current_file_name and (madHT<800 or madHT>1200)) or \
+       ("HT-1200to2500_" in current_file_name and (madHT<1200 or madHT>2500)) or \
+       ("HT-2500toInf_" in current_file_name and madHT<2500) or \
+       ("HT-500to700_" in current_file_name and (madHT<500 or madHT>700)) or \
+       ("HT-700to1000_" in current_file_name and (madHT<700 or madHT>1000)) or \
+       ("HT-1000to1500_" in current_file_name and (madHT<1000 or madHT>1500)) or \
+       ("HT-1500to2000_" in current_file_name and (madHT<1500 or madHT>2000)) or \
+       ("HT-600toInf_" in current_file_name and (madHT<600)) or \
+       ("HT-70to100_" in current_file_name and (madHT<70 or madHT>100)) or \
+       ("HT-100To200_" in current_file_name and (madHT<100 or madHT>200)) or \
+       ("HT-200To300_" in current_file_name and (madHT<200 or madHT>300)) or \
+       ("HT-200To400_" in current_file_name and (madHT<200 or madHT>400)) or \
+       ("HT-300To500_" in current_file_name and (madHT<300 or madHT>500)) or \
+       ("HT-400To600_" in current_file_name and (madHT<400 or madHT>600)) or \
+       ("HT-500To700_" in current_file_name and (madHT<500 or madHT>700)) or \
+       ("HT-600To800_" in current_file_name and (madHT<600 or madHT>800)) or \
+       ("HT-700To1000_" in current_file_name and (madHT<700 or madHT>1000)) or \
+       ("HT-800To1200_" in current_file_name and (madHT<800 or madHT>1200)) or \
+       ("HT-1000To1500_" in current_file_name and (madHT<1000 or madHT>1500)) or \
+       ("HT-1200To2500_" in current_file_name and (madHT<1200 or madHT>2500)) or \
+       ("HT-1500To2000_" in current_file_name and (madHT<1500 or madHT>2000)) or \
+       ("HT-2500ToInf_" in current_file_name and madHT<2500):
+        print "MADHT FALSE"
+        return False
+    else:
+        return True

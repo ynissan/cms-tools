@@ -28,7 +28,7 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 SCRIPT_PATH=$ANALYZER_PATH
 if [ -n "$SKIM" ]; then
     SCRIPT_PATH=$SKIMMER_PATH
-    OUTPUT_DIR=$SKIM_OUTPUT_DIR	
+    OUTPUT_DIR=$SKIM_OUTPUT_DIR
 fi
 
 STD_OUTPUT="${OUTPUT_DIR}/stdoutput"
@@ -61,17 +61,15 @@ files=()
 for type in ${BG_TYPES[@]}; do 
     echo "Checking type $type"
     if [ "$type" = "DYJetsToLL" ]; then
-        files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_M-50_HT-*)
+        files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_M-50_*)
         files=("${files[@]}" ${BG_NTUPLES}/RunIISummer16MiniAODv3.DYJetsToLL_M-5to50*)
-        elif [ "$type" = "WJetsToLNu" ]; then
-            files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_HT*)
-        elif [ "$type" = "ZJetsToNuNu" ]; then
-            files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_HT*)
-        elif [ "$type" = "TTJets" ]; then
-            files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_TuneCUETP8M1*)
-        else
-            files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_*)
-        fi
+    elif [ "$type" = "ZJetsToNuNu" ]; then
+        files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_HT*)
+    elif [ "$type" = "TTJets" ]; then
+        files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_TuneCUETP8M1*)
+    else
+        files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_*)
+    fi
 done
 
 # madHtFilesGt600=()
@@ -102,6 +100,19 @@ files_per_job=20
 for fullname in "${files[@]}"; do
     name=$(basename $fullname)
     #echo "Checking $FILE_OUTPUT/$name"
+    skip=0
+    for ef in ${FILE_EXCLUDE_LIST[@]}; do
+        if [[ $name == *"$ef"* ]]; then
+            #echo "Skipping file $name"
+            skip=1
+        fi
+    done
+    
+    if [[ $skip == 1 ]]; then
+        #echo "Really skipping"
+        continue
+    fi
+    
     if [ -f "$FILE_OUTPUT/$name" ]; then
         #echo "$name exist. Skipping..."
         continue

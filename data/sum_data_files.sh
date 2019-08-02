@@ -4,7 +4,7 @@
 
 count=0
 input_files=""
-files_per_job=150
+files_per_job=300
 output_count=1
 lastfile=""
 
@@ -18,7 +18,7 @@ for fullname in $SKIM_DATA_OUTPUT_DIR/single/*; do
         output_name=`echo $(basename $fullname .root) | awk -F"METAOD_" "{print \\$1\"METAOD_${output_count}.root\"}"`
         ((output_count+=1))
         echo hadd -f $SKIM_DATA_OUTPUT_DIR/sum/$output_name $input_files
-        hadd -f $SKIM_DATA_OUTPUT_DIR/sum/$output_name $input_files
+        /afs/desy.de/user/n/nissanuv/cms-tools/analysis/scripts/ahadd.py -f $SKIM_DATA_OUTPUT_DIR/sum/$output_name $input_files
         echo -e "\n\n\n\n\n\n\n"
         #echo rm $input_files
         #rm $input_files
@@ -31,7 +31,7 @@ if [ $(($count % $files_per_job)) != 0 ]; then
     output_name=`echo $(basename $lastfile .root) | awk -F"METAOD_" "{print \\$1\"METAOD_${output_count}.root\"}"`
     ((output_count+=1))
     echo hadd -f $SKIM_DATA_OUTPUT_DIR/sum/$output_name $input_files
-    hadd -f $SKIM_DATA_OUTPUT_DIR/sum/$output_name $input_files
+    /afs/desy.de/user/n/nissanuv/cms-tools/analysis/scripts/ahadd.py -f $SKIM_DATA_OUTPUT_DIR/sum/$output_name $input_files
     echo -e "\n\n\n\n\n\n\n"
     #echo rm $input_files
     #rm $input_files

@@ -189,3 +189,4 @@ def passed2016BTrigger(t, data=False):
     #    if not t.ecalBadCalibReducedExtraFilter: return False
     #    if not t.ecalBadCalibReducedFilter: return False
     return True
+    
