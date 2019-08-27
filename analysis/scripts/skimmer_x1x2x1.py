@@ -123,6 +123,8 @@ def main():
     #var_tracks_trackLeptonIso = ROOT.std.vector(double)()
     var_tracks_trkMiniRelIso = ROOT.std.vector(double)()
     var_tracks_trkRelIso = ROOT.std.vector(double)()
+    var_tracks_trackQualityHighPurity = ROOT.std.vector(bool)()
+    
     var_LeadingJet = TLorentzVector()
 
 
@@ -141,6 +143,7 @@ def main():
     tEvent.Branch('MetDHt', var_MetDHt,'MetDHt/D')
     #tEvent.Branch('MetDHt2', var_MetDHt2,'MetDHt2/D')
     tEvent.Branch('Mt2', var_Mt2,'Mt2/D')
+    tEvent.Branch('puWeight', var_puWeight,'puWeight/D')
 
     tEvent.Branch('Electrons', 'std::vector<TLorentzVector>', var_Electrons)
     tEvent.Branch('Electrons_charge', 'std::vector<int>', var_Electrons_charge)
@@ -178,6 +181,8 @@ def main():
     #tEvent.Branch('tracks_trackLeptonIso', 'std::vector<double>', var_tracks_trackLeptonIso)
     tEvent.Branch('tracks_trkMiniRelIso', 'std::vector<double>', var_tracks_trkMiniRelIso)
     tEvent.Branch('tracks_trkRelIso', 'std::vector<double>', var_tracks_trkRelIso)
+    tEvent.Branch('tracks_trackQualityHighPurity', 'std::vector<bool>', var_tracks_trackQualityHighPurity)
+    
     tEvent.Branch('LeadingJet', 'TLorentzVector', var_LeadingJet)
 
     nentries = c.GetEntries()
@@ -333,6 +338,7 @@ def main():
         #var_tracks_trackLeptonIso = c.tracks_trackLeptonIso
         var_tracks_trkMiniRelIso = c.tracks_trkMiniRelIso
         var_tracks_trkRelIso = c.tracks_trkRelIso
+        var_tracks_trackQualityHighPurity = c.tracks_trackQualityHighPurity
     
         tEvent.SetBranchAddress('Electrons', var_Electrons)
         tEvent.SetBranchAddress('Electrons_charge', var_Electrons_charge)
@@ -362,6 +368,8 @@ def main():
         #tEvent.SetBranchAddress('tracks_trackLeptonIso', var_tracks_trackLeptonIso)
         tEvent.SetBranchAddress('tracks_trkMiniRelIso', var_tracks_trkMiniRelIso)
         tEvent.SetBranchAddress('tracks_trkRelIso', var_tracks_trkRelIso)
+        tEvent.SetBranchAddress('tracks_trackQualityHighPurity', var_tracks_trackQualityHighPurity)
+        
         tEvent.SetBranchAddress('LeadingJet', var_LeadingJet)
 
         metDHt = 9999999

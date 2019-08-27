@@ -19,14 +19,14 @@ input_dir = args.input_dir[0]
 
 gROOT.SetBatch(1)
 #print "input_dir:", input_dir
-bFileNames =  glob(input_dir + "/Run2016B*METAOD*");
+bFileNames =  glob(input_dir + "/*");
 #print bFileNames
 origNumberOfEvents = 0
 origWeightedNumberOfEvents = 0
 count = 0
 weightedCount = 0
 for f in bFileNames:
-    print "going to open ", f
+    #print "going to open ", f
     rootFile = TFile(f, "read")
     #h = rootFile.Get("hHt")
     #oN = h.Integral(-1,99999999)+0.000000000001
@@ -35,7 +35,7 @@ for f in bFileNames:
     #t = rootFile.Get("TreeMaker2/PreSelection")
     c = t.GetEntries()
     count += c
-    t.GetEntry(0)
+    #t.GetEntry(0)
     #weight = t.Weight
     #weightedCount += weight * c
     #origWeightedNumberOfEvents += oN * weight

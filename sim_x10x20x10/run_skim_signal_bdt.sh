@@ -5,6 +5,26 @@
 shopt -s nullglob
 shopt -s expand_aliases
 
+#---------- GET OPTIONS ------------
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        -sc)
+        SC=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
+        *)    # unknown option
+        POSITIONAL+=("$1") # save it in an array for later
+        shift # past argument
+        ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+#---------- END OPTIONS ------------
 
 # CMS ENV
 cd $CMS_WD
@@ -15,6 +35,12 @@ cmsenv
 
 OUTPUT_DIR=$SKIM_SIG_BDT_OUTPUT_DIR
 #OUTPUT_DIR="$OUTPUT_WD/signal/skim_signal_bdt_tighter"
+
+if [ -n "$SC" ]; then
+    echo "GOT SC"
+    echo "HERE: $@"
+    OUTPUT_DIR=$SKIM_SIG_BDT_SC_OUTPUT_DIR
+fi
 
 #check output directory
 if [ ! -d "$OUTPUT_DIR" ]; then
@@ -71,9 +97,9 @@ for sim in ${SKIM_SIG_OUTPUT_DIR}/sum/*; do
         fi
     done
     echo "Will run:"
-    echo $SCRIPTS_WD/run_skim_signal_bdt_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$tb  -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt
+    echo $SCRIPTS_WD/run_skim_signal_bdt_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$tb  -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@
 cat << EOM >> $output_file
-arguments = $SCRIPTS_WD/run_skim_signal_bdt_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$tb  -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt
+arguments = $SCRIPTS_WD/run_skim_signal_bdt_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$tb  -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@
 error = ${OUTPUT_DIR}/stderr/${filename}.err
 output = ${OUTPUT_DIR}/stdout/${filename}.output
 Queue

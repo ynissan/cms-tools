@@ -5,6 +5,26 @@
 shopt -s nullglob
 shopt -s expand_aliases
 
+#---------- GET OPTIONS ------------
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        -sc)
+        SC=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
+        *)    # unknown option
+        POSITIONAL+=("$1") # save it in an array for later
+        shift # past argument
+        ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+#---------- END OPTIONS ------------
 
 # CMS ENV
 cd $CMS_WD
@@ -14,6 +34,14 @@ module load cmssw
 cmsenv
 
 OUTPUT_DIR=$SKIM_DATA_SIG_DILEPTON_BDT_OUTPUT_DIR
+INPUT_DIR=$SKIM_DATA_BDT_OUTPUT_DIR
+
+if [ -n "$SC" ]; then
+    echo "GOT SC"
+    echo "HERE: $@"
+    OUTPUT_DIR=$SKIM_DATA_SIG_DILEPTON_BDT_SC_OUTPUT_DIR
+    INPUT_DIR=$SKIM_DATA_BDT_SC_OUTPUT_DIR
+fi
 
 timestamp=$(date +%Y%m%d_%H%M%S%N)
 output_file="${WORK_DIR}/condor_submut.${timestamp}"
@@ -34,7 +62,7 @@ priority = 0
 EOM
 
 #for sim in $SKIM_BG_SIG_BDT_OUTPUT_DIR/*; do
-for sim in $SKIM_DATA_BDT_OUTPUT_DIR/*; do    
+for sim in $INPUT_DIR/*; do    
     filename=`echo $(basename $sim)`
     echo $filename
     echo here
@@ -57,7 +85,7 @@ for sim in $SKIM_DATA_BDT_OUTPUT_DIR/*; do
       mkdir "$OUTPUT_DIR/$tb/stderr"
     fi
 
-    for data_file in $SKIM_DATA_BDT_OUTPUT_DIR/$tb/single/*; do
+    for data_file in $INPUT_DIR/$tb/single/*; do
         echo "Will run:"
         data_file_name=$(basename $data_file .root)
         echo $SCRIPTS_WD/run_skim_signal_dilepton_bdt_single.sh -i $data_file -o ${OUTPUT_DIR}/$tb/single/${data_file_name}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$tb 

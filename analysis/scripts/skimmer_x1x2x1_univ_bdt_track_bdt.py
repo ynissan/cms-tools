@@ -32,42 +32,47 @@ parser.add_argument('-tb', '--track_bdt', nargs=1, help='Track BDT Folder', requ
 
 parser.add_argument('-s', '--signal', dest='signal', help='Signal', action='store_true')
 parser.add_argument('-bg', '--background', dest='bg', help='Background', action='store_true')
+parser.add_argument('-sc', '--same_charge', dest='sc', help='Same Charge', action='store_true')
 args = parser.parse_args()
-	
+
 
 signal = args.signal
 bg = args.bg
+sc = args.sc
+
+print "SAME CHARGE=", sc
 
 input_file = None
 if args.input_file:
-	input_file = args.input_file[0].strip()
+    input_file = args.input_file[0].strip()
 output_file = None
 if args.output_file:
-	output_file = args.output_file[0].strip()
+    output_file = args.output_file[0].strip()
 
 if (bg and signal) or not (bg or signal):
-	signal = True
-	bg = False
-	
+    signal = True
+    bg = False
+
 univ_bdt = None
 track_bdt = None
 if args.univ_bdt:
-	univ_bdt = args.univ_bdt[0]
+    univ_bdt = args.univ_bdt[0]
 if args.track_bdt:
-	track_bdt = args.track_bdt[0]
-	
+    track_bdt = args.track_bdt[0]
+
 ######## END OF CMDLINE ARGUMENTS ########
 
 tracksVars = (
-		{"name":"dxyVtx", "type":"double"},
-		{"name":"dzVtx", "type":"double"},
-		{"name":"chi2perNdof", "type":"double"},
-		{"name":"trkMiniRelIso", "type":"double"},
-		{"name":"trkRelIso", "type":"double"},
-		{"name":"charge", "type":"int"},
-		{"name":"trackJetIso", "type":"double"},
-		#{"name":"trackLeptonIso", "type":"double"}
-		)
+        {"name":"dxyVtx", "type":"double"},
+        {"name":"dzVtx", "type":"double"},
+        {"name":"chi2perNdof", "type":"double"},
+        {"name":"trkMiniRelIso", "type":"double"},
+        {"name":"trkRelIso", "type":"double"},
+        {"name":"charge", "type":"int"},
+        {"name":"trackJetIso", "type":"double"},
+        {"name":"trackQualityHighPurity", "type":"bool"},
+        #{"name":"trackLeptonIso", "type":"double"}
+        )
 
 def main():
     iFile = TFile(input_file)
@@ -84,9 +89,13 @@ def main():
 
     var_l1 = TLorentzVector()
     var_l2 = TLorentzVector()
+    
+    var_lepton = TLorentzVector()
 
     tree.Branch('l1', 'TLorentzVector', var_l1)
     tree.Branch('l2', 'TLorentzVector', var_l2)
+    
+    tree.Branch('lepton', 'TLorentzVector', var_lepton)
 
     var_invMass = np.zeros(1,dtype=float)
     var_dileptonPt = np.zeros(1,dtype=float)
@@ -97,6 +106,8 @@ def main():
     var_mtautau = np.zeros(1,dtype=float)
     var_mt1 = np.zeros(1,dtype=float)
     var_mt2 = np.zeros(1,dtype=float)
+    var_mtt = np.zeros(1,dtype=float)
+    var_mtl = np.zeros(1,dtype=float)
     var_DeltaEtaLeadingJetDilepton = np.zeros(1,dtype=float)
     var_DeltaPhiLeadingJetDilepton = np.zeros(1,dtype=float)
     var_dilepHt = np.zeros(1,dtype=float)
@@ -111,6 +122,8 @@ def main():
     tree.Branch('mtautau', var_mtautau,'mtautau/D')
     tree.Branch('mt1', var_mt1,'mt1/D')
     tree.Branch('mt2', var_mt2,'mt2/D')
+    tree.Branch('mtt', var_mtt,'mtt/D')
+    tree.Branch('mtl', var_mtl,'mtl/D')
     tree.Branch('DeltaEtaLeadingJetDilepton', var_DeltaEtaLeadingJetDilepton,'DeltaEtaLeadingJetDilepton/D')
     tree.Branch('DeltaPhiLeadingJetDilepton', var_DeltaPhiLeadingJetDilepton,'DeltaPhiLeadingJetDilepton/D')
     tree.Branch('dilepHt', var_dilepHt,'dilepHt/D')
@@ -210,8 +223,13 @@ def main():
                 continue
             if c.tracks_dzVtx[ti] > 0.05:
                 continue
-            if tcharge * leptonCharge > 0:
-                continue
+            
+            if sc:
+                if tcharge * leptonCharge < 0:
+                    continue
+            else:
+                if tcharge * leptonCharge > 0:
+                    continue
             
             totalTracks +=1
         
@@ -279,7 +297,7 @@ def main():
         for v in tracksVars:
             tracksMem[v["name"]] = eval("ROOT.std.vector(" + v["type"] + ")()")
             #print eval("c.tracks_" + v["name"] + "[survivedTracks[0]]")
-            tracksMem[v["name"]].push_back(eval("c.tracks_" + v["name"] + "[oppositeChargeTrack]"))
+            tracksMem[v["name"]].push_back(eval(v["type"] + "(c.tracks_" + v["name"] + "[oppositeChargeTrack])"))
             tree.SetBranchAddress('tracks_' + v["name"], tracksMem[v["name"]])
     
     
@@ -294,9 +312,11 @@ def main():
     
         var_l1 = l1
         var_l2 = l2
+        var_lepton = ll
     
         tree.SetBranchAddress('l1', var_l1)
         tree.SetBranchAddress('l2', var_l2)
+        tree.SetBranchAddress('lepton', var_lepton)
     
         var_invMass[0] = (l1 + l2).M()
         var_dileptonPt[0] = abs((l1 + l2).Pt())
@@ -312,6 +332,9 @@ def main():
 
         var_mt1[0] = analysis_tools.MT2(c.Met, c.METPhi, l1)
         var_mt2[0] = analysis_tools.MT2(c.Met, c.METPhi, l2)
+
+        var_mtt[0] = analysis_tools.MT2(c.Met, c.METPhi, c.tracks[oppositeChargeTrack])
+        var_mtl[0] = analysis_tools.MT2(c.Met, c.METPhi, ll)
 
         var_mtautau[0] = analysis_tools.Mtautau(pt, l1, l2)
     

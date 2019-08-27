@@ -49,7 +49,7 @@ dyCrossSections = {
 #     "DYJetsToLL_M-5to50_HT-600toInf": 1.107
 # }
 
-#LUMINOSITY = 35900. #pb^-1
+LUMINOSITY = 35900. #pb^-1
 CMS_WD="/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src"
 CS_DIR="/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/cs/stdout"
 
@@ -68,26 +68,27 @@ compoundTypes = {
     "TTJets": ["ST_t-channel_antitop", "ST_t-channel_top", "TTJets_DiLept", "TTJets_SingleLeptFromT", "TTJets_SingleLeptFromTbar"]
 }
 
-# bgOrder = {
-#     "Rare" : 0,
-#     "TTWJetsToLNu" : 1,
-#     "DiBoson" : 2,
-#     "ZJetsToNuNu" : 3,
-#     "DYJetsToLL" : 4,
-#     "TTJets" : 5,
-#     "WJetsToLNu" : 6,
-#     "QCD" : 7,
-# }
-
+#Normal
 bgOrder = {
     "Rare" : 0,
-    "DiBoson" : 5,
-    "ZJetsToNuNu" : 1,
-    "DYJetsToLL" : 6,
-    "TTJets" : 4,
-    "WJetsToLNu" : 3,
-    "QCD" : 2,
+    "DiBoson" : 1,
+    "DYJetsToLL" : 2,
+    "TTJets" : 3,
+    "ZJetsToNuNu" : 4,
+    "QCD" : 5,
+    "WJetsToLNu" : 6,
 }
+
+#Z Jets
+# bgOrder = {
+#     "Rare" : 0,
+#     "DiBoson" : 5,
+#     "ZJetsToNuNu" : 1,
+#     "DYJetsToLL" : 6,
+#     "TTJets" : 4,
+#     "WJetsToLNu" : 3,
+#     "QCD" : 2,
+# }
 
 tl = TLatex()
 tl.SetNDC()

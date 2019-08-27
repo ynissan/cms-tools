@@ -5,6 +5,26 @@
 shopt -s nullglob
 shopt -s expand_aliases
 
+#---------- GET OPTIONS ------------
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        -sc)
+        SC=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
+        *)    # unknown option
+        POSITIONAL+=("$1") # save it in an array for later
+        shift # past argument
+        ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+#---------- END OPTIONS ------------
 
 # CMS ENV
 cd $CMS_WD
@@ -14,6 +34,14 @@ module load cmssw
 cmsenv
 
 OUTPUT_DIR=$SKIM_BG_SIG_DILEPTON_BDT_OUTPUT_DIR
+INPUT_DIR=$SKIM_BG_SIG_BDT_OUTPUT_DIR
+
+if [ -n "$SC" ]; then
+    echo "GOT SC"
+    echo "HERE: $@"
+    OUTPUT_DIR=$SKIM_BG_SIG_DILEPTON_BDT_SC_OUTPUT_DIR
+    INPUT_DIR=$SKIM_BG_SIG_BDT_SC_OUTPUT_DIR
+fi
 
 timestamp=$(date +%Y%m%d_%H%M%S%N)
 output_file="${WORK_DIR}/condor_submut.${timestamp}"
@@ -36,7 +64,7 @@ notification = Never
 priority = 0
 EOM
 
-for sim in $SKIM_BG_SIG_BDT_OUTPUT_DIR/*; do
+for sim in $INPUT_DIR/*; do
 #for sim in /afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_signal_bdt/single/*; do    
     filename=`echo $(basename $sim )`
     echo $filename
@@ -60,7 +88,7 @@ for sim in $SKIM_BG_SIG_BDT_OUTPUT_DIR/*; do
       mkdir "$OUTPUT_DIR/$tb/stderr"
     fi
 
-    for bg_file in $SKIM_BG_SIG_BDT_OUTPUT_DIR/$tb/single/*; do
+    for bg_file in $INPUT_DIR/$tb/single/*; do
     #for bg_file in $SKIM_BG_SIG_BDT_OUTPUT_DIR/$tb/single/WW_TuneCUETP8M1*; do
         echo "Will run:"
         echo "error=${OUTPUT_DIR}/$tb/stderr/${bg_file_name}.err" 

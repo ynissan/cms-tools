@@ -38,26 +38,30 @@ getenv = True
 EOM
 
 # CMS ENV
-cd ~/CMSSW_8_0_5_patch1/src
+cd ~/CMSSW_9_4_11/src 
 . /etc/profile.d/modules.sh
 module use -a /afs/desy.de/group/cms/modulefiles/
 module load cmssw
 cmsenv
 cd $OLDPWD
 
-for f in ~/CMSSW_8_0_5_patch1/src/Configuration/Generator/python/higgsino*.py; do
-	for i in `seq 20`; do
-		t=$(date +%N)
-		filename=$(basename $f .py)
-		configfilename=$(basename $filename _cff)_${t}.py
-		outfilename=$SIG_AOD_OUTPUT_DIR/single/$(basename $filename _cff)_AODSIM_n${t}.root
-		echo "Will run:"
-		cmd="$SIM_DIR/simulate/create_def_single.sh cmsDriver.py $filename --conditions auto:run2_mc --fast --era Run2_2016 --eventcontent AODSIM --relval 100000,1000 -s GEN,SIM,RECOBEFMIX,DIGI:pdigi_valid,L1,DIGI2RAW,L1Reco,RECO,EI,HLT:@relval25ns --datatier AODSIM --beamspot Realistic50ns13TeVCollision --python_filename=${SIG_CONFIG_OUTPUT_DIR}/single/$configfilename --fileout $outfilename --no_exec -n 5000"
-		echo $cmd
+count=0
+
+for f in ~/CMSSW_9_4_11/src/Configuration/Generator/python/higgsino*.py; do
+    for i in `seq 12`; do
+        ((count+=1))
+        echo Running $count
+        t=$(date +%N)
+        filename=$(basename $f .py)
+        configfilename=$(basename $filename _cff)_${t}.py
+        outfilename=$SIG_AOD_OUTPUT_DIR/single/$(basename $filename _cff)_AODSIM_n${t}.root
+        echo "Will run:" #GEN,SIM,RECOBEFMIX,DIGIPREMIX_S2:pdigi_valid,DATAMIX,L1,DIGI2RAW,L1Reco,RECO,VALIDATION
+        cmd="$SIM_DIR/simulate/create_def_single.sh cmsDriver.py $filename --datamix PreMix --conditions auto:run2_mc --pileup_input dbs:/RelValFS_PREMIXUP15_PU25/CMSSW_9_4_11_cand2-PU25ns_94X_mcRun2_asymptotic_v3_FastSim-v1/GEN-SIM-DIGI-RAW --fast --era Run2_2016 --eventcontent AODSIM --relval 100000,1000 -s GEN,SIM,RECOBEFMIX,DIGIPREMIX_S2:pdigi_valid,DATAMIX,L1,DIGI2RAW,L1Reco,RECO --datatier AODSIM --beamspot Realistic50ns13TeVCollision --python_filename=${SIG_CONFIG_OUTPUT_DIR}/single/$configfilename --fileout $outfilename --no_exec -n 5000 --customise SimGeneral/DataMixingModule/customiseForPremixingInput.customiseForPreMixingInput"
+        echo $cmd
 cat << EOM >> $output_file
 arguments = $cmd
-error = ${CS_SIG_OUTPUT_DIR}/stderr/${filename}.err
-output = $SIG_CONFIG_OUTPUT_DIR/stdout/${filename}.output
+error = ${SIG_CONFIG_OUTPUT_DIR}/stderr/${configfilename}.err
+output = $SIG_CONFIG_OUTPUT_DIR/stdout/${configfilename}.output
 Queue
 EOM
 done

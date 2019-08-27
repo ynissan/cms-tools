@@ -24,7 +24,7 @@ if [ ! -d "$SIG_AOD_OUTPUT_DIR/stderr" ]; then
   mkdir "$SIG_AOD_OUTPUT_DIR/stderr"
 fi
 
-cd ~/CMSSW_8_0_5_patch1/src
+cd ~/CMSSW_9_4_11/src
 . /etc/profile.d/modules.sh
 module use -a /afs/desy.de/group/cms/modulefiles/
 module load cmssw
@@ -41,6 +41,7 @@ executable = /bin/bash
 notification = Never
 priority = 0
 getenv = True
++RequestRuntime = 86400
 EOM
 
 for f in $SIG_CONFIG_OUTPUT_DIR/single/*; do

@@ -5,6 +5,26 @@
 shopt -s nullglob
 shopt -s expand_aliases
 
+#---------- GET OPTIONS ------------
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        -sc)
+        SC=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
+        *)    # unknown option
+        POSITIONAL+=("$1") # save it in an array for later
+        shift # past argument
+        ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+#---------- END OPTIONS ------------
 
 # CMS ENV
 cd $CMS_WD
@@ -14,6 +34,14 @@ module load cmssw
 cmsenv
 
 OUTPUT_DIR=$SKIM_SIG_DILEPTON_BDT_OUTPUT_DIR
+INPUT_DIR=$SKIM_SIG_BDT_OUTPUT_DIR
+
+if [ -n "$SC" ]; then
+    echo "GOT SC"
+    echo "HERE: $@"
+    OUTPUT_DIR=$SKIM_SIG_DILEPTON_BDT_SC_OUTPUT_DIR
+    INPUT_DIR=$SKIM_SIG_BDT_SC_OUTPUT_DIR
+fi
 
 #check output directory
 if [ ! -d "$OUTPUT_DIR" ]; then
@@ -48,7 +76,7 @@ notification = Never
 priority = 0
 EOM
 
-for sim in ${SKIM_SIG_BDT_OUTPUT_DIR}/single/*; do
+for sim in ${INPUT_DIR}/single/*; do
     filename=`echo $(basename $sim .root) | awk -F"_" '{print $1"_"$2"_"$3}'`
     echo $filename
     tb=$filename

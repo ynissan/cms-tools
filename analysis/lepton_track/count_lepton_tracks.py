@@ -12,19 +12,17 @@ import os
 
 sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
 from lib import histograms
-from lib import utils
 from lib import cuts
 from lib import analysis_ntuples
 from lib import analysis_tools
-
-from utils import UOFlowTH1F
+from lib import utils
 
 gROOT.SetBatch(1)
 
 ####### CMDLINE ARGUMENTS #########
 
-parser = argparse.ArgumentParser(description='Clones trees.')
-parser.add_argument('-i', '--input_file', nargs=1, help='Input Filename', required=True)
+parser = argparse.ArgumentParser(description='Plot Track Observeables.')
+parser.add_argument('-i', '--input_file', nargs=1, help='Input Filename', required=False)
 parser.add_argument('-o', '--output_file', nargs=1, help='Output Filename', required=False)
 parser.add_argument('-log', '--log', dest='log', help='Log Scale', action='store_true')
 parser.add_argument('-mm', '--mm', dest='mm', help='Miss match only', action='store_true')
@@ -34,92 +32,100 @@ args = parser.parse_args()
 input_file = None
 output_file = None
 if args.input_file:
-	input_file = args.input_file[0]
+    input_file = args.input_file[0]
+else:
+    input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm7p39Chi20Chipm.root"
+    #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm2p51Chi20Chipm.root"
 if args.output_file:
-	output_file = args.output_file[0]
+    output_file = args.output_file[0]
+else:
+    output_file = "tracks.pdf"
 logScale = args.log
 mm = args.mm
 rm = args.rm
-	
+
+mm = True
+rm = True
+
 ######## END OF CMDLINE ARGUMENTS ########
 
 lepTypes = ["Zl", "NZl", "MM"]
 
 if mm:
-	lepTypes = ["Zl", "MM"]
+    lepTypes = ["Zl", "MM"]
 
 def minRecDeltaR(l, c):
-	min = None
-	for v in [e for e in c.Electrons] + [m for m in c.Muons]:
-		deltaR = abs(v.DeltaR(l))
-		if min is None or deltaR < min:
-			min = deltaR
-	return min
-
-def trackCuts(c, ti):
-	if c.tracks_trackJetIso[ti] < 1:
-		return False
-	return True
+    min = None
+    for v in [e for e in c.Electrons] + [m for m in c.Muons]:
+        deltaR = abs(v.DeltaR(l))
+        if min is None or deltaR < min:
+            min = deltaR
+    return min
 
 def track_DeltaR_LJ(c, t, ti):
-	return abs(t.DeltaR(c.LeadingJet))
+    nj, btags, ljet = analysis_ntuples.numberOfJets25Pt2_4Eta_Loose(c)
+    return abs(t.DeltaR(c.Jets[ljet]))
 
 def track_DeltaEta_LJ(c, t, ti):
-	return abs(t.Eta() - c.LeadingJet.Eta())
+    nj, btags, ljet = analysis_ntuples.numberOfJets25Pt2_4Eta_Loose(c)
+    return abs(t.Eta() - c.Jets[ljet].Eta())
 
 def track_DeltaR_LL(c, t, ti):
-	ll = leadingLepton(c)
-	if ll is None:
-		return 0
-	return abs(t.DeltaR(ll))
-	
+    ll = analysis_ntuples.leadingLepton(c)
+    if ll is None:
+        return 0
+    return abs(t.DeltaR(ll))
+
 def track_DeltaEta_LL(c, t, ti):
-	ll = leadingLepton(c)
-	if ll is None:
-		return 0
-	return abs(t.Eta()-ll.Eta())
+    ll = analysis_ntuples.leadingLepton(c)
+    if ll is None:
+        return 0
+    return abs(t.Eta()-ll.Eta())
 
 def eta(c, ti):
-	return abs(c.tracks[ti].Eta()) < 2.4
+    return abs(c.tracks[ti].Eta()) < 2.4
 
 def pt(c, ti):
-	return abs(c.tracks[ti].Pt()) > 2.5
+    return abs(c.tracks[ti].Pt()) > 2.5
 
 def dz(c, ti):
-	return abs(c.tracks_dzVtx[ti]) < 0.035
+    return abs(c.tracks_dzVtx[ti]) < 0.035
 
 def dxy(c, ti):
-	return abs(c.tracks_dxyVtx[ti]) < 0.05
-	
-def lepIso(c, ti):
-	return c.tracks_trackLeptonIso[ti] < 0.02
+    return abs(c.tracks_dxyVtx[ti]) < 0.05
 
 def deltaEtaLL(c, ti):
-	return track_DeltaEta_LL(c, c.tracks[ti], ti) < 1
+    return track_DeltaEta_LL(c, c.tracks[ti], ti) < 1
 
 def deltaEtaLJ(c, ti):
-	return track_DeltaEta_LJ(c, c.tracks[ti], ti) < 3.8
+    return track_DeltaEta_LJ(c, c.tracks[ti], ti) < 3.8
 
 def deltaRLJ(c, ti):
-	return track_DeltaR_LJ(c, c.tracks[ti], ti) > 1.8
+    return track_DeltaR_LJ(c, c.tracks[ti], ti) > 1.8
 
 def deltaRLL(c, ti):
 	return track_DeltaR_LL(c, c.tracks[ti], ti) < 1.1
 
 
 def passedCut(cut, c, ti):
-	for func in cut["funcs"]:
-		if not func(c, ti):
-			return False
-	return True
-	
+    for func in cut["funcs"]:
+        if not func(c, ti):
+            return False
+    return True
+
 
 def main():
-
-    c = TChain('tEvent')
-    print "Going to open the file"
-    print input_file
-    c.Add(input_file)
+    
+#     c = TChain('tEvent')
+#     print "Going to open the file"
+#     print input_file
+#     c.Add(input_file)
+    
+    c= None
+    c = TChain('TreeMaker2/PreSelection')
+    
+    #c.Add('/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/ntuples_sum/higgsino_mu100_dm7p39Chi20Chipm_1.root')
+    c.Add('/nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggsino/M1M2Scan/ntuple_sidecar/higgsino_mu100_dm7.39Chi20Chipm.root')
 
     nentries = c.GetEntries()
     print 'Analysing', nentries, "entries"
@@ -154,17 +160,16 @@ def main():
     h2DHistsYMin = [0,0]
     h2DHistsYMax = [5,5]
 
-    tracksFuncs = ["tracks_trkRelIso", "tracks_chi2perNdof", "tracks_dxyVtx", "tracks_dzVtx", "tracks_trackQualityHighPurity", "tracks_trackJetIso", "tracks_trackLeptonIso"]
+    tracksFuncs = ["tracks_trkRelIso", "tracks_chi2perNdof", "tracks_dxyVtx", "tracks_dzVtx", "tracks_trackQualityHighPurity"]
     maxX = [15, 3.5, 3.5]
     tracksMaxX = [0.1, 10, 0.1, 0.1, 2, 1, 0.2]
 
     binNum = 50
 
-    cuts = [{"name":"", "title": "No Cuts"},			        
+    cuts = [{"name":"", "title": "No Cuts"},
         {"name":"Eta_deltaEtaLL", "title": "Eta < 2.6, deltaEtaLL < 1", "funcs":[eta, deltaEtaLL]},
         {"name":"Eta_deltaEtaLL_deltaEtaLJ", "title": "Eta < 2.6, deltaEtaLL < 1, deltaEtaLJ < 3.8", "funcs":[eta, deltaEtaLL, deltaEtaLJ]},
         {"name":"Pt_Eta_dxy_dz", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06", "funcs":[eta, pt, dxy, dz]},
-        {"name":"Pt_Eta_dxy_dz_lepIso", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06, lepIso < 0.02", "funcs":[eta, pt, dxy, dz, lepIso]},
         {"name":"Pt_Eta_dxy_dz_deltaEtaLL", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06, deltaEtaLL < 1", "funcs":[eta, pt, dxy, dz, deltaEtaLL]},
         {"name":"Pt_Eta_dxy_dz_deltaEtaLL_deltaEtaLJ", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06, deltaEtaLL < 1, deltaEtaLJ < 3.8", "funcs":[eta, pt, dxy, dz, deltaEtaLL, deltaEtaLJ]},
         {"name":"Pt_Eta_dxy_dz_deltaEtaLL_deltaRLJ", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06, deltaEtaLL < 1, deltaRLJ > 1.8", "funcs":[eta, pt, dxy, dz, deltaEtaLL, deltaRLJ]},
@@ -184,32 +189,32 @@ def main():
                         for cut in cuts:
                             tname = name + "_" + cut["name"]
                             if h == 1:
-                                histograms[tname] = UOFlowTH1F(tname, lepTrackHistsTitle[i] + " - " + obj, lepTrackHistsBins[i], 0, lepTrackHistsMaxX[i])
+                                histograms[tname] = utils.UOFlowTH1F(tname, lepTrackHistsTitle[i] + " - " + obj, lepTrackHistsBins[i], 0, lepTrackHistsMaxX[i])
                             else:
-                                histograms[tname] = UOFlowTH1F(tname, obj + " " + func, binNum, 0, maxX[i])
+                                histograms[tname] = utils.UOFlowTH1F(tname, obj + " " + func, binNum, 0, maxX[i])
                     else:
                         if h == 1:
-                            histograms[name] = UOFlowTH1F(name, lepTrackHistsTitle[i] + " - " + obj, lepTrackHistsBins[i], 0, lepTrackHistsMaxX[i])
+                            histograms[name] = utils.UOFlowTH1F(name, lepTrackHistsTitle[i] + " - " + obj, lepTrackHistsBins[i], 0, lepTrackHistsMaxX[i])
                         else:
-                            histograms[name] = UOFlowTH1F(name, obj + " " + func, binNum, 0, maxX[i])
+                            histograms[name] = utils.UOFlowTH1F(name, obj + " " + func, binNum, 0, maxX[i])
                                     
     for i, trackHist in enumerate(trackHists):
         for lepType in lepTypes:
             for cut in cuts:
                 tname = trackHist + "_" + lepType + "_" + cut["name"]
-                histograms[tname] = UOFlowTH1F(tname, trackHistsTitle[i], trackHistsBins[i], 0, trackHistsMaxX[i])
+                histograms[tname] = utils.UOFlowTH1F(tname, trackHistsTitle[i], trackHistsBins[i], 0, trackHistsMaxX[i])
 
     for i, trackHist in enumerate(trackHistsNoType):
         for cut in cuts:
             tname = trackHist + "_" + cut["name"]
-            histograms[tname] = UOFlowTH1F(tname, trackHistsTitleNoType[i], trackHistsBinsNoType[i], 0, trackHistsMaxXNoType[i])		
+            histograms[tname] = utils.UOFlowTH1F(tname, trackHistsTitleNoType[i], trackHistsBinsNoType[i], 0, trackHistsMaxXNoType[i])		
 
             
-    histograms["Lepton_minDealZ"] = UOFlowTH1F("Lepton_minDealZ", "Lepton Min Delta Z", binNum, 0, 0.02)
-    histograms["Reco_Num"] = UOFlowTH1F("Reco_Num", "Number of Reco Leptons", 5, 0, 5)
+    histograms["Lepton_minDealZ"] = utils.UOFlowTH1F("Lepton_minDealZ", "Lepton Min Delta Z", binNum, 0, 0.02)
+    histograms["Reco_Num"] = utils.UOFlowTH1F("Reco_Num", "Number of Reco Leptons", 5, 0, 5)
 
-    histograms["Track_minDealZ"] = UOFlowTH1F("Track_minDealZ", "Track Min Delta Z", binNum, 0, 0.2)
-    histograms["Track_RelIso"] = UOFlowTH1F("Track_RelIso", "Track RelIso for Delta Z < 0.1", binNum, 0, 0.01)
+    histograms["Track_minDealZ"] = utils.UOFlowTH1F("Track_minDealZ", "Track Min Delta Z", binNum, 0, 0.2)
+    histograms["Track_RelIso"] = utils.UOFlowTH1F("Track_RelIso", "Track RelIso for Delta Z < 0.1", binNum, 0, 0.01)
 
     for i, hist in enumerate(h2DHists):
         for cut in cuts:
@@ -221,9 +226,9 @@ def main():
             for cut in cuts:
                 name = func + "_" + lepType + "_" + cut["name"]
                 if func == "tracks_trackQualityHighPurity":
-                    histograms[name] = UOFlowTH1F(name, func, 2, 0, tracksMaxX[i])
+                    histograms[name] = utils.UOFlowTH1F(name, func, 2, 0, tracksMaxX[i])
                 else:
-                    histograms[name] = UOFlowTH1F(name, func, binNum, 0, tracksMaxX[i])
+                    histograms[name] = utils.UOFlowTH1F(name, func, binNum, 0, tracksMaxX[i])
 
     for k, h in histograms.items():
         h.Sumw2()
@@ -235,6 +240,7 @@ def main():
         if ientry % 5000 == 0:
             print "Processing " + str(ientry)
         c.GetEntry(ientry)
+        
         rightProcess = analysis_ntuples.isX1X2X1Process(c)
         if not rightProcess:
             print "No"
@@ -243,6 +249,10 @@ def main():
     
         recoNum = c.Electrons.size() + c.Muons.size()
         if recoNum != 1:
+            continue
+            
+        nj, btags, ljet = analysis_ntuples.numberOfJets25Pt2_4Eta_Loose(c)
+        if ljet is None:
             continue
     
         genZL, genNonZL = analysis_ntuples.classifyGenZLeptons(c)

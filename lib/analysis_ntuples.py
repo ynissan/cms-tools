@@ -131,28 +131,28 @@ def isX1X2X1Process(event):
 	return False
 	
 def classifyGenZLeptons(c):
-	genZL, genNonZL = [], []
-	partSize = c.GenParticles.size()
-	#print partSize
-	for ipart in range(partSize):
-		if c.GenParticles_Status[ipart] == 1 and (abs(c.GenParticles_PdgId[ipart]) == 11 or abs(c.GenParticles_PdgId[ipart]) == 13):
-			if c.GenParticles_ParentId[ipart] == 1000023 or c.GenParticles_ParentId[ipart] == 23:
-				genZL.append(ipart)
-			else:
-				genNonZL.append(ipart)
-	if len(genZL) != 2 or (abs(c.GenParticles_PdgId[genZL[0]]) != abs(c.GenParticles_PdgId[genZL[1]])) or (c.GenParticles_PdgId[genZL[0]] * c.GenParticles_PdgId[genZL[1]] > 0 ):
-		print "****** WOW!"
-		print "genZL=" + str(genZL) + " PdgId1=" + str(c.GenParticles_PdgId[genZL[0]]) + " PdgId2=" + str(c.GenParticles_PdgId[genZL[1]])
-		return None, None
-	# if len(genNonZL) == 0:
-# 		print "===="
-# 		print "partSize=" + str(partSize)
-# 		print "genZL=" + str(len(genZL))
-# 		for ipart in range(partSize):
-# 			print c.GenParticles_PdgId[ipart]
-# 		print "===="
-			
-	return genZL, genNonZL
+    genZL, genNonZL = [], []
+    partSize = c.GenParticles.size()
+    #print partSize
+    for ipart in range(partSize):
+        if c.GenParticles_Status[ipart] == 1 and (abs(c.GenParticles_PdgId[ipart]) == 11 or abs(c.GenParticles_PdgId[ipart]) == 13):
+            if c.GenParticles_ParentId[ipart] == 1000023 or c.GenParticles_ParentId[ipart] == 23:
+                genZL.append(ipart)
+            else:
+                genNonZL.append(ipart)
+    if len(genZL) != 2 or (abs(c.GenParticles_PdgId[genZL[0]]) != abs(c.GenParticles_PdgId[genZL[1]])) or (c.GenParticles_PdgId[genZL[0]] * c.GenParticles_PdgId[genZL[1]] > 0 ):
+        print "****** WOW!"
+        print "genZL=" + str(genZL) + " PdgId1=" + str(c.GenParticles_PdgId[genZL[0]]) + " PdgId2=" + str(c.GenParticles_PdgId[genZL[1]])
+        return None, None
+    # if len(genNonZL) == 0:
+    # 		print "===="
+    # 		print "partSize=" + str(partSize)
+    # 		print "genZL=" + str(len(genZL))
+    # 		for ipart in range(partSize):
+    # 			print c.GenParticles_PdgId[ipart]
+    # 		print "===="
+        
+    return genZL, genNonZL
 
 def minDeltaRGenParticles(l, gens, c):
 	min = None

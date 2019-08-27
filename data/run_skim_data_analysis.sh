@@ -53,7 +53,8 @@ files_per_job=20
 OUTPUT_DIR=$SKIM_DATA_OUTPUT_DIR
 FILE_OUTPUT="${OUTPUT_DIR}/single"
 
-for fullname in ${DATA_NTUPLES_DIR}/Run2016*SingleMuon*; do
+#for fullname in ${DATA_NTUPLES_DIR}/Run2016*SingleMuon*; do
+for fullname in ${DATA_NTUPLES_DIR}/Run2016*METAOD*; do
     name=$(basename $fullname)
     if [ -f "$FILE_OUTPUT/$name" ]; then
         #echo "$name exist. Skipping..."
