@@ -73,6 +73,10 @@ def main():
     
     lumiSecs = LumiSectMap()
     
+    var_RunNum = np.zeros(1,dtype=int)
+    var_LumiBlockNum = np.zeros(1,dtype=int)
+    var_EvtNum = np.zeros(1,dtype=long)
+    
     var_Met = np.zeros(1,dtype=float)
     var_METPhi = np.zeros(1,dtype=float)
     var_CrossSection = np.zeros(1,dtype=float)
@@ -129,6 +133,11 @@ def main():
 
 
     tEvent = TTree('tEvent','tEvent')
+    
+    tEvent.Branch('RunNum', var_RunNum,'RunNum/I')
+    tEvent.Branch('LumiBlockNum', var_LumiBlockNum,'LumiBlockNum/I')
+    tEvent.Branch('EvtNum', var_EvtNum,'EvtNum/L')
+    
     tEvent.Branch('Met', var_Met,'Met/D')
     tEvent.Branch('METPhi', var_METPhi,'METPhi/D')
     tEvent.Branch('CrossSection', var_CrossSection,'CrossSection/D')
@@ -290,6 +299,10 @@ def main():
         ## END PRECUTS##
 
         afterPreselection += 1
+        
+        var_RunNum[0] = c.RunNum
+        var_LumiBlockNum[0] = c.LumiBlockNum
+        var_EvtNum[0] = c.EvtNum
 
         var_Met[0] = c.MET
         var_METPhi[0] = c.METPhi

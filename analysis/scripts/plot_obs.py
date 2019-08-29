@@ -54,6 +54,7 @@ plot_ratio = True
 plot_rand = False
 plot_fast = True
 plot_title = True
+plot_overflow = False
 
 if not plot_data:
     plot_ratio = False
@@ -137,9 +138,9 @@ histograms_defs = [
     
     #NORMAL
     { "obs" : "invMass", "minX" : 0, "maxX" : 30, "bins" : 30, "units" : "GeV" },
-    { "obs" : "trackBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
-    { "obs" : "univBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
-    # { "obs" : "dilepBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
+#     { "obs" : "trackBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
+#     { "obs" : "univBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
+#     { "obs" : "dilepBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
 #     { "obs" : "tracks[0].Eta()", "minX" : -3, "maxX" : 3, "bins" : 30 },
 #     { "obs" : "tracks[0].Pt()", "minX" : 0, "maxX" : 30, "bins" : 30 },
 #     { "obs" : "tracks_dxyVtx[0]", "minX" : 0, "maxX" : 0.05, "bins" : 30 },
@@ -159,7 +160,7 @@ histograms_defs = [
 #     { "obs" : "NTracks", "minX" : 0, "maxX" : 7, "bins" : 7 },
 #     { "obs" : "Met", "minX" : 100, "maxX" : 700, "bins" : 30 },
 #     { "obs" : "Mht", "minX" : 100, "maxX" : 700, "bins" : 30 },
-#     { "obs" : "tracks_trackQualityHighPurity[0]", "minX" : 0, "maxX" : 1, "bins" : 2 },
+    #{ "obs" : "tracks_trackQualityHighPurity[0]", "minX" : 0, "maxX" : 1, "bins" : 2 },
 #     
 ]
 
@@ -169,11 +170,30 @@ cuts = [{"name":"none", "title": "No Cuts", "condition" : "1"},
 #        {"name":"mets", "title": "Met>20", "condition" : "Met > 20"},
 
 #NORMAL 
+#         {"name":"dilepBdt", "title": "dilepBdt", "condition" : "dilepBDT >= -0.3"},
+#         {"name":"dilepBdt2", "title": "dilepBdt2", "condition" : "dilepBDT >= 0"},
+#         {"name":"dilepBdt3", "title": "dilepBdt3", "condition" : "dilepBDT >= 0.2"},
+#         {"name":"dilepBdt3", "title": "dilepBdt4", "condition" : "dilepBDT >= 0.3"},
+#         
+#         
+#         {"name":"univBDT", "title": "univBDT", "condition" : "univBDT >= -0.2"},
+#         {"name":"univBDT2", "title": "univBDT2", "condition" : "univBDT >= 0"},
+#         {"name":"univBDT3", "title": "univBDT3", "condition" : "univBDT >= 0.2"},
+#         {"name":"univBDT4", "title": "univBDT4", "condition" : "univBDT >= 0.3"},
+#         {"name":"univBDT5", "title": "univBDT5", "condition" : "univBDT >= 0.5 && univBDT <= 0.6"},
+#         
+#         
+#         {"name":"trackBDT", "title": "trackBDT", "condition" : "trackBDT >= -0.2"},
+#         {"name":"trackBDT2", "title": "trackBDT2", "condition" : "trackBDT >= 0"},
+#         {"name":"trackBDT3", "title": "trackBDT3", "condition" : "trackBDT >= 0.1"},
+#         {"name":"trackBDT4", "title": "trackBDT4", "condition" : "trackBDT >= 0.1 && trackBDT < 0.3"},
+        
         #{"name":"dilep_skim_no_pt", "title": "dilep_skim_no_pt", "condition" : "invMass < 30 && dilepBDT >= -0.3 && univBDT >= -0.4 && tracks_dzVtx[0] < 0.1 && tracks_dxyVtx[0] < 0.1 && abs(tracks[0].Eta()) <= 2.4"},     
-        #{"name":"dilep_skim", "title": "dilep_skim", "condition" : "tracks_trackQualityHighPurity[0] && invMass < 30 && dilepBDT >= -0.3 && univBDT >= -0.4 && tracks[0].Pt() >= 3 && tracks[0].Pt() < 15 && tracks_dzVtx[0] < 0.1 && tracks_dxyVtx[0] < 0.1 && abs(tracks[0].Eta()) <= 2.4"},
-        #{"name":"dilep_skim_track_bdt", "title": "dilep_skim_track_bdt", "condition" : "tracks_trackQualityHighPurity[0] && invMass < 30 && dilepBDT >= -0.3 && univBDT >= -0.4 && tracks[0].Pt() >= 3 && tracks[0].Pt() < 15 && tracks_dzVtx[0] < 0.1 && tracks_dxyVtx[0] < 0.1 && abs(tracks[0].Eta()) <= 2.4 && trackBDT > 0.1 && @tracks.size() == 1"},
-        #{"name":"step", "title": "step", "condition" : "tracks_trackQualityHighPurity[0] && invMass < 30 && dilepBDT >= -0.3 && univBDT >= -0.4 && tracks[0].Pt() >= 3 && tracks[0].Pt() < 15 && tracks_dzVtx[0] < 0.1 && tracks_dxyVtx[0] < 0.1 && abs(tracks[0].Eta()) <= 2.4 && trackBDT > 0.1 && @tracks.size() == 1"},
+        {"name":"dilep_skim", "title": "dilep_skim", "condition" : "tracks_trackQualityHighPurity[0] && invMass < 30 && dilepBDT >= -0.3 && univBDT >= -0.4 && tracks[0].Pt() >= 3 && tracks[0].Pt() < 15 && tracks_dzVtx[0] < 0.1 && tracks_dxyVtx[0] < 0.1 && abs(tracks[0].Eta()) <= 2.4"},
+        {"name":"dilep_skim_track_bdt", "title": "dilep_skim_track_bdt", "condition" : "tracks_trackQualityHighPurity[0] && invMass < 30 && dilepBDT >= -0.3 && univBDT >= -0.4 && tracks[0].Pt() >= 3 && tracks[0].Pt() < 15 && tracks_dzVtx[0] < 0.1 && tracks_dxyVtx[0] < 0.1 && abs(tracks[0].Eta()) <= 2.4 && trackBDT > 0.1 && @tracks.size() == 1"},
+        {"name":"step", "title": "step", "condition" : "tracks_trackQualityHighPurity[0] && invMass < 30 && dilepBDT >= -0.3 && univBDT >= -0.4 && tracks[0].Pt() >= 3 && tracks[0].Pt() < 15 && tracks_dzVtx[0] < 0.1 && tracks_dxyVtx[0] < 0.1 && abs(tracks[0].Eta()) <= 2.4 && trackBDT > 0.1 && @tracks.size() == 1"},
         {"name":"step2", "title": "step2", "condition" : "Met > 200 && tracks[0].Pt() < 10 && tracks_dzVtx[0] <= 0.01 && tracks_dxyVtx[0] <= 0.01 && univBDT >= 0.1 && pt3 >= 225 && dilepBDT >= 0.15 && trackBDT >= 0.1 && abs(tracks[0].Eta()) < 1.8 && tracks[0].Pt() > 5"},
+        {"name":"step3", "title": "step3", "condition" : "Met > 200 && tracks[0].Pt() < 10 && tracks_dzVtx[0] <= 0.01 && tracks_dxyVtx[0] <= 0.01 && univBDT >= 0.1 && pt3 >= 225 && dilepBDT >= 0.4 && trackBDT >= 0.1 && abs(tracks[0].Eta()) < 1.8 && tracks[0].Pt() > 5"},
 
 #        {"name":"metMht", "title": "MET > 200, Mht > 100", "funcs" : [metMht]},
 #         {"name":"trackBDT", "title": "trackBDT >= 0.2", "funcs":[trackBDT]},
@@ -273,7 +293,7 @@ def createPlotsFast(rootfiles, type, histograms, weight=1):
                 #if type != "data" and type != "signal":
                 #    hist = utils.getHistogramFromTree(histName, c, hist_def["obs"], hist_def["bins"], hist_def["minX"], hist_def["maxX"], "puWeight * (" + cut["condition"] + ")")
                 #else:
-                hist = utils.getHistogramFromTree(histName, c, hist_def["obs"], hist_def["bins"], hist_def["minX"], hist_def["maxX"], cut["condition"])
+                hist = utils.getHistogramFromTree(histName, c, hist_def["obs"], hist_def["bins"], hist_def["minX"], hist_def["maxX"], cut["condition"], plot_overflow)
                 if hist is None:
                     continue
                 hist.GetXaxis().SetTitle("")
@@ -512,6 +532,7 @@ def main():
             titlePad.Update()
         pId = 1
         for hist_def in histograms_defs:
+            
             needToDraw = True
             pad = None
             if plot_single:
@@ -585,6 +606,7 @@ def main():
                 newBgHist.SetMaximum(maximum*1000)
                 newBgHist.SetMinimum(0.01)
                 newBgHist.Draw("hist")
+                
                 if plot_single:
                     utils.histoStyler(newBgHist)
                 if not plot_ratio:
@@ -677,7 +699,8 @@ def main():
                     ratioPads[pId][1].Clear()
                 else:
                     pad.Clear()
-        c1.Print(output_file);
+        if needToDraw:
+            c1.Print(output_file);
         
     c1.Print(output_file+"]");
     

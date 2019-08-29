@@ -48,7 +48,7 @@ cd $OLDPWD
 count=0
 
 for f in ~/CMSSW_9_4_11/src/Configuration/Generator/python/higgsino*.py; do
-    for i in `seq 12`; do
+    for i in `seq 120`; do
         ((count+=1))
         echo Running $count
         t=$(date +%N)
@@ -56,7 +56,7 @@ for f in ~/CMSSW_9_4_11/src/Configuration/Generator/python/higgsino*.py; do
         configfilename=$(basename $filename _cff)_${t}.py
         outfilename=$SIG_AOD_OUTPUT_DIR/single/$(basename $filename _cff)_AODSIM_n${t}.root
         echo "Will run:" #GEN,SIM,RECOBEFMIX,DIGIPREMIX_S2:pdigi_valid,DATAMIX,L1,DIGI2RAW,L1Reco,RECO,VALIDATION
-        cmd="$SIM_DIR/simulate/create_def_single.sh cmsDriver.py $filename --datamix PreMix --conditions auto:run2_mc --pileup_input dbs:/RelValFS_PREMIXUP15_PU25/CMSSW_9_4_11_cand2-PU25ns_94X_mcRun2_asymptotic_v3_FastSim-v1/GEN-SIM-DIGI-RAW --fast --era Run2_2016 --eventcontent AODSIM --relval 100000,1000 -s GEN,SIM,RECOBEFMIX,DIGIPREMIX_S2:pdigi_valid,DATAMIX,L1,DIGI2RAW,L1Reco,RECO --datatier AODSIM --beamspot Realistic50ns13TeVCollision --python_filename=${SIG_CONFIG_OUTPUT_DIR}/single/$configfilename --fileout $outfilename --no_exec -n 5000 --customise SimGeneral/DataMixingModule/customiseForPremixingInput.customiseForPreMixingInput"
+        cmd="$SIM_DIR/simulate/create_def_single.sh cmsDriver.py $filename --datamix PreMix --conditions auto:run2_mc --pileup_input dbs:/RelValFS_PREMIXUP15_PU25/CMSSW_9_4_11_cand2-PU25ns_94X_mcRun2_asymptotic_v3_FastSim-v1/GEN-SIM-DIGI-RAW --fast --era Run2_2016 --eventcontent AODSIM --relval 100000,1000 -s GEN,SIM,RECOBEFMIX,DIGIPREMIX_S2:pdigi_valid,DATAMIX,L1,DIGI2RAW,L1Reco,RECO --datatier AODSIM --beamspot Realistic50ns13TeVCollision --python_filename=${SIG_CONFIG_OUTPUT_DIR}/single/$configfilename --fileout $outfilename --no_exec -n 500 --customise SimGeneral/DataMixingModule/customiseForPremixingInput.customiseForPreMixingInput"
         echo $cmd
 cat << EOM >> $output_file
 arguments = $cmd

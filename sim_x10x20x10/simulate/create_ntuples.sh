@@ -49,7 +49,7 @@ for f in $SIG_MINIAOD_OUTPUT_DIR/single/*; do
 	filename=`echo $(basename $f) | awk -F"_" '{print $1"_"$2"_"$3"_"$5}'`
 	logfname=$(basename $filename .root)
 	echo logfname=$logfname
-	cmd="$SIM_DIR/simulate/create_ntuples_single.sh cmsRun runMakeTreeFromMiniAOD_cfg.py scenario=Summer16MiniAODv3Fastsig dataset=file:$f outfile=$SIG_NTUPLES_OUTPUT_DIR/single/${logfname} numevents=5000"
+	cmd="$SIM_DIR/simulate/create_ntuples_single.sh cmsRun runMakeTreeFromMiniAOD_cfg.py scenario=Summer16MiniAODv3Fastsig dataset=file:$f outfile=$SIG_NTUPLES_OUTPUT_DIR/single/${logfname} numevents=500"
 	echo $cmd
 cat << EOM >> $output_file
 arguments = $cmd
