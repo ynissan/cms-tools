@@ -41,7 +41,6 @@ executable = /bin/bash
 notification = Never
 priority = 0
 getenv = True
-+RequestRuntime = 86400
 EOM
 
 for f in $SIG_MINIAOD_OUTPUT_DIR/single/*; do

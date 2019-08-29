@@ -28,3 +28,9 @@ public:
     
     ClassDef(LeptonCollection,1);
 };
+
+#if defined(__ROOTCLING__)
+#pragma link C++ class LeptonCollection+;
+#pragma link C++ class LeptonCollectionMap+;
+#pragma link C++ nestedclasses;
+#endif

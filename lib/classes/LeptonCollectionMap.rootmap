@@ -1,0 +1,5 @@
+[ LeptonCollectionMap_C.so ]
+class LeptonCollection
+class LeptonCollectionArrayHasher
+class LeptonCollectionMap
+header LeptonCollectionMap.h
