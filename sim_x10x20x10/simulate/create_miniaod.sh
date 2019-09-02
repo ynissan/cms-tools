@@ -35,12 +35,18 @@ getenv = True
 EOM
 
 for f in $SIG_AOD_OUTPUT_DIR/single/*; do
-	echo "Will run:"
-	filename=`echo $(basename $f) | awk -F"_" '{print $1"_"$2"_"$3"_miniAODSIM_"$5}'`
-	logfname=$(basename $filename .root)
-	#echo logfname=$logfname
-	cmd="$SIM_DIR/simulate/create_miniaod_single.sh cmsDriver.py step3 --conditions auto:run2_mc --fast --eventcontent MINIAODSIM --runUnscheduled --filein file:$f -s PAT --datatier MINIAODSIM --era Run2_2016 --mc --fileout $SIG_MINIAOD_OUTPUT_DIR/single/${filename} -n 500"
-	echo $cmd
+    filename=`echo $(basename $f) | awk -F"_" '{print $1"_"$2"_"$3"_miniAODSIM_"$5}'`
+    fileout=$SIG_MINIAOD_OUTPUT_DIR/single/${filename}
+    #echo $fileout
+    if [ -f "$fileout" ]; then
+        echo "$fileout exist. Skipping..."
+        continue
+    fi
+    logfname=$(basename $filename .root)
+    #echo logfname=$logfname
+    echo "Will run:"
+    cmd="$SIM_DIR/simulate/create_miniaod_single.sh cmsDriver.py step3 --conditions auto:run2_mc --fast --eventcontent MINIAODSIM --runUnscheduled --filein file:$f -s PAT --datatier MINIAODSIM --era Run2_2016 --mc --fileout $fileout -n 500"
+    echo $cmd
 cat << EOM >> $output_file
 arguments = $cmd
 error = ${SIG_MINIAOD_OUTPUT_DIR}/stderr/${logfname}.err

@@ -44,12 +44,17 @@ getenv = True
 EOM
 
 for f in $SIG_MINIAOD_OUTPUT_DIR/single/*; do
-	echo "Will run:"
-	filename=`echo $(basename $f) | awk -F"_" '{print $1"_"$2"_"$3"_"$5}'`
-	logfname=$(basename $filename .root)
-	echo logfname=$logfname
-	cmd="$SIM_DIR/simulate/create_ntuples_single.sh cmsRun runMakeTreeFromMiniAOD_cfg.py scenario=Summer16MiniAODv3Fastsig dataset=file:$f outfile=$SIG_NTUPLES_OUTPUT_DIR/single/${logfname} numevents=500"
-	echo $cmd
+    
+    filename=`echo $(basename $f) | awk -F"_" '{print $1"_"$2"_"$3"_"$5}'`
+    logfname=$(basename $filename .root)
+    fileout=$SIG_NTUPLES_OUTPUT_DIR/single/${logfname}
+    if [ -f "${fileout}_RA2AnalysisTree.root" ]; then
+        echo "${fileout}_RA2AnalysisTree.root exist. Skipping..."
+        continue
+    fi
+    echo "Will run:"
+    cmd="$SIM_DIR/simulate/create_ntuples_single.sh cmsRun runMakeTreeFromMiniAOD_cfg.py scenario=Summer16MiniAODv3Fastsig dataset=file:$f outfile=$fileout numevents=500"
+    echo $cmd
 cat << EOM >> $output_file
 arguments = $cmd
 error = ${SIG_NTUPLES_OUTPUT_DIR}/stderr/${logfname}.err
