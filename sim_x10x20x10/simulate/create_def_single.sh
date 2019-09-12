@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. "$CMSSW_BASE/src/cms-tools/bg/def.sh"
+. "$CMSSW_BASE/src/cms-tools/lib/def.sh"
 
 shopt -s nullglob
 
