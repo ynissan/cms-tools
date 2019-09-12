@@ -9,19 +9,19 @@ shopt -s expand_aliases
 
 #check output directory
 if [ ! -d "$SIG_CONFIG_OUTPUT_DIR" ]; then
-  mkdir $SIG_CONFIG_OUTPUT_DIR
+  $MKDIR_CMD $SIG_CONFIG_OUTPUT_DIR
 fi
 
-if [ ! -d "$SIG_CONFIG_OUTPUT_DIR/single" ]; then
-  mkdir "$SIG_CONFIG_OUTPUT_DIR/single"
+if [ ! -d "~/config" ]; then
+  mkdir "~/config"
 fi
 
-if [ ! -d "$SIG_CONFIG_OUTPUT_DIR/stdout" ]; then
-  mkdir "$SIG_CONFIG_OUTPUT_DIR/stdout"
+if [ ! -d "~/config/stdout" ]; then
+  mkdir "~/config/stdout"
 fi
 
-if [ ! -d "$SIG_CONFIG_OUTPUT_DIR/stderr" ]; then
-  mkdir "$SIG_CONFIG_OUTPUT_DIR/stderr"
+if [ ! -d "~/config/stderr" ]; then
+  mkdir "~/config/stderr"
 fi
 
 timestamp=$(date +%Y%m%d_%H%M%S%N)
@@ -54,14 +54,16 @@ for f in ~/CMSSW_9_4_11/src/Configuration/Generator/python/higgsino*.py; do
         t=$(date +%N)
         filename=$(basename $f .py)
         configfilename=$(basename $filename _cff)_${t}.py
-        outfilename=$SIG_AOD_OUTPUT_DIR/single/$(basename $filename _cff)_AODSIM_n${t}.root
+        #outfilename=$SIG_AOD_OUTPUT_DIR/single/$(basename $filename _cff)_AODSIM_n${t}.root
+        outfilename=$WORK_DIR/$(basename $filename _cff)_AODSIM_n${t}.root
         echo "Will run:" #GEN,SIM,RECOBEFMIX,DIGIPREMIX_S2:pdigi_valid,DATAMIX,L1,DIGI2RAW,L1Reco,RECO,VALIDATION
-        cmd="$SIM_DIR/simulate/create_def_single.sh cmsDriver.py $filename --datamix PreMix --conditions auto:run2_mc --pileup_input dbs:/RelValFS_PREMIXUP15_PU25/CMSSW_9_4_11_cand2-PU25ns_94X_mcRun2_asymptotic_v3_FastSim-v1/GEN-SIM-DIGI-RAW --fast --era Run2_2016 --eventcontent AODSIM --relval 100000,1000 -s GEN,SIM,RECOBEFMIX,DIGIPREMIX_S2:pdigi_valid,DATAMIX,L1,DIGI2RAW,L1Reco,RECO --datatier AODSIM --beamspot Realistic50ns13TeVCollision --python_filename=${SIG_CONFIG_OUTPUT_DIR}/single/$configfilename --fileout $outfilename --no_exec -n 500 --customise SimGeneral/DataMixingModule/customiseForPremixingInput.customiseForPreMixingInput"
+        #${SIG_CONFIG_OUTPUT_DIR}/single/$configfilename
+        cmd="$SIM_DIR/simulate/create_def_single.sh $filename $WORK_DIR/$configfilename $outfilename"
         echo $cmd
 cat << EOM >> $output_file
 arguments = $cmd
-error = ${SIG_CONFIG_OUTPUT_DIR}/stderr/${configfilename}.err
-output = $SIG_CONFIG_OUTPUT_DIR/stdout/${configfilename}.output
+error = ~/config/stderr/${configfilename}.err
+output = ~/config/stdout/${configfilename}.output
 Queue
 EOM
 done

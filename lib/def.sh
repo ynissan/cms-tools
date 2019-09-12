@@ -36,7 +36,6 @@ SKIMMER_PATH="$SCRIPTS_WD/skimmer_x1x2x1.py"
 CLONE_SCRIPT="$SCRIPTS_WD/clone_tree_split.py"
 CLONE_SINGLE="$SIM_DIR/clone_sim_file_single.sh"
 CS_SINGLE="$SIM_DIR/calculate_cross_section_single.sh"
-OUTPUT_WD="/afs/desy.de/user/n/nissanuv/nfs/x1x2x1"
 
 #OUTPUT_WD="/afs/desy.de/user/n/nissanuv/work/x1x2x1"
 
@@ -47,10 +46,6 @@ SKIM_OUTPUT_DIR="$OUTPUT_WD/bg/skim"
 SKIM_SIG_OUTPUT_DIR="$OUTPUT_WD/signal/skim"
 SKIM_DATA_OUTPUT_DIR="$OUTPUT_WD/data/skim"
 CS_SIG_OUTPUT_DIR="$OUTPUT_WD/signal/cs"
-SIG_CONFIG_OUTPUT_DIR="$OUTPUT_WD/signal/config"
-SIG_AOD_OUTPUT_DIR="$OUTPUT_WD/signal/aod"
-SIG_MINIAOD_OUTPUT_DIR="$OUTPUT_WD/signal/miniaod"
-SIG_NTUPLES_OUTPUT_DIR="$OUTPUT_WD/signal/ntuples"
 SKIM_SIG_BDT_OUTPUT_DIR="$OUTPUT_WD/signal/skim_signal_bdt"
 SKIM_DATA_BDT_OUTPUT_DIR="$OUTPUT_WD/data/skim_signal_bdt"
 SKIM_BG_SIG_BDT_OUTPUT_DIR="$OUTPUT_WD/bg/skim_signal_bdt"
@@ -70,3 +65,23 @@ LEPTON_TRACK_SPLIT_DIR="$OUTPUT_WD/signal/lepton_track"
 RGS_DIR="/afs/desy.de/user/n/nissanuv/cms-tools/analysis/cut_optimisation/rgs"
 RESUMMINO_BIN="/afs/desy.de/user/n/nissanuv/local/bin/resummino"
 DILEPTON_BDT_DIR="$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt"
+
+if [[ `hostname` == *".desy.de"* ]]; then
+    MKDIR_CMD=mkdir
+    COPY_CMD=cp
+    COPY_DEST_PREFIX=""
+    OUTPUT_WD="/afs/desy.de/user/n/nissanuv/nfs/x1x2x1"
+    SIG_CONFIG_OUTPUT_DIR="$OUTPUT_WD/signal/config"
+    SIG_AOD_OUTPUT_DIR="$OUTPUT_WD/signal/aod"
+    SIG_MINIAOD_OUTPUT_DIR="$OUTPUT_WD/signal/miniaod"
+    SIG_NTUPLES_OUTPUT_DIR="$OUTPUT_WD/signal/ntuples"
+else
+    MKDIR_CMD=gfal-mkdir
+    COPY_CMD=cp
+    COPY_DEST_PREFIX="file://"
+    OUTPUT_WD="srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub"
+    SIG_CONFIG_OUTPUT_DIR="$OUTPUT_WD/signal/config"
+    SIG_AOD_OUTPUT_DIR="$OUTPUT_WD/signal/aod"
+    SIG_MINIAOD_OUTPUT_DIR="$OUTPUT_WD/signal/miniaod"
+    SIG_NTUPLES_OUTPUT_DIR="$OUTPUT_WD/signal/ntuples"
+fi
