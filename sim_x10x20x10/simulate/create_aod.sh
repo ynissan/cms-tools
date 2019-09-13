@@ -45,7 +45,7 @@ priority = 0
 getenv = True
 EOM
 
-for f in $SIG_CONFIG_OUTPUT_DIR/*; do
+for f in $SIG_CONFIG_OUTPUT_DIR/single/*; do
 	echo "Will run:"
 	filename=$(basename $f .py)
 	cmd="$SIM_DIR/simulate/create_aod_single.sh cmsRun $f"
