@@ -16,8 +16,10 @@ cd ~/CMSSW_9_4_11/src
 . /cvmfs/cms.cern.ch/cmsset_default.sh
 cmsenv
 
-echo Nopa@2wd | voms-proxy-init -voms cms:/cms -valid 192:00
-export X509_USER_PROXY=$(voms-proxy-info | grep path | cut -b 13-)
+if [[ `hostname` == *".desy.de"* ]]; then
+    echo Nopa@2wd | voms-proxy-init -voms cms:/cms -valid 192:00
+    export X509_USER_PROXY=$(voms-proxy-info | grep path | cut -b 13-)
+fi
 
 cmsDriver.py $1 --datamix PreMix --conditions auto:run2_mc --pileup_input dbs:/RelValFS_PREMIXUP15_PU25/CMSSW_9_4_11_cand2-PU25ns_94X_mcRun2_asymptotic_v3_FastSim-v1/GEN-SIM-DIGI-RAW --fast --era Run2_2016 --eventcontent AODSIM --relval 100000,1000 -s GEN,SIM,RECOBEFMIX,DIGIPREMIX_S2:pdigi_valid,DATAMIX,L1,DIGI2RAW,L1Reco,RECO --datatier AODSIM --beamspot Realistic50ns13TeVCollision --python_filename=$2 --fileout $3 --no_exec -n 500 --customise SimGeneral/DataMixingModule/customiseForPremixingInput.customiseForPreMixingInput
 
