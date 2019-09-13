@@ -7,6 +7,9 @@ shopt -s nullglob
 # necessary for running cmsenv
 shopt -s expand_aliases
 
+echo Nopa@2wd | voms-proxy-init -voms cms:/cms -valid 192:00
+export X509_USER_PROXY=$(voms-proxy-info | grep path | cut -b 13-)
+
 #check output directory
 if [ ! -d "$SIG_AOD_OUTPUT_DIR" ]; then
   mkdir $SIG_AOD_OUTPUT_DIR
@@ -25,7 +28,8 @@ if [ ! -d "$SIG_AOD_OUTPUT_DIR/stderr" ]; then
 fi
 
 cd ~/CMSSW_9_4_11/src
-. /cvmfs/cms.cern.ch/cmsset_default.sh
+export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
+source $VO_CMS_SW_DIR/cmsset_default.sh
 cmsenv
 
 timestamp=$(date +%Y%m%d_%H%M%S%N)
@@ -41,7 +45,7 @@ priority = 0
 getenv = True
 EOM
 
-for f in $SIG_CONFIG_OUTPUT_DIR/single/*; do
+for f in $SIG_CONFIG_OUTPUT_DIR/*; do
 	echo "Will run:"
 	filename=$(basename $f .py)
 	cmd="$SIM_DIR/simulate/create_aod_single.sh cmsRun $f"

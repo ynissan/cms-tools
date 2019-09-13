@@ -13,7 +13,9 @@ cd ~/CMSSW_9_4_11/src
 # module use -a /afs/desy.de/group/cms/modulefiles/
 # module load cmssw
 
-. /cvmfs/cms.cern.ch/cmsset_default.sh
+export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
+source $VO_CMS_SW_DIR/cmsset_default.sh
+
 cmsenv
 
 if [[ `hostname` == *".desy.de"* ]]; then
@@ -29,7 +31,7 @@ randSvc = RandomNumberServiceHelper(process.RandomNumberGeneratorService)
 randSvc.populate()
 EOM
 
-echo Running: $COPY_CMD ${COPY_DEST_PREFIX}$2 $SIG_CONFIG_OUTPUT_DIR/
+echo Running: $COPY_CMD ${COPY_DEST_PREFIX}$2 $SIG_CONFIG_OUTPUT_DIR/single/
 
-$COPY_CMD ${COPY_DEST_PREFIX}$2 $SIG_CONFIG_OUTPUT_DIR/
+$COPY_CMD ${COPY_DEST_PREFIX}$2 $SIG_CONFIG_OUTPUT_DIR/single/
 rm $2

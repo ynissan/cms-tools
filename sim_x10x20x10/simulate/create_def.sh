@@ -16,16 +16,16 @@ if [ ! -d "$SIG_CONFIG_OUTPUT_DIR" ]; then
     $MKDIR_CMD $SIG_CONFIG_OUTPUT_DIR
 fi
 
-if [ ! -d "$HOME/config" ]; then
-  mkdir $HOME/config
+if [ ! -d "$SIG_CONFIG_OUTPUT_DIR/single" ]; then
+  mkdir $SIG_CONFIG_OUTPUT_DIR/single
 fi
 
-if [ ! -d "$HOME/config/stdout" ]; then
-  mkdir $HOME/config/stdout
+if [ ! -d "$SIG_CONFIG_OUTPUT_DIR/stdout" ]; then
+  mkdir $SIG_CONFIG_OUTPUT_DIR/stdout
 fi
 
-if [ ! -d "$HOME/config/stderr" ]; then
-  mkdir "$HOME/config/stderr"
+if [ ! -d "$SIG_CONFIG_OUTPUT_DIR/stderr" ]; then
+  mkdir "$SIG_CONFIG_OUTPUT_DIR/stderr"
 fi
 
 timestamp=$(date +%Y%m%d_%H%M%S%N)
@@ -43,14 +43,15 @@ EOM
 
 # CMS ENV
 cd ~/CMSSW_9_4_11/src 
-. /cvmfs/cms.cern.ch/cmsset_default.sh
+export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
+source $VO_CMS_SW_DIR/cmsset_default.sh
 cmsenv
 cd $OLDPWD
 
 count=0
 
 for f in ~/CMSSW_9_4_11/src/Configuration/Generator/python/higgsino*.py; do
-    for i in `seq 1`; do
+    for i in `seq 120`; do
     #for i in 1; do
         ((count+=1))
         echo Running $count
@@ -58,15 +59,15 @@ for f in ~/CMSSW_9_4_11/src/Configuration/Generator/python/higgsino*.py; do
         filename=$(basename $f .py)
         configfilename=$(basename $filename _cff)_${t}.py
         #outfilename=$SIG_AOD_OUTPUT_DIR/single/$(basename $filename _cff)_AODSIM_n${t}.root
-        outfilename=$WORK_DIR/$(basename $filename _cff)_AODSIM_n${t}.root
+        outfilename=$WORK_DIR/$(basename $filename _cff)_${t}.root
         echo "Will run:" #GEN,SIM,RECOBEFMIX,DIGIPREMIX_S2:pdigi_valid,DATAMIX,L1,DIGI2RAW,L1Reco,RECO,VALIDATION
         #${SIG_CONFIG_OUTPUT_DIR}/single/$configfilename
         cmd="$SIM_DIR/simulate/create_def_single.sh $filename $WORK_DIR/$configfilename $outfilename"
         echo $cmd
 cat << EOM >> $output_file
 arguments = $cmd
-error = $HOME/config/stderr/${configfilename}.err
-output = $HOME/config/stdout/${configfilename}.output
+error = $SIG_CONFIG_OUTPUT_DIR/stderr/${configfilename}.err
+output = $SIG_CONFIG_OUTPUT_DIR/stdout/${configfilename}.output
 Queue
 EOM
 done

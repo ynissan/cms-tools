@@ -70,6 +70,7 @@ if [[ `hostname` == *".desy.de"* ]]; then
     echo Running in DESY
     MKDIR_CMD=mkdir
     COPY_CMD=cp
+    LS_CMD=ls
     COPY_DEST_PREFIX=""
     OUTPUT_WD="/afs/desy.de/user/n/nissanuv/nfs/x1x2x1"
     SIG_CONFIG_OUTPUT_DIR="$OUTPUT_WD/signal/config"
@@ -80,6 +81,7 @@ else
     echo Running in cmslogin
     MKDIR_CMD=gfal-mkdir
     COPY_CMD=gfal-copy
+    LS_CMD=gfal-ls
     COPY_DEST_PREFIX="file://"
     OUTPUT_WD="srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub"
     SIG_CONFIG_OUTPUT_DIR="$OUTPUT_WD/signal/config"
