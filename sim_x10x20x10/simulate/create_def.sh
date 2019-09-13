@@ -7,6 +7,9 @@ shopt -s nullglob
 # necessary for running cmsenv
 shopt -s expand_aliases
 
+echo Nopa@2wd | voms-proxy-init -voms cms:/cms -valid 192:00
+export X509_USER_PROXY=$(voms-proxy-info | grep path | cut -b 13-)
+
 #check output directory
 if [ ! -d "$SIG_CONFIG_OUTPUT_DIR" ]; then
   $MKDIR_CMD $SIG_CONFIG_OUTPUT_DIR
@@ -39,17 +42,15 @@ EOM
 
 # CMS ENV
 cd ~/CMSSW_9_4_11/src 
-. /etc/profile.d/modules.sh
-module use -a /afs/desy.de/group/cms/modulefiles/
-module load cmssw
+. /cvmfs/cms.cern.ch/cmsset_default.sh
 cmsenv
 cd $OLDPWD
 
 count=0
 
 for f in ~/CMSSW_9_4_11/src/Configuration/Generator/python/higgsino*.py; do
-    #for i in `seq 120`; do
-    for i in 1; do
+    for i in `seq 120`; do
+    #for i in 1; do
         ((count+=1))
         echo Running $count
         t=$(date +%N)

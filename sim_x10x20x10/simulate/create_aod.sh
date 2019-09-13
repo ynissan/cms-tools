@@ -25,9 +25,7 @@ if [ ! -d "$SIG_AOD_OUTPUT_DIR/stderr" ]; then
 fi
 
 cd ~/CMSSW_9_4_11/src
-. /etc/profile.d/modules.sh
-module use -a /afs/desy.de/group/cms/modulefiles/
-module load cmssw
+. /cvmfs/cms.cern.ch/cmsset_default.sh
 cmsenv
 
 timestamp=$(date +%Y%m%d_%H%M%S%N)
