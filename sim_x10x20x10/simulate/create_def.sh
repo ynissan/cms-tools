@@ -12,7 +12,8 @@ export X509_USER_PROXY=$(voms-proxy-info | grep path | cut -b 13-)
 
 #check output directory
 if [ ! -d "$SIG_CONFIG_OUTPUT_DIR" ]; then
-  $MKDIR_CMD $SIG_CONFIG_OUTPUT_DIR
+    echo Running: $MKDIR_CMD $SIG_CONFIG_OUTPUT_DIR
+    $MKDIR_CMD $SIG_CONFIG_OUTPUT_DIR
 fi
 
 if [ ! -d "$HOME/config" ]; then
@@ -49,7 +50,7 @@ cd $OLDPWD
 count=0
 
 for f in ~/CMSSW_9_4_11/src/Configuration/Generator/python/higgsino*.py; do
-    for i in `seq 120`; do
+    for i in `seq 1`; do
     #for i in 1; do
         ((count+=1))
         echo Running $count
