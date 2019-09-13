@@ -69,6 +69,7 @@ DILEPTON_BDT_DIR="$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt"
 if [[ `hostname` == *".desy.de"* ]]; then
     MKDIR_CMD=mkdir
     COPY_CMD=cp
+    echo "COPY_CMD=$COPY_CMD"
     COPY_DEST_PREFIX=""
     OUTPUT_WD="/afs/desy.de/user/n/nissanuv/nfs/x1x2x1"
     SIG_CONFIG_OUTPUT_DIR="$OUTPUT_WD/signal/config"
@@ -77,7 +78,7 @@ if [[ `hostname` == *".desy.de"* ]]; then
     SIG_NTUPLES_OUTPUT_DIR="$OUTPUT_WD/signal/ntuples"
 else
     MKDIR_CMD=gfal-mkdir
-    COPY_CMD=cp
+    COPY_CMD=gfal-copy
     COPY_DEST_PREFIX="file://"
     OUTPUT_WD="srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub"
     SIG_CONFIG_OUTPUT_DIR="$OUTPUT_WD/signal/config"

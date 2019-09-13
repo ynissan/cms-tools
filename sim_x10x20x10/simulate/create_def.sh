@@ -12,16 +12,16 @@ if [ ! -d "$SIG_CONFIG_OUTPUT_DIR" ]; then
   $MKDIR_CMD $SIG_CONFIG_OUTPUT_DIR
 fi
 
-if [ ! -d "~/config" ]; then
-  mkdir "~/config"
+if [ ! -d "$HOME/config" ]; then
+  mkdir $HOME/config
 fi
 
-if [ ! -d "~/config/stdout" ]; then
-  mkdir "~/config/stdout"
+if [ ! -d "$HOME/config/stdout" ]; then
+  mkdir $HOME/config/stdout
 fi
 
-if [ ! -d "~/config/stderr" ]; then
-  mkdir "~/config/stderr"
+if [ ! -d "$HOME/config/stderr" ]; then
+  mkdir "$HOME/config/stderr"
 fi
 
 timestamp=$(date +%Y%m%d_%H%M%S%N)
@@ -48,7 +48,8 @@ cd $OLDPWD
 count=0
 
 for f in ~/CMSSW_9_4_11/src/Configuration/Generator/python/higgsino*.py; do
-    for i in `seq 120`; do
+    #for i in `seq 120`; do
+    for i in 1; do
         ((count+=1))
         echo Running $count
         t=$(date +%N)
@@ -62,8 +63,8 @@ for f in ~/CMSSW_9_4_11/src/Configuration/Generator/python/higgsino*.py; do
         echo $cmd
 cat << EOM >> $output_file
 arguments = $cmd
-error = ~/config/stderr/${configfilename}.err
-output = ~/config/stdout/${configfilename}.output
+error = $HOME/config/stderr/${configfilename}.err
+output = $HOME/config/stdout/${configfilename}.output
 Queue
 EOM
 done
