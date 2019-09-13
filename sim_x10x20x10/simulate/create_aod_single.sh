@@ -21,6 +21,8 @@ export X509_USER_PROXY=$(voms-proxy-info | grep path | cut -b 13-)
 
 $@
 
+echo Output Code: $?
+
 filename=$(basename $2 .py).root
 
 echo Running: $COPY_CMD ${COPY_DEST_PREFIX}$WORK_DIR/$2 $SIG_AOD_OUTPUT_DIR/single/
