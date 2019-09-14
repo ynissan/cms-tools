@@ -1,0 +1,4 @@
+[manage]
+dir = .
+[caches]
+$CMSSW_BASE/test = 1
