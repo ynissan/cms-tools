@@ -56,7 +56,7 @@ class jobSubmitterCT(jobSubmitter):
                 with open("input/args_"+jname+".txt",'w') as argfile:
                     id = str(self.timenow) + str(job.njobs)
                     basename = os.path.basename(file)
-                    cff_file = os.path.splitext(basename)[0]
+                    cff_file = basename.split(".py")[0]
                     config_out = "/tmp/" + basename + "_" + id + ".py"
                     file_out = "/tmp/" + basename + "_" + id + ".root"
                     args = "cff_file=" + cff_file + " config_out=" + config_out + " file_out=" + file_out
