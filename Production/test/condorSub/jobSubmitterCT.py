@@ -3,9 +3,15 @@ from Condor.Production.jobSubmitter import *
 class jobSubmitterCT(jobSubmitter):
     def addExtraOptions(self,parser):
         super(jobSubmitterCT,self).addExtraOptions(parser)
+        self.removeOptions(self,parser,"-m")
+        print "Parser after remove:", parser
+        parser.add_option("-m", "--mode", dest="mode", default="", help="mode to run (required) (default = %default)")
     
     def checkExtraOptions(self,options,parser):
         super(jobSubmitterCT,self).checkExtraOptions(options,parser)
+        
+        if len(options.mode)==0 or options.mode not in ("def", "aod", "miniaod", "ntuples"):
+            parser.error("Required option: --mode [mode]")
     
     def generateExtra(self,job):
         super(jobSubmitterTM,self).generateExtra(job)
@@ -16,4 +22,8 @@ class jobSubmitterCT(jobSubmitter):
         ])
     
     def generateSubmission(self):
+        # create protojob
+        job = protoJob()
+        job.name = self.mode
+        self.generatePerJob(job)
         
