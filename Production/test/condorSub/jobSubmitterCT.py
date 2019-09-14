@@ -58,9 +58,9 @@ class jobSubmitterCT(jobSubmitter):
                     basename = os.path.basename(file)
                     cff_file = os.path.splitext(basename)[0]
                     base = basename.split("_cff.py")[0]
-                    config_out = "/tmp/" + base + "_" + id + ".py"
-                    file_out = "/tmp/" + base + "_" + id + ".root"
-                    args = "cff_file=" + cff_file + " config_out=" + config_out + " file_out=" + file_out
+                    config_out = base + "_" + id + ".py"
+                    file_out = base + "_" + id + ".root"
+                    args = cff_file + " " + config_out + " " + file_out
                     argfile.write(args)
         
         job.queue = "-queue "+str(job.njobs)
