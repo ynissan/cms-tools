@@ -2,7 +2,7 @@ from Condor.Production.jobSubmitter import *
 from glob import glob
 import os
 
-defaultModeLocations: {
+defaultModeLocations = {
     "def" : "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/def/"
 }
 
