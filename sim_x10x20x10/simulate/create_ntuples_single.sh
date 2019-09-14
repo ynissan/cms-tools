@@ -25,8 +25,8 @@ echo Output Code: $exit_code
 
 if [ "$exit_code" -eq "0" ]
 then
-    echo Running: $COPY_CMD ${COPY_DEST_PREFIX}$2 $SIG_NTUPLES_OUTPUT_DIR/single/
-    $COPY_CMD ${COPY_DEST_PREFIX}$2 $SIG_NTUPLES_OUTPUT_DIR/single/
+    echo Running: $COPY_CMD ${COPY_DEST_PREFIX}$2_RA2AnalysisTree.root $SIG_NTUPLES_OUTPUT_DIR/single/
+    $COPY_CMD ${COPY_DEST_PREFIX}$2_RA2AnalysisTree.root $SIG_NTUPLES_OUTPUT_DIR/single/
 fi
 
 rm $2_RA2AnalysisTree.root
