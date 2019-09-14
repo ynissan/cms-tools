@@ -1,4 +1,6 @@
 from Condor.Production.jobSubmitter import *
+from glob import glob
+import os
 
 class jobSubmitterCT(jobSubmitter):
     def addExtraOptions(self,parser):
@@ -26,4 +28,11 @@ class jobSubmitterCT(jobSubmitter):
         job = protoJob()
         job.name = self.mode
         self.generatePerJob(job)
+        
+        modelLocation = os.path.expandvars("$CMSSW_BASE/src/Configuration/Generator/python")
+        for file in glob(modelLocation + "/*"):
+            print "Adding job for file=" + file
+            job.njobs += 1
+            if self.count and not self.prepare:
+                continue
         
