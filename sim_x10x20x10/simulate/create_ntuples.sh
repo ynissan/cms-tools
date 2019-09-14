@@ -49,8 +49,8 @@ for f in $SIG_MINIAOD_OUTPUT_DIR/single/*; do
     filename=$(basename $f)
     logfname=$(basename $filename .root)
     fileout=$WORK_DIR/${logfname}
-    if [ -f "${fileout}_RA2AnalysisTree.root" ]; then
-        echo "${fileout}_RA2AnalysisTree.root exist. Skipping..."
+    if [ -f "$SIG_NTUPLES_OUTPUT_DIR/single/${logfname}_RA2AnalysisTree.root" ]; then
+        echo "$SIG_NTUPLES_OUTPUT_DIR/single/${logfname}_RA2AnalysisTree.root exist. Skipping..."
         continue
     fi
     echo "Will run:"

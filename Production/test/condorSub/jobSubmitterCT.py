@@ -5,7 +5,7 @@ import os
 class jobSubmitterCT(jobSubmitter):
     def addExtraOptions(self,parser):
         super(jobSubmitterCT,self).addExtraOptions(parser)
-        self.removeOptions(self,parser,"-m")
+        self.removeOptions(parser,"-m")
         print "Parser after remove:", parser
         parser.add_option("-m", "--mode", dest="mode", default="", help="mode to run (required) (default = %default)")
     

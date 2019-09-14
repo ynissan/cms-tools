@@ -40,8 +40,8 @@ for f in $SIG_AOD_OUTPUT_DIR/single/*; do
     #fileout=$SIG_MINIAOD_OUTPUT_DIR/single/${filename}
     fileout=$WORK_DIR/${filename}
     #echo $fileout
-    if [ -f "$fileout" ]; then
-        echo "$fileout exist. Skipping..."
+    if [ -f "$SIG_MINIAOD_OUTPUT_DIR/single/${filename}" ]; then
+        echo "$SIG_MINIAOD_OUTPUT_DIR/single/${filename} exist. Skipping..."
         continue
     fi
     logfname=$(basename $filename .root)
