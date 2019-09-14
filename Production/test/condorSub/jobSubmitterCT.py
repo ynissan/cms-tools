@@ -37,7 +37,7 @@ class jobSubmitterCT(jobSubmitter):
         job.name = self.mode
         self.generatePerJob(job)
         
-        modelLocation = os.path.expandvars("$CMSSW_BASE/src/Configuration/Generator/python")
+        modelLocation = os.path.expandvars("$CMSSW_BASE/src/cms-tools/Configuration/Generator/python")
         for file in glob(modelLocation + "/*"):
             print "Adding job for file=" + file
             job.njobs += 1

@@ -29,4 +29,4 @@ then
     $COPY_CMD ${COPY_DEST_PREFIX}$2 $SIG_NTUPLES_OUTPUT_DIR/single/
 fi
 
-rm $2
+rm $2_RA2AnalysisTree.root
