@@ -12,7 +12,7 @@ class jobSubmitterCT(jobSubmitter):
         self.removeOptions(parser,"-m")
         print "Parser after remove:", parser
         parser.add_option("-m", "--mode", dest="mode", default="", help="mode to run (required) (default = %default)")
-        parser.add_option("-o", "--output", dest="output", default="", help="path to output directory in which root files will be stored (required) (default = %default)"
+        parser.add_option("-o", "--output", dest="output", default="", help="path to output directory in which root files will be stored (required) (default = %default)")
     
     def checkExtraOptions(self,options,parser):
         super(jobSubmitterCT,self).checkExtraOptions(options,parser)
