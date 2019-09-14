@@ -43,4 +43,4 @@ class jobSubmitterCT(jobSubmitter):
             job.njobs += 1
             if self.count and not self.prepare:
                 continue
-        
+        self.protoJobs.append(job)
