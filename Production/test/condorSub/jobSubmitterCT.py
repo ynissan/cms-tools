@@ -1,6 +1,7 @@
 from Condor.Production.jobSubmitter import *
 from glob import glob
 import os
+import time
 
 defaultModeLocations = {
     "def" : "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/def/"
@@ -37,10 +38,30 @@ class jobSubmitterCT(jobSubmitter):
         job.name = self.mode
         self.generatePerJob(job)
         
-        modelLocation = os.path.expandvars("$CMSSW_BASE/src/cms-tools/Configuration/Generator/python")
-        for file in glob(modelLocation + "/*"):
+        self.timenow = int(time.time())
+        
+        modelLocation = os.path.expandvars("$CMSSW_BASE/src/Configuration/Generator/python")
+        for file in glob(modelLocation + "/higgsino*.py"):
             print "Adding job for file=" + file
             job.njobs += 1
             if self.count and not self.prepare:
                 continue
+            job.nums.append(job.njobs-1)
+            # just keep list of jobs
+            if self.missing and not self.prepare:
+                continue
+            
+            # write job options to file - will be transferred with job
+            if self.prepare:
+                jname = job.makeName(job.nums[-1])
+                with open("input/args_"+jname+".txt",'w') as argfile:
+                    id = str(self.timenow) + str(job.njobs)
+                    basename = os.path.basename(file)
+                    cff_file = os.path.splitext(basename)[0]
+                    config_out = "/tmp/" + basename + "_" + id + ".py"
+                    file_out = "/tmp/" + basename + "_" + id + ".root"
+                    args = "cff_file=" + cff_file + " config_out=" + config_out + " file_out=" + file_out
+                    argfile.write(args)
+        
+        job.queue = "-queue "+str(job.njobs)
         self.protoJobs.append(job)
