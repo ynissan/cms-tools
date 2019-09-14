@@ -11,7 +11,6 @@ class jobSubmitterCT(jobSubmitter):
     def addExtraOptions(self,parser):
         super(jobSubmitterCT,self).addExtraOptions(parser)
         self.removeOptions(parser,"-m")
-        print "Parser after remove:", parser
         parser.add_option("-m", "--mode", dest="mode", default="", help="mode to run (required) (default = %default)")
         parser.add_option("-o", "--output", dest="output", default="", help="path to output directory in which root files will be stored (required) (default = %default)")
     
@@ -64,4 +63,5 @@ class jobSubmitterCT(jobSubmitter):
                     argfile.write(args)
         
         job.queue = "-queue "+str(job.njobs)
+        print "Job queue", job.queue
         self.protoJobs.append(job)
