@@ -16,7 +16,7 @@ class jobSubmitterCT(jobSubmitter):
             parser.error("Required option: --mode [mode]")
     
     def generateExtra(self,job):
-        super(jobSubmitterTM,self).generateExtra(job)
+        super(jobSubmitterCT,self).generateExtra(job)
         job.patterns.update([
             ("JOBNAME",job.name+"_$(Process)_$(Cluster)"),
             ("EXTRAINPUTS","input/args_"+job.name+"_$(Process).txt"),
