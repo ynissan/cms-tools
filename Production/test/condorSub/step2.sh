@@ -64,7 +64,7 @@ elif [[ "$MODE" == "aod" ]]; then
     echo "Running: $COPY_CMD"
     $COPY_CMD
     export basename_name=$(basename ${ARGS[0]})
-    cmd="cmsRun " $basename_name
+    cmd="cmsRun  $basename_name"
     echo "Running: $cmd"
     $cmd
 fi
