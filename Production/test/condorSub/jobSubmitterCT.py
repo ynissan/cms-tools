@@ -84,7 +84,6 @@ class jobSubmitterCT(jobSubmitter):
                         config_out = defaultModeLocations['def'] + "/" + file
                         args = config_out
                         argfile.write(args)
-            exit(0)
         
         job.queue = "-queue "+str(job.njobs)
         print "Job queue", job.queue
