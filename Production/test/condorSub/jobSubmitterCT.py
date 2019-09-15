@@ -2,9 +2,11 @@ from Condor.Production.jobSubmitter import *
 from glob import glob
 import os
 import time
+import commands
 
 defaultModeLocations = {
-    "def" : "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/def/"
+    "def" : "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/def/",
+    "aod" : "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/aod/"
 }
 
 class jobSubmitterCT(jobSubmitter):
@@ -38,30 +40,34 @@ class jobSubmitterCT(jobSubmitter):
         self.generatePerJob(job)
         
         self.timenow = int(time.time())
-        
-        modelLocation = os.path.expandvars("$CMSSW_BASE/src/Configuration/Generator/python")
-        for file in glob(modelLocation + "/higgsino*.py"):
-            print "Adding job for file=" + file
-            job.njobs += 1
-            if self.count and not self.prepare:
-                continue
-            job.nums.append(job.njobs-1)
-            # just keep list of jobs
-            if self.missing and not self.prepare:
-                continue
+        if self.mode == "def":
+            modelLocation = os.path.expandvars("$CMSSW_BASE/src/Configuration/Generator/python")
+            for file in glob(modelLocation + "/higgsino*.py"):
+                print "Adding job for file=" + file
+                job.njobs += 1
+                if self.count and not self.prepare:
+                    continue
+                job.nums.append(job.njobs-1)
+                # just keep list of jobs
+                if self.missing and not self.prepare:
+                    continue
             
-            # write job options to file - will be transferred with job
-            if self.prepare:
-                jname = job.makeName(job.nums[-1])
-                with open("input/args_"+jname+".txt",'w') as argfile:
-                    id = str(self.timenow) + str(job.njobs)
-                    basename = os.path.basename(file)
-                    cff_file = os.path.splitext(basename)[0]
-                    base = basename.split("_cff.py")[0]
-                    config_out = base + "_" + id + ".py"
-                    file_out = base + "_" + id + ".root"
-                    args = cff_file + " " + config_out + " " + file_out
-                    argfile.write(args)
+                # write job options to file - will be transferred with job
+                if self.prepare:
+                    jname = job.makeName(job.nums[-1])
+                    with open("input/args_"+jname+".txt",'w') as argfile:
+                        id = str(self.timenow) + str(job.njobs)
+                        basename = os.path.basename(file)
+                        cff_file = os.path.splitext(basename)[0]
+                        base = basename.split("_cff.py")[0]
+                        config_out = base + "_" + id + ".py"
+                        file_out = base + "_" + id + ".root"
+                        args = cff_file + " " + config_out + " " + file_out
+                        argfile.write(args)
+        elif self.mode == "aod":
+            status, out = commands.getstatusoutput('gfal-ls ' + defaultModeLocations['def'])
+            print out
+            exit(0)
         
         job.queue = "-queue "+str(job.njobs)
         print "Job queue", job.queue
