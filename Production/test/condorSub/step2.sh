@@ -38,7 +38,8 @@ echo "PROCESS:    $PROCESS"
 echo ""
 
 # run CMSSW
-ARGS=$(cat args_${JOBNAME}_${PROCESS}.txt)
+ARGS_FILE=$(cat args_${JOBNAME}_${PROCESS}.txt)
+ARGS=$(ARGS_FILE)
 
 echo "ARGS FROM FILE: $ARGS"
 
@@ -52,9 +53,13 @@ if [[ $vomsident = *"cmsgli"* ]]; then
     exit 60322
 fi
 
-cmsDriver.py $1 --datamix PreMix --conditions auto:run2_mc --pileup_input dbs:/RelValFS_PREMIXUP15_PU25/CMSSW_9_4_11_cand2-PU25ns_94X_mcRun2_asymptotic_v3_FastSim-v1/GEN-SIM-DIGI-RAW --fast --era Run2_2016 --eventcontent AODSIM --relval 100000,1000 -s GEN,SIM,RECOBEFMIX,DIGIPREMIX_S2:pdigi_valid,DATAMIX,L1,DIGI2RAW,L1Reco,RECO --datatier AODSIM --beamspot Realistic50ns13TeVCollision --python_filename=$2 --fileout $3 --no_exec -n 500 --customise SimGeneral/DataMixingModule/customiseForPremixingInput.customiseForPreMixingInput
+echo Runnning: cmsDriver.py ${ARGS[0]} --datamix PreMix --conditions auto:run2_mc --pileup_input dbs:/RelValFS_PREMIXUP15_PU25/CMSSW_9_4_11_cand2-PU25ns_94X_mcRun2_asymptotic_v3_FastSim-v1/GEN-SIM-DIGI-RAW --fast --era Run2_2016 --eventcontent AODSIM --relval 100000,1000 -s GEN,SIM,RECOBEFMIX,DIGIPREMIX_S2:pdigi_valid,DATAMIX,L1,DIGI2RAW,L1Reco,RECO --datatier AODSIM --beamspot Realistic50ns13TeVCollision --python_filename=${ARGS[1]} --fileout ${ARGS[2]} --no_exec -n 500 --customise SimGeneral/DataMixingModule/customiseForPremixingInput.customiseForPreMixingInput
+
+cmsDriver.py ${ARGS[0]} --datamix PreMix --conditions auto:run2_mc --pileup_input dbs:/RelValFS_PREMIXUP15_PU25/CMSSW_9_4_11_cand2-PU25ns_94X_mcRun2_asymptotic_v3_FastSim-v1/GEN-SIM-DIGI-RAW --fast --era Run2_2016 --eventcontent AODSIM --relval 100000,1000 -s GEN,SIM,RECOBEFMIX,DIGIPREMIX_S2:pdigi_valid,DATAMIX,L1,DIGI2RAW,L1Reco,RECO --datatier AODSIM --beamspot Realistic50ns13TeVCollision --python_filename=${ARGS[1]} --fileout ${ARGS[2]} --no_exec -n 500 --customise SimGeneral/DataMixingModule/customiseForPremixingInput.customiseForPreMixingInput
 
 CMSEXIT=$?
+
+echo "Exit Status: $CMSEXIT"
 
 if [[ $CMSEXIT -ne 0 ]]; then
         rm $2
@@ -62,7 +67,7 @@ if [[ $CMSEXIT -ne 0 ]]; then
         exit $CMSEXIT
 fi
 
-cat << EOM >> $2
+cat << EOM >> ${ARGS[1]}
 from IOMC.RandomEngine.RandomServiceHelper import RandomNumberServiceHelper
 randSvc = RandomNumberServiceHelper(process.RandomNumberGeneratorService)
 randSvc.populate()
@@ -83,6 +88,6 @@ if [[ ( "$CMSSITE" == "T1_US_FNAL" && "$USER" == "cmsgli" && "${OUTDIR}" == *"ro
 fi
 echo "$CMDSTR output for condor"
 
-echo Running: ${CMDSTR} -n 1 $2 ${OUTDIR}/
-${CMDSTR} -n 1 $2 ${OUTDIR}/
-rm $2
+echo Running: ${CMDSTR} -n 1 ${ARGS[1]} ${OUTDIR}/
+${CMDSTR} -n 1 ${ARGS[1]} ${OUTDIR}/
+rm ${ARGS[1]}
