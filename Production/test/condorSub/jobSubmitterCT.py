@@ -66,8 +66,24 @@ class jobSubmitterCT(jobSubmitter):
                         argfile.write(args)
         elif self.mode == "aod":
             status, out = commands.getstatusoutput('gfal-ls ' + defaultModeLocations['def'])
-            for f in out.split("\n"):
-                print "|" + f + "|"
+            for file in out.split("\n"):
+                print "Adding job for file=" + file
+                if self.count and not self.prepare:
+                    continue
+                job.nums.append(job.njobs-1)
+                # just keep list of jobs
+                if self.missing and not self.prepare:
+                    continue
+            
+                # write job options to file - will be transferred with job
+                if self.prepare:
+                    jname = job.makeName(job.nums[-1])
+                    with open("input/args_"+jname+".txt",'w') as argfile:
+                        id = file.split("_")[-1].split(".")[0]
+                        basename = os.path.basename(file)
+                        config_out = defaultModeLocations['def'] + "/" + file
+                        args = config_out
+                        argfile.write(args)
             exit(0)
         
         job.queue = "-queue "+str(job.njobs)

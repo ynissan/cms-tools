@@ -60,7 +60,9 @@ if [[ "$MODE" == "def" ]]; then
     echo Runnning: cmsDriver.py ${ARGS[0]} --datamix PreMix --conditions auto:run2_mc --pileup_input dbs:/RelValFS_PREMIXUP15_PU25/CMSSW_9_4_11_cand2-PU25ns_94X_mcRun2_asymptotic_v3_FastSim-v1/GEN-SIM-DIGI-RAW --fast --era Run2_2016 --eventcontent AODSIM --relval 100000,1000 -s GEN,SIM,RECOBEFMIX,DIGIPREMIX_S2:pdigi_valid,DATAMIX,L1,DIGI2RAW,L1Reco,RECO --datatier AODSIM --beamspot Realistic50ns13TeVCollision --python_filename=${ARGS[1]} --fileout ${ARGS[2]} --no_exec -n 500 --customise SimGeneral/DataMixingModule/customiseForPremixingInput.customiseForPreMixingInput
     cmsDriver.py ${ARGS[0]} --datamix PreMix --conditions auto:run2_mc --pileup_input dbs:/RelValFS_PREMIXUP15_PU25/CMSSW_9_4_11_cand2-PU25ns_94X_mcRun2_asymptotic_v3_FastSim-v1/GEN-SIM-DIGI-RAW --fast --era Run2_2016 --eventcontent AODSIM --relval 100000,1000 -s GEN,SIM,RECOBEFMIX,DIGIPREMIX_S2:pdigi_valid,DATAMIX,L1,DIGI2RAW,L1Reco,RECO --datatier AODSIM --beamspot Realistic50ns13TeVCollision --python_filename=${ARGS[1]} --fileout ${ARGS[2]} --no_exec -n 500 --customise SimGeneral/DataMixingModule/customiseForPremixingInput.customiseForPreMixingInput
 elif [[ "$MODE" == "aod" ]]; then
-    
+    cmd="cmsRun ${ARGS[0]}"
+    echo "Running: $cmd"
+    $cmd
 fi
 
 CMSEXIT=$?
@@ -96,6 +98,12 @@ if [[ ( "$CMSSITE" == "T1_US_FNAL" && "$USER" == "cmsgli" && "${OUTDIR}" == *"ro
 fi
 echo "$CMDSTR output for condor"
 
-echo Running: ${CMDSTR} -n 1 ${ARGS[1]} ${OUTDIR}/
-${CMDSTR} -n 1 ${ARGS[1]} ${OUTDIR}/
-rm ${ARGS[1]}
+if [[ "$MODE" == "def" ]]; then
+    echo Running: ${CMDSTR} -n 1 ${ARGS[1]} ${OUTDIR}/
+    ${CMDSTR} -n 1 ${ARGS[1]} ${OUTDIR}/
+    rm ${ARGS[1]}
+elif [[ "$MODE" == "aod" ]]; then
+    echo Running: ${CMDSTR} -n 1 ${ARGS[1]} ${OUTDIR}/
+    ${CMDSTR} -n 1 ${ARGS[0]} ${OUTDIR}/
+    rm ${ARGS[0]}
+fi
