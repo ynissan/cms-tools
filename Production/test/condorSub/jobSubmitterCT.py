@@ -66,7 +66,7 @@ class jobSubmitterCT(jobSubmitter):
                         argfile.write(args)
         elif self.mode == "aod":
             status, out = commands.getstatusoutput('gfal-ls ' + defaultModeLocations['def'])
-            for f in out:
+            for f in out.split("\n"):
                 print "|" + f + "|"
             exit(0)
         
