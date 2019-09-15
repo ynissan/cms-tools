@@ -68,6 +68,7 @@ class jobSubmitterCT(jobSubmitter):
             status, out = commands.getstatusoutput('gfal-ls ' + defaultModeLocations['def'])
             for file in out.split("\n"):
                 print "Adding job for file=" + file
+                job.njobs += 1
                 if self.count and not self.prepare:
                     continue
                 job.nums.append(job.njobs-1)
