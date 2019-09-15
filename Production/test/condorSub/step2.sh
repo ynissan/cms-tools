@@ -39,9 +39,9 @@ echo ""
 
 # run CMSSW
 ARGS_FILE=$(cat args_${JOBNAME}_${PROCESS}.txt)
-ARGS=$(ARGS_FILE)
+ARGS=($ARGS_FILE)
 
-echo "ARGS FROM FILE: $ARGS"
+echo "ARGS FROM FILE: " ${ARGS[*]}
 
 # check for incorrect pilot cert
 vomsident=$(voms-proxy-info -identity)
