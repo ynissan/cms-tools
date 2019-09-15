@@ -67,7 +67,7 @@ class jobSubmitterCT(jobSubmitter):
         elif self.mode == "aod":
             status, out = commands.getstatusoutput('gfal-ls ' + defaultModeLocations['def'])
             for f in out:
-                print "|" + f = "|"
+                print "|" + f + "|"
             exit(0)
         
         job.queue = "-queue "+str(job.njobs)
