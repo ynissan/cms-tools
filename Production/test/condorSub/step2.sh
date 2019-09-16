@@ -84,7 +84,7 @@ if [[ "$MODE" == "def" ]]; then
     from IOMC.RandomEngine.RandomServiceHelper import RandomNumberServiceHelper
     randSvc = RandomNumberServiceHelper(process.RandomNumberGeneratorService)
     randSvc.populate()
-    EOM
+EOM
 fi
 
 # copy output to eos
@@ -111,3 +111,5 @@ elif [[ "$MODE" == "aod" ]]; then
     ${CMDSTR} -n 1 $basename_name ${OUTDIR}/
     rm $basename_name
 fi
+
+echo "END OF SCRIPT"
