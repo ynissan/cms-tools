@@ -61,7 +61,7 @@ class jobSubmitterCT(jobSubmitter):
                         cff_file = os.path.splitext(basename)[0]
                         base = basename.split("_cff.py")[0]
                         config_out = base + "_" + id + ".py"
-                        file_out = base + "_" + id + ".root"
+                        file_out = base + "_" + id + "_AOD.root"
                         args = cff_file + " " + config_out + " " + file_out
                         argfile.write(args)
         elif self.mode == "aod":

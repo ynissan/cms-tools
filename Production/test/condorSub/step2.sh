@@ -107,9 +107,12 @@ if [[ "$MODE" == "def" ]]; then
     ${CMDSTR} -n 1 ${ARGS[1]} ${OUTDIR}/
     rm ${ARGS[1]}
 elif [[ "$MODE" == "aod" ]]; then
-    echo Running: ${CMDSTR} -n 1 $basename_name ${OUTDIR}/
+    move_file=$($basename_name .py)
+    move_file=${move_file}_aod.root
+    echo Running: ${CMDSTR} -n 1 $move_file ${OUTDIR}/
     ${CMDSTR} -n 1 $basename_name ${OUTDIR}/
     rm $basename_name
+    rm $move_file
 fi
 
 echo "END OF SCRIPT"
