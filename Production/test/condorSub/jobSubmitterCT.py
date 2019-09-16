@@ -88,7 +88,7 @@ class jobSubmitterCT(jobSubmitter):
                     with open("input/args_"+jname+".txt",'w') as argfile:
                         id = file.split("_")[-1].split(".")[0]
                         basename = os.path.basename(file)
-                        config_out = defaultFileLocations['def'] + "/" + file
+                        config_out = defaultModeLocations['def'] + "/" + file
                         args = config_out
                         argfile.write(args)
         
