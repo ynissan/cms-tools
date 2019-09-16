@@ -9,6 +9,12 @@ defaultModeLocations = {
     "aod" : "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/aod/"
 }
 
+defaultFileLocations = {
+    "def" : "root://dcache-cms-xrootd.desy.de//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/def/",
+    "aod" : "root://dcache-cms-xrootd.desy.de//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/aod/"
+}
+
+
 class jobSubmitterCT(jobSubmitter):
     def addExtraOptions(self,parser):
         super(jobSubmitterCT,self).addExtraOptions(parser)
@@ -82,7 +88,7 @@ class jobSubmitterCT(jobSubmitter):
                     with open("input/args_"+jname+".txt",'w') as argfile:
                         id = file.split("_")[-1].split(".")[0]
                         basename = os.path.basename(file)
-                        config_out = defaultModeLocations['def'] + "/" + file
+                        config_out = defaultFileLocations['def'] + "/" + file
                         args = config_out
                         argfile.write(args)
         

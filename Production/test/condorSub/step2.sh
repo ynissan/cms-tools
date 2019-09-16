@@ -57,14 +57,11 @@ if [[ $vomsident = *"cmsgli"* ]]; then
 fi
 
 if [[ "$MODE" == "def" ]]; then
-    echo Runnning: cmsDriver.py ${ARGS[0]} --datamix PreMix --conditions auto:run2_mc --pileup_input dbs:/RelValFS_PREMIXUP15_PU25/CMSSW_9_4_11_cand2-PU25ns_94X_mcRun2_asymptotic_v3_FastSim-v1/GEN-SIM-DIGI-RAW --fast --era Run2_2016 --eventcontent AODSIM --relval 100000,1000 -s GEN,SIM,RECOBEFMIX,DIGIPREMIX_S2:pdigi_valid,DATAMIX,L1,DIGI2RAW,L1Reco,RECO --datatier AODSIM --beamspot Realistic50ns13TeVCollision --python_filename=${ARGS[1]} --fileout ${ARGS[2]} --no_exec -n 5 --customise SimGeneral/DataMixingModule/customiseForPremixingInput.customiseForPreMixingInput
-    cmsDriver.py ${ARGS[0]} --datamix PreMix --conditions auto:run2_mc --pileup_input dbs:/RelValFS_PREMIXUP15_PU25/CMSSW_9_4_11_cand2-PU25ns_94X_mcRun2_asymptotic_v3_FastSim-v1/GEN-SIM-DIGI-RAW --fast --era Run2_2016 --eventcontent AODSIM --relval 100000,1000 -s GEN,SIM,RECOBEFMIX,DIGIPREMIX_S2:pdigi_valid,DATAMIX,L1,DIGI2RAW,L1Reco,RECO --datatier AODSIM --beamspot Realistic50ns13TeVCollision --python_filename=${ARGS[1]} --fileout ${ARGS[2]} --no_exec -n 5 --customise SimGeneral/DataMixingModule/customiseForPremixingInput.customiseForPreMixingInput
+    cmd="cmsDriver.py ${ARGS[0]} --datamix PreMix --conditions auto:run2_mc --pileup_input dbs:/RelValFS_PREMIXUP15_PU25/CMSSW_9_4_11_cand2-PU25ns_94X_mcRun2_asymptotic_v3_FastSim-v1/GEN-SIM-DIGI-RAW --fast --era Run2_2016 --eventcontent AODSIM --relval 100000,1000 -s GEN,SIM,RECOBEFMIX,DIGIPREMIX_S2:pdigi_valid,DATAMIX,L1,DIGI2RAW,L1Reco,RECO --datatier AODSIM --beamspot Realistic50ns13TeVCollision --python_filename=${ARGS[1]} --fileout ${ARGS[2]} --no_exec -n 5 --customise SimGeneral/DataMixingModule/customiseForPremixingInput.customiseForPreMixingInput"
+    echo Runnning: $cmd
+    $cmd
 elif [[ "$MODE" == "aod" ]]; then
-    COPY_CMD="gfal-copy ${ARGS[0]} ."
-    echo "Running: $COPY_CMD"
-    $COPY_CMD
-    export basename_name=$(basename ${ARGS[0]})
-    cmd="cmsRun  $basename_name"
+    cmd="cmsRun ${ARGS[0]}"
     echo "Running: $cmd"
     $cmd
 fi
@@ -107,11 +104,10 @@ if [[ "$MODE" == "def" ]]; then
     ${CMDSTR} -n 1 ${ARGS[1]} ${OUTDIR}/
     rm ${ARGS[1]}
 elif [[ "$MODE" == "aod" ]]; then
-    move_file=$($basename_name .py)
-    move_file=${move_file}_aod.root
+    move_file=$(basename ${ARGS[0]} .py)
+    move_file=${move_file}_AOD.root
     echo Running: ${CMDSTR} -n 1 $move_file ${OUTDIR}/
-    ${CMDSTR} -n 1 $basename_name ${OUTDIR}/
-    rm $basename_name
+    ${CMDSTR} -n 1 $move_file ${OUTDIR}/
     rm $move_file
 fi
 
