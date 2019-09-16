@@ -80,10 +80,10 @@ if [[ $CMSEXIT -ne 0 ]]; then
 fi
 
 if [[ "$MODE" == "def" ]]; then
-    cat << EOM >> ${ARGS[1]}
-    from IOMC.RandomEngine.RandomServiceHelper import RandomNumberServiceHelper
-    randSvc = RandomNumberServiceHelper(process.RandomNumberGeneratorService)
-    randSvc.populate()
+cat << EOM >> ${ARGS[1]}
+from IOMC.RandomEngine.RandomServiceHelper import RandomNumberServiceHelper
+randSvc = RandomNumberServiceHelper(process.RandomNumberGeneratorService)
+randSvc.populate()
 EOM
 fi
 
