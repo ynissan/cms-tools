@@ -37,7 +37,7 @@ class jobSubmitterLC(jobSubmitter):
     def generateSubmission(self):
         # create protojob
         job = protoJob()
-        job.name = self.mode
+        job.name = "leptonCollection"
         self.generatePerJob(job)
         print "Wanted dicts", self.dicts
         self.timenow = int(time.time())
