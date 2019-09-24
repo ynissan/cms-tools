@@ -82,7 +82,9 @@ CMSEXIT=$?
 echo "Exit Status: $CMSEXIT"
 
 if [[ $CMSEXIT -ne 0 ]]; then
-        rm $2
+        if [[ "$MODE" == "aod" ]]; then
+            rm $(basename ${ARGS[0]})
+        fi
         echo "exit code $CMSEXIT, skipping gfal-copy"
         exit $CMSEXIT
 fi

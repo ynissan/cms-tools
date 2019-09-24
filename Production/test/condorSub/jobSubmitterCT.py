@@ -38,6 +38,10 @@ class jobSubmitterCT(jobSubmitter):
             ("EXTRAINPUTS","input/args_"+job.name+"_$(Process).txt"),
             ("EXTRAARGS","-j "+job.name+" -p $(Process) -o "+self.output + " -m " + self.mode),
         ])
+        job.appends.append(
+                'requirements = (OpSysAndVer =?= "CentOS6")\n'
+                '+SingularityAutoLoad = False\n'
+            )
     
     def generateSubmission(self):
         # create protojob
