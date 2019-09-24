@@ -4,7 +4,7 @@ import os
 import time
 import commands
 
-slimmedProductionPath = "root://dcache-cms-xrootd.desy.de//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/SlimmedProduction/"
+slimmedProductionPath = "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/SlimmedProduction/"
 
 class jobSubmitterLC(jobSubmitter):
     def __init__(self,argv=None,parser=None):
@@ -31,7 +31,7 @@ class jobSubmitterLC(jobSubmitter):
         job.patterns.update([
             ("JOBNAME",job.name+"_$(Process)_$(Cluster)"),
             ("EXTRAINPUTS","input/args_"+job.name+"_$(Process).txt"),
-            ("EXTRAARGS","-j "+job.name+" -p $(Process) -o "+self.output + " -i " + self.input),
+            ("EXTRAARGS","-j "+job.name+" -p $(Process) -o "+self.output + " -i " + "root://dcache-cms-xrootd.desy.de//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/SlimmedProduction/"),
         ])
     
     def generateSubmissionForFiles(self, job, files):
