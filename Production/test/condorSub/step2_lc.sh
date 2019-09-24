@@ -17,7 +17,7 @@ export REDIR=""
 export OPTIND=1
 while [[ $OPTIND -lt $# ]]; do
     # getopts in silent mode, don't exit on errors
-    getopts ":j:p:o:m:" opt || status=$?
+    getopts ":j:p:o:i:" opt || status=$?
     case "$opt" in
         j) export JOBNAME=$OPTARG
         ;;
@@ -25,7 +25,7 @@ while [[ $OPTIND -lt $# ]]; do
         ;;
         o) export OUTDIR=$OPTARG
         ;;
-        m) export MODE=$OPTARG
+        i) export INDIR=$OPTARG
         ;;
         # keep going if getopts had an error
         \? | :) OPTIND=$((OPTIND+1))
@@ -37,7 +37,7 @@ echo "parameter set:"
 echo "OUTDIR:     $OUTDIR"
 echo "JOBNAME:    $JOBNAME"
 echo "PROCESS:    $PROCESS"
-echo "MODE:       $MODE"
+echo "INDIR:      $INDIR"
 echo ""
 
 # run CMSSW
@@ -64,22 +64,27 @@ fi
 export CMDSTR="gfal-copy"
 export GFLAG=""
 
-if [[ "$MODE" == "def" ]]; then
-    cmd="cmsDriver.py ${ARGS[0]} --datamix PreMix --conditions auto:run2_mc --pileup_input dbs:/RelValFS_PREMIXUP15_PU25/CMSSW_9_4_11_cand2-PU25ns_94X_mcRun2_asymptotic_v3_FastSim-v1/GEN-SIM-DIGI-RAW --fast --era Run2_2016 --eventcontent AODSIM --relval 100000,1000 -s GEN,SIM,RECOBEFMIX,DIGIPREMIX_S2:pdigi_valid,DATAMIX,L1,DIGI2RAW,L1Reco,RECO --datatier AODSIM --beamspot Realistic50ns13TeVCollision --python_filename=${ARGS[1]} --fileout ${ARGS[2]} --no_exec -n 5 --customise SimGeneral/DataMixingModule/customiseForPremixingInput.customiseForPreMixingInput"
-    echo Runnning: $cmd
-    $cmd
-elif [[ "$MODE" == "aod" ]]; then
-    echo Running: ${CMDSTR} -n 1 ${ARGS[0]} .
-    ${CMDSTR} -n 1 ${ARGS[0]} .
-    export local_file=$(basename ${ARGS[0]})
-    cmd="cmsRun $local_file"
-    echo "Running: $cmd"
-    $cmd
-fi
+for f in ${ARGS[*]}; do
+    echo "Processing " $f
+done
+
+# if [[ "$MODE" == "def" ]]; then
+#     cmd="cmsDriver.py ${ARGS[0]} --datamix PreMix --conditions auto:run2_mc --pileup_input dbs:/RelValFS_PREMIXUP15_PU25/CMSSW_9_4_11_cand2-PU25ns_94X_mcRun2_asymptotic_v3_FastSim-v1/GEN-SIM-DIGI-RAW --fast --era Run2_2016 --eventcontent AODSIM --relval 100000,1000 -s GEN,SIM,RECOBEFMIX,DIGIPREMIX_S2:pdigi_valid,DATAMIX,L1,DIGI2RAW,L1Reco,RECO --datatier AODSIM --beamspot Realistic50ns13TeVCollision --python_filename=${ARGS[1]} --fileout ${ARGS[2]} --no_exec -n 5 --customise SimGeneral/DataMixingModule/customiseForPremixingInput.customiseForPreMixingInput"
+#     echo Runnning: $cmd
+#     $cmd
+# elif [[ "$MODE" == "aod" ]]; then
+#     echo Running: ${CMDSTR} -n 1 ${ARGS[0]} .
+#     ${CMDSTR} -n 1 ${ARGS[0]} .
+#     export local_file=$(basename ${ARGS[0]})
+#     cmd="cmsRun $local_file"
+#     echo "Running: $cmd"
+#     $cmd
+# fi
 
 CMSEXIT=$?
 
 echo "Exit Status: $CMSEXIT"
+exit 0
 
 if [[ $CMSEXIT -ne 0 ]]; then
         if [[ "$MODE" == "aod" ]]; then
@@ -87,14 +92,6 @@ if [[ $CMSEXIT -ne 0 ]]; then
         fi
         echo "exit code $CMSEXIT, skipping gfal-copy"
         exit $CMSEXIT
-fi
-
-if [[ "$MODE" == "def" ]]; then
-cat << EOM >> ${ARGS[1]}
-from IOMC.RandomEngine.RandomServiceHelper import RandomNumberServiceHelper
-randSvc = RandomNumberServiceHelper(process.RandomNumberGeneratorService)
-randSvc.populate()
-EOM
 fi
 
 if [[ ( "$CMSSITE" == "T1_US_FNAL" && "$USER" == "cmsgli" && "${OUTDIR}" == *"root://cmseos.fnal.gov/"* ) ]]; then
