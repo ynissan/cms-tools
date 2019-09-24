@@ -31,7 +31,7 @@ class jobSubmitterLC(jobSubmitter):
         job.patterns.update([
             ("JOBNAME",job.name+"_$(Process)_$(Cluster)"),
             ("EXTRAINPUTS","input/args_"+job.name+"_$(Process).txt"),
-            ("EXTRAARGS","-j "+job.name+" -p $(Process) -o "+self.output),
+            ("EXTRAARGS","-j "+job.name+" -p $(Process) -o "+self.output + " -i " + self.input),
         ])
     
     def generateSubmissionForFiles(self, job, files):
