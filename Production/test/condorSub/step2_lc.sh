@@ -65,7 +65,7 @@ export CMDSTR="gfal-copy"
 export GFLAG=""
 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CMSSW_BASE/src/cms-tools/lib/classes
-cd $LD_LIBRARY_PATH:$CMSSW_BASE/src/cms-tools/lib/classes
+cd $CMSSW_BASE/src/cms-tools/lib/classes
 rm LeptonCollectionMapDict.cxx
 rootcling -f LeptonCollectionMapDict.cxx -c LeptonCollectionMap.h LinkDef.h
 rm LeptonCollectionMap_C.so
