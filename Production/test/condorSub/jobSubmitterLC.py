@@ -4,7 +4,7 @@ import os
 import time
 import commands
 
-slimmedProductionPath = "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/SlimmedProduction/"
+slimmedProductionPath = "root://dcache-cms-xrootd.desy.de//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/SlimmedProduction/"
 
 class jobSubmitterLC(jobSubmitter):
     def __init__(self,argv=None,parser=None):

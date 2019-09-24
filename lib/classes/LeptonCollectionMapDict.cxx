@@ -679,7 +679,7 @@ namespace {
     };
     static const char* includePaths[] = {
 "/cvmfs/cms.cern.ch/slc6_amd64_gcc630/lcg/root/6.10.09-omkpbe4/include",
-"/afs/desy.de/user/n/nissanuv/cms-tools/lib/classes/",
+"/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools/lib/classes/",
 0
     };
     static const char* fwdDeclCode = R"DICTFWDDCLS(

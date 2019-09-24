@@ -64,35 +64,13 @@ fi
 export CMDSTR="gfal-copy"
 export GFLAG=""
 
-for f in ${ARGS[*]}; do
-    echo "Processing " $f
-done
-
-# if [[ "$MODE" == "def" ]]; then
-#     cmd="cmsDriver.py ${ARGS[0]} --datamix PreMix --conditions auto:run2_mc --pileup_input dbs:/RelValFS_PREMIXUP15_PU25/CMSSW_9_4_11_cand2-PU25ns_94X_mcRun2_asymptotic_v3_FastSim-v1/GEN-SIM-DIGI-RAW --fast --era Run2_2016 --eventcontent AODSIM --relval 100000,1000 -s GEN,SIM,RECOBEFMIX,DIGIPREMIX_S2:pdigi_valid,DATAMIX,L1,DIGI2RAW,L1Reco,RECO --datatier AODSIM --beamspot Realistic50ns13TeVCollision --python_filename=${ARGS[1]} --fileout ${ARGS[2]} --no_exec -n 5 --customise SimGeneral/DataMixingModule/customiseForPremixingInput.customiseForPreMixingInput"
-#     echo Runnning: $cmd
-#     $cmd
-# elif [[ "$MODE" == "aod" ]]; then
-#     echo Running: ${CMDSTR} -n 1 ${ARGS[0]} .
-#     ${CMDSTR} -n 1 ${ARGS[0]} .
-#     export local_file=$(basename ${ARGS[0]})
-#     cmd="cmsRun $local_file"
-#     echo "Running: $cmd"
-#     $cmd
-# fi
-
-CMSEXIT=$?
-
-echo "Exit Status: $CMSEXIT"
-exit 0
-
-if [[ $CMSEXIT -ne 0 ]]; then
-        if [[ "$MODE" == "aod" ]]; then
-            rm $(basename ${ARGS[0]})
-        fi
-        echo "exit code $CMSEXIT, skipping gfal-copy"
-        exit $CMSEXIT
-fi
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CMSSW_BASE/src/cms-tools/lib/classes
+cd $LD_LIBRARY_PATH:$CMSSW_BASE/src/cms-tools/lib/classes
+rm LeptonCollectionMapDict.cxx
+rootcling -f LeptonCollectionMapDict.cxx -c LeptonCollectionMap.h LinkDef.h
+rm LeptonCollectionMap_C.so
+echo .L LeptonCollectionMap.C+ | root.exe -b
+cd $LD_LIBRARY_PATH:$CMSSW_BASE/src/cms-tools/analysis/scripts/
 
 if [[ ( "$CMSSITE" == "T1_US_FNAL" && "$USER" == "cmsgli" && "${OUTDIR}" == *"root://cmseos.fnal.gov/"* ) ]]; then
     export CMDSTR="gfal-copy"
@@ -100,19 +78,11 @@ if [[ ( "$CMSSITE" == "T1_US_FNAL" && "$USER" == "cmsgli" && "${OUTDIR}" == *"ro
     export GSIFTP_ENDPOINT="gsiftp://cmseos-gridftp.fnal.gov//eos/uscms/store/user/"
     export OUTDIR=${GSIFTP_ENDPOINT}${OUTDIR#root://cmseos.fnal.gov//store/user/}
 fi
-echo "$CMDSTR output for condor"
 
-if [[ "$MODE" == "def" ]]; then
-    echo Running: ${CMDSTR} -n 1 ${ARGS[1]} ${OUTDIR}/
-    ${CMDSTR} -n 1 ${ARGS[1]} ${OUTDIR}/
-    rm ${ARGS[1]}
-elif [[ "$MODE" == "aod" ]]; then
-    move_file=$(basename ${ARGS[0]} .py)
-    move_file=${move_file}_AOD.root
-    echo Running: ${CMDSTR} -n 1 $move_file ${OUTDIR}/
-    ${CMDSTR} -n 1 $move_file ${OUTDIR}/
-    rm $move_file
-    rm $local_file
-fi
+for f in ${ARGS[*]}; do
+    echo "Processing " $f
+    ./create_lepton_collection.py -i $INDIR/$f -o /tmp/$f
+    ${CMDSTR} -n 1 /tmp/$f ${OUTDIR}/
+done
 
-echo "END OF SCRIPT"
+exit 0

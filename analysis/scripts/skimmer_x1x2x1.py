@@ -8,8 +8,8 @@ import sys
 import numpy as np
 import os
 
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib/classes")
+sys.path.append("/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools")
+sys.path.append("/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools/lib/classes")
 from lib import analysis_ntuples
 from lib import analysis_tools
 from lib import utils
@@ -60,6 +60,7 @@ if (bg and signal):
 ######## END OF CMDLINE ARGUMENTS ########
 def main():
     chain = TChain('TreeMaker2/PreSelection')
+    print "Opening", input_file
     chain.Add(input_file)
     c = chain.CloneTree()
     chain = None
