@@ -81,7 +81,9 @@ fi
 
 for f in ${ARGS[*]}; do
     echo "Processing " $f
+    echo "Running ./create_lepton_collection.py -i $INDIR/$f -o /tmp/$f"
     ./create_lepton_collection.py -i $INDIR/$f -o /tmp/$f
+    echo "Running ${CMDSTR} -n 1 /tmp/$f ${OUTDIR}/"
     ${CMDSTR} -n 1 /tmp/$f ${OUTDIR}/
 done
 
