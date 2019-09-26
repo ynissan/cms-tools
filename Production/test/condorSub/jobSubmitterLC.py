@@ -9,7 +9,7 @@ slimmedProductionPath = "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/stor
 class jobSubmitterLC(jobSubmitter):
     def __init__(self,argv=None,parser=None):
         super(jobSubmitterLC,self).__init__(argv, parser)
-        self.scripts = ["step1.sh","step2_test.sh"]
+        self.scripts = ["step1.sh","step2_lc.sh"]
         
     def addExtraOptions(self,parser):
         super(jobSubmitterLC,self).addExtraOptions(parser)

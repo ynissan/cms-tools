@@ -6,13 +6,13 @@ import commands
 
 slimmedProductionPath = "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/SlimmedProduction/"
 
-class jobSubmitterLC(jobSubmitter):
+class jobSubmitterTest(jobSubmitter):
     def __init__(self,argv=None,parser=None):
-        super(jobSubmitterLC,self).__init__(argv, parser)
-        self.scripts = ["step1.sh","step2_lc.sh"]
+        super(jobSubmitterTest,self).__init__(argv, parser)
+        self.scripts = ["step1.sh","step2_test.sh"]
         
     def addExtraOptions(self,parser):
-        super(jobSubmitterLC,self).addExtraOptions(parser)
+        super(jobSubmitterTest,self).addExtraOptions(parser)
         parser.add_option("-N", "--nFiles", dest="nFiles", default=1, help="number of files to process (default = %default)")
         parser.add_option("-J", "--nFilesPerJob", dest="nFilesPerJob", default=1, help="number of files to process per job (default = %default)")
         parser.add_option("-o", "--output", dest="output", default="", help="path to output directory in which root files will be stored (required) (default = %default)")
@@ -21,13 +21,13 @@ class jobSubmitterLC(jobSubmitter):
             help="comma-separated list of input sample names (default = %default)")
     
     def checkExtraOptions(self,options,parser):
-        super(jobSubmitterLC,self).checkExtraOptions(options,parser)
+        super(jobSubmitterTest,self).checkExtraOptions(options,parser)
         
         if len(options.output)==0:
             options.output = "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection/"
     
     def generateExtra(self,job):
-        super(jobSubmitterLC,self).generateExtra(job)
+        super(jobSubmitterTest,self).generateExtra(job)
         job.patterns.update([
             ("JOBNAME",job.name+"_$(Process)_$(Cluster)"),
             ("EXTRAINPUTS","input/args_"+job.name+"_$(Process).txt"),
