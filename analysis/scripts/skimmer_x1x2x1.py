@@ -59,11 +59,11 @@ if (bg and signal):
 
 ######## END OF CMDLINE ARGUMENTS ########
 def main():
-    chain = TChain('TreeMaker2/PreSelection')
+    c = TChain('TreeMaker2/PreSelection')
     print "Opening", input_file
-    chain.Add(input_file)
-    c = chain.CloneTree()
-    chain = None
+    c.Add(input_file)
+    #c = chain.CloneTree()
+    #chain = None
     print "Creating " + output_file
     fnew = TFile(output_file,'recreate')
 
