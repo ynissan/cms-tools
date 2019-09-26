@@ -87,6 +87,8 @@ for f in ${ARGS[*]}; do
     ./create_lepton_collection.py -i $f -o /tmp/$f
     echo "Running ${CMDSTR} -n 1 /tmp/$f ${OUTDIR}/"
     ${CMDSTR} -n 1 /tmp/$f ${OUTDIR}/
+    rm $f
+    rm /tmp/$f
 done
 
 exit 0
