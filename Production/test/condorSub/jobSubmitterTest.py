@@ -52,16 +52,14 @@ class jobSubmitterLC(jobSubmitter):
         job.name = "test"
         self.generatePerJob(job)
         job.njobs += 1
-        if self.count and not self.prepare:
-            continue
-        job.nums.append(job.njobs-1)
-        if self.missing and not self.prepare:
-            continue
-        if self.prepare:
-            jname = job.makeName(job.nums[-1])
-            with open("input/args_"+jname+".txt",'w') as argfile:
-                args = "test"
-                argfile.write(args)
+        if not (self.count and not self.prepare):
+            job.nums.append(job.njobs-1)
+            if not (self.missing and not self.prepare):
+                if self.prepare:
+                    jname = job.makeName(job.nums[-1])
+                    with open("input/args_"+jname+".txt",'w') as argfile:
+                        args = "test"
+                        argfile.write(args)
         
         job.queue = "-queue "+str(job.njobs)
         print "Job queue", job.queue
