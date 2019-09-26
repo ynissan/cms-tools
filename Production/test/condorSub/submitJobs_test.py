@@ -1,7 +1,7 @@
-from jobSubmitterSetup import jobSubmitterSetup
+from jobSubmitterTest import jobSubmitterTest
 
 def submitJobs():  
-    mySubmitter = jobSubmitterSetup()
+    mySubmitter = jobSubmitterTest()
     mySubmitter.run()
     
 if __name__=="__main__":
