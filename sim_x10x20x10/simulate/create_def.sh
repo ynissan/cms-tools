@@ -51,7 +51,7 @@ cd $OLDPWD
 count=0
 
 for f in ~/CMSSW_9_4_11/src/Configuration/Generator/python/higgsino*.py; do
-    for i in `seq 120`; do
+    for i in `seq 150`; do
     #for i in 1; do
         ((count+=1))
         echo Running $count
