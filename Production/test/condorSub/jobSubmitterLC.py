@@ -66,6 +66,7 @@ class jobSubmitterLC(jobSubmitter):
         for file in out.split("\n"):
             if file in existingFiles:
                 print "File", file, " alreading exists. Skipping."
+                continue
             if self.dicts is not None and len(self.dicts) > 0:
                 shouldProcess = False
                 for dict in self.dicts:
