@@ -86,8 +86,20 @@ for f in ${ARGS[*]}; do
     mkdir tmp
     echo "Running ./create_lepton_collection.py -i $f -o tmp/$f"
     ./create_lepton_collection.py -i $f -o tmp/$f
+    EXIT_STATUS=$?
+    if [[ $EXIT_STATUS -ne 0 ]]; then
+        echo "exit code $EXIT_STATUS, skipping gfal-copy"
+        rm $f
+        rm -rf tmp
+        continue
+    fi
     echo "Running ${CMDSTR} -n 1 tmp/$f ${OUTDIR}/"
-    ${CMDSTR} -n 1 /tmp/$f ${OUTDIR}/
+    ${CMDSTR} -f tmp/$f ${OUTDIR}/
+    if [[ $? -ne 0 ]]; then
+        echo "Deleting file because gfal-copy failed"
+        echo gfal-rm ${OUTDIR}/$f
+        gfal-rm ${OUTDIR}/$f
+    fi
     rm $f
     rm -rf tmp
 done
