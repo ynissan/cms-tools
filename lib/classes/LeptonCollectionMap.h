@@ -51,8 +51,23 @@ public:
     bool contains(long runNum, long lumiBlockNum, long evtNum);
     const LeptonCollection& get(long runNum, long lumiBlockNum, long evtNum);
     virtual Long64_t  Merge(TCollection *leptonCollectionMap);
+    virtual Long64_t  Merge(const LeptonCollectionMap& leptonCollectionMapM);
     ClassDef(LeptonCollectionMap,1);
     int getSize() const;
-protected:    
+//protected:    
     std::unordered_map< array<long,3> , LeptonCollection, LeptonCollectionArrayHasher >  leptonCollectionMap;
+};
+
+class LeptonCollectionFilesMap : public TObject {
+public:
+    LeptonCollectionFilesMap() {};
+    void insert(long runNum, long lumiBlockNum, long evtNum, const std::string& file, bool checkExists=false);
+    bool contains(long runNum, long lumiBlockNum, long evtNum);
+    const std::string& get(long runNum, long lumiBlockNum, long evtNum);
+    virtual Long64_t  Merge(TCollection *leptonCollectionFilesMap);
+    virtual Long64_t  Merge(const LeptonCollectionFilesMap& leptonCollectionFilesMapM);
+    ClassDef(LeptonCollectionFilesMap,1);
+    int getSize() const;
+//protected:    
+    std::unordered_map< array<long,3> , std::string, LeptonCollectionArrayHasher >  leptonCollectionFilesMap;
 };

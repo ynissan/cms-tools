@@ -9,8 +9,9 @@ import os
 import re
 from datetime import datetime
 
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib")
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib/classes")
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
 import utils
 
 gROOT.SetBatch(True)
@@ -33,10 +34,10 @@ args = parser.parse_args()
 
 output_file = None
 
-signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm7p39Chi20Chipm.root"
+signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/old_leptons_x1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm7p39Chi20Chipm.root"
 #signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm2p51Chi20Chipm.root"
-bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_dilepton_signal_bdt/dm7/single"
-#data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_dilepton_signal_bdt/dm7/single"
+bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/old_leptons_x1x2x1/bg/skim_dilepton_signal_bdt/dm7/single"
+data_dir = "/afs/desy.de/user/n/nissanuv/nfs/old_leptons_x1x2x1/data/skim_dilepton_signal_bdt/dm7/single"
 
 #Z peak
 #bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_z/sum/type_sum"
@@ -48,7 +49,7 @@ bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_dilepton_signal_bdt/dm
 #data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_dilepton_signal_bdt_sc/dm7/single"
 
 
-plot_data = False
+plot_data = True
 plot_signal = True
 plot_ratio = True
 plot_rand = False
@@ -170,7 +171,7 @@ cuts = [{"name":"none", "title": "No Cuts", "condition" : "1"},
 #        {"name":"mets", "title": "Met>20", "condition" : "Met > 20"},
 
 #NORMAL 
-#         {"name":"dilepBdt", "title": "dilepBdt", "condition" : "dilepBDT >= -0.3"},
+         {"name":"MET", "title": "MET", "condition" : "Met >= 250"},
 #         {"name":"dilepBdt2", "title": "dilepBdt2", "condition" : "dilepBDT >= 0"},
 #         {"name":"dilepBdt3", "title": "dilepBdt3", "condition" : "dilepBDT >= 0.2"},
 #         {"name":"dilepBdt3", "title": "dilepBdt4", "condition" : "dilepBDT >= 0.3"},
@@ -192,8 +193,10 @@ cuts = [{"name":"none", "title": "No Cuts", "condition" : "1"},
         {"name":"dilep_skim", "title": "dilep_skim", "condition" : "tracks_trackQualityHighPurity[0] && invMass < 30 && dilepBDT >= -0.3 && univBDT >= -0.4 && tracks[0].Pt() >= 3 && tracks[0].Pt() < 15 && tracks_dzVtx[0] < 0.1 && tracks_dxyVtx[0] < 0.1 && abs(tracks[0].Eta()) <= 2.4"},
         {"name":"dilep_skim_track_bdt", "title": "dilep_skim_track_bdt", "condition" : "tracks_trackQualityHighPurity[0] && invMass < 30 && dilepBDT >= -0.3 && univBDT >= -0.4 && tracks[0].Pt() >= 3 && tracks[0].Pt() < 15 && tracks_dzVtx[0] < 0.1 && tracks_dxyVtx[0] < 0.1 && abs(tracks[0].Eta()) <= 2.4 && trackBDT > 0.1 && @tracks.size() == 1"},
         {"name":"step", "title": "step", "condition" : "tracks_trackQualityHighPurity[0] && invMass < 30 && dilepBDT >= -0.3 && univBDT >= -0.4 && tracks[0].Pt() >= 3 && tracks[0].Pt() < 15 && tracks_dzVtx[0] < 0.1 && tracks_dxyVtx[0] < 0.1 && abs(tracks[0].Eta()) <= 2.4 && trackBDT > 0.1 && @tracks.size() == 1"},
-        {"name":"step2", "title": "step2", "condition" : "Met > 200 && tracks[0].Pt() < 10 && tracks_dzVtx[0] <= 0.01 && tracks_dxyVtx[0] <= 0.01 && univBDT >= 0.1 && pt3 >= 225 && dilepBDT >= 0.15 && trackBDT >= 0.1 && abs(tracks[0].Eta()) < 1.8 && tracks[0].Pt() > 5"},
+        {"name":"step2", "title": "step2", "condition" : "Met > 250 && tracks[0].Pt() < 10 && tracks_dzVtx[0] <= 0.01 && tracks_dxyVtx[0] <= 0.01 && univBDT >= 0.1 && pt3 >= 225 && dilepBDT >= 0.15 && trackBDT >= 0.1 && abs(tracks[0].Eta()) < 1.8 && tracks[0].Pt() > 5"},
         {"name":"step3", "title": "step3", "condition" : "Met > 200 && tracks[0].Pt() < 10 && tracks_dzVtx[0] <= 0.01 && tracks_dxyVtx[0] <= 0.01 && univBDT >= 0.1 && pt3 >= 225 && dilepBDT >= 0.4 && trackBDT >= 0.1 && abs(tracks[0].Eta()) < 1.8 && tracks[0].Pt() > 5"},
+        {"name":"custom", "title": "custom", "condition" : "Met > 200 && dilepBDT >= 0.1 && univBDT >= 0 && tracks_dzVtx[0] <= 0.03 && tracks_dxyVtx[0] <= 0.03 && tracks[0].Pt() < 10 && tracks[0].Pt() > 3 && abs(tracks[0].Eta()) < 2.4 && dileptonPt <= 35 && pt3 >= 100"},
+        {"name":"custom_dpg", "title": "custom_dpg", "condition" : "Met > 200 && trackBDT >= 0.1 && dilepBDT >= 0.1 && univBDT >= 0 && tracks_dzVtx[0] <= 0.03 && tracks_dxyVtx[0] <= 0.03 && tracks[0].Pt() < 10 && tracks[0].Pt() > 5 && abs(tracks[0].Eta()) < 2.4 && dileptonPt <= 35  && pt3 >= 100"}
 
 #        {"name":"metMht", "title": "MET > 200, Mht > 100", "funcs" : [metMht]},
 #         {"name":"trackBDT", "title": "trackBDT >= 0.2", "funcs":[trackBDT]},
@@ -435,6 +438,7 @@ def createAllHistograms(histograms, sumTypes):
             print "Calculated Luminosity: ", calculated_lumi
             weight = calculated_lumi * 1000
         else:
+            print "HERE"
             weight = utils.LUMINOSITY
     
         if plot_signal:

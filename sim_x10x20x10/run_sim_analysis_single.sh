@@ -1,7 +1,5 @@
 #!/bin/bash
 
-. "/afs/desy.de/user/n/nissanuv/cms-tools/bg/def.sh"
-
 shopt -s nullglob
 
 #---------- GET OPTIONS ------------
@@ -28,13 +26,15 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 shopt -s expand_aliases
 
 # CMS ENV
-cd $CMS_WD
-. /etc/profile.d/modules.sh
-module use -a /afs/desy.de/group/cms/modulefiles/
-module load cmssw
+cd ~/CMSSW_10_1_0/src
+
+export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
+source $VO_CMS_SW_DIR/cmsset_default.sh
+
 cmsenv
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/afs/desy.de/user/n/nissanuv/cms-tools/lib/classes
+. "$CMSSW_BASE/src/cms-tools/lib/def.sh"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$CMSSW_BASE/src/cms-tools/lib/classes"
 
 SCRIPT_PATH=$ANALYZER_PATH
 if [ -n "$SKIM" ]; then

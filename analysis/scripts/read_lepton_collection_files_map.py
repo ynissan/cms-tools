@@ -13,6 +13,7 @@ sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib/classes")
 
 gSystem.Load('LeptonCollectionMap_C')
 from ROOT import LeptonCollectionMap
+from ROOT import LeptonCollectionFilesMap
 from ROOT import LeptonCollection
 
 ####### CMDLINE ARGUMENTS #########
@@ -31,11 +32,11 @@ if args.input_file:
 def main():
     f = TFile(input_file,'read')
     
-    leptonCollectionMap = f.Get("leptonCollectionMap")
-    print "Size=", leptonCollectionMap.getSize()
+    leptonCollectionFilesMap = f.Get("leptonCollectionFilesMap")
+    print "Size=", leptonCollectionFilesMap.getSize()
     #print leptonCollectionMap.leptonCollectionMap
-    #for a in leptonCollectionMap.leptonCollectionMap:
-    #    print a.first[0], a.first[1], a.first[2]
+    for a in leptonCollectionFilesMap.leptonCollectionFilesMap:
+        print a.first[0], a.first[1], a.first[2], a.second
     f.Close()
 
 main()

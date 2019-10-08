@@ -12,11 +12,13 @@ declare -A SIM_GROUP=(["low"]="dm2p dm3p dm4p"\
            ["dm9"]="dm9p" \
            ["high"]="dm12p dm13p")
 
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$CMSSW_BASE/src/cms-tools/lib/classes"
+
 NEW_SIM_DIR="/pnfs/desy.de/cms/tier2/store/user/sbein/CommonNtuples"
 NEWEST_SIM_DIR="/pnfs/desy.de/cms/tier2/store/user/sbein/NtupleHub/Production2016v2"
 BG_NTUPLES="/pnfs/desy.de/cms/tier2/store/user/*/NtupleHub/ProductionRun2v[34]"
 NEWESTEST_SIM_DIR="/nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggsino/M1M2Scan/ntuple_sidecar/"
-SIM_NTUPLES_DIR="/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/ntuples_sum"
+SIM_NTUPLES_DIR="/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/SignalNtuplesSplit"
 DATA_NTUPLES_DIR="/pnfs/desy.de/cms/tier2/store/user/*/NtupleHub/ProductionRun2v[34]"
 BG_TYPES=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays DYJetsToLL WJetsToLNu ZJetsToNuNu WZZ WWZ WW WZ ZZZ ZZ TTWJetsToLNu)
 RARE=(WZZ WWZ ZZZ)
@@ -29,20 +31,23 @@ CMS_WD="$CMSSW_BASE/src"
 CMS_TOOLS="$CMS_WD/cms-tools"
 SIM_DIR="$CMS_TOOLS/sim_x10x20x10"
 SCRIPTS_WD="$CMS_TOOLS/analysis/scripts"
+CONDOR_WRAPPER="$SCRIPTS_WD/condor_wrapper.sh"
 LEPTON_TRACK_DIR="$CMS_TOOLS/analysis/lepton_track"
 BG_SCRIPTS="$CMS_TOOLS/bg/scripts"
 ANALYZER_PATH="$SCRIPTS_WD/analyzer_x1x2x1.py"
 SKIMMER_PATH="$SCRIPTS_WD/skimmer_x1x2x1.py"
+LC_SCRIPT_PATH="$SCRIPTS_WD/merge_lepton_collection.py"
 CLONE_SCRIPT="$SCRIPTS_WD/clone_tree_split.py"
 CLONE_SINGLE="$SIM_DIR/clone_sim_file_single.sh"
 CS_SINGLE="$SIM_DIR/calculate_cross_section_single.sh"
 
-#OUTPUT_WD="/afs/desy.de/user/n/nissanuv/work/x1x2x1"
+OUTPUT_WD="/afs/desy.de/user/n/nissanuv/nfs/x1x2x1"
 
 DATA_DIR="$CMS_TOOLS/data"
 BG_DIR="$CMS_TOOLS/bg"
 BG_HIST_DIR="$OUTPUT_WD/bg/hist"
 SKIM_OUTPUT_DIR="$OUTPUT_WD/bg/skim"
+LC_OUTPUT_DIR="$OUTPUT_WD/bg/lc"
 SKIM_SIG_OUTPUT_DIR="$OUTPUT_WD/signal/skim"
 SKIM_DATA_OUTPUT_DIR="$OUTPUT_WD/data/skim"
 CS_SIG_OUTPUT_DIR="$OUTPUT_WD/signal/cs"

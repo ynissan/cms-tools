@@ -58,7 +58,7 @@ def haddMultiple(inputTuple):
     args = ["hadd", outFile] + inFiles
     if verbosity >= 1:
         print "Calling hadd"
-        print "\tOutput:", outfile
+        print "\tOutput:", outFile
         print "\tInput:"
         for f in inFiles:
             print "\t\t", f

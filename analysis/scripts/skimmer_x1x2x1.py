@@ -59,11 +59,11 @@ if (bg and signal):
 
 ######## END OF CMDLINE ARGUMENTS ########
 def main():
-    c = TChain('TreeMaker2/PreSelection')
+    chain = TChain('TreeMaker2/PreSelection')
     print "Opening", input_file
-    c.Add(input_file)
-    #c = chain.CloneTree()
-    #chain = None
+    chain.Add(input_file)
+    c = chain.CloneTree()
+    chain = None
     print "Creating " + output_file
     fnew = TFile(output_file,'recreate')
 
@@ -325,8 +325,17 @@ def main():
     
         var_Electrons = c.Electrons
         var_Electrons_charge= c.Electrons_charge
+        var_Electrons_mediumID = c.Electrons_mediumID
+        var_Electrons_passIso = c.Electrons_passIso
+        var_Electrons_tightID = c.Electrons_tightID
+        
+        
         var_Muons = c.Muons
         var_Muons_charge = c.Muons_charge
+        var_Muons_mediumID = c.Muons_mediumID
+        var_Muons_passIso = c.Muons_passIso
+        var_Muons_tightID = c.Muons_tightID
+        
         var_Jets = c.Jets
         
         if data:

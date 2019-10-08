@@ -10,7 +10,8 @@ import argparse
 import os
 import sys
 
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
 from lib import utils
 
 parser = argparse.ArgumentParser(description='Sum histograms and trees.')
@@ -21,6 +22,8 @@ parser.add_argument('-s', '--stack', dest='stack', help='Perform stack', action=
 parser.add_argument('-skim', '--skim', dest='skim', help='Work on skim', action='store_true')
 parser.add_argument('-bg', '--background', dest='bg', help='Signal', action='store_true')
 parser.add_argument('-sig', '--signal', dest='sig', help='Background', action='store_true')
+parser.add_argument('-lp', '--lepton_collection', dest='lepton_collection', help='Lepton Collection', action='store_true')
+parser.add_argument('-sn', '--signal_ntuples', dest='signal_ntuples', help='Signal Ntuples', action='store_true')
 args = parser.parse_args()
 
 hadd = args.hadd
@@ -30,6 +33,8 @@ stack = args.stack
 skim = args.skim
 signal = args.sig
 bg = args.bg
+lepton_collection = args.lepton_collection
+signal_ntuples = args.signal_ntuples
 
 if (bg and signal) or not (bg or signal):
     signal = True
@@ -39,11 +44,15 @@ WORK_DIR = None
 if bg:
     if skim:
         WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim"
+        if lepton_collection:
+            WORK_DIR = "/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollectionFilesMaps/"
     else:
         WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/hist"
 else:
     if skim:
         WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim"
+        if lepton_collection:
+            WORK_DIR = "/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollectionFilesMaps/"
     else:
         WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/hist"
 
@@ -53,17 +62,25 @@ OUTPOUT_TYPE_SUM = OUTPUT_SUM + "/type_sum"
 OUTPOUT_PROCESSED = OUTPUT_SUM + "/processed"
 OUTPOUT_STACK = OUTPUT_SUM + "/stack"
 
-if not os.path.isdir(OUTPUT_SUM):
-    os.mkdir(OUTPUT_SUM)
+if lepton_collection:
+    OUTPOUT_TYPE_SUM = "/tmp"
+    SINGLE_OUTPUT = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/lc/single"
+elif signal_ntuples:
+    OUTPOUT_TYPE_SUM = "/tmp"
+    SINGLE_OUTPUT = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/ntuples/single/"
+    WORK_DIR = "/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/SignalNtuples/"
+else:
+    if not os.path.isdir(OUTPUT_SUM):
+        os.mkdir(OUTPUT_SUM)
 
-if not os.path.isdir(OUTPOUT_TYPE_SUM):
-    os.mkdir(OUTPOUT_TYPE_SUM)
+    if not os.path.isdir(OUTPOUT_TYPE_SUM):
+        os.mkdir(OUTPOUT_TYPE_SUM)
 
-if not os.path.isdir(OUTPOUT_PROCESSED):
-    os.mkdir(OUTPOUT_PROCESSED)
+    if not os.path.isdir(OUTPOUT_PROCESSED):
+        os.mkdir(OUTPOUT_PROCESSED)
 
-if not os.path.isdir(OUTPOUT_STACK):
-    os.mkdir(OUTPOUT_STACK)
+    if not os.path.isdir(OUTPOUT_STACK):
+        os.mkdir(OUTPOUT_STACK)
 
 sumTypes = {}
 
@@ -112,6 +129,9 @@ def getCompoundTypeFiles(cType):
     return rootFiles
 
 
+#def system(command):
+#    print "Just Performing: " + command
+
 # Add the histograms
 if hadd or all:
     print "Adding histograms."
@@ -122,15 +142,19 @@ if hadd or all:
             filename = os.path.basename(f).split(".")[1]
         else:
             filename = os.path.basename(f).split(".")[0]
+        if "MET" in filename:
+            continue
         types = filename.split("_")
         type = types[0]
+        if signal_ntuples:
+            type = types[0] + "_" + types[1] + "_" + types[2]
         if type not in sumTypes:
             sumTypes[type] = {}
         if bg:
-            if type == "DYJetsToLL" or type == "ST":
-                sumTypes[type][types[1] + "_" + types[2]] = True
-            else:
-                sumTypes[type][types[1]] = True
+            #if type == "DYJetsToLL" or type == "ST":
+            sumTypes[type][types[1] + "_" + types[2]] = True
+            #else:
+            #    sumTypes[type][types[1]] = True
 
     print sumTypes 
 
@@ -138,18 +162,69 @@ if hadd or all:
         print type
         if bg:
             for typeRange in sumTypes[type]:
+                print "-----"
+                print typeRange
+                print "-----"
+                #continue
                 command = None
+                file = ""
+                files = ""
                 if "M-5to50" in typeRange:
                     #command = "/afs/desy.de/user/n/nissanuv/cms-tools/analysis/scripts/ahadd.py -f " + OUTPOUT_TYPE_SUM + "/" + type + "_" + typeRange + ".root " + SINGLE_OUTPUT + "/RunIISummer16MiniAODv3." + type + "_*" + typeRange + "*.root"
-                    command = "hadd -f " + OUTPOUT_TYPE_SUM + "/" + type + "_" + typeRange + ".root " + SINGLE_OUTPUT + "/RunIISummer16MiniAODv3." + type + "_*" + typeRange + "*.root"
+                    file = OUTPOUT_TYPE_SUM + "/" + type + "_" + typeRange + ".root"
+                    if lepton_collection:
+                        files = SINGLE_OUTPUT + "/Summer16*." + type + "_*" + typeRange + "*.root"
+                    else:
+                        files = SINGLE_OUTPUT + "/RunIISummer16MiniAODv3." + type + "_*" + typeRange + "*.root"
+                    command = "hadd -f " + file + " " + SINGLE_OUTPUT + "/RunIISummer16MiniAODv3." + type + "_*" + typeRange + "*.root"
                 else:
-                    command = "hadd -f " + OUTPOUT_TYPE_SUM + "/" + type + "_" + typeRange + ".root " + SINGLE_OUTPUT + "/Summer16." + type + "_" + typeRange + "_*.root"
-                print "Perorming:", command 
-                system(command)
+                    file = OUTPOUT_TYPE_SUM + "/" + type + "_" + typeRange + ".root"
+                    files = SINGLE_OUTPUT + "/Summer16*." + type + "_" + typeRange + "_*.root"
+                    command = "hadd -f " + file + " " + SINGLE_OUTPUT + "/Summer16*." + type + "_" + typeRange + "_*.root"
+                if lepton_collection:
+                    #command = "mkdir tmp"
+                    #print "Perorming:", command 
+                    #system(command)
+                    #command = "gfal-copy -f srm://dcache-se-cms.desy.de/" + files + " ./tmp/"
+                    #print "Perorming:", command 
+                    #system(command)
+                    print files
+                    files_glob = glob(files)
+                    print "***NUMBER:" + str(len(files_glob)) + " " + type + "_" + typeRange
+                    #print files_glob
+                    print "Checking " + WORK_DIR + "/" + os.path.basename(file)
+                    if os.path.exists(WORK_DIR + "/" + os.path.basename(file)):
+                        print "File " + WORK_DIR + "/" + os.path.basename(file) + " exists..."
+                        continue
+                    
+                    command = "./merge_lepton_collection_map.py -o " + file + " -i " + files
+                    print "Perorming:", command 
+                    system(command)
+                    command = "gfal-copy " + file + " " + "srm://dcache-se-cms.desy.de" + WORK_DIR
+                    print "Perorming:", command 
+                    system(command)
+                    command = "rm -rf ./tmp"
+                    print "Perorming:", command 
+                    system(command)
+                else:                
+                    print "Perorming:", command 
+                    system(command)
+                    
+        elif signal_ntuples:          
+            print "-------"
+            command = "hadd -f " + OUTPOUT_TYPE_SUM + "/" + type + "_1.root " + SINGLE_OUTPUT + "/" + type + "_*.root"
+            print "Perorming:", command
+            system(command)
+            command = "gfal-copy " + OUTPOUT_TYPE_SUM + "/" + type + "_1.root " + WORK_DIR
+            print "Perorming:", command
+            system(command)
+            command = "rm " + OUTPOUT_TYPE_SUM + "/" + type + "_1.root "
+            print "Perorming:", command
+            system(command)
         else:
             command = "hadd -f " + OUTPOUT_TYPE_SUM + "/" + type + ".root " + SINGLE_OUTPUT + "/" + type + "_*.root"
             print "Perorming:", command 
-            system(command)
+            #system(command)
 
 if cp or all:
     print "Creating plots."

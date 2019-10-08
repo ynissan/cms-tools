@@ -2,8 +2,6 @@ from ROOT import *
 import sys
 import numpy as np
 
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib/classes")
 from lib import histograms
 from lib import cuts
 import os, re

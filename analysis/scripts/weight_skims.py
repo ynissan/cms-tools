@@ -8,7 +8,8 @@ import argparse
 import sys
 import os
 
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
 from lib import utils
 
 ####### CMDLINE ARGUMENTS #########

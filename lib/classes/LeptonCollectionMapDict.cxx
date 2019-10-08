@@ -141,6 +141,40 @@ namespace ROOT {
    static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::LeptonCollectionMap*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
 } // end of namespace ROOT
 
+namespace ROOT {
+   static void *new_LeptonCollectionFilesMap(void *p = 0);
+   static void *newArray_LeptonCollectionFilesMap(Long_t size, void *p);
+   static void delete_LeptonCollectionFilesMap(void *p);
+   static void deleteArray_LeptonCollectionFilesMap(void *p);
+   static void destruct_LeptonCollectionFilesMap(void *p);
+   static Long64_t merge_LeptonCollectionFilesMap(void *obj, TCollection *coll,TFileMergeInfo *info);
+
+   // Function generating the singleton type initializer
+   static TGenericClassInfo *GenerateInitInstanceLocal(const ::LeptonCollectionFilesMap*)
+   {
+      ::LeptonCollectionFilesMap *ptr = 0;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::LeptonCollectionFilesMap >(0);
+      static ::ROOT::TGenericClassInfo 
+         instance("LeptonCollectionFilesMap", ::LeptonCollectionFilesMap::Class_Version(), "LeptonCollectionMap.h", 61,
+                  typeid(::LeptonCollectionFilesMap), ::ROOT::Internal::DefineBehavior(ptr, ptr),
+                  &::LeptonCollectionFilesMap::Dictionary, isa_proxy, 4,
+                  sizeof(::LeptonCollectionFilesMap) );
+      instance.SetNew(&new_LeptonCollectionFilesMap);
+      instance.SetNewArray(&newArray_LeptonCollectionFilesMap);
+      instance.SetDelete(&delete_LeptonCollectionFilesMap);
+      instance.SetDeleteArray(&deleteArray_LeptonCollectionFilesMap);
+      instance.SetDestructor(&destruct_LeptonCollectionFilesMap);
+      instance.SetMerge(&merge_LeptonCollectionFilesMap);
+      return &instance;
+   }
+   TGenericClassInfo *GenerateInitInstance(const ::LeptonCollectionFilesMap*)
+   {
+      return GenerateInitInstanceLocal((::LeptonCollectionFilesMap*)0);
+   }
+   // Static variable to force the class initialization
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::LeptonCollectionFilesMap*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+} // end of namespace ROOT
+
 //______________________________________________________________________________
 atomic_TClass_ptr LeptonCollection::fgIsA(0);  // static to hold class pointer
 
@@ -243,6 +277,41 @@ TClass *LeptonCollectionMap::Dictionary()
 TClass *LeptonCollectionMap::Class()
 {
    if (!fgIsA.load()) { R__LOCKGUARD2(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::LeptonCollectionMap*)0x0)->GetClass(); }
+   return fgIsA;
+}
+
+//______________________________________________________________________________
+atomic_TClass_ptr LeptonCollectionFilesMap::fgIsA(0);  // static to hold class pointer
+
+//______________________________________________________________________________
+const char *LeptonCollectionFilesMap::Class_Name()
+{
+   return "LeptonCollectionFilesMap";
+}
+
+//______________________________________________________________________________
+const char *LeptonCollectionFilesMap::ImplFileName()
+{
+   return ::ROOT::GenerateInitInstanceLocal((const ::LeptonCollectionFilesMap*)0x0)->GetImplFileName();
+}
+
+//______________________________________________________________________________
+int LeptonCollectionFilesMap::ImplFileLine()
+{
+   return ::ROOT::GenerateInitInstanceLocal((const ::LeptonCollectionFilesMap*)0x0)->GetImplFileLine();
+}
+
+//______________________________________________________________________________
+TClass *LeptonCollectionFilesMap::Dictionary()
+{
+   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::LeptonCollectionFilesMap*)0x0)->GetClass();
+   return fgIsA;
+}
+
+//______________________________________________________________________________
+TClass *LeptonCollectionFilesMap::Class()
+{
+   if (!fgIsA.load()) { R__LOCKGUARD2(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::LeptonCollectionFilesMap*)0x0)->GetClass(); }
    return fgIsA;
 }
 
@@ -355,6 +424,43 @@ namespace ROOT {
       return ((::LeptonCollectionMap*)obj)->Merge(coll);
    }
 } // end of namespace ROOT for class ::LeptonCollectionMap
+
+//______________________________________________________________________________
+void LeptonCollectionFilesMap::Streamer(TBuffer &R__b)
+{
+   // Stream an object of class LeptonCollectionFilesMap.
+
+   if (R__b.IsReading()) {
+      R__b.ReadClassBuffer(LeptonCollectionFilesMap::Class(),this);
+   } else {
+      R__b.WriteClassBuffer(LeptonCollectionFilesMap::Class(),this);
+   }
+}
+
+namespace ROOT {
+   // Wrappers around operator new
+   static void *new_LeptonCollectionFilesMap(void *p) {
+      return  p ? new(p) ::LeptonCollectionFilesMap : new ::LeptonCollectionFilesMap;
+   }
+   static void *newArray_LeptonCollectionFilesMap(Long_t nElements, void *p) {
+      return p ? new(p) ::LeptonCollectionFilesMap[nElements] : new ::LeptonCollectionFilesMap[nElements];
+   }
+   // Wrapper around operator delete
+   static void delete_LeptonCollectionFilesMap(void *p) {
+      delete ((::LeptonCollectionFilesMap*)p);
+   }
+   static void deleteArray_LeptonCollectionFilesMap(void *p) {
+      delete [] ((::LeptonCollectionFilesMap*)p);
+   }
+   static void destruct_LeptonCollectionFilesMap(void *p) {
+      typedef ::LeptonCollectionFilesMap current_t;
+      ((current_t*)p)->~current_t();
+   }
+   // Wrapper around the merge function.
+   static Long64_t  merge_LeptonCollectionFilesMap(void *obj,TCollection *coll,TFileMergeInfo *) {
+      return ((::LeptonCollectionFilesMap*)obj)->Merge(coll);
+   }
+} // end of namespace ROOT for class ::LeptonCollectionFilesMap
 
 namespace ROOT {
    static TClass *vectorlEintgR_Dictionary();
@@ -609,6 +715,69 @@ namespace ROOT {
 } // end of namespace ROOT for class vector<TLorentzVector>
 
 namespace ROOT {
+   static TClass *unordered_maplEarraylElongcO3gRcOstringcOLeptonCollectionArrayHashergR_Dictionary();
+   static void unordered_maplEarraylElongcO3gRcOstringcOLeptonCollectionArrayHashergR_TClassManip(TClass*);
+   static void *new_unordered_maplEarraylElongcO3gRcOstringcOLeptonCollectionArrayHashergR(void *p = 0);
+   static void *newArray_unordered_maplEarraylElongcO3gRcOstringcOLeptonCollectionArrayHashergR(Long_t size, void *p);
+   static void delete_unordered_maplEarraylElongcO3gRcOstringcOLeptonCollectionArrayHashergR(void *p);
+   static void deleteArray_unordered_maplEarraylElongcO3gRcOstringcOLeptonCollectionArrayHashergR(void *p);
+   static void destruct_unordered_maplEarraylElongcO3gRcOstringcOLeptonCollectionArrayHashergR(void *p);
+
+   // Function generating the singleton type initializer
+   static TGenericClassInfo *GenerateInitInstanceLocal(const unordered_map<array<long,3>,string,LeptonCollectionArrayHasher>*)
+   {
+      unordered_map<array<long,3>,string,LeptonCollectionArrayHasher> *ptr = 0;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(unordered_map<array<long,3>,string,LeptonCollectionArrayHasher>));
+      static ::ROOT::TGenericClassInfo 
+         instance("unordered_map<array<long,3>,string,LeptonCollectionArrayHasher>", -2, "unordered_map", 98,
+                  typeid(unordered_map<array<long,3>,string,LeptonCollectionArrayHasher>), ::ROOT::Internal::DefineBehavior(ptr, ptr),
+                  &unordered_maplEarraylElongcO3gRcOstringcOLeptonCollectionArrayHashergR_Dictionary, isa_proxy, 0,
+                  sizeof(unordered_map<array<long,3>,string,LeptonCollectionArrayHasher>) );
+      instance.SetNew(&new_unordered_maplEarraylElongcO3gRcOstringcOLeptonCollectionArrayHashergR);
+      instance.SetNewArray(&newArray_unordered_maplEarraylElongcO3gRcOstringcOLeptonCollectionArrayHashergR);
+      instance.SetDelete(&delete_unordered_maplEarraylElongcO3gRcOstringcOLeptonCollectionArrayHashergR);
+      instance.SetDeleteArray(&deleteArray_unordered_maplEarraylElongcO3gRcOstringcOLeptonCollectionArrayHashergR);
+      instance.SetDestructor(&destruct_unordered_maplEarraylElongcO3gRcOstringcOLeptonCollectionArrayHashergR);
+      instance.AdoptCollectionProxyInfo(TCollectionProxyInfo::Generate(TCollectionProxyInfo::MapInsert< unordered_map<array<long,3>,string,LeptonCollectionArrayHasher> >()));
+      return &instance;
+   }
+   // Static variable to force the class initialization
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const unordered_map<array<long,3>,string,LeptonCollectionArrayHasher>*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+
+   // Dictionary for non-ClassDef classes
+   static TClass *unordered_maplEarraylElongcO3gRcOstringcOLeptonCollectionArrayHashergR_Dictionary() {
+      TClass* theClass =::ROOT::GenerateInitInstanceLocal((const unordered_map<array<long,3>,string,LeptonCollectionArrayHasher>*)0x0)->GetClass();
+      unordered_maplEarraylElongcO3gRcOstringcOLeptonCollectionArrayHashergR_TClassManip(theClass);
+   return theClass;
+   }
+
+   static void unordered_maplEarraylElongcO3gRcOstringcOLeptonCollectionArrayHashergR_TClassManip(TClass* ){
+   }
+
+} // end of namespace ROOT
+
+namespace ROOT {
+   // Wrappers around operator new
+   static void *new_unordered_maplEarraylElongcO3gRcOstringcOLeptonCollectionArrayHashergR(void *p) {
+      return  p ? ::new((::ROOT::Internal::TOperatorNewHelper*)p) unordered_map<array<long,3>,string,LeptonCollectionArrayHasher> : new unordered_map<array<long,3>,string,LeptonCollectionArrayHasher>;
+   }
+   static void *newArray_unordered_maplEarraylElongcO3gRcOstringcOLeptonCollectionArrayHashergR(Long_t nElements, void *p) {
+      return p ? ::new((::ROOT::Internal::TOperatorNewHelper*)p) unordered_map<array<long,3>,string,LeptonCollectionArrayHasher>[nElements] : new unordered_map<array<long,3>,string,LeptonCollectionArrayHasher>[nElements];
+   }
+   // Wrapper around operator delete
+   static void delete_unordered_maplEarraylElongcO3gRcOstringcOLeptonCollectionArrayHashergR(void *p) {
+      delete ((unordered_map<array<long,3>,string,LeptonCollectionArrayHasher>*)p);
+   }
+   static void deleteArray_unordered_maplEarraylElongcO3gRcOstringcOLeptonCollectionArrayHashergR(void *p) {
+      delete [] ((unordered_map<array<long,3>,string,LeptonCollectionArrayHasher>*)p);
+   }
+   static void destruct_unordered_maplEarraylElongcO3gRcOstringcOLeptonCollectionArrayHashergR(void *p) {
+      typedef unordered_map<array<long,3>,string,LeptonCollectionArrayHasher> current_t;
+      ((current_t*)p)->~current_t();
+   }
+} // end of namespace ROOT for class unordered_map<array<long,3>,string,LeptonCollectionArrayHasher>
+
+namespace ROOT {
    static TClass *unordered_maplEarraylElongcO3gRcOLeptonCollectioncOLeptonCollectionArrayHashergR_Dictionary();
    static void unordered_maplEarraylElongcO3gRcOLeptonCollectioncOLeptonCollectionArrayHashergR_TClassManip(TClass*);
    static void *new_unordered_maplEarraylElongcO3gRcOLeptonCollectioncOLeptonCollectionArrayHashergR(void *p = 0);
@@ -699,6 +868,7 @@ namespace std{template <typename _T1, typename _T2> struct __attribute__((annota
 namespace std{template <typename _Tp> class __attribute__((annotate("$clingAutoload$bits/allocator.h")))  __attribute__((annotate("$clingAutoload$string")))  allocator;
 }
 class __attribute__((annotate("$clingAutoload$LeptonCollectionMap.h")))  LeptonCollectionMap;
+class __attribute__((annotate("$clingAutoload$LeptonCollectionMap.h")))  LeptonCollectionFilesMap;
 )DICTFWDDCLS";
     static const char* payloadCode = R"DICTPAYLOAD(
 #line 1 "LeptonCollectionMapDict dictionary payload"
@@ -715,6 +885,7 @@ class __attribute__((annotate("$clingAutoload$LeptonCollectionMap.h")))  LeptonC
     static const char* classesHeaders[]={
 "LeptonCollection", payloadCode, "@",
 "LeptonCollectionArrayHasher", payloadCode, "@",
+"LeptonCollectionFilesMap", payloadCode, "@",
 "LeptonCollectionMap", payloadCode, "@",
 nullptr};
 
