@@ -17,6 +17,11 @@ from lib import utils
 gSystem.Load('LumiSectMap_C')
 from ROOT import LumiSectMap
 
+gSystem.Load('LeptonCollectionMap_C')
+from ROOT import LeptonCollectionMap
+from ROOT import LeptonCollectionFilesMap
+from ROOT import LeptonCollection
+
 ####### CMDLINE ARGUMENTS #########
 
 parser = argparse.ArgumentParser(description='Create skims for x1x2x1 process.')
@@ -57,8 +62,16 @@ if (bg and signal):
     signal = True
     bg = False
 
+replace_lepton_collection = True
+if signal:
+    replace_lepton_collection = False
+
 ######## END OF CMDLINE ARGUMENTS ########
 def main():
+    
+    import os
+    from lib import utils
+    
     chain = TChain('TreeMaker2/PreSelection')
     print "Opening", input_file
     chain.Add(input_file)
@@ -66,6 +79,7 @@ def main():
     chain = None
     print "Creating " + output_file
     fnew = TFile(output_file,'recreate')
+    print "Created."
 
     hHt = TH1F('hHt','hHt',100,0,3000)
     hHtWeighted = TH1F('hHtWeighted','hHtWeighted',100,0,3000)
@@ -94,11 +108,21 @@ def main():
     var_Electrons_mediumID = ROOT.std.vector(bool)()
     var_Electrons_passIso = ROOT.std.vector(bool)()
     var_Electrons_tightID = ROOT.std.vector(bool)()
+    var_Electrons_EnergyCorr = ROOT.std.vector(double)()
+    var_Electrons_MiniIso = ROOT.std.vector(double)()
+    var_Electrons_MT2Activity = ROOT.std.vector(double)()
+    var_Electrons_MTW = ROOT.std.vector(double)()
+    var_Electrons_TrkEnergyCorr = ROOT.std.vector(double)()
+    
     var_Muons = ROOT.std.vector(TLorentzVector)()
     var_Muons_charge = ROOT.std.vector(int)()
     var_Muons_mediumID = ROOT.std.vector(bool)()
     var_Muons_passIso = ROOT.std.vector(bool)()
     var_Muons_tightID = ROOT.std.vector(bool)()
+    var_Muons_MiniIso = ROOT.std.vector(double)()
+    var_Muons_MT2Activity = ROOT.std.vector(double)()
+    var_Muons_MTW = ROOT.std.vector(double)()
+    
     var_GenParticles = ROOT.std.vector(TLorentzVector)()
     var_GenParticles_ParentId = ROOT.std.vector(int)()
     var_GenParticles_ParentIdx = ROOT.std.vector(int)()
@@ -111,6 +135,7 @@ def main():
     var_puWeight = np.zeros(1,dtype=float)
 
     var_Jets = ROOT.std.vector(TLorentzVector)()
+    var_Jets_bDiscriminatorCSV = ROOT.std.vector(double)()
 
     var_LeadingJetPartonFlavor = np.zeros(1,dtype=int)
     var_LeadingJetQgLikelihood = np.zeros(1,dtype=float)
@@ -154,18 +179,30 @@ def main():
     #tEvent.Branch('MetDHt2', var_MetDHt2,'MetDHt2/D')
     tEvent.Branch('Mt2', var_Mt2,'Mt2/D')
     tEvent.Branch('puWeight', var_puWeight,'puWeight/D')
+    
 
     tEvent.Branch('Electrons', 'std::vector<TLorentzVector>', var_Electrons)
     tEvent.Branch('Electrons_charge', 'std::vector<int>', var_Electrons_charge)
-    tEvent.Branch('Muons', 'std::vector<TLorentzVector>', var_Muons)
-    tEvent.Branch('Muons_charge', 'std::vector<int>', var_Muons_charge)
+    
+    tEvent.Branch('Electrons_EnergyCorr', 'std::vector<double>', var_Electrons_EnergyCorr)
+    tEvent.Branch('Electrons_MiniIso', 'std::vector<double>', var_Electrons_MiniIso)
+    tEvent.Branch('Electrons_MT2Activity', 'std::vector<double>', var_Electrons_MT2Activity)
+    tEvent.Branch('Electrons_MTW', 'std::vector<double>', var_Electrons_MTW)
+    tEvent.Branch('Electrons_TrkEnergyCorr', 'std::vector<double>', var_Electrons_TrkEnergyCorr)
     
     tEvent.Branch('Electrons_mediumID', 'std::vector<bool>', var_Electrons_mediumID)
     tEvent.Branch('Electrons_passIso', 'std::vector<bool>', var_Electrons_passIso)
     tEvent.Branch('Electrons_tightID', 'std::vector<bool>', var_Electrons_tightID)
+    
+    tEvent.Branch('Muons', 'std::vector<TLorentzVector>', var_Muons)
+    tEvent.Branch('Muons_charge', 'std::vector<int>', var_Muons_charge)
     tEvent.Branch('Muons_mediumID', 'std::vector<bool>', var_Muons_mediumID)
     tEvent.Branch('Muons_passIso', 'std::vector<bool>', var_Muons_passIso)
     tEvent.Branch('Muons_tightID', 'std::vector<bool>', var_Muons_tightID)
+    
+    tEvent.Branch('Muons_MiniIso', 'std::vector<double>', var_Muons_MiniIso)
+    tEvent.Branch('Muons_MT2Activity', 'std::vector<double>', var_Muons_MT2Activity)
+    tEvent.Branch('Muons_MTW', 'std::vector<double>', var_Muons_MTW)
     
     tEvent.Branch('GenParticles', 'std::vector<TLorentzVector>', var_GenParticles)
     tEvent.Branch('GenParticles_ParentId', 'std::vector<int>', var_GenParticles_ParentId)
@@ -174,6 +211,7 @@ def main():
     tEvent.Branch('GenParticles_Status', 'std::vector<int>', var_GenParticles_Status)
 
     tEvent.Branch('Jets', 'std::vector<TLorentzVector>', var_Jets)
+    tEvent.Branch('Jets_bDiscriminatorCSV', 'std::vector<double>', var_Jets_bDiscriminatorCSV)
 
     tEvent.Branch('LeadingJetPartonFlavor', var_LeadingJetPartonFlavor,'LeadingJetPartonFlavor/I')
     tEvent.Branch('LeadingJetQgLikelihood', var_LeadingJetQgLikelihood,'LeadingJetQgLikelihood/D')
@@ -216,6 +254,9 @@ def main():
                 crossSection = utils.crossSections.get(filename)
             else:
                 crossSection = 1.21547
+    
+    currLeptonCollectionMap = None
+    
     print "Starting Loop"
     for ientry in range(nentries):
         if ientry % 1000 == 0:
@@ -243,12 +284,15 @@ def main():
         if not data:
             hHtAfterMadHt.Fill(c.madHT)
         
-        
         nj, btags, ljet = analysis_ntuples.numberOfJets25Pt2_4Eta_Loose(c)
         if ljet is None:
             #print "No ljet:",ljet 
             continue
         nL = c.Electrons.size() + c.Muons.size()
+        nT = c.tracks.size()
+        
+        if nT == 0:
+            continue
     
         #### GEN LEVEL STUFF ####
         nLGen = 0
@@ -322,21 +366,58 @@ def main():
         else:
             var_puWeight[0] = 1
             var_madHT[0] = 1
+        
+        takeLeptonsFrom = None
+        
+        if replace_lepton_collection:
+            if currLeptonCollectionMap is None or not currLeptonCollectionMap.contains(c.RunNum, c.LumiBlockNum, c.EvtNum):
+                print "NEED NEW LEPTON COLLECTION..."
+                currLeptonCollection = None
+                currLeptonCollectionFileMapFile = utils.getLeptonCollectionFileMapFile(baseFileName)
+                if currLeptonCollectionFileMapFile is None:
+                    print "FATAL: could not open LeptonCollectionFileMapFile"
+                    exit(1)
+                currLeptonCollectionFileMap = utils.getLeptonCollectionFileMap(currLeptonCollectionFileMapFile, c.RunNum, c.LumiBlockNum, c.EvtNum)
+                if currLeptonCollectionFileMap is None:
+                    print "FATAL: could not find file map. continuing..."
+                    continue 
+                currLeptonCollectionFileName = currLeptonCollectionFileMap.get(c.RunNum, c.LumiBlockNum, c.EvtNum)
+                
+                print "currLeptonCollectionFileName=", currLeptonCollectionFileName
+                
+                currLeptonCollectionMap = utils.getLeptonCollection(currLeptonCollectionFileName)
+                currLeptonCollectionFileMapFile.Close()
+            
+            if currLeptonCollectionMap is None:
+                print "FATAL: could not find lepton map for ",c.RunNum, c.LumiBlockNum, c.EvtNum, " continuing..."
+                continue
+            
+            takeLeptonsFrom = currLeptonCollectionMap.get(c.RunNum, c.LumiBlockNum, c.EvtNum)
+        else:
+            takeLeptonsFrom = c
+        
+        var_Electrons = takeLeptonsFrom.Electrons
+        var_Electrons_charge= takeLeptonsFrom.Electrons_charge
+        var_Electrons_mediumID = takeLeptonsFrom.Electrons_mediumID
+        var_Electrons_passIso = takeLeptonsFrom.Electrons_passIso
+        var_Electrons_tightID = takeLeptonsFrom.Electrons_tightID
+        var_Electrons_EnergyCorr = takeLeptonsFrom.Electrons_EnergyCorr
+        var_Electrons_MiniIso = takeLeptonsFrom.Electrons_MiniIso
+        var_Electrons_MT2Activity = takeLeptonsFrom.Electrons_MT2Activity
+        var_Electrons_MTW = takeLeptonsFrom.Electrons_MTW
+        var_Electrons_TrkEnergyCorr = takeLeptonsFrom.Electrons_TrkEnergyCorr
     
-        var_Electrons = c.Electrons
-        var_Electrons_charge= c.Electrons_charge
-        var_Electrons_mediumID = c.Electrons_mediumID
-        var_Electrons_passIso = c.Electrons_passIso
-        var_Electrons_tightID = c.Electrons_tightID
-        
-        
-        var_Muons = c.Muons
-        var_Muons_charge = c.Muons_charge
-        var_Muons_mediumID = c.Muons_mediumID
-        var_Muons_passIso = c.Muons_passIso
-        var_Muons_tightID = c.Muons_tightID
+        var_Muons = takeLeptonsFrom.Muons
+        var_Muons_charge = takeLeptonsFrom.Muons_charge
+        var_Muons_mediumID = takeLeptonsFrom.Muons_mediumID
+        var_Muons_passIso = takeLeptonsFrom.Muons_passIso
+        var_Muons_tightID = takeLeptonsFrom.Muons_tightID
+        var_Muons_MiniIso = takeLeptonsFrom.Muons_MiniIso
+        var_Muons_MT2Activity = takeLeptonsFrom.Muons_MT2Activity
+        var_Muons_MTW = takeLeptonsFrom.Muons_MTW
         
         var_Jets = c.Jets
+        var_Jets_bDiscriminatorCSV = c.Jets_bDiscriminatorCSV
         
         if data:
             var_GenParticles = ROOT.std.vector(TLorentzVector)()
@@ -371,9 +452,21 @@ def main():
         tEvent.SetBranchAddress('Electrons_mediumID', var_Electrons_mediumID)
         tEvent.SetBranchAddress('Electrons_passIso', var_Electrons_passIso)
         tEvent.SetBranchAddress('Electrons_tightID', var_Electrons_tightID)
+        
+        tEvent.SetBranchAddress('Electrons_EnergyCorr', var_Electrons_EnergyCorr)
+        tEvent.SetBranchAddress('Electrons_MiniIso', var_Electrons_MiniIso)
+        tEvent.SetBranchAddress('Electrons_MT2Activity', var_Electrons_MT2Activity)
+        tEvent.SetBranchAddress('Electrons_MTW', var_Electrons_MTW)
+        tEvent.SetBranchAddress('Electrons_TrkEnergyCorr', var_Electrons_TrkEnergyCorr)
+        
+        
         tEvent.SetBranchAddress('Muons_mediumID', var_Muons_mediumID)
         tEvent.SetBranchAddress('Muons_passIso', var_Muons_passIso)
         tEvent.SetBranchAddress('Muons_tightID', var_Muons_tightID)
+        
+        tEvent.SetBranchAddress('Muons_MiniIso', var_Muons_MiniIso)
+        tEvent.SetBranchAddress('Muons_MT2Activity', var_Muons_MT2Activity)
+        tEvent.SetBranchAddress('Muons_MTW', var_Muons_MTW)
 
         tEvent.SetBranchAddress('GenParticles', var_GenParticles)
         tEvent.SetBranchAddress('GenParticles_ParentId', var_GenParticles_ParentId)
@@ -381,6 +474,7 @@ def main():
         tEvent.SetBranchAddress('GenParticles_ParentIdx', var_GenParticles_ParentIdx)
         tEvent.SetBranchAddress('GenParticles_PdgId', var_GenParticles_PdgId)
         tEvent.SetBranchAddress('Jets', var_Jets)
+        tEvent.SetBranchAddress('Jets_bDiscriminatorCSV', var_Jets_bDiscriminatorCSV)
     
         tEvent.SetBranchAddress('tracks', var_tracks)
         tEvent.SetBranchAddress('tracks_charge', var_tracks_charge)

@@ -13,6 +13,11 @@ import commands
 gSystem.Load('LumiSectMap_C')
 from ROOT import LumiSectMap
 
+# gSystem.Load('LeptonCollectionMap_C')
+# from ROOT import LeptonCollectionMap
+# from ROOT import LeptonCollectionFilesMap
+# from ROOT import LeptonCollection
+
 colorPalette = [
     { "name" : "green", "fillColor" : "#0bb200", "lineColor" : "#099300", "fillStyle" : 3444 },
     { "name" : "yellow", "fillColor" : "#fcf802", "lineColor" : "#e0dc00", "fillStyle" : 3444 },
@@ -50,6 +55,8 @@ dyCrossSections = {
 LUMINOSITY = 35900. #pb^-1
 CMS_WD="/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src"
 CS_DIR="/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/cs/stdout"
+LEPTON_COLLECTION_DIR="/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection"
+LEPTON_COLLECTION_FILES_MAP_DIR="/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollectionFilesMaps"
 
 epsilon = 0.00001
 
@@ -481,3 +488,41 @@ def madHtCheck(current_file_name, madHT):
         return False
     else:
         return True
+
+def getLeptonCollectionFileMapFile(baseFileName):
+    currLeptonCollectionFileMapFile, currLeptonCollectionFileMap = None, None
+    
+    mapNameFile = ("_".join(baseFileName.split(".")[1].split("_")[0:3])).split("AOD")[0] + ".root"
+    print mapNameFile
+    if not os.path.isfile(LEPTON_COLLECTION_FILES_MAP_DIR + "/" + mapNameFile):
+        print "File " + LEPTON_COLLECTION_FILES_MAP_DIR + "/" + mapNameFile + " does not exist."
+        return None
+    print "Opening file map: " + LEPTON_COLLECTION_FILES_MAP_DIR + "/" + mapNameFile
+    currLeptonCollectionFileMapFile = TFile(LEPTON_COLLECTION_FILES_MAP_DIR + "/" + mapNameFile, "read")
+    print "After open"
+    if currLeptonCollectionFileMapFile is None:
+        return None
+    
+    return currLeptonCollectionFileMapFile
+    
+def getLeptonCollectionFileMap(currLeptonCollectionFileMapFile, runNum, lumiBlockNum, evtNum):
+    currLeptonCollectionFileMap = None
+    keys = currLeptonCollectionFileMapFile.GetListOfKeys()
+    print "Looping over keys"
+    for key in keys:
+        print key.GetName()
+        currLeptonCollectionFileMap = currLeptonCollectionFileMapFile.Get(key.GetName())
+        if not currLeptonCollectionFileMap.contains(runNum, lumiBlockNum, evtNum):
+            continue
+        print "Found the correct file map!"
+        return currLeptonCollectionFileMap
+    print "Could not find file map for ", runNum, lumiBlockNum, evtNum
+    return None 
+    
+def getLeptonCollection(currLeptonCollectionFileName):
+    print "Opening file map: " + LEPTON_COLLECTION_DIR + "/" + currLeptonCollectionFileName
+    currLeptonCollectionFile = TFile(LEPTON_COLLECTION_DIR + "/" + currLeptonCollectionFileName, "read")
+    print "After open"
+    leptonCollectionMap = currLeptonCollectionFile.Get("leptonCollectionMap")
+    currLeptonCollectionFile.Close()
+    return leptonCollectionMap

@@ -1,11 +1,21 @@
 #!/bin/bash
 
-# CONSTS
-. "/afs/desy.de/user/n/nissanuv/cms-tools/bg/def.sh"
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/afs/desy.de/user/n/nissanuv/cms-tools/lib/classes
+
+shopt -s nullglob
 
 # necessary for running cmsenv
 shopt -s expand_aliases
+
+# CMS ENV
+cd ~/CMSSW_10_1_0/src
+
+export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
+source $VO_CMS_SW_DIR/cmsset_default.sh
+
+cmsenv
+
+. "$CMSSW_BASE/src/cms-tools/lib/def.sh"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$CMSSW_BASE/src/cms-tools/lib/classes"
 
 print_help() {
     echo "$0 -i input_file [-s|--simulation]"
@@ -53,13 +63,6 @@ if [ -z "$INPUT_FILES" ]; then
     exit 0
 fi
 
-# CMS ENV
-cd $CMS_WD
-. /etc/profile.d/modules.sh
-module use -a /afs/desy.de/group/cms/modulefiles/
-module load cmssw
-cmsenv
-
 SCRIPT_PATH=$ANALYZER_PATH
 if [ -n "$SKIM" ]; then
     echo "GOT SKIM"
@@ -100,9 +103,16 @@ for INPUT_FILE in $INPUT_FILES; do
 
     if [ -z "$SIMULATION" ]; then
         mkdir $timestamp
-        eval $command
-        mv $output_file "${FILE_OUTPUT}/"
-        rm -rf $timestamp
+        $command
+        EXIT_STATUS=$?
+        if [[ $EXIT_STATUS -ne 0 ]]; then
+            echo "exit code $EXIT_STATUS, skipping copy"
+            rm -rf $timestamp
+            continue
+        else
+            mv $output_file "${FILE_OUTPUT}/"
+            rm -rf $timestamp
+        fi
     fi
 done
 

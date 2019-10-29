@@ -31,7 +31,7 @@ def numberOfJets(event, pt, eta, csv):
 				leadingJet = ijet
 			elif jet.Pt() > event.Jets[leadingJet].Pt():
 				leadingJet = ijet
-			if event.Jets_bDiscriminatorCSV[ijet] > csv:
+			if event.GetBranchStatus('Jets_bDiscriminatorCSV') and event.Jets_bDiscriminatorCSV[ijet] > csv:
 				btags += 1
 	return nj, btags, leadingJet
 
@@ -142,7 +142,9 @@ def classifyGenZLeptons(c):
                 genNonZL.append(ipart)
     if len(genZL) != 2 or (abs(c.GenParticles_PdgId[genZL[0]]) != abs(c.GenParticles_PdgId[genZL[1]])) or (c.GenParticles_PdgId[genZL[0]] * c.GenParticles_PdgId[genZL[1]] > 0 ):
         print "****** WOW!"
-        print "genZL=" + str(genZL) + " PdgId1=" + str(c.GenParticles_PdgId[genZL[0]]) + " PdgId2=" + str(c.GenParticles_PdgId[genZL[1]])
+        print "genZL=" + str(genZL) 
+        for i in genZL:
+            print "PdgId" + str(i) + "=" + str(c.GenParticles_PdgId[i])
         return None, None
     # if len(genNonZL) == 0:
     # 		print "===="
@@ -155,26 +157,38 @@ def classifyGenZLeptons(c):
     return genZL, genNonZL
 
 def minDeltaRGenParticles(l, gens, c):
-	min = None
-	minCan = None
-	
-	for ipart in gens:
-		genV = c.GenParticles[ipart]
-		deltaR = abs(genV.DeltaR(l))
-		if min is None or deltaR < min:
-			min = deltaR
-			minCan = ipart
-	return min, minCan
+    min = None
+    minCan = None
+
+    for ipart in gens:
+        genV = c.GenParticles[ipart]
+        deltaR = abs(genV.DeltaR(l))
+        if min is None or deltaR < min:
+            min = deltaR
+            minCan = ipart
+    return min, minCan
+
+def minDeltaRLepTracks(l, c):
+    min = None
+    minCan = None
+    #print "len(c.tracks) ", len(c.tracks)
+    for i, t in enumerate(c.tracks):
+        deltaR = abs(t.DeltaR(l))
+        #print deltaR
+        if min is None or deltaR < min:
+            min = deltaR
+            minCan = i
+    return min, minCan
 
 def leadingLepton(c):
-	ll = None
-	for v in [e for e in c.Electrons] + [m for m in c.Muons]:
-		if ll is None:
-			ll = v
-			continue
-		if v.Pt() > ll.Pt():
-			ll = v
-	return ll
+    ll = None
+    for v in [e for e in c.Electrons] + [m for m in c.Muons]:
+        if ll is None:
+            ll = v
+            continue
+        if v.Pt() > ll.Pt():
+            ll = v
+    return ll
 
 def passed2016BTrigger(t, data=False):
     if not t.globalSuperTightHalo2016Filter: return False

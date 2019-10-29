@@ -70,9 +70,13 @@ EOM
 
 #for sim in ${SIG_DUP_OUTPUT_DIR}/single/*; do
 for sim in ${SIM_NTUPLES_DIR}/*; do
-	filename=$(basename $sim .root)
-	echo "Will run:"
-	echo $SIM_DIR/run_sim_analysis_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root ${POSITIONAL[@]} --signal
+    filename=$(basename $sim .root)
+    if [ -f "${OUTPUT_DIR}/single/${filename}.root" ]; then
+        echo "${OUTPUT_DIR}/single/${filename}.root exist. Skipping..."
+        continue
+    fi
+    echo "Will run:"
+    echo $SIM_DIR/run_sim_analysis_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root ${POSITIONAL[@]} --signal
 cat << EOM >> $output_file
 arguments = $SIM_DIR/run_sim_analysis_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root ${POSITIONAL[@]} --signal
 error = ${OUTPUT_DIR}/stderr/${filename}.err
