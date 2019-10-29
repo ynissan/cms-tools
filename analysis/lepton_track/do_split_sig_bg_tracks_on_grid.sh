@@ -1,8 +1,8 @@
 #!/bin/bash
 
-. "/afs/desy.de/user/n/nissanuv/cms-tools/bg/def.sh"
+. "$CMSSW_BASE/src/cms-tools/lib/def.sh"
 
-shopt -s nullglob
+shopt -s nullglob 
 shopt -s expand_aliases
 
 OUTPUT_DIR=$LEPTON_TRACK_SPLIT_DIR
@@ -43,9 +43,10 @@ EOM
 for f in /afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/*; do
 	filename=$(basename $f .root)
 	echo "Will run:"
-	echo $LEPTON_TRACK_DIR/split_sig_bg_tracks_single.sh -i $f -o  $OUTPUT_DIR/single/${filename}
+	cmd = $CONDOR_WRAPPER $LC_SCRIPT_PATH -i $input_files -o ${FILE_OUTPUT}
+	echo $CONDOR_WRAPPER $LEPTON_TRACK_DIR/split_sig_bg_tracks.py -i $f -o  $OUTPUT_DIR/single/${filename}
 cat << EOM >> $output_file
-arguments = $LEPTON_TRACK_DIR/split_sig_bg_tracks_single.sh -i $f -o  $OUTPUT_DIR/single/${filename}
+arguments = $cmd
 error = ${OUTPUT_DIR}/stderr/${filename}.err
 output = ${OUTPUT_DIR}/stdout/${filename}.output
 Queue

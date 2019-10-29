@@ -10,8 +10,8 @@ import sys
 import numpy as np
 import os
 
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib/classes")
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
 
 from lib import utils
 from lib import analysis_ntuples

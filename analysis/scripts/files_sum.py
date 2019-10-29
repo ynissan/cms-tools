@@ -152,6 +152,7 @@ if hadd or all:
             sumTypes[type] = {}
         if bg:
             #if type == "DYJetsToLL" or type == "ST":
+            types[2] = types[2].split("AOD")[0]
             sumTypes[type][types[1] + "_" + types[2]] = True
             #else:
             #    sumTypes[type][types[1]] = True
@@ -176,11 +177,11 @@ if hadd or all:
                         files = SINGLE_OUTPUT + "/Summer16*." + type + "_*" + typeRange + "*.root"
                     else:
                         files = SINGLE_OUTPUT + "/RunIISummer16MiniAODv3." + type + "_*" + typeRange + "*.root"
-                    command = "hadd -f " + file + " " + SINGLE_OUTPUT + "/RunIISummer16MiniAODv3." + type + "_*" + typeRange + "*.root"
+                    command = "hadd -f " + file + " " + files
                 else:
                     file = OUTPOUT_TYPE_SUM + "/" + type + "_" + typeRange + ".root"
-                    files = SINGLE_OUTPUT + "/Summer16*." + type + "_" + typeRange + "_*.root"
-                    command = "hadd -f " + file + " " + SINGLE_OUTPUT + "/Summer16*." + type + "_" + typeRange + "_*.root"
+                    files = SINGLE_OUTPUT + "/Summer16*." + type + "_" + typeRange + "*.root"
+                    command = "hadd -f " + file + " " + files
                 if lepton_collection:
                     #command = "mkdir tmp"
                     #print "Perorming:", command 

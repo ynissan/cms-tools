@@ -380,7 +380,7 @@ def main():
                 currLeptonCollectionFileMap = utils.getLeptonCollectionFileMap(currLeptonCollectionFileMapFile, c.RunNum, c.LumiBlockNum, c.EvtNum)
                 if currLeptonCollectionFileMap is None:
                     print "FATAL: could not find file map. continuing..."
-                    continue 
+                    exit(1) 
                 currLeptonCollectionFileName = currLeptonCollectionFileMap.get(c.RunNum, c.LumiBlockNum, c.EvtNum)
                 
                 print "currLeptonCollectionFileName=", currLeptonCollectionFileName
@@ -390,7 +390,7 @@ def main():
             
             if currLeptonCollectionMap is None:
                 print "FATAL: could not find lepton map for ",c.RunNum, c.LumiBlockNum, c.EvtNum, " continuing..."
-                continue
+                exit(1)
             
             takeLeptonsFrom = currLeptonCollectionMap.get(c.RunNum, c.LumiBlockNum, c.EvtNum)
         else:
