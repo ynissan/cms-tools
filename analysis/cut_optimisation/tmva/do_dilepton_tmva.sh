@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. "/afs/desy.de/user/n/nissanuv/cms-tools/bg/def.sh"
+. "$CMSSW_BASE/src/cms-tools/lib/def.sh"
 
 shopt -s nullglob
 shopt -s expand_aliases
@@ -36,9 +36,9 @@ for group in "${!SIM_GROUP[@]}"; do
     dir="$DILEPTON_BDT_DIR/${group}"
     mkdir $dir
     echo "Will run:"
-    echo $CMS_TOOLS/analysis/cut_optimisation/tmva/run_dilepton_on_grid.sh -i $input -bg  $SKIM_BG_SIG_BDT_OUTPUT_DIR/${group}/single --no_norm -o $dir/${group}.root
+    echo $CONDOR_WRAPPER $CUT_OPTIMISATION_SCRIPTS/dilepton_tmva.py -i $input -bg  $SKIM_BG_SIG_BDT_OUTPUT_DIR/${group}/single --no_norm -o $dir/${group}.root
 cat << EOM >> $output_file
-arguments = $CMS_TOOLS/analysis/cut_optimisation/tmva/run_dilepton_on_grid.sh -i $input -bg  $SKIM_BG_SIG_BDT_OUTPUT_DIR/${group}/single --no_norm -o $dir/${group}.root
+arguments = $CONDOR_WRAPPER $CUT_OPTIMISATION_SCRIPTS/dilepton_tmva.py -i $input -bg  $SKIM_BG_SIG_BDT_OUTPUT_DIR/${group}/single --no_norm -o $dir/${group}.root
 error = ${dir}/${group}.err
 output = ${dir}/${group}.output
 Queue

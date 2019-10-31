@@ -203,4 +203,31 @@ def passed2016BTrigger(t, data=False):
     #    if not t.ecalBadCalibReducedExtraFilter: return False
     #    if not t.ecalBadCalibReducedFilter: return False
     return True
+
+def getSingleLeptonAfterSelection(c):
+    lep = None
+    lepCharge = None
+    lepFlavour = None
+    nL = 0
+    
+    for i in range(c.Electrons.size()):
+        e = c.Electrons[i]
+        if e.Pt() <= 25 and bool(c.Electrons_passIso[i]):
+            nL += 1
+            if nL > 1:
+                return None, None, None
+            lep = e
+            lepCharge = c.Electrons_charge[i]
+            lepFlavour = "Electrons"
+    for i in range(c.Muons.size()):
+        m = c.Muons[i]
+        if m.Pt() <= 25 and m.Pt()>=2 and bool(c.Muons_mediumID[i]) and abs(m.DeltaR(c.LeadingJet)) >= 0.4:
+            nL += 1
+            if nL > 1:
+                return None, None, None
+            lep = m
+            lepCharge = c.Muons_charge[i]
+            lepFlavour = "Muons"
+    
+    return lep, lepCharge, lepFlavour
     

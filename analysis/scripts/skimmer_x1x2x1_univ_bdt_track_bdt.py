@@ -9,8 +9,8 @@ import numpy as np
 import os
 import xml.etree.ElementTree as ET
 
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib/classes")
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
 from lib import analysis_ntuples
 from lib import analysis_tools
 from lib import utils
@@ -91,11 +91,15 @@ def main():
     var_l2 = TLorentzVector()
     
     var_lepton = TLorentzVector()
+    var_track = TLorentzVector()
+    
+    var_leptonFlavour = ROOT.std.string()
 
     tree.Branch('l1', 'TLorentzVector', var_l1)
     tree.Branch('l2', 'TLorentzVector', var_l2)
     
     tree.Branch('lepton', 'TLorentzVector', var_lepton)
+    tree.Branch('track', 'TLorentzVector', var_track)
 
     var_invMass = np.zeros(1,dtype=float)
     var_dileptonPt = np.zeros(1,dtype=float)
@@ -112,7 +116,13 @@ def main():
     var_DeltaPhiLeadingJetDilepton = np.zeros(1,dtype=float)
     var_dilepHt = np.zeros(1,dtype=float)
     var_NTracks = np.zeros(1,dtype=int)
+    var_leptonCharge = np.zeros(1,dtype=int)
 
+
+    tree.Branch('leptonCharge', var_leptonCharge, 'leptonCharge/I')
+    #tree.Branch('leptonFlavour', var_leptonFlavour,'leptonCharge/C')
+    tree.Branch('leptonFlavour', 'std::string', var_leptonFlavour)
+    
     tree.Branch('invMass', var_invMass,'invMass/D')
     tree.Branch('dileptonPt', var_dileptonPt,'dileptonPt/D')
     tree.Branch('deltaPhi', var_deltaPhi,'deltaPhi/D')
@@ -188,10 +198,15 @@ def main():
         if ientry % 1000 == 0:
             print "Processing " + str(ientry)
         c.GetEntry(ientry)
-    
-        nL = c.Electrons.size() + c.Muons.size()
-        if nL != 1:
+        
+        ll, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(c)
+        
+        if ll is None:
             continue
+        if leptonCharge == 0:
+            print "WHAT?! leptonCharge=0"
+        var_leptonCharge[0] = leptonCharge
+        var_leptonFlavour = ROOT.std.string(leptonFlavour)
     
         afterMonoLepton += 1
     
@@ -204,15 +219,9 @@ def main():
     
         afterUniversalBdt += 1
     
-        ll = analysis_ntuples.leadingLepton(c)
         survivedTracks = []
         highestOppositeTrackScore = None
-        leptonCharge = 0
         oppositeChargeTrack = None
-        if c.Electrons.size() == 1:
-            leptonCharge = c.Electrons_charge[0]
-        elif c.Muons.size() == 1:
-            leptonCharge = c.Muons_charge[0]
         ntracks = 0
         for ti in range(c.tracks.size()):
             t = c.tracks[ti]
@@ -313,10 +322,13 @@ def main():
         var_l1 = l1
         var_l2 = l2
         var_lepton = ll
+        var_track = c.tracks[oppositeChargeTrack]
     
         tree.SetBranchAddress('l1', var_l1)
         tree.SetBranchAddress('l2', var_l2)
         tree.SetBranchAddress('lepton', var_lepton)
+        tree.SetBranchAddress('track', var_track)
+        tree.SetBranchAddress('leptonFlavour', var_leptonFlavour)
     
         var_invMass[0] = (l1 + l2).M()
         var_dileptonPt[0] = abs((l1 + l2).Pt())

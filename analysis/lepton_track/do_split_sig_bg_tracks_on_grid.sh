@@ -43,8 +43,8 @@ EOM
 for f in /afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/*; do
 	filename=$(basename $f .root)
 	echo "Will run:"
-	cmd = $CONDOR_WRAPPER $LC_SCRIPT_PATH -i $input_files -o ${FILE_OUTPUT}
-	echo $CONDOR_WRAPPER $LEPTON_TRACK_DIR/split_sig_bg_tracks.py -i $f -o  $OUTPUT_DIR/single/${filename}
+	cmd="$CONDOR_WRAPPER $LEPTON_TRACK_DIR/split_sig_bg_tracks.py -i $f -o  $OUTPUT_DIR/single/${filename}"
+	echo $cmd
 cat << EOM >> $output_file
 arguments = $cmd
 error = ${OUTPUT_DIR}/stderr/${filename}.err
@@ -53,7 +53,7 @@ Queue
 EOM
 done
 
-condor_submit $output_file
+#condor_submit $output_file
 rm $output_file
 
 

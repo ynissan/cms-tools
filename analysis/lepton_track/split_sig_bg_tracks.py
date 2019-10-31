@@ -17,6 +17,15 @@ from lib import utils
 from lib import analysis_ntuples
 from lib import analysis_tools
 
+gSystem.Load('LumiSectMap_C')
+from ROOT import LumiSectMap
+
+gSystem.Load('LeptonCollectionMap_C')
+from ROOT import LeptonCollectionMap
+from ROOT import LeptonCollectionFilesMap
+from ROOT import LeptonCollection
+
+
 gROOT.SetBatch(1)
 
 ####### CMDLINE ARGUMENTS #########

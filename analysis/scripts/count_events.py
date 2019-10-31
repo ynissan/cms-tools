@@ -6,6 +6,7 @@ from sys import exit
 from array import array
 import argparse
 import sys
+import os
 
 ####### CMDLINE ARGUMENTS #########
 
@@ -34,6 +35,7 @@ for f in bFileNames:
     t = rootFile.Get("tEvent")
     #t = rootFile.Get("TreeMaker2/PreSelection")
     c = t.GetEntries()
+    print os.path.basename(f), c
     count += c
     #t.GetEntry(0)
     #weight = t.Weight

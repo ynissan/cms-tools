@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. "/afs/desy.de/user/n/nissanuv/cms-tools/bg/def.sh"
+. "$CMSSW_BASE/src/cms-tools/lib/def.sh"
 
 shopt -s nullglob
 shopt -s expand_aliases
@@ -39,9 +39,10 @@ for group in "${!SIM_GROUP[@]}"; do
     done
     dir="$LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/${group}"
     mkdir $dir
-    echo $CMS_TOOLS/analysis/cut_optimisation/tmva/run_track_on_grid.sh -i $input -bg  $background --no_norm -o $dir/${group}.root
+    cmd="$CONDOR_WRAPPER $CUT_OPTIMISATION_SCRIPTS/track_tmva.py -i $input -bg  $background --no_norm -o $dir/${group}.root"
+    echo $cmd
 cat << EOM >> $output_file
-arguments = $CMS_TOOLS/analysis/cut_optimisation/tmva/run_track_on_grid.sh -i $input -bg  $background --no_norm -o $dir/${group}.root
+arguments = $cmd
 error = ${dir}/${group}.err
 output = ${dir}/${group}.output
 Queue

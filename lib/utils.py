@@ -506,13 +506,18 @@ def getLeptonCollectionFileMapFile(baseFileName):
     return currLeptonCollectionFileMapFile
     
 def getLeptonCollectionFileMap(currLeptonCollectionFileMapFile, runNum, lumiBlockNum, evtNum):
+    #import gc
     currLeptonCollectionFileMap = None
     keys = currLeptonCollectionFileMapFile.GetListOfKeys()
     print "Looping over keys"
+    print [key.GetName() for key in keys]
     for key in keys:
         print key.GetName()
         currLeptonCollectionFileMap = currLeptonCollectionFileMapFile.Get(key.GetName())
         if not currLeptonCollectionFileMap.contains(runNum, lumiBlockNum, evtNum):
+            currLeptonCollectionFileMap.Delete()
+            currLeptonCollectionFileMap = None
+            #gc.collect()
             continue
         print "Found the correct file map!"
         return currLeptonCollectionFileMap

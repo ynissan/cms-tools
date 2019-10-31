@@ -256,10 +256,11 @@ def main():
                 crossSection = 1.21547
     
     currLeptonCollectionMap = None
+    currLeptonCollectionFileMapFile = None
     
     print "Starting Loop"
     for ientry in range(nentries):
-        if ientry % 1000 == 0:
+        if ientry % 5 == 0:
             print "Processing " + str(ientry)
         c.GetEntry(ientry)
 
@@ -372,20 +373,27 @@ def main():
         if replace_lepton_collection:
             if currLeptonCollectionMap is None or not currLeptonCollectionMap.contains(c.RunNum, c.LumiBlockNum, c.EvtNum):
                 print "NEED NEW LEPTON COLLECTION..."
+                if currLeptonCollectionMap is not None:
+                    currLeptonCollectionMap.Delete()
+                    currLeptonCollectionMap = None
                 currLeptonCollection = None
                 currLeptonCollectionFileMapFile = utils.getLeptonCollectionFileMapFile(baseFileName)
                 if currLeptonCollectionFileMapFile is None:
                     print "FATAL: could not open LeptonCollectionFileMapFile"
                     exit(1)
+                print "currLeptonCollectionFileMapFile", currLeptonCollectionFileMapFile
                 currLeptonCollectionFileMap = utils.getLeptonCollectionFileMap(currLeptonCollectionFileMapFile, c.RunNum, c.LumiBlockNum, c.EvtNum)
+                print "Got currLeptonCollectionFileMap"
                 if currLeptonCollectionFileMap is None:
                     print "FATAL: could not find file map. continuing..."
                     exit(1) 
                 currLeptonCollectionFileName = currLeptonCollectionFileMap.get(c.RunNum, c.LumiBlockNum, c.EvtNum)
-                
+                currLeptonCollectionFileMap.Delete()
+                currLeptonCollectionFileMap = None
                 print "currLeptonCollectionFileName=", currLeptonCollectionFileName
                 
                 currLeptonCollectionMap = utils.getLeptonCollection(currLeptonCollectionFileName)
+                print "currLeptonCollectionMap=", currLeptonCollectionMap
                 currLeptonCollectionFileMapFile.Close()
             
             if currLeptonCollectionMap is None:
