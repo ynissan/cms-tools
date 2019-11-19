@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. "/afs/desy.de/user/n/nissanuv/cms-tools/bg/def.sh"
+. "$CMSSW_BASE/src/cms-tools/lib/def.sh"
 
 shopt -s nullglob
 shopt -s expand_aliases
@@ -98,9 +98,9 @@ for sim in ${INPUT_DIR}/single/*; do
         fi
     done
     echo "Will run:"
-    echo $SCRIPTS_WD/run_skim_signal_dilepton_bdt_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$tb
+    echo $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_dilepton_bdt.py -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$tb
 cat << EOM >> $output_file
-arguments = $SCRIPTS_WD/run_skim_signal_dilepton_bdt_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$tb
+arguments = $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_dilepton_bdt.py -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$tb
 error = ${OUTPUT_DIR}/stderr/${filename}.err
 output = ${OUTPUT_DIR}/stdout/${filename}.output
 Queue

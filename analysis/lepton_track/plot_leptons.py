@@ -39,10 +39,11 @@ if args.input_file:
     input_file = args.input_file[0]
 else:
     #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm3p28Chi20Chipm.root"
-    input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm12p84Chi20Chipm.root"
+    #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm12p84Chi20Chipm.root"
+    #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm7p39Chi20Chipm.root"
     
-    
-    #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm2p51Chi20Chipm.root"
+    #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm7p39Chi20Chipm.root"
+    input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm2p51Chi20Chipm.root"
 if args.output_file:
     output_file = args.output_file[0]
 else:
@@ -67,18 +68,26 @@ class CustomInsertTH1F(UOFlowTH1F):
         self.Fill(self.insertFunc(c, lepFlavour, lep, li, track, ti, lj, params))
 
 def mediumId(c, lepFlavour, l, li, track, minCanT, ljet, params):
+    if lepFlavour == "Electrons":
+        return True
     return bool(eval("c." + lepFlavour + "_mediumID")[li])
 
 def tightID(c, lepFlavour, l, li, track, minCanT, ljet, params):
     return bool(eval("c." + lepFlavour + "_tightID")[li])
 
 def pt(c, lepFlavour, l, li, track, minCanT, ljet, params):
+    if lepFlavour == "Muons" and l.Pt() < 2:
+        return False
     return l.Pt() < 25
 
 def deltaRLJ(c, lepFlavour, l, li, track, minCanT, ljet, params):
-    return abs(l.DeltaR(c.Jets[ljet])) > 0.6
+    if lepFlavour == "Electrons":
+        return True
+    return abs(l.DeltaR(c.Jets[ljet])) > 0.4
 
 def passIso(c, lepFlavour, l, li, track, minCanT, ljet, params):
+    if lepFlavour == "Muons":
+        return True
     return bool(eval("c." + lepFlavour + "_passIso")[li])
 
 
@@ -98,9 +107,10 @@ def main():
     global mediumId, tightID, pt, passIso
 
     cuts = [{"name":"none", "title": "No Cuts", "funcs":[]},
-        {"name":"mediumId", "title": "mediumId", "funcs":[mediumId, pt]},
-        {"name":"passIso", "title": "passIso", "funcs":[passIso, pt]},
-        {"name":"tightID", "title": "tightID", "funcs":[tightID, pt]},
+        #{"name":"mediumId", "title": "mediumId", "funcs":[mediumId, pt]},
+        #{"name":"passIso", "title": "passIso", "funcs":[passIso, pt]},
+        #{"name":"tightID", "title": "tightID", "funcs":[tightID, pt]},
+        {"name":"all", "title": "all", "funcs":[passIso, mediumId, pt, deltaRLJ]},
         #{"name":"pt", "title": "pt > 1.8", "funcs":[pt]},
         #{"name":"tightID", "title": "Eta < 2.6, deltaEtaLL < 1, deltaEtaLJ < 3.8", "funcs":[eta, deltaEtaLL, deltaEtaLJ]},
         #{"name":"Pt_Eta_dxy_dz", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06", "funcs":[eta, pt, dxy, dz]},
@@ -118,12 +128,18 @@ def main():
         {"name" : "mediumID", "title" : "mediumID", "bins" : 2, "minX" : 0, "maxX" : 1, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params: bool(eval("c." + lepFlavour + "_mediumID")[li]) },
         {"name" : "tightID", "title" : "tightID", "bins" : 2, "minX" : 0, "maxX" : 1, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params: bool(eval("c." + lepFlavour + "_tightID")[li]) },
         #{"name" : "iso", "title" : "iso", "bins" : 50, "minX" : 0, "maxX" : 1, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params: eval("c." + lepFlavour + "_MiniIso")[li] },
-        #{"name" : "MT2Activity", "title" : "MT2Activity", "bins" : 50, "minX" : 0, "maxX" : 1, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params: eval("c." + lepFlavour + "_MT2Activity")[li] },
+        {"name" : "MT2Activity", "title" : "MT2Activity", "bins" : 50, "minX" : 0, "maxX" : 1, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params: eval("c." + lepFlavour + "_MT2Activity")[li] },
         
         {"name" : "deltaRLJ", "title" : "deltaRLJ", "bins" : 50, "minX" : 0, "maxX" : 6, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params:  abs(lep.DeltaR(c.Jets[lj])) },
         {"name" : "deltaPhiLJ", "title" : "deltaPhiLJ", "bins" : 50, "minX" : 0, "maxX" : 6, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params:  abs(lep.DeltaPhi(c.Jets[lj])) },
         {"name" : "deltaEtaLJ", "title" : "deltaEtaLJ", "bins" : 50, "minX" : 0, "maxX" : 6, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params:  abs(lep.Eta() - c.Jets[lj].Eta()) },
         {"name" : "MT", "title" : "MT", "bins" : 50, "minX" : 0, "maxX" : 90, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params:  analysis_tools.MT2(c.Met, c.METPhi, lep) },
+        
+        
+        # {"name" : "EnergyCorr", "title" : "EnergyCorr", "bins" : 50, "minX" : 0, "maxX" : 2, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params:  bool(eval("c." + lepFlavour + "_EnergyCorr")[li])  },
+#         {"name" : "MTW", "title" : "MTW", "bins" : 50, "minX" : 0, "maxX" : 2, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params:  bool(eval("c." + lepFlavour + "_MTW")[li])  },
+#         {"name" : "TrkEnergyCorr", "title" :  "TrkEnergyCorr", "bins" : 50, "minX" : 0, "maxX" : 2, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params:  bool(eval("c." + lepFlavour + "_TrkEnergyCorr")[li])  },
+#         
         
         
         
@@ -180,8 +196,8 @@ def main():
             
         nj, btags, ljet = analysis_ntuples.numberOfJets25Pt2_4Eta_Loose(c)
         if ljet is None: continue
-        if btags > 0: continue
-        if nj < 1: continue 
+        #if btags > 0: continue
+        #if nj < 1: continue 
         
         genZL, genNonZL = analysis_ntuples.classifyGenZLeptons(c)
         if not genZL:
@@ -213,7 +229,7 @@ def main():
         zl = 0
         passedLep = 0
         
-        for lepVal in [["Electrons", -11]]:#["Electrons", -11], ["Muons", -13]:
+        for lepVal in ["Electrons", -11], ["Muons", -13]:
             #print lepVal
             lepFlavour = lepVal[0]
             lepCharge = lepVal[1]

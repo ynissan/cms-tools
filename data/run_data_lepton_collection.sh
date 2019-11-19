@@ -4,32 +4,8 @@
 
 shopt -s nullglob 
 
-#---------- GET OPTIONS ------------
-POSITIONAL=()
-while [[ $# -gt 0 ]]
-do
-    key="$1"
-
-    case $key in
-        -skim|--skim)
-        SKIM=true
-        POSITIONAL+=("$1") # save it in an array for later
-        shift # past argument
-        ;;
-        *)    # unknown option
-        POSITIONAL+=("$1") # save it in an array for later
-        shift # past argument
-        ;;
-    esac
-done
-set -- "${POSITIONAL[@]}" # restore positional parameters
-#---------- END OPTIONS ------------
-
-SCRIPT_PATH=$ANALYZER_PATH
-if [ -n "$SKIM" ]; then
-    SCRIPT_PATH=$SKIMMER_PATH
-    OUTPUT_DIR=$SKIM_OUTPUT_DIR
-fi
+SCRIPT_PATH=$LC_SCRIPT_PATH
+OUTPUT_DIR=$LC_DATA_OUTPUT_DIR
 
 STD_OUTPUT="${OUTPUT_DIR}/stdoutput"
 ERR_OUTPUT="${OUTPUT_DIR}/stderr"
@@ -57,29 +33,9 @@ if [ ! -d "$ERR_OUTPUT" ]; then
   mkdir $ERR_OUTPUT
 fi
 
-files=()
-for type in ${BG_TYPES[@]}; do 
-    echo "Checking type $type"
-    if [ "$type" = "DYJetsToLL" ]; then
-        files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_M-50_*)
-        files=("${files[@]}" ${BG_NTUPLES}/RunIISummer16MiniAODv3.DYJetsToLL_M-5to50*)
-    elif [ "$type" = "ZJetsToNuNu" ]; then
-        files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_HT*)
-    elif [ "$type" = "TTJets" ]; then
-        files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_TuneCUETP8M1*)
-    else
-        files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_*)
-    fi
-done
+LC_INTPUT="/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection/"
 
-# madHtFilesGt600=()
-# madHtFilesLt600=()
-# for type in ${MAD_HT_SPLIT_TYPES[@]}; do 
-#     madHtFilesGt600=("${madHtFilesGt600[@]}" ${BG_NTUPLES}/Summer16*${type}*_HT-*)
-#     madHtFilesLt600=("${madHtFilesLt600[@]}" ${BG_NTUPLES}/Summer16*${type}_TuneCUETP8M1*)
-# done
-
-#files=(${BG_NTUPLES}/Summer16.WJetsToLNu_HT-2500ToInf_*)
+files=(${LC_INTPUT}/Run2016*.MET*)
 
 timestamp=$(date +%Y%m%d_%H%M%S%N)
 output_file="${WORK_DIR}/condor_submut.${timestamp}"
@@ -98,6 +54,8 @@ i=0
 count=0
 input_files=""
 files_per_job=20
+index=0
+name=""
 
 for fullname in "${files[@]}"; do
     name=$(basename $fullname)
@@ -122,9 +80,10 @@ for fullname in "${files[@]}"; do
     input_files="$input_files $fullname"
     ((count+=1))
     if [ $(($count % $files_per_job)) == 0 ]; then
-        echo $BG_SCRIPTS/run_bg_analysis_single.sh -i \"$input_files\" ${POSITIONAL[@]}
+        ((index+=1)) 
+        echo $CONDOR_WRAPPER $LC_SCRIPT_PATH -i $input_files -o ${FILE_OUTPUT}
 cat << EOM >> $output_file
-arguments = $BG_SCRIPTS/run_bg_analysis_single.sh -i \"$input_files\" ${POSITIONAL[@]}
+arguments = $CONDOR_WRAPPER $LC_SCRIPT_PATH -i $input_files -o ${FILE_OUTPUT}
 error = $ERR_OUTPUT/$(basename $fullname .root).err
 output = $STD_OUTPUT/$(basename $fullname .root).output
 Queue
@@ -142,9 +101,9 @@ EOM
 done
 
 if [ $(($count % $files_per_job)) != 0 ]; then
-    echo $BG_SCRIPTS/run_bg_analysis_single.sh -i \"$input_files\" ${POSITIONAL[@]}
+    echo $CONDOR_WRAPPER $LC_SCRIPT_PATH  -i $input_files -o ${FILE_OUTPUT}
 cat << EOM >> $output_file
-arguments = $BG_SCRIPTS/run_bg_analysis_single.sh -i \"$input_files\" ${POSITIONAL[@]}
+arguments = $CONDOR_WRAPPER $LC_SCRIPT_PATH  -i $input_files -o ${FILE_OUTPUT}
 error = $ERR_OUTPUT/$(basename $fullname .root).err
 output = $STD_OUTPUT/$(basename $fullname .root).output
 Queue

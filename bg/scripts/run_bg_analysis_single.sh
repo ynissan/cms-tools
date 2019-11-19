@@ -1,5 +1,6 @@
 #!/bin/bash
 
+echo $0 $@
 
 shopt -s nullglob
 

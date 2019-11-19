@@ -1,0 +1,10 @@
+universe = vanilla
+should_transfer_files = IF_NEEDED
+executable = /bin/bash
+notification = Never
+priority = 0
+arguments = /afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools/analysis/scripts/condor_wrapper.sh /afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools/analysis/cut_optimisation/tmva/tmva.py -i /afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/total_sig.root -o /afs/desy.de/user/n/nissanuv/nfs/x1x2x1/cut_optimisation/tmva/total_bdt/total_bdt.root -bg /afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum/  --no_norm 
+error = /afs/desy.de/user/n/nissanuv/nfs/x1x2x1/cut_optimisation/tmva/total_bdt/stderr
+output = /afs/desy.de/user/n/nissanuv/nfs/x1x2x1/cut_optimisation/tmva/total_bdt/stdout
++RequestRuntime = 86400
+Queue

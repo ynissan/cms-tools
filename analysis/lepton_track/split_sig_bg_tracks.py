@@ -11,20 +11,19 @@ import numpy as np
 import os
 
 sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools"))
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
+#sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
 
 from lib import utils
 from lib import analysis_ntuples
 from lib import analysis_tools
 
-gSystem.Load('LumiSectMap_C')
-from ROOT import LumiSectMap
-
-gSystem.Load('LeptonCollectionMap_C')
-from ROOT import LeptonCollectionMap
-from ROOT import LeptonCollectionFilesMap
-from ROOT import LeptonCollection
-
+# gSystem.Load('LumiSectMap_C')
+# from ROOT import LumiSectMap
+# 
+# gSystem.Load('LeptonCollectionMap_C')
+# from ROOT import LeptonCollectionMap
+# from ROOT import LeptonCollectionFilesMap
+# from ROOT import LeptonCollection
 
 gROOT.SetBatch(1)
 
@@ -59,7 +58,12 @@ def main():
         {"name":"deltaEtaLL", "type":"D"},
         {"name":"deltaEtaLJ", "type":"D"},
         {"name":"deltaRLL", "type":"D"},
-        {"name":"deltaRLJ", "type":"D"}	
+        {"name":"deltaRLJ", "type":"D"},
+        {"name":"mtt", "type":"D"},
+        {"name":"deltaRMet", "type":"D"},
+        {"name":"deltaPhiMet", "type":"D"},
+        {"name":"lepton", "type2":"TLorentzVector"},
+        {"name":"invMass", "type":"D"}
     )
 
     vars = otherVars + tracksVars
@@ -112,8 +116,12 @@ def main():
             #print "genNonZL is None"
         if len(genZL) != 2:
             print "What:", len(genZL)
-    
-        ll = analysis_ntuples.leadingLepton(c)
+        
+        ll, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(c, c.LeadingJet)
+        
+        metvec = TLorentzVector()
+        metvec.SetPtEtaPhiE(c.Met, 0, c.METPhi, c.Met)
+        
         appEvent = False
         for ti in range(c.tracks.size()):
             if c.tracks_trkRelIso[ti] > 0.1:
@@ -124,9 +132,10 @@ def main():
                 continue
 
             t = c.tracks[ti]
-            elecMin = analysis_tools.minDeltaR(t, c.Electrons)
-            muonMin = analysis_tools.minDeltaR(t, c.Muons)
-            if (elecMin is not None and elecMin < 0.1) or (muonMin is not None and muonMin < 0.1):
+            
+            llMin = analysis_tools.minDeltaR(t, [ll])
+            
+            if (llMin is not None and llMin < 0.01):
                 continue
             clean += 1
             minZ, minCanZ = analysis_ntuples.minDeltaRGenParticles(t, genZL, c)
@@ -166,6 +175,11 @@ def main():
                 vars[varsDict["deltaRLL"]]["var"][0] = -1
             vars[varsDict["deltaEtaLJ"]]["var"][0] = abs(t.Eta() - c.LeadingJet.Eta())
             vars[varsDict["deltaRLJ"]]["var"][0] = abs(t.DeltaR(c.LeadingJet))
+            vars[varsDict["mtt"]]["var"][0] = analysis_tools.MT2(c.Met, c.METPhi, t)
+            vars[varsDict["deltaRMet"]]["var"][0] = abs(t.DeltaR(metvec))
+            vars[varsDict["deltaPhiMet"]]["var"][0] = abs(t.DeltaPhi(metvec))
+            vars[varsDict["lepton"]]["var"] = ll
+            vars[varsDict["invMass"]]["var"][0] = (ll + t).M()
         
             tree = None
             if result == "Zl":
@@ -177,6 +191,7 @@ def main():
                 tree = tBg
         
             tree.SetBranchAddress('track', vars[varsDict["track"]]["var"])
+            tree.SetBranchAddress('lepton', vars[varsDict["lepton"]]["var"])
             tree.Fill()
         if appEvent:
             appEvents += 1
@@ -195,6 +210,8 @@ def main():
     fnew = TFile(output_file + "_bg.root",'recreate')
     tBg.Write()
     fnew.Close()
+    
+    print "Done writing"
         
 main()
 exit(0)

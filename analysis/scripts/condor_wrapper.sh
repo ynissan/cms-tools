@@ -17,6 +17,8 @@ source $VO_CMS_SW_DIR/cmsset_default.sh
 
 cmsenv
 
+echo CMSSW_BASE=$CMSSW_BASE
+
 . "$CMSSW_BASE/src/cms-tools/lib/def.sh"
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$CMSSW_BASE/src/cms-tools/lib/classes"
 

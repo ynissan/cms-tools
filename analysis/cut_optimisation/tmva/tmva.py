@@ -6,6 +6,7 @@ from sys import exit
 from array import array
 import argparse
 import sys
+import os
 
 ####### CMDLINE ARGUMENTS #########
 
@@ -41,6 +42,10 @@ print "All=" + str(all)
 
 	
 ######## END OF CMDLINE ARGUMENTS ########
+
+dir = os.path.dirname(output_file_name)
+print "Changing directory to", dir
+os.chdir(dir)
 
 gROOT.SetBatch(1)
 TMVA.Tools.Instance()

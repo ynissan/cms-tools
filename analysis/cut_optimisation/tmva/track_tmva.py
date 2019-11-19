@@ -87,12 +87,26 @@ dataloader.AddVariable('track.Pt()', 'F')
 dataloader.AddVariable('track.Phi()', 'F')
 dataloader.AddVariable('dxyVtx', 'F')
 dataloader.AddVariable('dzVtx', 'F')
-#dataloader.AddVariable('deltaEtaLL', 'F')
 dataloader.AddVariable('deltaEtaLJ', 'F')
-#dataloader.AddVariable('deltaRLL', 'F')
 dataloader.AddVariable('deltaRLJ', 'F')
-#dataloader.AddVariable('trkMiniRelIso', 'F')
-#dataloader.AddVariable('trkRelIso', 'F')
+
+
+## FULL
+dataloader.AddVariable('deltaEtaLL', 'F')
+dataloader.AddVariable('deltaRLL', 'F')
+dataloader.AddVariable('trkMiniRelIso', 'F')
+dataloader.AddVariable('trkRelIso', 'F')
+dataloader.AddVariable('mtt', 'F')
+#dataloader.AddVariable('deltaRMet', 'F')
+dataloader.AddVariable('deltaPhiMet', 'F')
+dataloader.AddVariable('lepton.Eta()', 'F')
+dataloader.AddVariable('lepton.Phi()', 'F')
+dataloader.AddVariable('lepton.Pt()', 'F')
+dataloader.AddVariable('invMass', 'F')
+
+
+#dataloader.AddVariable('chi2perNdof', 'F')
+
 
 # cuts defining the signal and background sample
 preselectionCut = TCut("")
@@ -101,6 +115,7 @@ if no_norm:
 else:
     dataloader.PrepareTrainingAndTestTree(preselectionCut, "SplitMode=random:!V")
 factory.BookMethod(dataloader, TMVA.Types.kBDT, "BDT", "NTrees=200:MaxDepth=3")
+#factory.BookMethod(dataloader, TMVA.Types.kBDT, "BDT2","NTrees=2000:nEventsMin=2000:MaxDepth=4:BoostType=AdaBoost:AdaBoostBeta=0.6:UseRandomisedTrees=True:UseNVars=6:nCuts=2000:PruneMethod=CostComplexity:PruneStrength=-1")
 if all:
     factory.BookMethod(dataloader, TMVA.Types.kMLP, "MLP", "H:!V:NeuronType=tanh:VarTransform=N:NCycles=600:HiddenLayers=N+5:TestRate=5:!UseRegulator" )
 #factory.BookMethod(dataloader, TMVA.Types.kMLP, "MLP_ANN", "" );

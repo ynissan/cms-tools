@@ -8,7 +8,10 @@ import sys
 import math
 import os
 
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib")
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
+
 import cut_optimisation
 import utils
 
@@ -26,7 +29,7 @@ colorInx = 0
 ####### CMDLINE ARGUMENTS #########
 
 parser = argparse.ArgumentParser(description='ROC Comparison.')
-parser.add_argument('-i', '--input_dir', nargs=1, help='Input Dir', required=True)
+parser.add_argument('-i', '--input_dir', nargs=1, help='Input Dir', required=False)
 parser.add_argument('-o', '--output_file', nargs=1, help='Output File', required=True)
 args = parser.parse_args()
 
@@ -36,6 +39,10 @@ if args.output_file:
     outputFile = args.output_file[0]
 if args.input_dir:
     inputDir = args.input_dir[0]
+    
+if inputDir is None:
+    inputDir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/cut_optimisation/tmva/dilepton_bdt"
+
 
 ######## END OF CMDLINE ARGUMENTS ########
 
@@ -94,7 +101,8 @@ def plot_rocs():
         file = [dir]
         c2.cd()
         (testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names) = cut_optimisation.get_bdt_hists(file, None, None, None, None, None, None, 40)
-        (testBGHistsCut, trainBGHistsCut, testSignalHistsCut, trainSignalHistsCut, methodsCut, namesCut) = cut_optimisation.get_bdt_hists(file, None, None, None, None, None, None, 40, "&& invMass < " + str(cut))
+        #(testBGHistsCut, trainBGHistsCut, testSignalHistsCut, trainSignalHistsCut, methodsCut, namesCut) = cut_optimisation.get_bdt_hists(file, None, None, None, None, None, None, 40, "&& invMass < " + str(cut))
+        (testBGHistsCut, trainBGHistsCut, testSignalHistsCut, trainSignalHistsCut, methodsCut, namesCut) = cut_optimisation.get_bdt_hists(file, None, None, None, None, None, None, 40)
         #cut_optimisation.get_mlp_hists(file, testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names)
         c1.cd()
 

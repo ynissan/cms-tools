@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. "/afs/desy.de/user/n/nissanuv/cms-tools/bg/def.sh"
+. "$CMSSW_BASE/src/cms-tools/lib/def.sh"
 
 shopt -s nullglob
 shopt -s expand_aliases
@@ -85,9 +85,9 @@ for sim in $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
     for data_file in $SKIM_DATA_OUTPUT_DIR/sum/*; do
         echo "Will run:"
         data_file_name=$(basename $data_file .root)
-        echo $SCRIPTS_WD/run_skim_signal_bdt_single.sh -i $data_file -o ${OUTPUT_DIR}/$filename/single/${data_file_name}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@
+        echo $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_univ_bdt_track_bdt.py -i $data_file -o ${OUTPUT_DIR}/$filename/single/${data_file_name}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@
 cat << EOM >> $output_file
-arguments = $SCRIPTS_WD/run_skim_signal_bdt_single.sh -i $data_file -o ${OUTPUT_DIR}/$filename/single/${data_file_name}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@
+arguments = $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_univ_bdt_track_bdt.py -i $data_file -o ${OUTPUT_DIR}/$filename/single/${data_file_name}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@
 error = ${OUTPUT_DIR}/$filename/stderr/${data_file_name}.err
 output = ${OUTPUT_DIR}/$filename/stdout/${data_file_name}.output
 Queue

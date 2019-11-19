@@ -52,7 +52,8 @@ dyCrossSections = {
 #     "DYJetsToLL_M-5to50_HT-600toInf": 1.107
 # }
 
-LUMINOSITY = 35900. #pb^-1
+#LUMINOSITY = 35900. #pb^-1
+LUMINOSITY = 135000.
 CMS_WD="/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src"
 CS_DIR="/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/cs/stdout"
 LEPTON_COLLECTION_DIR="/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection"
@@ -491,8 +492,12 @@ def madHtCheck(current_file_name, madHT):
 
 def getLeptonCollectionFileMapFile(baseFileName):
     currLeptonCollectionFileMapFile, currLeptonCollectionFileMap = None, None
-    
-    mapNameFile = ("_".join(baseFileName.split(".")[1].split("_")[0:3])).split("AOD")[0] + ".root"
+    mapNameFile = ""
+    if "Run2016" in baseFileName and ".MET" in baseFileName:
+        mapNameFile = "Run2016_MET.root"
+    else:
+        mapNameFile = ("_".join(baseFileName.split(".")[1].split("_")[0:3])).split("AOD")[0] + ".root"
+
     print mapNameFile
     if not os.path.isfile(LEPTON_COLLECTION_FILES_MAP_DIR + "/" + mapNameFile):
         print "File " + LEPTON_COLLECTION_FILES_MAP_DIR + "/" + mapNameFile + " does not exist."

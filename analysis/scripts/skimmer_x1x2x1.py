@@ -141,7 +141,11 @@ def main():
     var_LeadingJetQgLikelihood = np.zeros(1,dtype=float)
     var_MinDeltaPhiMetJets = np.zeros(1,dtype=float)
     var_MinDeltaPhiMhtJets = np.zeros(1,dtype=float)
-
+    
+    var_MinCsv30 = np.zeros(1,dtype=float)
+    var_MinCsv25 = np.zeros(1,dtype=float)
+    var_MaxCsv30 = np.zeros(1,dtype=float)
+    var_MaxCsv25 = np.zeros(1,dtype=float)
     #### TRACKS ####
 
     var_tracks          = ROOT.std.vector(TLorentzVector)()
@@ -232,6 +236,11 @@ def main():
     tEvent.Branch('tracks_trackQualityHighPurity', 'std::vector<bool>', var_tracks_trackQualityHighPurity)
     
     tEvent.Branch('LeadingJet', 'TLorentzVector', var_LeadingJet)
+    
+    tEvent.Branch('MinCsv30', var_MinCsv30,'MinCsv30/D')
+    tEvent.Branch('MinCsv25', var_MinCsv25,'MinCsv25/D')
+    tEvent.Branch('MaxCsv30', var_MaxCsv30,'MaxCsv30/D')
+    tEvent.Branch('MaxCsv25', var_MaxCsv25,'MaxCsv25/D')
 
     nentries = c.GetEntries()
     print 'Analysing', nentries, "entries"
@@ -260,7 +269,7 @@ def main():
     
     print "Starting Loop"
     for ientry in range(nentries):
-        if ientry % 5 == 0:
+        if ientry % 1000 == 0:
             print "Processing " + str(ientry)
         c.GetEntry(ientry)
 
@@ -321,7 +330,6 @@ def main():
                 nLGenMapZ[nLGenZ] = 1
         #### END OF GEN LEVEL STUFF ####
     
-        var_NL[0] = nL
         var_NLGen[0] = nLGen
         var_NLGenZ[0] = nLGenZ
     
@@ -330,20 +338,20 @@ def main():
             if not analysis_ntuples.passed2016BTrigger(c, data): continue
         
         afterMET += 1
-        if btags > 0: continue
+        #if btags > 0: continue
         afterBTAGS += 1
-        if nj < 1: continue
+        #if nj < 1: continue
         afterNj += 1
         #if not duoLepton: continue
         var_MinDeltaPhiMetJets[0] = analysis_ntuples.minDeltaPhiMetJets25Pt2_4Eta(c)
         var_MinDeltaPhiMhtJets[0] = analysis_ntuples.minDeltaPhiMhtJets25Pt2_4Eta(c)
-        if var_MinDeltaPhiMhtJets[0] < 0.5: continue
-        if nL < 1:
-            continue
+        if var_MinDeltaPhiMetJets[0] < 0.4: continue
         if c.MHT < 100: continue
         if c.MET < 120: continue
         ## END PRECUTS##
-
+        
+        nj, btags, ljet = analysis_ntuples.numberOfJets25Pt2_4Eta_Loose(c)
+        
         afterPreselection += 1
         
         var_RunNum[0] = c.RunNum
@@ -360,6 +368,12 @@ def main():
         var_BTags[0] = btags
         var_LeadingJetPt[0] = c.Jets[ljet].Pt()
         var_LeadingJet = c.Jets[ljet]
+        
+        var_MinCsv30[0], var_MaxCsv30[0] = analysis_ntuples.minMaxCsv(c, 30)
+        var_MinCsv25[0], var_MaxCsv25[0] = analysis_ntuples.minMaxCsv(c, 25)
+        
+        if var_MaxCsv25[0] > 0.7:
+            continue
         
         if not data:
             var_puWeight[0] = c.puWeight
@@ -403,6 +417,11 @@ def main():
             takeLeptonsFrom = currLeptonCollectionMap.get(c.RunNum, c.LumiBlockNum, c.EvtNum)
         else:
             takeLeptonsFrom = c
+            
+        ll, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(takeLeptonsFrom, c.Jets[ljet])
+        
+        if ll is None:
+            continue
         
         var_Electrons = takeLeptonsFrom.Electrons
         var_Electrons_charge= takeLeptonsFrom.Electrons_charge
@@ -426,6 +445,8 @@ def main():
         
         var_Jets = c.Jets
         var_Jets_bDiscriminatorCSV = c.Jets_bDiscriminatorCSV
+        
+        var_NL[0] = nL
         
         if data:
             var_GenParticles = ROOT.std.vector(TLorentzVector)()

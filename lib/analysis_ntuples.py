@@ -18,22 +18,33 @@ BTAG_CSV_LOOSE2 = 0.46
 # 	for p in range(particle.numberOfDaughters()):
 # 		printTree(particle.daughter(p), space + 1)
 
+def minMaxCsv(event, pt):
+    minimum = 1
+    maximum = 0
+    for ijet in range(event.Jets.size()):
+        jet = event.Jets[ijet]
+        if jet.Pt() >= pt and abs(jet.Eta()) <= 2.4:
+            if event.Jets_bDiscriminatorCSV[ijet] >= 0 and event.Jets_bDiscriminatorCSV[ijet] < minimum:
+                minimum = event.Jets_bDiscriminatorCSV[ijet]
+            if event.Jets_bDiscriminatorCSV[ijet] >= 0 and event.Jets_bDiscriminatorCSV[ijet] > maximum:
+                maximum = event.Jets_bDiscriminatorCSV[ijet]
+    return minimum, maximum
 
 def numberOfJets(event, pt, eta, csv):
-	nj = 0
-	btags = 0
-	leadingJet = None
-	for ijet in range(event.Jets.size()):
-		jet = event.Jets[ijet]
-		if jet.Pt() >= pt and abs(jet.Eta()) <= eta:
-			nj +=1
-			if leadingJet is None:
-				leadingJet = ijet
-			elif jet.Pt() > event.Jets[leadingJet].Pt():
-				leadingJet = ijet
-			if event.GetBranchStatus('Jets_bDiscriminatorCSV') and event.Jets_bDiscriminatorCSV[ijet] > csv:
-				btags += 1
-	return nj, btags, leadingJet
+    nj = 0
+    btags = 0
+    leadingJet = None
+    for ijet in range(event.Jets.size()):
+        jet = event.Jets[ijet]
+        if jet.Pt() >= pt and abs(jet.Eta()) <= eta:
+            nj +=1
+            if leadingJet is None:
+                leadingJet = ijet
+            elif jet.Pt() > event.Jets[leadingJet].Pt():
+                leadingJet = ijet
+            if event.GetBranchStatus('Jets_bDiscriminatorCSV') and event.Jets_bDiscriminatorCSV[ijet] > csv:
+                btags += 1
+    return nj, btags, leadingJet
 
 def numberOfJets30Pt2_4Eta_Loose(event):
 	return numberOfJets(event, 30, 2.4, BTAG_CSV_LOOSE)
@@ -204,7 +215,7 @@ def passed2016BTrigger(t, data=False):
     #    if not t.ecalBadCalibReducedFilter: return False
     return True
 
-def getSingleLeptonAfterSelection(c):
+def getSingleLeptonAfterSelection(c, leadingJet):
     lep = None
     lepCharge = None
     lepFlavour = None
@@ -221,7 +232,7 @@ def getSingleLeptonAfterSelection(c):
             lepFlavour = "Electrons"
     for i in range(c.Muons.size()):
         m = c.Muons[i]
-        if m.Pt() <= 25 and m.Pt()>=2 and bool(c.Muons_mediumID[i]) and abs(m.DeltaR(c.LeadingJet)) >= 0.4:
+        if m.Pt() <= 25 and m.Pt()>=2 and bool(c.Muons_mediumID[i]) and abs(m.DeltaR(leadingJet)) >= 0.4:
             nL += 1
             if nL > 1:
                 return None, None, None

@@ -8,7 +8,10 @@ import sys
 import math
 import os
 
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib")
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
+
 import cut_optimisation
 import utils
 
@@ -26,7 +29,7 @@ colorInx = 0
 ####### CMDLINE ARGUMENTS #########
 
 parser = argparse.ArgumentParser(description='ROC Comparison.')
-parser.add_argument('-i', '--input_dir', nargs=1, help='Input Dir', required=True)
+parser.add_argument('-i', '--input_dir', nargs=1, help='Input Dir', required=False)
 parser.add_argument('-o', '--output_file', nargs=1, help='Output File', required=True)
 args = parser.parse_args()
 
@@ -36,6 +39,9 @@ if args.output_file:
     outputFile = args.output_file[0]
 if args.input_dir:
     inputDir = args.input_dir[0]
+
+if inputDir is None:
+    inputDir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track/cut_optimisation/tmva"
 
 ######## END OF CMDLINE ARGUMENTS ########
 

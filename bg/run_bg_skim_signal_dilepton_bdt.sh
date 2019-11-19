@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. "/afs/desy.de/user/n/nissanuv/cms-tools/bg/def.sh"
+. "$CMSSW_BASE/src/cms-tools/lib/def.sh"
 
 shopt -s nullglob
 shopt -s expand_aliases
@@ -93,9 +93,9 @@ for sim in $INPUT_DIR/*; do
         echo "Will run:"
         echo "error=${OUTPUT_DIR}/$tb/stderr/${bg_file_name}.err" 
         bg_file_name=$(basename $bg_file .root)
-        echo $SCRIPTS_WD/run_skim_signal_dilepton_bdt_single.sh -i $bg_file -o ${OUTPUT_DIR}/$tb/single/${bg_file_name}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$tb 
+        echo $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_dilepton_bdt.py -i $bg_file -o ${OUTPUT_DIR}/$tb/single/${bg_file_name}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$tb 
 cat << EOM >> $output_file
-arguments = $SCRIPTS_WD/run_skim_signal_dilepton_bdt_single.sh -i $bg_file -o ${OUTPUT_DIR}/$tb/single/${bg_file_name}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$tb 
+arguments = $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_dilepton_bdt.py -i $bg_file -o ${OUTPUT_DIR}/$tb/single/${bg_file_name}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$tb 
 error = ${OUTPUT_DIR}/$tb/stderr/${bg_file_name}.err
 output = ${OUTPUT_DIR}/$tb/stdout/${bg_file_name}.output
 Queue

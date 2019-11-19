@@ -10,7 +10,10 @@ import os
 import traceback
 import logging
 
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib")
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
+
 import cut_optimisation
 
 gROOT.SetBatch(True)
@@ -27,16 +30,19 @@ colorInx = 0
 ####### CMDLINE ARGUMENTS #########
 
 parser = argparse.ArgumentParser(description='ROC Comparison.')
-parser.add_argument('-i', '--input_dir', nargs=1, help='Input Dir', required=True)
+parser.add_argument('-i', '--input_dir', nargs=1, help='Input Dir', required=False)
 parser.add_argument('-o', '--output_file', nargs=1, help='Output File', required=True)
 args = parser.parse_args()
 
 outputFile = "roc_comparison.pdf"
 inputDir = None
 if args.output_file:
-	outputFile = args.output_file[0]
+    outputFile = args.output_file[0]
 if args.input_dir:
-	inputDir = args.input_dir[0]
+    inputDir = args.input_dir[0]
+
+if inputDir is None:
+    inputDir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/cut_optimisation/tmva/dilepton_bdt"
 
 ######## END OF CMDLINE ARGUMENTS ########
 
@@ -92,6 +98,7 @@ def plot_rocs():
         try:
             (testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names) = cut_optimisation.get_bdt_hists(file)
             condition = "&& invMass < " + str(cut)
+            #condition = "1"
             print "Condition=" + condition
             (testBGHistsCut, trainBGHistsCut, testSignalHistsCut, trainSignalHistsCut, methodsCut, namesCut) = cut_optimisation.get_bdt_hists(file, None, None, None, None, None, None, 10000, condition)
         except Exception as e:

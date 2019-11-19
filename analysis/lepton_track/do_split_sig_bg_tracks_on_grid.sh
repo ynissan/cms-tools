@@ -42,6 +42,10 @@ EOM
 
 for f in /afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/*; do
 	filename=$(basename $f .root)
+	if [ -f $OUTPUT_DIR/single/${filename}_sig.root ] && [ -f $OUTPUT_DIR/single/${filename}_bg.root ]; then
+        echo "$name exist. Skipping..."
+        continue
+    fi
 	echo "Will run:"
 	cmd="$CONDOR_WRAPPER $LEPTON_TRACK_DIR/split_sig_bg_tracks.py -i $f -o  $OUTPUT_DIR/single/${filename}"
 	echo $cmd
@@ -53,7 +57,7 @@ Queue
 EOM
 done
 
-#condor_submit $output_file
+condor_submit $output_file
 rm $output_file
 
 

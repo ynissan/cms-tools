@@ -17,8 +17,12 @@ from lib import cuts
 from lib import analysis_ntuples
 from lib import analysis_tools
 from lib import utils
+from lib import cut_optimisation
 
 gROOT.SetBatch(1)
+
+gSystem.Load('LumiSectMap_C')
+from ROOT import LumiSectMap
 
 ####### CMDLINE ARGUMENTS #########
 
@@ -32,11 +36,21 @@ args = parser.parse_args()
 
 input_file = None
 output_file = None
+track_bdt = None
 if args.input_file:
     input_file = args.input_file[0]
 else:
-    input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm7p39Chi20Chipm.root"
-    #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm2p51Chi20Chipm.root"
+    #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm7p39Chi20Chipm.root"
+    input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm2p51Chi20Chipm.root"
+    #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_signal_bdt/single/higgsino_mu100_dm7p39Chi20Chipm.root"
+    #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_signal_bdt/single/higgsino_mu100_dm12p84Chi20Chipm.root"
+    
+    #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_signal_bdt/single/higgsino_mu100_dm2p51Chi20Chipm.root"
+    input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_signal_bdt/single/higgsino_mu100_dm2p51Chi20Chipm.root"
+    track_bdt = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track/cut_optimisation/tmva/low"
+    #input_file = "/afs/desy.de/user/n/nissanuv/nfs/old_leptons_x1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm2p51Chi20Chipm.root"
+    
+    
 if args.output_file:
     output_file = args.output_file[0]
 else:
@@ -55,13 +69,13 @@ lepTypes = ["Zl", "NZl", "MM"]
 if mm:
     lepTypes = ["Zl", "MM"]
 
-def minRecDeltaR(l, c):
-    min = None
-    for v in [e for e in c.Electrons] + [m for m in c.Muons]:
-        deltaR = abs(v.DeltaR(l))
-        if min is None or deltaR < min:
-            min = deltaR
-    return min
+# def minRecDeltaR(l, c):
+#     min = None
+#     for v in [e for e in c.Electrons] + [m for m in c.Muons]:
+#         deltaR = abs(v.DeltaR(l))
+#         if min is None or deltaR < min:
+#             min = deltaR
+#     return min
 
 def track_DeltaR_LJ(c, t, ti):
     nj, btags, ljet = analysis_ntuples.numberOfJets25Pt2_4Eta_Loose(c)
@@ -72,7 +86,8 @@ def track_DeltaEta_LJ(c, t, ti):
     return abs(t.Eta() - c.Jets[ljet].Eta())
 
 def track_DeltaR_LL(c, t, ti):
-    ll = analysis_ntuples.leadingLepton(c)
+    ll, lepCharge, lepFlavour = analysis_ntuples.getSingleLeptonAfterSelection(c, c.LeadingJet)
+    #ll = analysis_ntuples.leadingLepton(c)
     if ll is None:
         return 0
     return abs(t.DeltaR(ll))
@@ -82,6 +97,19 @@ def track_DeltaEta_LL(c, t, ti):
     if ll is None:
         return 0
     return abs(t.Eta()-ll.Eta())
+
+def mtt(c, t, ti):
+    return analysis_tools.MT2(c.Met, c.METPhi, t)
+
+def deltaRMetTrack(c, t, ti):
+    metvec = TLorentzVector()
+    metvec.SetPtEtaPhiE(c.Met, 0, c.METPhi, c.Met)
+    return abs(t.DeltaR(metvec))
+
+def deltaPhiMetTrack(c, t, ti):
+    metvec = TLorentzVector()
+    metvec.SetPtEtaPhiE(c.Met, 0, c.METPhi, c.Met)
+    return abs(t.DeltaPhi(metvec))
 
 def eta(c, ti):
     return abs(c.tracks[ti].Eta()) < 2.4
@@ -107,6 +135,51 @@ def deltaRLJ(c, ti):
 def deltaRLL(c, ti):
 	return track_DeltaR_LL(c, c.tracks[ti], ti) < 1.1
 
+def trackBDT(c, ti):
+    return c.trackBDT>0.1
+
+def trackBDTOnly(c, ti):
+    return c.trackBDT>0
+
+def trackBDTLow(c, ti):
+    return c.trackBDT>-0.2
+
+(track_testBGHists, track_trainBGHists, track_testSignalHists, track_trainSignalHists, track_methods, track_names) = cut_optimisation.get_bdt_hists([track_bdt])
+track_trainSignalHist, track_trainBGHist, track_testSignalHist, track_testBGHist = track_trainSignalHists[0], track_trainBGHists[0], track_testSignalHists[0], track_testBGHists[0]
+track_highestZ, track_highestS, track_highestB, track_highestMVA, track_ST, track_BT = cut_optimisation.getHighestZ(track_trainSignalHist, track_trainBGHist, track_testSignalHist, track_testBGHist)
+
+track_bdt_weights = track_bdt + "/dataset/weights/TMVAClassification_BDT.weights.xml"
+track_bdt_vars = cut_optimisation.getVariablesFromXMLWeightsFile(track_bdt_weights)
+track_bdt_vars_map = cut_optimisation.getVariablesMemMap(track_bdt_vars)
+track_bdt_reader = cut_optimisation.prepareReader(track_bdt_weights, track_bdt_vars, track_bdt_vars_map)
+
+def allTrackBDT(c, t, ti):
+    ll, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(c, c.LeadingJet)
+    t = c.tracks[ti]
+    metvec = TLorentzVector()
+    metvec.SetPtEtaPhiE(c.Met, 0, c.METPhi, c.Met)
+    track_bdt_vars_map["deltaEtaLJ"][0] = abs(t.Eta() - c.LeadingJet.Eta())
+    track_bdt_vars_map["deltaRLJ"][0] = abs(t.DeltaR(c.LeadingJet))
+    track_bdt_vars_map["track.Phi()"][0] = t.Phi()
+    track_bdt_vars_map["track.Pt()"][0] = t.Pt()
+    track_bdt_vars_map["track.Eta()"][0] = t.Eta()
+    
+    
+    track_bdt_vars_map["deltaEtaLL"][0] = abs(t.Eta()-ll.Eta()) 
+    track_bdt_vars_map["deltaRLL"][0] = abs(t.DeltaR(ll))
+    track_bdt_vars_map["mtt"][0] = analysis_tools.MT2(c.Met, c.METPhi, t)
+    #track_bdt_vars_map["deltaRMet"][0] = abs(t.DeltaR(metvec))
+    track_bdt_vars_map["deltaPhiMet"][0] = abs(t.DeltaPhi(metvec))
+            
+    track_bdt_vars_map["lepton.Eta()"][0] = ll.Eta()
+    track_bdt_vars_map["lepton.Phi()"][0] = ll.Phi()
+    track_bdt_vars_map["lepton.Pt()"][0] = ll.Pt()
+    track_bdt_vars_map["invMass"][0] = (t + ll).M()
+    
+    for trackVar in ['dxyVtx', 'dzVtx','trkMiniRelIso','trkRelIso']:#, 'trkMiniRelIso', 'trkRelIso']:
+        track_bdt_vars_map[trackVar][0] = eval("c.tracks_" + trackVar + "[" + str(ti) + "]")
+    
+    return track_bdt_reader.EvaluateMVA("BDT")
 
 def passedCut(cut, c, ti):
     for func in cut["funcs"]:
@@ -121,12 +194,11 @@ def main():
 #     print "Going to open the file"
 #     print input_file
 #     c.Add(input_file)
-    
     c= None
-    c = TChain('TreeMaker2/PreSelection')
+    c = TChain('tEvent')
     
-    #c.Add('/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/ntuples_sum/higgsino_mu100_dm7p39Chi20Chipm_1.root')
-    c.Add('/nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggsino/M1M2Scan/ntuple_sidecar/higgsino_mu100_dm7.39Chi20Chipm.root')
+    c.Add(input_file)
+    #c.Add('/nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggsino/M1M2Scan/ntuple_sidecar/higgsino_mu100_dm7.39Chi20Chipm.root')
 
     nentries = c.GetEntries()
     print 'Analysing', nentries, "entries"
@@ -141,11 +213,12 @@ def main():
     lepTrackHistsMaxX = [5]
     lepTrackHistsBins = [5]
 
-    trackHists = ["Track_DeltaR_LJ", "Track_DeltaEta_LJ", "Track_DeltaR_LL", "Track_DeltaEta_LL"]
-    trackHistsFuncs = [track_DeltaR_LJ, track_DeltaEta_LJ, track_DeltaR_LL, track_DeltaEta_LL]
-    trackHistsTitle = ["Delta R Track Leading Jet", "Delta Eta Track Leading Jet", "Delta R Track Leading Lepton", "Delta Eta Track Leading Lepton"]
-    trackHistsMaxX = [5,5,5,5]
-    trackHistsBins = [50,50,50,50]
+    trackHists = ["Track_DeltaR_LJ", "Track_DeltaEta_LJ", "Track_DeltaR_LL", "Track_DeltaEta_LL", "deltaRMetTrack", "deltaPhiMetTrack", "mtt", "allTrackBDT"]
+    trackHistsFuncs = [track_DeltaR_LJ, track_DeltaEta_LJ, track_DeltaR_LL, track_DeltaEta_LL, deltaRMetTrack, deltaPhiMetTrack, mtt, allTrackBDT]
+    trackHistsTitle = ["Delta R Track Leading Jet", "Delta Eta Track Leading Jet", "Delta R Track Leading Lepton", "Delta Eta Track Leading Lepton", "deltaRMetTrack", "deltaPhiMetTrack", "mtt", "allTrackBDT"]
+    trackHistsMinX = [0,0,0,0,0,0,0,-1]
+    trackHistsMaxX = [5,5,5,5,4,4,100,1]
+    trackHistsBins = [50,50,50,50,50,50,50,50]
 
     trackHistsNoType = ["Track_NumIso",  "NM_Track_NumIso"]
     trackHistsTitleNoType = ["Number of Isolated Tracks",  "Number of Non Matched Tracks"]
@@ -166,16 +239,43 @@ def main():
     tracksMaxX = [0.1, 10, 0.1, 0.1, 2, 1, 0.2]
 
     binNum = 50
-
-    cuts = [{"name":"", "title": "No Cuts"},
-        {"name":"Eta_deltaEtaLL", "title": "Eta < 2.6, deltaEtaLL < 1", "funcs":[eta, deltaEtaLL]},
-        {"name":"Eta_deltaEtaLL_deltaEtaLJ", "title": "Eta < 2.6, deltaEtaLL < 1, deltaEtaLJ < 3.8", "funcs":[eta, deltaEtaLL, deltaEtaLJ]},
-        {"name":"Pt_Eta_dxy_dz", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06", "funcs":[eta, pt, dxy, dz]},
-        {"name":"Pt_Eta_dxy_dz_deltaEtaLL", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06, deltaEtaLL < 1", "funcs":[eta, pt, dxy, dz, deltaEtaLL]},
-        {"name":"Pt_Eta_dxy_dz_deltaEtaLL_deltaEtaLJ", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06, deltaEtaLL < 1, deltaEtaLJ < 3.8", "funcs":[eta, pt, dxy, dz, deltaEtaLL, deltaEtaLJ]},
-        {"name":"Pt_Eta_dxy_dz_deltaEtaLL_deltaRLJ", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06, deltaEtaLL < 1, deltaRLJ > 1.8", "funcs":[eta, pt, dxy, dz, deltaEtaLL, deltaRLJ]},
-        {"name":"Pt_Eta_dxy_dz_deltaEtaLL_deltaRLJ_deltaRLL", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06, deltaEtaLL < 1, deltaRLJ > 1.8, deltaRLL < 1.1", "funcs":[eta, pt, dxy, dz, deltaEtaLL, deltaRLJ, deltaRLL]}]
     
+    eventHistsNoType = ["GenTrackLepMll", "TrackLepMll", "TrackGenLepMll", "GenMll"]
+    eventHistsNoTypeTitle = ["GenTrackLepMll", "TrackLepMll", "TrackGenLepMll", "GenMll"]
+    eventHistsNoTypeMinX = [0,0,0,0]
+    eventHistsNoTypeMaxX = [30,30,30,30]
+    eventHistsNoTypeBins = [50,50,50,50]
+    
+    eventHists = ["trackBDT", "secondTrackBDT", "TrackLepMllTypes"]
+    eventHistsTitle = ["trackBDT", "secondTrackBDT", "TrackLepMllTypes"]
+    eventHistsMinX = [-1,-1,0]
+    eventHistsMaxX = [1,1,30]
+    eventHistsBins = [50,50,50]
+    
+    cuts = [{"name":"", "title": "No Cuts", "funcs":[]},
+            {"name": "trackBDT", "title": "trackBDT", "funcs":[trackBDT]},
+            {"name": "trackBDTLow", "title": "trackBDTLow", "funcs":[trackBDTLow]},
+            {"name": "trackBDTOnly", "title": "trackBDTOnly", "funcs":[trackBDTOnly]},
+            #{"name": "deltaRLL", "title": "deltaRLL", "funcs":[deltaRLL]},
+        ]
+        #{"name":"Eta_deltaEtaLL", "title": "Eta < 2.6, deltaEtaLL < 1", "funcs":[eta, deltaEtaLL]},
+#         {"name":"Eta_deltaEtaLL_deltaEtaLJ", "title": "Eta < 2.6, deltaEtaLL < 1, deltaEtaLJ < 3.8", "funcs":[eta, deltaEtaLL, deltaEtaLJ]},
+#         {"name":"Pt_Eta_dxy_dz", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06", "funcs":[eta, pt, dxy, dz]},
+#         {"name":"Pt_Eta_dxy_dz_deltaEtaLL", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06, deltaEtaLL < 1", "funcs":[eta, pt, dxy, dz, deltaEtaLL]},
+#         {"name":"Pt_Eta_dxy_dz_deltaEtaLL_deltaEtaLJ", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06, deltaEtaLL < 1, deltaEtaLJ < 3.8", "funcs":[eta, pt, dxy, dz, deltaEtaLL, deltaEtaLJ]},
+#         {"name":"Pt_Eta_dxy_dz_deltaEtaLL_deltaRLJ", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06, deltaEtaLL < 1, deltaRLJ > 1.8", "funcs":[eta, pt, dxy, dz, deltaEtaLL, deltaRLJ]},
+#         {"name":"Pt_Eta_dxy_dz_deltaEtaLL_deltaRLJ_deltaRLL", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06, deltaEtaLL < 1, deltaRLJ > 1.8, deltaRLL < 1.1", "funcs":[eta, pt, dxy, dz, deltaEtaLL, deltaRLJ, deltaRLL]}]
+#     
+    for lepType in lepTypes:
+        for h, hist in enumerate(eventHists):
+            for cut in cuts:
+                tname = hist + "_" + lepType + "_" +  cut["name"]
+                histograms[tname] = utils.UOFlowTH1F(tname, eventHistsTitle[h], eventHistsBins[h], eventHistsMinX[h], eventHistsMaxX[h])
+    
+    for h, hist in enumerate(eventHistsNoType):
+        for cut in cuts:
+            tname = hist + "_" +  cut["name"]
+            histograms[tname] = utils.UOFlowTH1F(tname, eventHistsNoTypeTitle[h], eventHistsNoTypeBins[h], eventHistsNoTypeMinX[h], eventHistsNoTypeMaxX[h])
 
     for obj in objs:
         for lepType in lepTypes:
@@ -203,7 +303,7 @@ def main():
         for lepType in lepTypes:
             for cut in cuts:
                 tname = trackHist + "_" + lepType + "_" + cut["name"]
-                histograms[tname] = utils.UOFlowTH1F(tname, trackHistsTitle[i], trackHistsBins[i], 0, trackHistsMaxX[i])
+                histograms[tname] = utils.UOFlowTH1F(tname, trackHistsTitle[i], trackHistsBins[i], trackHistsMinX[i], trackHistsMaxX[i])
 
     for i, trackHist in enumerate(trackHistsNoType):
         for cut in cuts:
@@ -235,7 +335,7 @@ def main():
         h.Sumw2()
         h.SetStats(0)
         h.SetMinimum(0.001)
-
+    
     notCorrect = 0
     for ientry in range(nentries):
         if ientry % 5000 == 0:
@@ -247,14 +347,20 @@ def main():
             print "No"
             notCorrect += 1
             continue
-    
-        recoNum = c.Electrons.size() + c.Muons.size()
-        if recoNum != 1:
+        
+        ll, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(c, c.LeadingJet)
+        
+        if ll is None:
             continue
+        
+        #recoNum = c.Electrons.size() + c.Muons.size()
+        recoNum = 1
+        #if recoNum != 1:
+        #    continue
             
-        nj, btags, ljet = analysis_ntuples.numberOfJets25Pt2_4Eta_Loose(c)
-        if ljet is None:
-            continue
+        #nj, btags, ljet = analysis_ntuples.numberOfJets25Pt2_4Eta_Loose(c)
+        #if ljet is None:
+        #    continue
     
         genZL, genNonZL = analysis_ntuples.classifyGenZLeptons(c)
         if genZL is None:
@@ -271,11 +377,12 @@ def main():
         histograms["Reco_Num"].Fill(recoNum)
     
     
-        for lepVal in ["Electrons", -11], ["Muons", -13]:
+        for lepVal in [[leptonFlavour, leptonCharge]]:#["Electrons", -11], ["Muons", -13]:
             lepFlavour = lepVal[0]
             lepCharge = lepVal[1]
-            leps = getattr(c, lepFlavour)
-            for li in range(leps.size()):
+            pdgid = -11 if leptonFlavour == "Electrons" else -13
+            leps = [ll]#getattr(c, lepFlavour)
+            for li in range(len(leps)):
                 l = leps[li]
                 minZ, minCanZ = analysis_ntuples.minDeltaRGenParticles(l, genZL, c)
                 minNZ, minCanNZ = analysis_ntuples.minDeltaRGenParticles(l, genNonZL, c)
@@ -297,12 +404,12 @@ def main():
                 name = ""
                 if minNZ is None or minZ < minNZ:
                     #print "E Z min: " + str(minZ)
-                    if c.GenParticles_PdgId[minCanZ] == lepCharge * getattr(c, lepFlavour + "_charge")[li]:
+                    if c.GenParticles_PdgId[minCanZ] == pdgid * lepCharge:#getattr(c, lepFlavour + "_charge")[li]:
                         name = "Rec_Zl_"
                     else:
                         name = "Rec_MM_"
                 else:
-                    if c.GenParticles_PdgId[minCanNZ] == lepCharge * getattr(c, lepFlavour + "_charge")[li]:
+                    if c.GenParticles_PdgId[minCanNZ] == pdgid * lepCharge:#getattr(c, lepFlavour + "_charge")[li]:
                         if mm:
                             name = "Rec_MM_"
                         else:
@@ -319,13 +426,35 @@ def main():
         numIsoTracks = [0] * len(cuts)
         numMMIsoTracks = [0] * len(cuts)
         numMMZlIsoTracks = [0] * len(cuts)
+        
+        for cut in cuts:
+            histograms["GenMll_" + cut["name"]].Fill((c.GenParticles[genZL[0]] + c.GenParticles[genZL[1]]).M())
+        #histograms["TrackLepMll"].Fill((ll + c.track).M())
+        
+        filledOnce = False
+        #print "====="
         for ti in range(c.tracks.size()):
+            t = c.tracks[ti]
+            
+            if c.track != t:
+                continue
+            
             if c.tracks_trkRelIso[ti] > 0.1:
                 continue 
-            #continue
+            if c.tracks_dxyVtx[ti] > 0.02:
+                continue
+            if c.tracks_dzVtx[ti] > 0.05:
+                continue
+            
+            minRecR = ll.DeltaR(t)
+
             t = c.tracks[ti]
-            minRecR = minRecDeltaR(t, c)
-            if rm and minRecR < 0.1:
+            tcharge = c.tracks_charge[ti]
+            
+            if tcharge * leptonCharge > 0:
+                continue
+            
+            if rm and minRecR < 0.01:
                 continue
         
             #if abs(t.Eta()) > 0.1:
@@ -346,11 +475,19 @@ def main():
 
             result = ""
         
-            if min > 0.1:
+            if min > 0.01:
                 result = "MM"
             elif minNZ is None or minZ < minNZ:
                 if c.tracks_charge[ti] * c.GenParticles_PdgId[minCanZ] < 0:
                     result = "Zl"
+                    if c.tracks_charge[ti] * c.leptonCharge < 0:
+                        #Opposite charge! Good!
+                        for i, cut in enumerate(cuts):
+                            #print "Checking cut " + cut["name"]
+                            if not passedCut(cut, c, ti):
+                                #print "not passed"
+                                continue
+                            histograms["GenTrackLepMll_" + cut["name"]].Fill((c.tracks[ti] + c.lepton).M())
                 else:
                     result = "MM"
             else:
@@ -363,7 +500,47 @@ def main():
                     result = "MM"
             #if result == "Zl":
             #	print "min=", min, " iso:", c.tracks_trkRelIso[ti]
+            
+            if c.track == t:
+                #if c.trackBDT < 0.1:
+                #    continue
+                    
+                #if track_DeltaR_LL(c, c.tracks[ti], ti) > 0.9:
+                #    continue
+                for i, cut in enumerate(cuts):
+                    if len(cut["name"]) > 0:
+                        #print "Checking cut " + cut["name"]
+                        if not passedCut(cut, c, ti):
+                            #print "not passed"
+                            continue
+                
+                    if filledOnce:
+                        print "WHAT?!?"
+                        filledOnce = True
+                    histograms["trackBDT" + "_" + result + "_" + cut["name"]].Fill(c.trackBDT)
+                    histograms["TrackLepMllTypes" + "_" + result + "_" + cut["name"]].Fill(c.invMass)
+                    histograms["TrackLepMll" + "_" + cut["name"]].Fill(c.invMass)
 
+                    if c.tracks_charge[ti] * c.GenParticles_PdgId[genZL[0]] < 0:
+                        #SAME CHARGE - TAKE THE OTHER ONE
+                        histograms["TrackGenLepMll" + "_" + cut["name"]].Fill((t + c.GenParticles[genZL[1]]).M())
+                    else:
+                        histograms["TrackGenLepMll" + "_" + cut["name"]].Fill((t + c.GenParticles[genZL[0]]).M())
+            # print "c.secondTrack.Pt()=", c.secondTrack.Pt()
+#             print "t.Pt()", t.Pt()
+#             print "---"
+            if t == c.secondTrack:
+                print "SECOND TRACK"
+                for i, cut in enumerate(cuts):
+                    if len(cut["name"]) > 0:
+                        #print "Checking cut " + cut["name"]
+                        if not passedCut(cut, c, ti):
+                            #print "not passed"
+                            continue
+                    histograms["secondTrackBDT" + "_" + result + "_" + cut["name"]].Fill(c.secondTrackBDT)
+                
+            
+            
             for i, cut in enumerate(cuts):
                 if len(cut["name"]) > 0:
                     #print "Checking cut " + cut["name"]
@@ -372,6 +549,26 @@ def main():
                         continue
             
                 numIsoTracks[i] += 1
+                
+                # track_bdt_vars_map["deltaEtaLJ"][0] = abs(t.Eta() - c.LeadingJet.Eta())
+#                 track_bdt_vars_map["deltaRLJ"][0] = abs(t.DeltaR(c.LeadingJet))
+#                 track_bdt_vars_map["track.Phi()"][0] = t.Phi()
+#                 track_bdt_vars_map["track.Pt()"][0] = t.Pt()
+#                 track_bdt_vars_map["track.Eta()"][0] = t.Eta()
+#             
+#             
+#                 track_bdt_vars_map["deltaEtaLL"][0] = abs(t.Eta()-ll.Eta()) 
+#                 track_bdt_vars_map["deltaRLL"][0] = abs(t.DeltaR(ll))
+#                 track_bdt_vars_map["mtt"][0] = analysis_tools.MT2(c.Met, c.METPhi, t)
+#                 track_bdt_vars_map["deltaRMet"][0] = abs(t.DeltaR(metvec))
+#                 track_bdt_vars_map["deltaPhiMet"][0] = abs(t.DeltaPhi(metvec))
+#             
+#                 for trackVar in ['dxyVtx', 'dzVtx','trkMiniRelIso','trkRelIso']:#, 'trkMiniRelIso', 'trkRelIso']:
+#                     track_bdt_vars_map[trackVar][0] = eval("c.tracks_" + trackVar + "[" + str(ti) + "]")
+#             
+#                 track_tmva_value = track_bdt_reader.EvaluateMVA("BDT")
+#                 
+#                 histograms["allTrackBDT_" + result + "_" + cut["name"]].Fill(track_tmva_value)
             
                 if minRecR is None or minRecR > 0.1:
                     numMMIsoTracks[i] += 1
@@ -497,7 +694,7 @@ def main():
                     legend.Draw("SAME")
                     if logScale:
                         pad.SetLogy()
-                    c1.Update()		
+                    c1.Update()
                     pId += 1
     
                     if pId > 6:
@@ -506,7 +703,7 @@ def main():
                         needToDraw = False;
 
         if len(cut["name"]) == 0:
-            for name in "Lepton_minDealZ", "Track_minDealZ", "Track_RelIso", "Reco_Num":
+            for name in ["Lepton_minDealZ", "Track_minDealZ", "Track_RelIso", "Reco_Num"]:
                 needToDraw = True
                 pad = histPad.cd(pId)
                 h =  histograms[name]
@@ -520,8 +717,46 @@ def main():
                     pId = 1
                     c1.Print(OUTPUT_FILE);
                     needToDraw = False
+            
+            # for name in eventHists:
+#                 drawSame = False
+#                 pad = histPad.cd(pId)
+#                 needToDraw = True
+#                 legend = TLegend(.69,.7,.85,.89)
+#                 memory.append(legend)
+#                 cP = 0
+#                 
+#                 maxY = 0
+#                 for lepType in lepTypes:
+#                     tname = name + "_" + lepType
+#                     h = histograms[tname]
+#                     maxY = max(maxY, h.GetMaximum())
+#                 
+#                 for lepType in lepTypes:
+#                     tname = name + "_" + lepType
+#                     h = histograms[tname]
+#                     utils.formatHist(h, utils.colorPalette[cP])
+#                     cP += 1
+#                     h.SetMaximum(maxY)
+#                     legend.AddEntry(h, lepType, 'F')
+#                     if drawSame:
+#                         h.Draw("HIST SAME")
+#                     else:
+#                         drawSame = True
+#                         #utils.setLabels(h, histDef)
+#                         h.Draw("HIST")
+#                 legend.Draw("SAME")
+#                 if logScale:
+#                     pad.SetLogy()
+#                 c1.Update()		
+#                 pId += 1
+# 
+#                 if pId > 6:
+#                     pId = 1
+#                     c1.Print(OUTPUT_FILE);
+#                     needToDraw = False;
                 
-        for i, trackHist in enumerate(trackHistsNoType):
+        for i, trackHist in enumerate(trackHistsNoType + eventHistsNoType):
                 name = trackHist + "_" + cut["name"]
                 needToDraw = True
                 pad = histPad.cd(pId)
@@ -550,7 +785,7 @@ def main():
                 c1.Print(OUTPUT_FILE);
                 needToDraw = False
 
-        for func in tracksFuncs + trackHists:
+        for func in tracksFuncs + trackHists + eventHists:
             maxY = 0
             for lepType in lepTypes:
                 name = func + "_" + lepType + "_" + cut["name"]
