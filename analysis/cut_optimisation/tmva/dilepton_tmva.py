@@ -16,6 +16,7 @@ parser.add_argument('-o', '--output_file', nargs=1, help='Output Filename', requ
 parser.add_argument('-bg', '--bg', nargs=1, help='Input Background Directory', required=False)
 parser.add_argument('-nn', '--no_norm', dest='no_norm', help='No renormalization of weights', action='store_true')
 parser.add_argument('-all', '--all', dest='all', help='All methods', action='store_true')
+parser.add_argument('-tl', '--tl', dest='two_leptons', help='Two Leptons', action='store_true')
 args = parser.parse_args()
 
 
@@ -36,6 +37,7 @@ all = args.all
 print "No norm=" + str(no_norm)
 print "All=" + str(all)
 
+two_leptons=args.two_leptons
 
 ######## END OF CMDLINE ARGUMENTS ########
 
@@ -123,23 +125,39 @@ for f in bFileNames:
 # Full
 #dataloader.AddVariable('univBDT', 'F')
 #dataloader.AddVariable('trackBDT', 'F')
-#dataloader.AddVariable('dileptonPt', 'F')
+
 dataloader.AddVariable('deltaPhi', 'F')
 dataloader.AddVariable('deltaEta', 'F')
 dataloader.AddVariable('deltaR', 'F')
 dataloader.AddVariable('pt3', 'F')
-#dataloader.AddVariable('mtautau', 'F')
-#dataloader.AddVariable('mtt', 'F')
-dataloader.AddVariable('mtl', 'F')
+if two_leptons:
+    dataloader.AddVariable('dileptonPt', 'F')
+    dataloader.AddVariable('mtautau', 'F')
+    dataloader.AddVariable('mt1', 'F')
+    dataloader.AddVariable('mt2', 'F')
+    dataloader.AddVariable('leptons[0].Pt()', 'F')
+    dataloader.AddVariable('leptons[1].Pt()', 'F')
+    dataloader.AddVariable('leptons[0].Eta()', 'F')
+    dataloader.AddVariable('leptons[1].Eta()', 'F')
+    dataloader.AddVariable('leptons[0].Phi()', 'F')
+    dataloader.AddVariable('leptons[1].Phi()', 'F')
+    dataloader.AddVariable('deltaPhiMetLepton1', 'F')
+    dataloader.AddVariable('deltaPhiMetLepton2', 'F')
+else:
+    #dataloader.AddVariable('dileptonPt', 'F')
+    #dataloader.AddVariable('mtautau', 'F')
+    #dataloader.AddVariable('mtt', 'F')
+    dataloader.AddVariable('mtl', 'F')
+    dataloader.AddVariable('lepton.Pt()', 'F')
+    #dataloader.AddVariable('track.Pt()', 'F')
+    dataloader.AddVariable('lepton.Eta()', 'F')
+    dataloader.AddVariable('track.Eta()', 'F')
+    dataloader.AddVariable('lepton.Phi()', 'F')
+    dataloader.AddVariable('track.Phi()', 'F')
+
 dataloader.AddVariable('DeltaEtaLeadingJetDilepton', 'F')
 dataloader.AddVariable('DeltaPhiLeadingJetDilepton', 'F')
 dataloader.AddVariable('dilepHt', 'F')
-dataloader.AddVariable('lepton.Pt()', 'F')
-#dataloader.AddVariable('track.Pt()', 'F')
-dataloader.AddVariable('lepton.Eta()', 'F')
-dataloader.AddVariable('track.Eta()', 'F')
-dataloader.AddVariable('lepton.Phi()', 'F')
-dataloader.AddVariable('track.Phi()', 'F')
 dataloader.AddVariable('Ht', 'F')
 dataloader.AddVariable('LeadingJetQgLikelihood', 'F')
 dataloader.AddVariable('MinDeltaPhiMhtJets', 'F')

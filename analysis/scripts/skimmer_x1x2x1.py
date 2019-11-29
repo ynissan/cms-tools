@@ -33,6 +33,7 @@ parser.add_argument('-madHTlt', '--madHTlt', nargs=1, help='madHT uppper bound',
 parser.add_argument('-s', '--signal', dest='signal', help='Signal', action='store_true')
 parser.add_argument('-bg', '--background', dest='bg', help='Background', action='store_true')
 parser.add_argument('-data', '--data', dest='data', help='Data', action='store_true')
+parser.add_argument('-tl', '--tl', dest='two_leptons', help='Two Leptons', action='store_true')
 args = parser.parse_args()
 
 print args
@@ -50,6 +51,10 @@ if args.madHTlt:
 signal = args.signal
 bg = args.bg
 data = args.data
+two_leptons = args.two_leptons
+
+if two_leptons:
+    print "RUNNING TWO LEPTONS!"
 
 input_file = None
 if args.input_file:
@@ -159,7 +164,31 @@ def main():
     var_tracks_trkRelIso = ROOT.std.vector(double)()
     var_tracks_trackQualityHighPurity = ROOT.std.vector(bool)()
     
+    var_leptons         = ROOT.std.vector(TLorentzVector)()
+    var_leptons_charge  = ROOT.std.vector(int)()
+    var_leptonFlavour   = ROOT.std.string()
+    
     var_LeadingJet = TLorentzVector()
+    
+    # FOR DILEPTON
+    var_invMass = np.zeros(1,dtype=float)
+    var_dileptonPt = np.zeros(1,dtype=float)
+    var_deltaPhi = np.zeros(1,dtype=float)
+    var_deltaEta = np.zeros(1,dtype=float)
+    var_deltaR = np.zeros(1,dtype=float)
+    var_pt3 = np.zeros(1,dtype=float)
+    var_mtautau = np.zeros(1,dtype=float)
+    var_mt1 = np.zeros(1,dtype=float)
+    var_mt2 = np.zeros(1,dtype=float)
+    
+    var_DeltaEtaLeadingJetDilepton = np.zeros(1,dtype=float)
+    var_DeltaPhiLeadingJetDilepton = np.zeros(1,dtype=float)
+    var_dilepHt = np.zeros(1,dtype=float)
+    
+    var_deltaPhiMetLepton1 = np.zeros(1,dtype=float)
+    var_deltaPhiMetLepton2 = np.zeros(1,dtype=float)
+
+    # END DILEPTON
 
 
     tEvent = TTree('tEvent','tEvent')
@@ -241,6 +270,28 @@ def main():
     tEvent.Branch('MinCsv25', var_MinCsv25,'MinCsv25/D')
     tEvent.Branch('MaxCsv30', var_MaxCsv30,'MaxCsv30/D')
     tEvent.Branch('MaxCsv25', var_MaxCsv25,'MaxCsv25/D')
+    
+    if two_leptons:
+        tEvent.Branch('leptons', 'std::vector<TLorentzVector>', var_leptons)
+        tEvent.Branch('leptons_charge', 'std::vector<int>', var_leptons_charge)
+        tEvent.Branch('leptonFlavour', 'std::string', var_leptonFlavour)
+        
+        tEvent.Branch('invMass', var_invMass,'invMass/D')
+        tEvent.Branch('dileptonPt', var_dileptonPt,'dileptonPt/D')
+        tEvent.Branch('deltaPhi', var_deltaPhi,'deltaPhi/D')
+        tEvent.Branch('deltaEta', var_deltaEta,'deltaEta/D')
+        tEvent.Branch('deltaR', var_deltaR,'deltaR/D')
+        tEvent.Branch('pt3', var_pt3,'pt3/D')
+        tEvent.Branch('mtautau', var_mtautau,'mtautau/D')
+        tEvent.Branch('mt1', var_mt1,'mt1/D')
+        tEvent.Branch('mt2', var_mt2,'mt2/D')
+    
+        tEvent.Branch('DeltaEtaLeadingJetDilepton', var_DeltaEtaLeadingJetDilepton,'DeltaEtaLeadingJetDilepton/D')
+        tEvent.Branch('DeltaPhiLeadingJetDilepton', var_DeltaPhiLeadingJetDilepton,'DeltaPhiLeadingJetDilepton/D')
+        tEvent.Branch('dilepHt', var_dilepHt,'dilepHt/D')
+    
+        tEvent.Branch('deltaPhiMetLepton1', var_deltaPhiMetLepton1, 'deltaPhiMetLepton1/D')
+        tEvent.Branch('deltaPhiMetLepton2', var_deltaPhiMetLepton2, 'deltaPhiMetLepton2/D')
 
     nentries = c.GetEntries()
     print 'Analysing', nentries, "entries"
@@ -263,6 +314,9 @@ def main():
                 crossSection = utils.crossSections.get(filename)
             else:
                 crossSection = 1.21547
+    elif bg and "DYJetsToLL_M-5to50_" in input_file:
+        fileBasename = os.path.basename(input_file).split(".root")[0].split("RunIISummer16MiniAODv3.")[1].split("_TuneCUETP8M1")[0]
+        cs = utils.dyCrossSections.get(fileBasename)
     
     currLeptonCollectionMap = None
     currLeptonCollectionFileMapFile = None
@@ -279,7 +333,8 @@ def main():
         if signal:
             rightProcess = analysis_ntuples.isX1X2X1Process(c)
         elif bg:
-            crossSection = c.CrossSection
+            if "DYJetsToLL_M-5to50_" not in input_file:
+                crossSection = c.CrossSection
             rightProcess = utils.madHtCheck(baseFileName, c.madHT)
         elif data:
             lumiSecs.insert(c.RunNum, c.LumiBlockNum)
@@ -301,7 +356,7 @@ def main():
         nL = c.Electrons.size() + c.Muons.size()
         nT = c.tracks.size()
         
-        if nT == 0:
+        if not two_leptons and nT == 0:
             continue
     
         #### GEN LEVEL STUFF ####
@@ -417,11 +472,18 @@ def main():
             takeLeptonsFrom = currLeptonCollectionMap.get(c.RunNum, c.LumiBlockNum, c.EvtNum)
         else:
             takeLeptonsFrom = c
-            
-        ll, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(takeLeptonsFrom, c.Jets[ljet])
         
-        if ll is None:
-            continue
+        ll, leptonCharge, leptonFlavour = None, None, None
+        leptons, leptonsCharge = None, None
+        
+        if two_leptons:
+            leptons, leptonsCharge, leptonFlavour = analysis_ntuples.getTwoLeptonsAfterSelection(takeLeptonsFrom, c.Jets[ljet])
+            if leptons is None:
+                continue
+        else:
+            ll, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(takeLeptonsFrom, c.Jets[ljet])
+            if ll is None:
+                continue
         
         var_Electrons = takeLeptonsFrom.Electrons
         var_Electrons_charge= takeLeptonsFrom.Electrons_charge
@@ -517,6 +579,49 @@ def main():
         tEvent.SetBranchAddress('tracks_trackQualityHighPurity', var_tracks_trackQualityHighPurity)
         
         tEvent.SetBranchAddress('LeadingJet', var_LeadingJet)
+        
+        var_leptons = ROOT.std.vector(TLorentzVector)()
+        var_leptons_charge = ROOT.std.vector(int)()
+        var_leptonFlavour = None
+        
+        if two_leptons:
+            var_leptons.push_back(leptons[0])
+            var_leptons.push_back(leptons[1])
+        
+            var_leptons_charge.push_back(leptonsCharge[0])
+            var_leptons_charge.push_back(leptonsCharge[1])
+        
+            var_leptonFlavour = ROOT.std.string(leptonFlavour)
+            
+            tEvent.SetBranchAddress('leptons', var_leptons)
+            tEvent.SetBranchAddress('leptons_charge', var_leptons_charge)
+            tEvent.SetBranchAddress('leptonFlavour', var_leptonFlavour)
+            
+            var_invMass[0] = (leptons[0] + leptons[1]).M()
+            var_dileptonPt[0] = abs((leptons[0] + leptons[1]).Pt())
+            var_deltaPhi[0] = abs(leptons[0].DeltaPhi(leptons[1]))
+            var_deltaEta[0] = abs(leptons[0].Eta() - leptons[1].Eta())
+            var_deltaR[0] = abs(leptons[0].DeltaR(leptons[1]))
+
+            var_pt3[0] = analysis_tools.pt3(leptons[0].Pt(),leptons[0].Phi(),leptons[1].Pt(),leptons[1].Phi(),c.MET,c.METPhi)
+
+            pt = TLorentzVector()
+            pt.SetPtEtaPhiE(c.MET,0,c.METPhi,c.MET)
+
+            var_mt1[0] = analysis_tools.MT2(c.MET, c.METPhi, leptons[0])
+            var_mt2[0] = analysis_tools.MT2(c.MET, c.METPhi, leptons[1])
+
+            var_mtautau[0] = analysis_tools.Mtautau(pt, leptons[0], leptons[1])
+    
+            var_DeltaEtaLeadingJetDilepton[0] = abs((leptons[0] + leptons[1]).Eta() - c.Jets[ljet].Eta())
+            var_DeltaPhiLeadingJetDilepton[0] = abs((leptons[0] + leptons[1]).DeltaPhi(c.Jets[ljet]))
+    
+            var_dilepHt[0] = analysis_ntuples.htJet25Leps(c, leptons)
+        
+            var_deltaPhiMetLepton1[0] = abs(leptons[0].DeltaPhi(pt))
+            var_deltaPhiMetLepton2[0] = abs(leptons[1].DeltaPhi(pt))
+            
+            
 
         metDHt = 9999999
         if c.HT != 0:

@@ -9,9 +9,20 @@ from os import system
 import argparse
 import os
 import sys
+import argparse
+
+parser = argparse.ArgumentParser(description='Create skims for x1x2x1 process.')
+parser.add_argument('-tl', '--tl', dest='two_leptons', help='Two Leptons', action='store_true')
+args = parser.parse_args()
+
+two_leptons = args.two_leptons
 
 skim_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/single/"
 output_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum"
+
+if two_leptons:
+    skim_dir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim/single/"
+    output_dir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim/sum"
 
 SUM_SIZE = 30
 

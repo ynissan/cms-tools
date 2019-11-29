@@ -8,7 +8,9 @@ import sys
 import os
 import re
 
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib")
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
 import utils
 import analysis_ntuples
 import analysis_tools
@@ -26,7 +28,7 @@ args = parser.parse_args()
 
 
 output_file = None
-input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/cut_optimisation/tmva/dilepton_bdt/high"
+input = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/cut_optimisation/tmva/dilepton_bdt/low"
 if args.output_file:
     output_file = args.output_file[0]
 if args.input:
@@ -73,14 +75,14 @@ def main():
         maxY = max(trainSignalHist.GetMaximum(), testSignalHist.GetMaximum(), testBGHist.GetMaximum(), trainBGHist.GetMaximum())
         
         cpBlue = utils.colorPalette[2]
-        cpRed = utils.colorPalette[6]
+        cpRed = utils.colorPalette[7]
         utils.histoStyler(trainBGHist)
         trainBGHist.SetTitle("")
         trainBGHist.GetXaxis().SetTitle("BDT Output")
         trainBGHist.GetYaxis().SetTitle("Number of events")
         trainBGHist.GetYaxis().SetTitleOffset(1.4)
         trainBGHist.GetXaxis().SetLabelSize(0.055)
-        trainBGHist.SetMaximum(maxY + 0.02)
+        #trainBGHist.SetMaximum(maxY + 0.02)
 
         fillC = TColor.GetColor(cpRed["fillColor"])
         lineC = TColor.GetColor(cpRed["lineColor"])
@@ -126,7 +128,7 @@ def main():
         legend.Draw("SAME")
 
     utils.stamp_plot()
-    gPad.SetLogy();
+    #gPad.SetLogy();
     #utils.stampFab("35.9")
     c1.Print(output_file);
     c1.Print(output_file+"]");

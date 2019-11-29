@@ -46,7 +46,7 @@ else:
     #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_signal_bdt/single/higgsino_mu100_dm12p84Chi20Chipm.root"
     
     #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_signal_bdt/single/higgsino_mu100_dm2p51Chi20Chipm.root"
-    input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_signal_bdt/single/higgsino_mu100_dm2p51Chi20Chipm.root"
+    input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_signal_bdt_no_bdt_cut/single/higgsino_mu100_dm2p51Chi20Chipm.root"
     track_bdt = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track/cut_optimisation/tmva/low"
     #input_file = "/afs/desy.de/user/n/nissanuv/nfs/old_leptons_x1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm2p51Chi20Chipm.root"
     
@@ -136,7 +136,7 @@ def deltaRLL(c, ti):
 	return track_DeltaR_LL(c, c.tracks[ti], ti) < 1.1
 
 def trackBDT(c, ti):
-    return c.trackBDT>0.1
+    return c.trackBDT>0.2
 
 def trackBDTOnly(c, ti):
     return c.trackBDT>0

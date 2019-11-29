@@ -44,6 +44,11 @@ do
         SKIM=true
         shift # past argument
         ;;
+        --tl)
+        TWO_LEPTONS=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         -s|--simulation)
         SIMULATION=true
         shift # past argument
@@ -68,7 +73,11 @@ SCRIPT_PATH=$ANALYZER_PATH
 if [ -n "$SKIM" ]; then
     echo "GOT SKIM"
     SCRIPT_PATH=$SKIMMER_PATH
-    OUTPUT_DIR=$SKIM_OUTPUT_DIR
+    if [ -n "$TWO_LEPTONS" ]; then
+        OUTPUT_DIR=$TWO_LEPTONS_SKIM_OUTPUT_DIR
+    else
+        OUTPUT_DIR=$SKIM_OUTPUT_DIR
+    fi
 fi
 
 FILE_OUTPUT="${OUTPUT_DIR}/single"
@@ -111,6 +120,7 @@ for INPUT_FILE in $INPUT_FILES; do
             rm -rf $timestamp
             continue
         else
+            echo mv $output_file "${FILE_OUTPUT}/"
             mv $output_file "${FILE_OUTPUT}/"
             rm -rf $timestamp
         fi

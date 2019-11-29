@@ -31,6 +31,8 @@ parser.add_argument('-bdt', '--bdt', nargs=1, help='Dilepton BDT Folder', requir
 
 parser.add_argument('-s', '--signal', dest='signal', help='Signal', action='store_true')
 parser.add_argument('-bg', '--background', dest='bg', help='Background', action='store_true')
+parser.add_argument('-data', '--data', dest='data', help='Data', action='store_true')
+parser.add_argument('-tl', '--tl', dest='two_leptons', help='Two Leptons', action='store_true')
 args = parser.parse_args()
 	
 
@@ -51,6 +53,9 @@ if (bg and signal) or not (bg or signal):
 univ_bdt = None
 if args.bdt:
     univ_bdt = args.bdt[0]
+    
+two_leptons = args.two_leptons
+data = args.data
 
 ######## END OF CMDLINE ARGUMENTS ########
 
@@ -63,7 +68,20 @@ def main():
     tree = c.CloneTree(0)
     tree.SetDirectory(0)
     var_dilepBDT = np.zeros(1,dtype=float)
+    
+    var_leptons_ParentPdgId = ROOT.std.vector(int)()
+    var_leptonParentPdgId = np.zeros(1,dtype=int)
+    var_trackParentPdgId = np.zeros(1,dtype=int)
+    
     tree.Branch('dilepBDT', var_dilepBDT,'dilepBDT/D')
+    if not data:
+        if two_leptons:
+            print "TWO_LEPTONS!"
+            tree.Branch('leptons_ParentPdgId', 'std::vector<int>', var_leptons_ParentPdgId)
+        else:
+            tree.Branch('leptonParentPdgId', var_leptonParentPdgId, 'leptonParentPdgId/I')
+            tree.Branch('trackParentPdgId', var_trackParentPdgId, 'trackParentPdgId/I')
+    
 
     nentries = c.GetEntries()
     print 'Analysing', nentries, "entries"
@@ -106,10 +124,43 @@ def main():
         #if dilep_tmva_value < -0.3 or c.Met < 200 or c.univBDT < -0.4 or c.tracks[0].Pt() < 3 or c.tracks[0].Pt() > 15 or c.tracks_dzVtx[0] > 0.1 or c.tracks_dxyVtx[0] > 0.1 or abs(c.tracks[0].Eta()) > 2.4:
         #if dilep_tmva_value < -0.3 or c.Met < 200 or c.univBDT < -0.4 or c.tracks[0].Pt() < 3 or c.tracks[0].Pt() > 15 or abs(c.tracks[0].Eta()) > 2.4:
         #    continue
-        if c.Mht < 200:
-            continue
+        #if c.Mht < 200:
+        #    continue
         var_dilepBDT[0] = dilep_tmva_value
-
+        
+        if not data:
+            gens = [i for i in range(c.GenParticles.size())]
+            #print "c.GenParticles.size() ", c.GenParticles.size(), gens
+            if two_leptons:
+                var_leptons_ParentPdgId = ROOT.std.vector(int)()
+                for i in range(c.leptons.size()):
+                    lepton = c.leptons[i]
+                    min, minCan = analysis_ntuples.minDeltaRGenParticles(lepton, gens, c)
+                    pdgId = c.GenParticles_ParentId[minCan]
+                    if min > 0.05:
+                        print "BAD GEN!!! ", min
+                        pdgId = 0
+                    var_leptons_ParentPdgId.push_back(pdgId)
+                tree.SetBranchAddress('leptons_ParentPdgId', var_leptons_ParentPdgId)
+            else:
+                min, minCan = analysis_ntuples.minDeltaRGenParticles(c.lepton, gens, c)
+                print min, minCan
+                pdgId = c.GenParticles_ParentId[minCan]
+                if min > 0.05:
+                 #   print "BAD GEN LEPTON!!!"
+                    pdgId = 0
+                #else:
+                #    print "GOOD LEPTON ", pdgId
+                var_leptonParentPdgId[0] = pdgId
+                min, minCan = analysis_ntuples.minDeltaRGenParticles(c.track, gens, c)
+                pdgId = c.GenParticles_ParentId[minCan]
+                if min > 0.05:
+                    #print "BAD GEN TRACK!!!"
+                    pdgId = 0
+                #else:
+                #    print "GOOD TRACK ", pdgId
+                var_trackParentPdgId[0] = pdgId
+                
         tree.Fill()
 
     if iFile.GetListOfKeys().Contains("lumiSecs") or tree.GetEntries() != 0:

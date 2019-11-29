@@ -9,19 +9,24 @@ shopt -s expand_aliases
 POSITIONAL=()
 while [[ $# -gt 0 ]]
 do
-	key="$1"
+    key="$1"
 
-	case $key in
-	    -skim|--skim)
-	    SKIM=true
-	    POSITIONAL+=("$1") # save it in an array for later
-	    shift # past argument
-	    ;;
-	    *)    # unknown option
-	    POSITIONAL+=("$1") # save it in an array for later
-	    shift # past argument
-	    ;;
-	esac
+    case $key in
+        -skim|--skim)
+        SKIM=true
+        POSITIONAL+=("$1") # save it in an array for later
+        shift # past argument
+        ;;
+        --tl)
+        TWO_LEPTONS=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
+        *)    # unknown option
+        POSITIONAL+=("$1") # save it in an array for later
+        shift # past argument
+        ;;
+    esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 #---------- END OPTIONS ------------
@@ -35,7 +40,11 @@ cmsenv
 
 OUTPUT_DIR=$SIM_DIR
 if [ -n "$SKIM" ]; then
-	OUTPUT_DIR=$SKIM_SIG_OUTPUT_DIR	
+    if [ -n "$TWO_LEPTONS" ]; then
+        OUTPUT_DIR=$TWO_LEPTONS_SKIM_SIG_OUTPUT_DIR
+    else
+        OUTPUT_DIR=$SKIM_SIG_OUTPUT_DIR
+    fi
 fi
 
 #check output directory
@@ -76,14 +85,15 @@ for sim in ${SIM_NTUPLES_DIR}/*; do
         continue
     fi
     echo "Will run:"
-    echo $SIM_DIR/run_sim_analysis_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root ${POSITIONAL[@]} --signal
+    cmd="$SIM_DIR/run_sim_analysis_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root ${POSITIONAL[@]} --signal"
+    echo $cmd
 cat << EOM >> $output_file
-arguments = $SIM_DIR/run_sim_analysis_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root ${POSITIONAL[@]} --signal
+arguments = $cmd
 error = ${OUTPUT_DIR}/stderr/${filename}.err
 output = ${OUTPUT_DIR}/stdout/${filename}.output
 Queue
 EOM
 done
 
-#condor_submit $output_file
+condor_submit $output_file
 rm $output_file

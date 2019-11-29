@@ -17,6 +17,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --tl)
+        TWO_LEPTONS=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -33,8 +38,15 @@ module use -a /afs/desy.de/group/cms/modulefiles/
 module load cmssw
 cmsenv
 
-OUTPUT_DIR=$SKIM_SIG_DILEPTON_BDT_OUTPUT_DIR
-INPUT_DIR=$SKIM_SIG_BDT_OUTPUT_DIR
+if [ -n "$TWO_LEPTONS" ]; then
+    OUTPUT_DIR=$SKIM_TWO_LEPTONS_SIG_DILEPTON_BDT_OUTPUT_DIR
+    INPUT_DIR=$TWO_LEPTONS_SKIM_SIG_OUTPUT_DIR/sum
+    BDT_DIR=$TWO_LEPTONS_OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt
+else
+    OUTPUT_DIR=$SKIM_SIG_DILEPTON_BDT_OUTPUT_DIR
+    INPUT_DIR=$SKIM_SIG_BDT_OUTPUT_DIR/single
+    BDT_DIR=$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt
+fi
 
 if [ -n "$SC" ]; then
     echo "GOT SC"
@@ -76,7 +88,7 @@ notification = Never
 priority = 0
 EOM
 
-for sim in ${INPUT_DIR}/single/*; do
+for sim in ${INPUT_DIR}/*; do
     filename=`echo $(basename $sim .root) | awk -F"_" '{print $1"_"$2"_"$3}'`
     echo $filename
     tb=$filename
@@ -97,10 +109,11 @@ for sim in ${INPUT_DIR}/single/*; do
             break
         fi
     done
+    cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_dilepton_bdt.py -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -bdt $BDT_DIR/$tb $@"
     echo "Will run:"
-    echo $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_dilepton_bdt.py -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$tb
+    echo $cmd
 cat << EOM >> $output_file
-arguments = $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_dilepton_bdt.py -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$tb
+arguments = $cmd
 error = ${OUTPUT_DIR}/stderr/${filename}.err
 output = ${OUTPUT_DIR}/stdout/${filename}.output
 Queue

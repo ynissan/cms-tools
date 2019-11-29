@@ -31,6 +31,9 @@ from ROOT import LumiSectMap
 parser = argparse.ArgumentParser(description='Plot Lepton Observeables.')
 parser.add_argument('-i', '--input_file', nargs=1, help='Input Filename', required=False)
 parser.add_argument('-o', '--output_file', nargs=1, help='Output Filename', required=False)
+parser.add_argument('-s', '--single', dest='single', help='Single', action='store_true')
+parser.add_argument('-c', '--cut', nargs=1, help='Cut', required=False)
+parser.add_argument('-obs', '--obs', nargs=1, help='Obs', required=False)
 args = parser.parse_args()
 
 input_file = None
@@ -42,12 +45,27 @@ else:
     #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm12p84Chi20Chipm.root"
     #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm7p39Chi20Chipm.root"
     
-    #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm7p39Chi20Chipm.root"
-    input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm2p51Chi20Chipm.root"
+    input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm4p30Chi20Chipm.root"
+    #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm2p51Chi20Chipm.root"
 if args.output_file:
     output_file = args.output_file[0]
 else:
     output_file = "leptons.pdf"
+
+plot_single = args.single
+
+req_cut = None
+req_obs = None
+if plot_single:
+    print "Printing Single Plot"
+    if args.cut is None:
+        print "Must provide cut with single option."
+        exit(0)
+    if args.obs is None:
+        print "Must provide obs with single option."
+        exit(0)
+    req_cut = args.cut[0]
+    req_obs = args.obs[0]
 
 ######## END OF CMDLINE ARGUMENTS ########
 
@@ -110,6 +128,7 @@ def main():
         #{"name":"mediumId", "title": "mediumId", "funcs":[mediumId, pt]},
         #{"name":"passIso", "title": "passIso", "funcs":[passIso, pt]},
         #{"name":"tightID", "title": "tightID", "funcs":[tightID, pt]},
+        {"name":"mediuimId", "title": "mediuimId", "funcs": [mediumId, deltaRLJ]},
         {"name":"all", "title": "all", "funcs":[passIso, mediumId, pt, deltaRLJ]},
         #{"name":"pt", "title": "pt > 1.8", "funcs":[pt]},
         #{"name":"tightID", "title": "Eta < 2.6, deltaEtaLL < 1, deltaEtaLJ < 3.8", "funcs":[eta, deltaEtaLL, deltaEtaLJ]},
@@ -229,7 +248,7 @@ def main():
         zl = 0
         passedLep = 0
         
-        for lepVal in ["Electrons", -11], ["Muons", -13]:
+        for lepVal in ["Electrons", -11], ["Muons", -13]:#[["Electrons", -11]]:#[["Muons", -13]]:#["Electrons", -11], ["Muons", -13]:
             #print lepVal
             lepFlavour = lepVal[0]
             lepCharge = lepVal[1]
@@ -337,40 +356,66 @@ def main():
     
     print passedCutsCount
 
-    c1 = TCanvas("c1")
-
-    titlePad = TPad("titlePad", "",0.0,0.93,1.0,1.0)
-    histPad = TPad("histPad", "",0.0,0.0,1.0,0.93)
-
-    titlePad.Draw()
-    t = TPaveText(0.0,0.93,1.0,1.0,"NB")
-    t.SetFillStyle(0)
-    t.SetLineColor(0)
-    t.SetTextFont(40);
-    t.Draw()
-
+    c1 = TCanvas("c1", "c1", 800, 800)
+    
+    if plot_single:
+        c1.SetBottomMargin(0.16)
+        c1.SetLeftMargin(0.18)
+    
+    if plot_single:
+        plot_title = False
+    
+    titlePad = None
+    histPad = None
+    t = None
+    if plot_title:
+        titlePad = TPad("titlePad", "",0.0,0.93,1.0,1.0)
+        histPad = TPad("histPad", "",0.0,0.0,1.0,0.93)
+        titlePad.Draw()
+        t = TPaveText(0.0,0.93,1.0,1.0,"NB")
+        t.SetFillStyle(0)
+        t.SetLineColor(0)
+        t.SetTextFont(40);
+        t.AddText("No Cuts")
+        t.Draw()
+    else:
+        histPad = c1
+    
     histPad.Draw()
-    histPad.Divide(2,2)
+    if not plot_single:
+        histPad.Divide(2,2)
+
     OUTPUT_FILE = output_file or "./lepton_obs.pdf"
     c1.Print(OUTPUT_FILE + "[");
 
     for cut in cuts:
-        t.Clear()
-        t.AddText(cut["title"])
-        t.Draw();
-        titlePad.Update()
+        if plot_single and req_cut != cut["name"]:
+            continue
+        
+        if plot_title:
+            t.Clear()
+            t.AddText(cut["title"])
+            t.Draw()
+            titlePad.Update()
+        
         pId = 1
         needToDraw = False
         
         for histDef in histoDefs:
-            
+            if plot_single and req_obs != histDef["name"]:
+                continue
             #print histDef
             
             for log in [True, False]:
-                pad = histPad.cd(pId)
-                pad.cd()
+                if plot_single and log:
+                    continue
+                if plot_single:
+                    pad = histPad.cd()
+                else:
+                    pad = histPad.cd(pId)
+                    pad.cd()
             
-                legend = TLegend(.69,.7,.85,.89)
+                legend = TLegend(.75,.75,.89,.89)
                 memory.append(legend)
                 cP = 0
                 maxY = 0
@@ -382,7 +427,11 @@ def main():
                 for lepType in lepTypes:
                     name = histDef["name"] + "_" + cut["name"] + "_" + lepType
                     h = histograms[lepType][name]
-                    utils.formatHist(h, utils.colorPalette[cP])
+                    utils.formatHist(h, utils.colorPalette[cP], 0.35, True)
+                    if plot_single:
+                        utils.histoStyler(h)
+                        h.GetYaxis().SetTitleOffset(1.15)
+                    
                     cP += 1
                     h.SetMaximum(maxY)
                     #if log:
@@ -409,12 +458,15 @@ def main():
                 c1.Print(OUTPUT_FILE);
                 needToDraw = False;
         
-        if needToDraw:
+        if needToDraw and not plot_single:
             for id in range(pId, 5):
                 print "Clearing pad " + str(id)
                 pad = histPad.cd(id)
                 pad.Clear()
             c1.Print(OUTPUT_FILE);
+    if plot_single:
+        utils.stamp_plot()
+        c1.Print(OUTPUT_FILE);
     c1.Print(OUTPUT_FILE+"]");
 
 main()

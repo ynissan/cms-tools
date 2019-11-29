@@ -98,7 +98,7 @@ def get_bdt_hists(folders, testBGHists=None, trainBGHists=None, testSignalHists=
 def get_mlp_hists(folders, testBGHists=None, trainBGHists=None, testSignalHists=None, trainSignalHists=None, methods=None, names=None, bins=10000, condition=""):
     return get_method_hists(folders, "MLP", testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names, bins, condition)
 
-def getHighestZ(trainSignalHist, trainBGHist, testSignalHist, testBGHist, h=None):
+def getHighestZ(trainSignalHist, trainBGHist, testSignalHist, testBGHist, h=None,cs=1):
     highestZ = 0
     highestS = 0
     highestB = 0
@@ -109,15 +109,15 @@ def getHighestZ(trainSignalHist, trainBGHist, testSignalHist, testBGHist, h=None
     #print testBGHist.GetNbinsX(), trainBGHist.GetNbinsX(), testSignalHist.GetNbinsX(), testBGHist.GetNbinsX()
     #print "numOfBins=" , numOfBins
 
-    ST = trainSignalHist.Integral() + testSignalHist.Integral()
-    BT = trainBGHist.Integral() + testBGHist.Integral()
+    ST = (trainSignalHist.Integral() + testSignalHist.Integral())*cs
+    BT = (trainBGHist.Integral() + testBGHist.Integral())*cs
     print "=================="
     print "Signal: " + str(ST)
     print "Background: " + str(BT)
 
     for i in range(numOfBins):
-        S = trainSignalHist.Integral(i,numOfBins+1) + testSignalHist.Integral(i,numOfBins+1)
-        B = trainBGHist.Integral(i,numOfBins+1) + testBGHist.Integral(i,numOfBins+1)
+        S = (trainSignalHist.Integral(i,numOfBins+1) + testSignalHist.Integral(i,numOfBins+1))*cs
+        B = (trainBGHist.Integral(i,numOfBins+1) + testBGHist.Integral(i,numOfBins+1))*cs
         if h is not None:
             h.SetPoint(i,S/ST, 1 - B/BT)
         if S + B:

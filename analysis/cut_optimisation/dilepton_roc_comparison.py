@@ -15,6 +15,7 @@ sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
 sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
 
 import cut_optimisation
+from lib import utils
 
 gROOT.SetBatch(True)
 gStyle.SetOptStat(0)
@@ -97,10 +98,10 @@ def plot_rocs():
         c2.cd()
         try:
             (testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names) = cut_optimisation.get_bdt_hists(file)
-            condition = "&& invMass < " + str(cut)
+            #condition = "&& invMass < " + str(cut)
             #condition = "1"
-            print "Condition=" + condition
-            (testBGHistsCut, trainBGHistsCut, testSignalHistsCut, trainSignalHistsCut, methodsCut, namesCut) = cut_optimisation.get_bdt_hists(file, None, None, None, None, None, None, 10000, condition)
+            #print "Condition=" + condition
+            #(testBGHistsCut, trainBGHistsCut, testSignalHistsCut, trainSignalHistsCut, methodsCut, namesCut) = cut_optimisation.get_bdt_hists(file, None, None, None, None, None, None, 10000, condition)
         except Exception as e:
                 logging.error(traceback.format_exc())
                 print "Skipping this one...."
@@ -116,13 +117,13 @@ def plot_rocs():
         memory.extend(trainBGHists)
         memory.extend(testSignalHists)
         memory.extend(trainSignalHists)
-        memory.extend(testBGHistsCut)
-        memory.extend(trainBGHistsCut)
-        memory.extend(testSignalHistsCut)
-        memory.extend(trainSignalHistsCut)
+       #  memory.extend(testBGHistsCut)
+#         memory.extend(trainBGHistsCut)
+#         memory.extend(testSignalHistsCut)
+#         memory.extend(trainSignalHistsCut)
         inx = 0
         print "Here!!!!"
-        for mode in ([testBGHists[inx], trainBGHists[inx], testSignalHists[inx], trainSignalHists[inx], methods[inx], names[inx], ""], [testBGHistsCut[inx], trainBGHistsCut[inx], testSignalHistsCut[inx], trainSignalHistsCut[inx], methodsCut[inx], namesCut[inx], " - invMass Cut"]):
+        for mode in ([[testBGHists[inx], trainBGHists[inx], testSignalHists[inx], trainSignalHists[inx], methods[inx], names[inx], ""]]):#, [testBGHistsCut[inx], trainBGHistsCut[inx], testSignalHistsCut[inx], trainSignalHistsCut[inx], methodsCut[inx], namesCut[inx], " - invMass Cut"]):
             print "***"
             histPad.cd(pId)
             testBGHist, trainBGHist, testSignalHist, trainSignalHist, method, name, title = mode
@@ -154,7 +155,7 @@ def plot_rocs():
             h.SetTitle(name + title)
             memory.append(h)
     
-            highestZ, highestS, highestB, highestMVA, ST, BT = cut_optimisation.getHighestZ(trainSignalHist, trainBGHist, testSignalHist, testBGHist, h)
+            highestZ, highestS, highestB, highestMVA, ST, BT = cut_optimisation.getHighestZ(trainSignalHist, trainBGHist, testSignalHist, testBGHist, h, utils.LUMINOSITY)
 
             color = colors[colorInx]
             colorInx += 1

@@ -7,8 +7,8 @@ shopt -s nullglob
 # necessary for running cmsenv
 shopt -s expand_aliases
 
-echo Nopa@2wd | voms-proxy-init -voms cms:/cms -valid 192:00
-export X509_USER_PROXY=$(voms-proxy-info | grep path | cut -b 13-)
+# echo Nopa@2wd | voms-proxy-init -voms cms:/cms -valid 192:00
+# export X509_USER_PROXY=$(voms-proxy-info | grep path | cut -b 13-)
 
 #check output directory
 if [ ! -d "$SIG_CONFIG_OUTPUT_DIR" ]; then
@@ -50,7 +50,7 @@ cd $OLDPWD
 
 count=0
 
-for f in ~/CMSSW_9_4_11/src/Configuration/Generator/python/higgsino*.py; do
+for f in ~/CMSSW_10_1_0/src/Configuration/Generator/python/higgsino*.py; do
     for i in `seq 150`; do
     #for i in 1; do
         ((count+=1))

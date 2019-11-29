@@ -298,14 +298,14 @@ def getCrossSection(filename):
                         cs += crossSection
                         break
                 fh.close()
-        print "Summed cs:", cs
-        if cs > 0:
-            return cs
-        return None
+    print "Summed cs:", cs
+    if cs > 0:
+        return cs
+    return None
 
 def stamp_plot():
     showlumi = True
-    lumi = 35.9
+    lumi = 135.0
     tl = TLatex()
     tl.SetNDC()
     cmsTextFont = 61

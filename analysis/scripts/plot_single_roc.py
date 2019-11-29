@@ -8,7 +8,9 @@ import sys
 import os
 import re
 
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib")
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
 import utils
 import analysis_ntuples
 import analysis_tools
@@ -26,7 +28,7 @@ args = parser.parse_args()
 
 
 output_file = None
-input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/cut_optimisation/tmva/dilepton_bdt/high"
+input = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/cut_optimisation/tmva/dilepton_bdt/low"
 if args.output_file:
     output_file = args.output_file[0]
 if args.input:

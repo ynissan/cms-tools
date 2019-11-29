@@ -16,6 +16,11 @@ do
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
         ;;
+        --tl)
+        TWO_LEPTONS=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -28,7 +33,11 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 SCRIPT_PATH=$ANALYZER_PATH
 if [ -n "$SKIM" ]; then
     SCRIPT_PATH=$SKIMMER_PATH
-    OUTPUT_DIR=$SKIM_OUTPUT_DIR
+    if [ -n "$TWO_LEPTONS" ]; then
+        OUTPUT_DIR=$TWO_LEPTONS_SKIM_OUTPUT_DIR
+    else
+        OUTPUT_DIR=$SKIM_OUTPUT_DIR
+    fi
 fi
 
 STD_OUTPUT="${OUTPUT_DIR}/stdoutput"

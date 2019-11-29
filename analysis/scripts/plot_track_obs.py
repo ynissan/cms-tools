@@ -8,7 +8,9 @@ import sys
 import os
 import re
 
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib")
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
 import utils
 
 gROOT.SetBatch(True)
@@ -76,8 +78,8 @@ def main():
     print signal_files
     print bg_files
     
-    sh = utils.UOFlowTH1F("sh", "", 100, 0, 5)
-    bh = utils.UOFlowTH1F("bh", "", 100, 0, 5)
+    sh = utils.UOFlowTH1F("sh", "", 100, 2, 26)
+    bh = utils.UOFlowTH1F("bh", "", 100, 2, 26)
     utils.histoStyler(sh)
     utils.histoStyler(bh)
     
@@ -92,13 +94,13 @@ def main():
                 if ientry % 1000 == 0:
                     print "Processing " + str(ientry)
                 c.GetEntry(ientry)
-                hs.Fill(c.deltaRLJ)
+                hs.Fill(c.lepton.Pt())
     
     cpBlue = utils.colorPalette[2]
-    cpRed = utils.colorPalette[6]
+    cpRed = utils.colorPalette[7]
 
     #trainBGHist.SetTitle(name)
-    bh.GetXaxis().SetTitle("#DeltaR({\ell} j)")
+    bh.GetXaxis().SetTitle("Pt(l)")
     bh.GetYaxis().SetTitle("Number of tracks")
     bh.GetYaxis().SetTitleOffset(1.15)
     #bh.GetXaxis().SetLabelSize(0.04)
@@ -110,6 +112,7 @@ def main():
     bh.SetFillColorAlpha(fillC, 0.35)#.35)
     bh.SetLineColor(lineC)
     bh.SetLineWidth(1)
+    bh.SetMinimum(0.01)
     bh.SetOption("HIST")
     bh.Draw("HIST")
 

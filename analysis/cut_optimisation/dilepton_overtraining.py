@@ -136,7 +136,7 @@ def plot_rocs():
             maxY = max(trainSignalHist.GetMaximum(), testSignalHist.GetMaximum(), testBGHist.GetMaximum(), trainBGHist.GetMaximum())
         
             cpBlue = utils.colorPalette[2]
-            cpRed = utils.colorPalette[6]
+            cpRed = utils.colorPalette[7]
 
             trainBGHist.SetTitle(name + title)
             trainBGHist.GetXaxis().SetTitle("BDT Output")

@@ -241,4 +241,45 @@ def getSingleLeptonAfterSelection(c, leadingJet):
             lepFlavour = "Muons"
     
     return lep, lepCharge, lepFlavour
+
+def getTwoLeptonsAfterSelection(c, leadingJet):
+    leps = []
+    lepCharges = []
+    lepFlavour = None
+    nL = 0
+    
+    for i in range(c.Electrons.size()):
+        e = c.Electrons[i]
+        if e.Pt() <= 25 and bool(c.Electrons_passIso[i]):
+            nL += 1
+            if nL > 2:
+                return None, None, None
+            leps.append(e)
+            lepCharges.append(c.Electrons_charge[i])
+            lepFlavour = "Electrons"
+    if nL == 1:
+        return None, None, None
+    if nL == 2:
+        if lepCharges[0] * lepCharges[1] > 0:
+            return None, None, None
+    
+    for i in range(c.Muons.size()):
+        m = c.Muons[i]
+        if m.Pt() <= 25 and m.Pt()>=2 and bool(c.Muons_mediumID[i]) and abs(m.DeltaR(leadingJet)) >= 0.4:
+            nL += 1
+            if nL > 2:
+                return None, None, None
+            leps.append(m)
+            lepCharges.append(c.Muons_charge[i])
+            lepFlavour = "Muons"
+    
+    if nL != 2 or lepCharges[0] * lepCharges[1] > 0:
+        return None, None, None
+    
+    if leps[0].Pt() < leps[1].Pt():
+        leps = [leps[1], leps[0]]
+        lepCharges = [lepCharges[1], lepCharges[0]]
+    
+    return leps, lepCharges, lepFlavour
+    
     
