@@ -14,6 +14,7 @@ sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
 sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/"))
 sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
 import utils
+import analysis_ntuples
 
 gROOT.SetBatch(True)
 gStyle.SetOptStat(0)
@@ -67,7 +68,7 @@ plot_data = False
 plot_signal = True
 plot_ratio = True
 plot_rand = False
-plot_fast = True
+plot_fast = False
 plot_title = True
 plot_overflow = True
 
@@ -103,7 +104,7 @@ def univBDT(c):
     return c.univBDT >= 0
     
 def dilepBDT(c):
-    return c.dilepBDT >= 0.1
+    return c.dilepBDT >= 0.4
 
 def custom_cool(c):
     return c.dilepBDT >= 0.1 and c.univBDT >= 0 and c.tracks_dzVtx[0] <= 0.2 and c.tracks_dxyVtx[0] < 0.2 and c.tracks[0].Pt() < 15 and c.tracks[0].Pt() > 3 and abs(c.tracks[0].Eta()) < 2.4
@@ -137,6 +138,41 @@ def invMass(c):
 
 def metMht(c):
     return c.Met > 200 and c.Mht > 100
+
+def mw(c):
+    if abs(c.leptonParentPdgId) == 15:
+        gens = [i for i in range(c.GenParticles.size())]
+        min, minCan = analysis_ntuples.minDeltaRGenParticles(c.lepton, gens, c)
+        tauIdx = c.GenParticles_ParentIdx[minCan]
+        wIdx = c.GenParticles_ParentIdx[tauIdx]
+        if abs(c.GenParticles_PdgId[wIdx]) != 24:
+            #print "Weird!"
+            return 0
+        else:
+            #print "***Found W!"
+            wChildrenPdgId = []
+            wChildrenPdgIdx = []
+            tauChildren = []
+            #print "---"
+            for i in range(c.GenParticles.size()):
+                if c.GenParticles_ParentIdx[i] == wIdx:
+                    #print c.GenParticles_Status[i]
+                    wChildrenPdgId.append(c.GenParticles_PdgId[i])
+                    wChildrenPdgIdx.append(i)
+                if c.GenParticles_ParentIdx[i] == tauIdx:
+                    tauChildren.append(c.GenParticles_PdgId[i])
+            #print "wChildrenPdgId=", wChildrenPdgId
+            #print "tauChildren=", tauChildren
+            if len(wChildrenPdgIdx) == 2:
+                return (c.GenParticles[wChildrenPdgIdx[0]] + c.GenParticles[wChildrenPdgIdx[1]]).M()
+            return 0
+    else:
+        return 0
+
+def mw2(c):
+    if mw(c) > 0:
+        return c.invMass
+    return 0
 
 #and c.dilepHt >= 250 and c.NJets <= 3 and c.mt1 <= 50
 
@@ -194,7 +230,8 @@ histograms_defs = [
     
     #DILEPTON
     { "obs" : "invMass", "minX" : 0, "maxX" : 15, "bins" : 90, "units" : "GeV" },
-    #{ "obs" : "trackBDT", "minX" : 0, "maxX" : 0.7, "bins" : 30 },
+    { "obs" : "invMass2", "minX" : 0, "maxX" : 15, "bins" : 90, "func" : mw2 },
+    { "obs" : "mw", "minX" : 0, "maxX" : 150, "bins" : 50, "func" : mw },
     #{ "obs" : "secondTrackBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
     #{ "obs" : "univBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
     { "obs" : "dilepBDT", "minX" : -0.6, "maxX" : 0.6, "bins" : 30 },
@@ -208,7 +245,7 @@ histograms_defs = [
 #     { "obs" : "deltaR", "minX" : 0, "maxX" : 4, "bins" : 30 },
 #     { "obs" : "pt3", "minX" : 230, "maxX" : 1000, "bins" : 30 },
 #     { "obs" : "mtautau", "minX" : 0, "maxX" : 1000, "bins" : 30 },
-#     { "obs" : "mt1", "minX" : 0, "maxX" : 200, "bins" : 30 },
+#     { "obs" : "mtl", "minX" : 0, "maxX" : 200, "bins" : 30 },
 #     { "obs" : "mt2", "minX" : 0, "maxX" : 200, "bins" : 30 },
 #     { "obs" : "DeltaEtaLeadingJetDilepton", "minX" : 0, "maxX" : 4, "bins" : 30 },
 #     { "obs" : "DeltaPhiLeadingJetDilepton", "minX" : 0, "maxX" : 4, "bins" : 30 },
@@ -230,8 +267,8 @@ histograms_defs = [
 #     { "obs" : "MaxCsv25", "minX" : 0, "maxX" : 1, "bins" : 30 },
 #     { "obs" : "deltaPhiMetLepton1", "minX" : 0, "maxX" : 3.5, "bins" : 30 },
 #     { "obs" : "deltaPhiMetLepton2", "minX" : 0, "maxX" : 3.5, "bins" : 30 },
-      { "obs" : "abs(leptonParentPdgId)", "minX" : 0, "maxX" : 30, "bins" : 30 },
-      { "obs" : "abs(trackParentPdgId)", "minX" : 0, "maxX" : 30, "bins" : 30 },
+#      { "obs" : "abs(leptonParentPdgId)", "minX" : 0, "maxX" : 30, "bins" : 30 },
+#      { "obs" : "abs(trackParentPdgId)", "minX" : 0, "maxX" : 30, "bins" : 30 },
     
     
     
@@ -265,10 +302,10 @@ cuts = [#{"name":"none", "title": "No Cuts", "condition" : "1"},
 
 #DILEPTON
         {"name":"none", "title": "No Cuts", "condition" : "invMass < 30"},
-        {"name":"dilepBDT", "title": "dilepBDT", "condition" : "dilepBDT > 0 && invMass < 30"},
-        {"name":"dilepBDT2", "title": "dilepBDT2", "condition" : "dilepBDT > 0.2 && invMass < 30"},
-        {"name":"dilepBDT3", "title": "dilepBDT3", "condition" : "dilepBDT > 0.3 && invMass < 30"},
-        {"name":"dilepBDT4", "title": "dilepBDT4", "condition" : "dilepBDT > 0.4 && invMass < 30"},
+        {"name":"dilepBDT", "title": "dilepBDT", "condition" : "dilepBDT > 0 && invMass < 30", "funcs" : [dilepBDT, invMass]},
+        #{"name":"dilepBDT2", "title": "dilepBDT2", "condition" : "dilepBDT > 0.2 && invMass < 30"},
+        #{"name":"dilepBDT3", "title": "dilepBDT3", "condition" : "dilepBDT > 0.3 && invMass < 30"},
+        #{"name":"dilepBDT4", "title": "dilepBDT4", "condition" : "dilepBDT > 0.4 && invMass < 30"},
 
 #         {"name":"dilepBdt2", "title": "dilepBdt2", "condition" : "dilepBDT >= 0"},
 #         {"name":"dilepBdt3", "title": "dilepBdt3", "condition" : "dilepBDT >= 0.2"},
@@ -317,55 +354,58 @@ def styleHist(hist):
     hist.GetXaxis().SetLabelFont(43); 
     hist.GetXaxis().SetLabelSize(10);
 
-# def createPlots(rootfiles, type, histograms, weight=1):
-#     print "Processing "
-#     print rootfiles
-#     lumiSecs = LumiSectMap()
-#     
-#     for f in rootfiles:
-#         print f
-#         rootFile = TFile(f)
-#         c = rootFile.Get('tEvent')
-#         if type == "data":
-#             lumis = rootFile.Get('lumiSecs')
-#             col = TList()
-#             col.Add(lumis)
-#             lumiSecs.Merge(col)
-#         nentries = c.GetEntries()
-#         print 'Analysing', nentries, "entries"
-#         for ientry in range(nentries):
-#             if ientry % 10000 == 0:
-#                 print "Processing " + str(ientry)
-#             c.GetEntry(ientry)
-#             
-#             for cut in cuts:
-#                 passed = True
-#                 if cut.get("funcs") is not None:
-#                     for func in cut["funcs"]:
-#                         passed = func(c)
-#                         if not passed:
-#                             break
-#                 if not passed:
-#                     continue
-#                 
-#                 for hist_def in histograms_defs:
-#                     histName =  cut["name"] + "_" + hist_def["obs"] + "_" + type
-#                     hist = histograms[histName]
-#                     if type != "data":
-#                         #print "Weight=", c.Weight
-#                         #print "weight=", weight
-#                         hist.Fill(eval('c.' + hist_def["obs"]), c.Weight * weight)
-#                     else:
-#                         hist.Fill(eval('c.' + hist_def["obs"]), 1)
-#         rootFile.Close()
-#     
-#     if type == "data":
-#         #return 3.939170474
-#         #return 35.574589421
-#         #return 35.493718415
-#         #return 27.360953311
-#         return 27.677964176
-#         #return utils.calculateLumiFromLumiSecs(lumiSecs)
+def createPlots(rootfiles, type, histograms, weight=1):
+    print "Processing "
+    print rootfiles
+    lumiSecs = LumiSectMap()
+    
+    for f in rootfiles:
+        print f
+        rootFile = TFile(f)
+        c = rootFile.Get('tEvent')
+        if type == "data":
+            lumis = rootFile.Get('lumiSecs')
+            col = TList()
+            col.Add(lumis)
+            lumiSecs.Merge(col)
+        nentries = c.GetEntries()
+        print 'Analysing', nentries, "entries"
+        for ientry in range(nentries):
+            if ientry % 10000 == 0:
+                print "Processing " + str(ientry)
+            c.GetEntry(ientry)
+            
+            for cut in cuts:
+                passed = True
+                if cut.get("funcs") is not None:
+                    for func in cut["funcs"]:
+                        passed = func(c)
+                        if not passed:
+                            break
+                if not passed:
+                    continue
+                
+                for hist_def in histograms_defs:
+                    histName =  cut["name"] + "_" + hist_def["obs"] + "_" + type
+                    hist = histograms[histName]
+                    if type != "data":
+                        #print "Weight=", c.Weight
+                        #print "weight=", weight
+                        if hist_def.get("func") is not None:
+                            hist.Fill(hist_def["func"](c), c.Weight * weight)
+                        else:
+                            hist.Fill(eval('c.' + hist_def["obs"]), c.Weight * weight)
+                    else:
+                        hist.Fill(eval('c.' + hist_def["obs"]), 1)
+        rootFile.Close()
+    
+    if type == "data":
+        #return 3.939170474
+        #return 35.574589421
+        #return 35.493718415
+        #return 27.360953311
+        return 27.677964176
+        #return utils.calculateLumiFromLumiSecs(lumiSecs)
 
 
 def createPlotsFast(rootfiles, type, histograms, weight=1):
