@@ -20,8 +20,8 @@ echo PWD = $PWD
 
 #cmsRun runMakeTreeFromMiniAOD_cfg.py scenario=Summer16MiniAODv3Fastsig dataset=file:$1 outfile=$2 numevents=500
 echo "Will run:"
-echo cmsRun runMakeTreeFromMiniAOD_cfg.py scenario=Summer16MiniAODv3Fastsig dataset=file:$1 outfile=$2 numevents=500
-cmsRun runMakeTreeFromMiniAOD_cfg.py scenario=Summer16MiniAODv3Fastsig dataset=file:$1 outfile=$2 numevents=500
+echo cmsRun runMakeTreeFromMiniAOD_cfg.py scenario=Summer16MiniAODv3Fastsig dataset=file:$1 outfile=$2 
+cmsRun runMakeTreeFromMiniAOD_cfg.py scenario=Summer16MiniAODv3Fastsig dataset=file:$1 outfile=$2 
 
 exit_code=$?
 echo Output Code: $exit_code
