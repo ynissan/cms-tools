@@ -18,6 +18,9 @@ cd $CMSSW_BASE/src/TreeMaker/Production/test
 
 echo PWD = $PWD
 
+#cmsRun runMakeTreeFromMiniAOD_cfg.py scenario=Summer16MiniAODv3Fastsig dataset=file:$1 outfile=$2 numevents=500
+echo "Will run:"
+echo cmsRun runMakeTreeFromMiniAOD_cfg.py scenario=Summer16MiniAODv3Fastsig dataset=file:$1 outfile=$2 numevents=500
 cmsRun runMakeTreeFromMiniAOD_cfg.py scenario=Summer16MiniAODv3Fastsig dataset=file:$1 outfile=$2 numevents=500
 
 exit_code=$?
