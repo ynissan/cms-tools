@@ -251,7 +251,7 @@ if hadd or all:
                 command = "hadd -f " + OUTPOUT_TYPE_SUM + "/" + type + "_1.root " + SINGLE_OUTPUT + "/" + type + "_*.root"
                 print "Perorming:", command
                 system(command)
-                command = "gfal-copy " + OUTPOUT_TYPE_SUM + "/" + type + "_1.root " + WORK_DIR
+                command = "gfal-copy " + OUTPOUT_TYPE_SUM + "/" + type + "_1.root " + " srm://dcache-se-cms.desy.de" + WORK_DIR
                 print "Perorming:", command
                 system(command)
                 command = "rm " + OUTPOUT_TYPE_SUM + "/" + type + "_1.root "

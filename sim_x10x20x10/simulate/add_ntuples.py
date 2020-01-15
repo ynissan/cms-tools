@@ -10,7 +10,7 @@ import argparse
 import os
 import sys
 
-ntuples_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/.ntuples/single"
+ntuples_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/ntuples/single"
 output_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/ntuples_sum/"
 
 SUM_SIZE = 30

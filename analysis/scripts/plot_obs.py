@@ -49,6 +49,8 @@ signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signa
 bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_dilepton_signal_bdt/low/single"
 data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_dilepton_signal_bdt/low/single"
 
+bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_dilepton_signal_bdt/dm0/single"
+signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm0p86Chi20Chipm.root"
 
 #bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/bg/skim_dilepton_signal_bdt/dm7/single"
 #signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm7p39Chi20Chipm.root"
@@ -68,7 +70,7 @@ plot_data = False
 plot_signal = True
 plot_ratio = True
 plot_rand = False
-plot_fast = False
+plot_fast = True
 plot_title = True
 plot_overflow = True
 
@@ -170,9 +172,7 @@ def mw(c):
         return 0
 
 def mw2(c):
-    if mw(c) > 0:
-        return c.invMass
-    return 0
+    return mw(c) < 60
 
 #and c.dilepHt >= 250 and c.NJets <= 3 and c.mt1 <= 50
 
@@ -188,54 +188,60 @@ histograms_defs = [
     
     
     #NORMAL
-    # { "obs" : "invMass", "minX" : 0, "maxX" : 15, "bins" : 90, "units" : "GeV" },
-#     { "obs" : "trackBDT", "minX" : 0, "maxX" : 0.7, "bins" : 30 },
-#     { "obs" : "secondTrackBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
-#     { "obs" : "dilepBDT", "minX" : -0.6, "maxX" : 0.6, "bins" : 30 },
-#     { "obs" : "abs(track.Eta())", "minX" : 0, "maxX" : 3, "bins" : 60 },
-#     { "obs" : "abs(lepton.Eta())", "minX" : 0, "maxX" : 3, "bins" : 60 },
-#     { "obs" : "track.Pt()", "minX" : 0, "maxX" : 30, "bins" : 60 },
-#     { "obs" : "lepton.Pt()", "minX" : 2, "maxX" : 25, "bins" : 60 },
-#     { "obs" : "secondTrack.Pt()", "minX" : 0, "maxX" : 30, "bins" : 60 },
-#     { "obs" : "abs(secondTrack.Eta())", "minX" : 0, "maxX" : 3, "bins" : 60 },
-#     { "obs" : "dileptonPt", "minX" : 0, "maxX" : 100, "bins" : 30 },
-#     { "obs" : "deltaPhi", "minX" : 0, "maxX" : 3.2, "bins" : 30 },
-#     { "obs" : "deltaEta", "minX" : 0, "maxX" : 4, "bins" : 30 },
-#     { "obs" : "deltaR", "minX" : 0, "maxX" : 4, "bins" : 30 },
-#     { "obs" : "pt3", "minX" : 230, "maxX" : 1000, "bins" : 30 },
-#     { "obs" : "mtautau", "minX" : 0, "maxX" : 1000, "bins" : 30 },
-#     { "obs" : "mtl", "minX" : 0, "maxX" : 200, "bins" : 30 },
-#     { "obs" : "mtt", "minX" : 0, "maxX" : 200, "bins" : 30 },
-#     { "obs" : "mt1", "minX" : 0, "maxX" : 200, "bins" : 30 },
-#     { "obs" : "mt2", "minX" : 0, "maxX" : 200, "bins" : 30 },
-#     { "obs" : "DeltaEtaLeadingJetDilepton", "minX" : 0, "maxX" : 4, "bins" : 30 },
-#     { "obs" : "DeltaPhiLeadingJetDilepton", "minX" : 0, "maxX" : 4, "bins" : 30 },
-#     { "obs" : "dilepHt", "minX" : 0, "maxX" : 400, "bins" : 30 },
-#     { "obs" : "NJets", "minX" : 0, "maxX" : 7, "bins" : 7 },
-#     { "obs" : "NTracks", "minX" : 0, "maxX" : 7, "bins" : 7 },
-#     { "obs" : "Met", "minX" : 140, "maxX" : 700, "bins" : 30 },
-#     { "obs" : "Mht", "minX" : 0, "maxX" : 700, "bins" : 30 },
-#     { "obs" : "Ht", "minX" : 0, "maxX" : 700, "bins" : 30 },
-#     { "obs" : "LeadingJetQgLikelihood", "minX" : 0, "maxX" : 1, "bins" : 30 },
-#     { "obs" : "MinDeltaPhiMhtJets", "minX" : 0, "maxX" : 4, "bins" : 30 },
-#     { "obs" : "MinDeltaPhiMetJets", "minX" : 0, "maxX" : 4, "bins" : 30 },
-#     { "obs" : "Mt2", "minX" : 0, "maxX" : 100, "bins" : 30 },
-#     { "obs" : "LeadingJetPt", "minX" : 0, "maxX" : 800, "bins" : 30 },
-#     { "obs" : "abs(LeadingJet.Eta())", "minX" : 0, "maxX" : 4, "bins" : 30 },
-#     { "obs" : "MinCsv30", "minX" : 0, "maxX" : 1, "bins" : 30 },
-#     { "obs" : "MinCsv25", "minX" : 0, "maxX" : 1, "bins" : 30 },
-#     { "obs" : "MaxCsv30", "minX" : 0, "maxX" : 1, "bins" : 30 },
-#     { "obs" : "MaxCsv25", "minX" : 0, "maxX" : 1, "bins" : 30 },
+    { "obs" : "invMass", "minX" : 0, "maxX" : 15, "bins" : 90, "units" : "GeV" },
+    { "obs" : "trackBDT", "minX" : 0, "maxX" : 0.7, "bins" : 30 },
+    { "obs" : "secondTrackBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
+    { "obs" : "dilepBDT", "minX" : -0.6, "maxX" : 0.6, "bins" : 30 },
+    { "obs" : "abs(track.Eta())", "minX" : 0, "maxX" : 3, "bins" : 60 },
+    { "obs" : "abs(lepton.Eta())", "minX" : 0, "maxX" : 3, "bins" : 60 },
+    { "obs" : "track.Pt()", "minX" : 0, "maxX" : 30, "bins" : 60 },
+    { "obs" : "lepton.Pt()", "minX" : 2, "maxX" : 25, "bins" : 60 },
+    { "obs" : "secondTrack.Pt()", "minX" : 0, "maxX" : 30, "bins" : 60 },
+    { "obs" : "abs(secondTrack.Eta())", "minX" : 0, "maxX" : 3, "bins" : 60 },
+    { "obs" : "dileptonPt", "minX" : 0, "maxX" : 100, "bins" : 30 },
+    { "obs" : "deltaPhi", "minX" : 0, "maxX" : 3.2, "bins" : 30 },
+    { "obs" : "deltaEta", "minX" : 0, "maxX" : 4, "bins" : 30 },
+    { "obs" : "deltaR", "minX" : 0, "maxX" : 4, "bins" : 30 },
+    { "obs" : "pt3", "minX" : 230, "maxX" : 1000, "bins" : 30 },
+    { "obs" : "mtautau", "minX" : 0, "maxX" : 1000, "bins" : 30 },
+    { "obs" : "mtl", "minX" : 0, "maxX" : 200, "bins" : 30 },
+    { "obs" : "mtt", "minX" : 0, "maxX" : 200, "bins" : 30 },
+    { "obs" : "mt1", "minX" : 0, "maxX" : 200, "bins" : 30 },
+    { "obs" : "mt2", "minX" : 0, "maxX" : 200, "bins" : 30 },
+    { "obs" : "DeltaEtaLeadingJetDilepton", "minX" : 0, "maxX" : 4, "bins" : 30 },
+    { "obs" : "DeltaPhiLeadingJetDilepton", "minX" : 0, "maxX" : 4, "bins" : 30 },
+    { "obs" : "dilepHt", "minX" : 0, "maxX" : 400, "bins" : 30 },
+    { "obs" : "NJets", "minX" : 0, "maxX" : 7, "bins" : 7 },
+    { "obs" : "NTracks", "minX" : 0, "maxX" : 7, "bins" : 7 },
+    { "obs" : "Met", "minX" : 140, "maxX" : 700, "bins" : 30 },
+    { "obs" : "Mht", "minX" : 0, "maxX" : 700, "bins" : 30 },
+    { "obs" : "Ht", "minX" : 0, "maxX" : 700, "bins" : 30 },
+    { "obs" : "LeadingJetQgLikelihood", "minX" : 0, "maxX" : 1, "bins" : 30 },
+    { "obs" : "MinDeltaPhiMhtJets", "minX" : 0, "maxX" : 4, "bins" : 30 },
+    { "obs" : "MinDeltaPhiMetJets", "minX" : 0, "maxX" : 4, "bins" : 30 },
+    { "obs" : "Mt2", "minX" : 0, "maxX" : 100, "bins" : 30 },
+    { "obs" : "LeadingJetPt", "minX" : 0, "maxX" : 800, "bins" : 30 },
+    { "obs" : "abs(LeadingJet.Eta())", "minX" : 0, "maxX" : 4, "bins" : 30 },
+    { "obs" : "MinCsv30", "minX" : 0, "maxX" : 1, "bins" : 30 },
+    { "obs" : "MinCsv25", "minX" : 0, "maxX" : 1, "bins" : 30 },
+    { "obs" : "MaxCsv30", "minX" : 0, "maxX" : 1, "bins" : 30 },
+    { "obs" : "MaxCsv25", "minX" : 0, "maxX" : 1, "bins" : 30 },
+
+
+     #{ "obs" : "abs(leptonParentPdgId)", "minX" : 0, "maxX" : 30, "bins" : 30 },
+     #{ "obs" : "abs(trackParentPdgId)", "minX" : 0, "maxX" : 30, "bins" : 30 },
 #     
     
     #DILEPTON
-    { "obs" : "invMass", "minX" : 0, "maxX" : 15, "bins" : 90, "units" : "GeV" },
-    { "obs" : "invMass2", "minX" : 0, "maxX" : 15, "bins" : 90, "func" : mw2 },
-    { "obs" : "mw", "minX" : 0, "maxX" : 150, "bins" : 50, "func" : mw },
-    #{ "obs" : "secondTrackBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
-    #{ "obs" : "univBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
-    { "obs" : "dilepBDT", "minX" : -0.6, "maxX" : 0.6, "bins" : 30 },
-    # { "obs" : "abs(leptons[0].Eta())", "minX" : 0, "maxX" : 3, "bins" : 60 },
+    
+    #{ "obs" : "mw", "minX" : 0, "maxX" : 150, "bins" : 50, "func" : mw },
+    #{ "obs" : "invMass2", "minX" : 0, "maxX" : 15, "bins" : 90, "func" : mw2 },
+    
+    
+    
+   #  { "obs" : "invMass", "minX" : 0, "maxX" : 2, "bins" : 90, "units" : "GeV" },
+#     { "obs" : "dilepBDT", "minX" : -0.6, "maxX" : 0.6, "bins" : 30 },
+#     { "obs" : "abs(leptons[0].Eta())", "minX" : 0, "maxX" : 3, "bins" : 60 },
 #     { "obs" : "abs(leptons[1].Eta())", "minX" : 0, "maxX" : 3, "bins" : 60 },
 #     { "obs" : "leptons[0].Pt()", "minX" : 0, "maxX" : 30, "bins" : 60 },
 #     { "obs" : "leptons[1].Pt()", "minX" : 0, "maxX" : 30, "bins" : 60 },
@@ -245,13 +251,12 @@ histograms_defs = [
 #     { "obs" : "deltaR", "minX" : 0, "maxX" : 4, "bins" : 30 },
 #     { "obs" : "pt3", "minX" : 230, "maxX" : 1000, "bins" : 30 },
 #     { "obs" : "mtautau", "minX" : 0, "maxX" : 1000, "bins" : 30 },
-#     { "obs" : "mtl", "minX" : 0, "maxX" : 200, "bins" : 30 },
+#     { "obs" : "mt1", "minX" : 0, "maxX" : 200, "bins" : 30 },
 #     { "obs" : "mt2", "minX" : 0, "maxX" : 200, "bins" : 30 },
 #     { "obs" : "DeltaEtaLeadingJetDilepton", "minX" : 0, "maxX" : 4, "bins" : 30 },
 #     { "obs" : "DeltaPhiLeadingJetDilepton", "minX" : 0, "maxX" : 4, "bins" : 30 },
 #     { "obs" : "dilepHt", "minX" : 0, "maxX" : 400, "bins" : 30 },
 #     { "obs" : "NJets", "minX" : 0, "maxX" : 7, "bins" : 7 },
-#     #{ "obs" : "NTracks", "minX" : 0, "maxX" : 7, "bins" : 7 },
 #     { "obs" : "Met", "minX" : 140, "maxX" : 700, "bins" : 30 },
 #     { "obs" : "Mht", "minX" : 100, "maxX" : 700, "bins" : 30 },
 #     { "obs" : "Ht", "minX" : 0, "maxX" : 700, "bins" : 30 },
@@ -267,8 +272,6 @@ histograms_defs = [
 #     { "obs" : "MaxCsv25", "minX" : 0, "maxX" : 1, "bins" : 30 },
 #     { "obs" : "deltaPhiMetLepton1", "minX" : 0, "maxX" : 3.5, "bins" : 30 },
 #     { "obs" : "deltaPhiMetLepton2", "minX" : 0, "maxX" : 3.5, "bins" : 30 },
-#      { "obs" : "abs(leptonParentPdgId)", "minX" : 0, "maxX" : 30, "bins" : 30 },
-#      { "obs" : "abs(trackParentPdgId)", "minX" : 0, "maxX" : 30, "bins" : 30 },
     
     
     
@@ -280,7 +283,8 @@ cuts = [#{"name":"none", "title": "No Cuts", "condition" : "1"},
 #        {"name":"mets", "title": "Met>20", "condition" : "Met > 20"},
 
 #NORMAL 
-#          {"name":"MET", "title": "MET", "condition" : "Met >= 250"},
+          {"name":"MET", "title": "MET", "condition" : "Met >= 250 && invMass < 30"},
+          {"name":"dilepBDT", "title": "dilepBDT", "condition" : "Met >= 200 && dilepBDT > -0.3 && invMass < 30"}
 #          {"name":"deltaR", "title": "deltaR", "condition" : "Met >= 250 && deltaR < 0.9"},
 #          {"name":"dm7", "title": "dm7", "condition" : "Met >= 250 && invMass < 30 && dilepBDT > -0.2 && abs(track.Eta()) < 1.5 && abs(lepton.Eta()) < 2 && track.Pt() < 10 && dilepBDT > 0 && univBDT > 0 && univBDT < 0.5 && secondTrack.Pt() < 5 && lepton.Pt() > 4 && lepton.Pt() < 20 && trackBDT > -0.2 && trackBDT < 0.3 && LeadingJetPt > 200 && tracks_dxyVtx[0] < 0.01 && tracks_dzVtx[0] < 0.015 && secondTrackBDT == -1 && deltaEta < 1.5 && mtl < 60"},
 #          {"name":"leptons", "title": "leptons", "condition" : "lepton.Pt() > 4 && trackBDT > -0.3 && trackBDT < 0.4 && dilepBDT > -0.1 && lepton.Pt() < 20 && mtl < 60"},
@@ -301,8 +305,8 @@ cuts = [#{"name":"none", "title": "No Cuts", "condition" : "1"},
          #{"name":"trackBDT", "title": "trackBDT", "condition" : "trackBDT >= 0 && MaxCsv25 < 0.7"},
 
 #DILEPTON
-        {"name":"none", "title": "No Cuts", "condition" : "invMass < 30"},
-        {"name":"dilepBDT", "title": "dilepBDT", "condition" : "dilepBDT > 0 && invMass < 30", "funcs" : [dilepBDT, invMass]},
+        #{"name":"none", "title": "No Cuts", "condition" : "invMass < 30"},
+        #{"name":"dilepBDT", "title": "dilepBDT", "condition" : "dilepBDT > 0 && invMass < 30", "funcs" : [dilepBDT, invMass, mw2]},
         #{"name":"dilepBDT2", "title": "dilepBDT2", "condition" : "dilepBDT > 0.2 && invMass < 30"},
         #{"name":"dilepBDT3", "title": "dilepBDT3", "condition" : "dilepBDT > 0.3 && invMass < 30"},
         #{"name":"dilepBDT4", "title": "dilepBDT4", "condition" : "dilepBDT > 0.4 && invMass < 30"},
@@ -783,7 +787,7 @@ def main():
             
             if hist_def["obs"] == "invMass":
                 binMin = sigHist.GetXaxis().FindBin(0)
-                binMax = sigHist.GetXaxis().FindBin(8)
+                binMax = sigHist.GetXaxis().FindBin(1.2)
                 sigNum = sigHist.Integral(binMin,binMax)
                 bgNum = 0
                 for h in newBgHist.GetHists():

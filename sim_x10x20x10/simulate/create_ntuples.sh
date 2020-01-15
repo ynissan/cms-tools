@@ -44,6 +44,7 @@ getenv = True
 EOM
 
 for f in $SIG_MINIAOD_OUTPUT_DIR/single/*; do
+#for f in /nfs/dust/cms/user/beinsam/CommonSamples/MC_BSM/CompressedHiggsino/RadiativeMu/v2/*dm[^23456]*MINIAOD*; do
     
     #filename=`echo $(basename $f) | awk -F"_" '{print $1"_"$2"_"$3"_"$5}'`
     filename=$(basename $f)

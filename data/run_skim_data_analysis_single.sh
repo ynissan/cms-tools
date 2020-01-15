@@ -30,6 +30,11 @@ do
         shift # past argument
         shift # past value
         ;;
+        --tl)
+        TWO_LEPTONS=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -39,8 +44,12 @@ done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 #---------- END OPTIONS ------------
 
+if [ -n "$TWO_LEPTONS" ]; then
+    OUTPUT_DIR=$TWO_LEPTONS_SKIM_DATA_OUTPUT_DIR
+else
+    OUTPUT_DIR=$SKIM_DATA_OUTPUT_DIR
+fi
 
-OUTPUT_DIR=$SKIM_DATA_OUTPUT_DIR
 FILE_OUTPUT="${OUTPUT_DIR}/single"
 
 #check output directory

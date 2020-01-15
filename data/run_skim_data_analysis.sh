@@ -12,7 +12,33 @@ module use -a /afs/desy.de/group/cms/modulefiles/
 module load cmssw
 cmsenv
 
-OUTPUT_DIR=$SKIM_DATA_OUTPUT_DIR
+#---------- GET OPTIONS ------------
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        --tl)
+        TWO_LEPTONS=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
+        *)    # unknown option
+        POSITIONAL+=("$1") # save it in an array for later
+        shift # past argument
+        ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+#---------- END OPTIONS ------------
+
+
+if [ -n "$TWO_LEPTONS" ]; then
+    OUTPUT_DIR=$TWO_LEPTONS_SKIM_DATA_OUTPUT_DIR
+else
+    OUTPUT_DIR=$SKIM_DATA_OUTPUT_DIR
+fi
 
 #check output directory
 if [ ! -d "$OUTPUT_DIR" ]; then
@@ -50,7 +76,6 @@ count=0
 input_files=""
 files_per_job=20
 
-OUTPUT_DIR=$SKIM_DATA_OUTPUT_DIR
 FILE_OUTPUT="${OUTPUT_DIR}/single"
 
 #for fullname in ${DATA_NTUPLES_DIR}/Run2016*SingleMuon*; do

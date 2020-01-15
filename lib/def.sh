@@ -7,10 +7,13 @@ SIMS=( ["dm13"]="/nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggs
 SIMS=(["dm051"]="/nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggsino/M1M2Scan/ntuple_sidecar/higgsino_mu100_dm0.51Chi20Chipm.root")
 
 declare -A SIM_GROUP=(["low"]="dm2p dm3p dm4p"\
+           ["dm0"]="dm0p" \
+           ["dm1"]="dm1p" \
            ["dm5"]="dm5p" \
            ["dm7"]="dm7p" \
            ["dm9"]="dm9p" \
-           ["high"]="dm12p dm13p")
+           ["high"]="dm12p dm13p" \
+           )
 
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$CMSSW_BASE/src/cms-tools/lib/classes"
 
@@ -55,6 +58,7 @@ LC_DATA_OUTPUT_DIR="$OUTPUT_WD/data/lc"
 SKIM_SIG_OUTPUT_DIR="$OUTPUT_WD/signal/skim"
 TWO_LEPTONS_SKIM_SIG_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/signal/skim"
 SKIM_DATA_OUTPUT_DIR="$OUTPUT_WD/data/skim"
+TWO_LEPTONS_SKIM_DATA_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/data/skim"
 CS_SIG_OUTPUT_DIR="$OUTPUT_WD/signal/cs"
 SKIM_SIG_BDT_OUTPUT_DIR="$OUTPUT_WD/signal/skim_signal_bdt"
 SKIM_DATA_BDT_OUTPUT_DIR="$OUTPUT_WD/data/skim_signal_bdt"
@@ -64,6 +68,7 @@ SKIM_TWO_LEPTONS_SIG_DILEPTON_BDT_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/signal/skim
 SKIM_TWO_LEPTONS_BG_DILEPTON_BDT_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/bg/skim_dilepton_signal_bdt"
 SKIM_BG_SIG_DILEPTON_BDT_OUTPUT_DIR="$OUTPUT_WD/bg/skim_dilepton_signal_bdt"
 SKIM_DATA_SIG_DILEPTON_BDT_OUTPUT_DIR="$OUTPUT_WD/data/skim_dilepton_signal_bdt"
+
 
 SKIM_SIG_BDT_SC_OUTPUT_DIR="$OUTPUT_WD/signal/skim_signal_bdt_sc"
 SKIM_DATA_BDT_SC_OUTPUT_DIR="$OUTPUT_WD/data/skim_signal_bdt_sc"

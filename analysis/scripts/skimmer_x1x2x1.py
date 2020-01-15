@@ -301,6 +301,7 @@ def main():
     afterMET = 0
     afterBTAGS = 0
     afterNj = 0
+    afterLeptons = 0
     nLMap = {}
     nLGenMap = {}
     nLGenMapZ = {}
@@ -485,6 +486,8 @@ def main():
             if ll is None:
                 continue
         
+        afterLeptons += 1
+        
         var_Electrons = takeLeptonsFrom.Electrons
         var_Electrons_charge= takeLeptonsFrom.Electrons_charge
         var_Electrons_mediumID = takeLeptonsFrom.Electrons_mediumID
@@ -642,6 +645,7 @@ def main():
     print "After BTAGS: " + str(afterBTAGS)
     print "After NJ: " + str(afterNj)
     print "After Preselection: " + str(afterPreselection)
+    print "After Leptons: " + str(afterLeptons)
     print "nL:"
     print nLMap
     print "nLGen:"

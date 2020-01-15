@@ -46,6 +46,13 @@ else:
     #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm7p39Chi20Chipm.root"
     
     input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm4p30Chi20Chipm.root"
+    input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm2p51Chi20Chipm.root"
+    #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm1p92Chi20Chipm.root"
+    input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm12p84Chi20Chipm.root"
+    # input_file = "/afs/desy.de/user/n/nissanuv/ntupleHub/SignalNtuples/higgsino_mu100_dm2p51Chi20Chipm_1.root"
+    input_file = "/afs/desy.de/user/n/nissanuv/ntupleHub/SignalNtuples/higgsino_mu100_dm1p13Chi20Chipm_1.root"
+#     input_file = "/afs/desy.de/user/n/nissanuv/ntupleHub/SignalNtuples/higgsino_mu100_dm1p92Chi20Chipm_1.root"
+    
     #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm2p51Chi20Chipm.root"
 if args.output_file:
     output_file = args.output_file[0]
@@ -103,6 +110,12 @@ def deltaRLJ(c, lepFlavour, l, li, track, minCanT, ljet, params):
         return True
     return abs(l.DeltaR(c.Jets[ljet])) > 0.4
 
+def deltaPhiLJ(c, lepFlavour, l, li, track, minCanT, ljet, params):
+    if lepFlavour == "Electrons":
+        return True
+    return abs(l.DeltaPhi(c.Jets[ljet])) > 1
+
+
 def passIso(c, lepFlavour, l, li, track, minCanT, ljet, params):
     if lepFlavour == "Muons":
         return True
@@ -111,9 +124,13 @@ def passIso(c, lepFlavour, l, li, track, minCanT, ljet, params):
 
 def main():
     
-    c = TChain('tEvent')
-    print "Going to open the file"
-    print input_file
+#     c = TChain('tEvent')
+#     print "Going to open the file"
+#     print input_file
+#     c.Add(input_file)
+    
+    c = TChain('TreeMaker2/PreSelection')
+    print "Opening", input_file
     c.Add(input_file)
     
     nentries = c.GetEntries()
@@ -129,7 +146,7 @@ def main():
         #{"name":"passIso", "title": "passIso", "funcs":[passIso, pt]},
         #{"name":"tightID", "title": "tightID", "funcs":[tightID, pt]},
         {"name":"mediuimId", "title": "mediuimId", "funcs": [mediumId, deltaRLJ]},
-        {"name":"all", "title": "all", "funcs":[passIso, mediumId, pt, deltaRLJ]},
+        {"name":"all", "title": "all", "funcs":[passIso, mediumId, pt, deltaRLJ, deltaPhiLJ]},
         #{"name":"pt", "title": "pt > 1.8", "funcs":[pt]},
         #{"name":"tightID", "title": "Eta < 2.6, deltaEtaLL < 1, deltaEtaLJ < 3.8", "funcs":[eta, deltaEtaLL, deltaEtaLJ]},
         #{"name":"Pt_Eta_dxy_dz", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06", "funcs":[eta, pt, dxy, dz]},
@@ -147,12 +164,12 @@ def main():
         {"name" : "mediumID", "title" : "mediumID", "bins" : 2, "minX" : 0, "maxX" : 1, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params: bool(eval("c." + lepFlavour + "_mediumID")[li]) },
         {"name" : "tightID", "title" : "tightID", "bins" : 2, "minX" : 0, "maxX" : 1, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params: bool(eval("c." + lepFlavour + "_tightID")[li]) },
         #{"name" : "iso", "title" : "iso", "bins" : 50, "minX" : 0, "maxX" : 1, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params: eval("c." + lepFlavour + "_MiniIso")[li] },
-        {"name" : "MT2Activity", "title" : "MT2Activity", "bins" : 50, "minX" : 0, "maxX" : 1, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params: eval("c." + lepFlavour + "_MT2Activity")[li] },
+        {"name" : "MT2Activity", "title" : "MT2Activity", "bins" : 50, "minX" : 0, "maxX" : 0.1, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params: eval("c." + lepFlavour + "_MT2Activity")[li] },
         
         {"name" : "deltaRLJ", "title" : "deltaRLJ", "bins" : 50, "minX" : 0, "maxX" : 6, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params:  abs(lep.DeltaR(c.Jets[lj])) },
         {"name" : "deltaPhiLJ", "title" : "deltaPhiLJ", "bins" : 50, "minX" : 0, "maxX" : 6, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params:  abs(lep.DeltaPhi(c.Jets[lj])) },
         {"name" : "deltaEtaLJ", "title" : "deltaEtaLJ", "bins" : 50, "minX" : 0, "maxX" : 6, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params:  abs(lep.Eta() - c.Jets[lj].Eta()) },
-        {"name" : "MT", "title" : "MT", "bins" : 50, "minX" : 0, "maxX" : 90, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params:  analysis_tools.MT2(c.Met, c.METPhi, lep) },
+        #{"name" : "MT", "title" : "MT", "bins" : 50, "minX" : 0, "maxX" : 90, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params:  analysis_tools.MT2(c.Met, c.METPhi, lep) },
         
         
         # {"name" : "EnergyCorr", "title" : "EnergyCorr", "bins" : 50, "minX" : 0, "maxX" : 2, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params:  bool(eval("c." + lepFlavour + "_EnergyCorr")[li])  },
@@ -195,6 +212,8 @@ def main():
     totalEvents = 0
     dileptonTotal = 0
     singleTotal = 0
+    zeroTotal = 0
+    moreTotal = 0
     
     passedCutsCount = {"Zl" : {}, "MM" : {}}
     
@@ -217,6 +236,16 @@ def main():
         if ljet is None: continue
         #if btags > 0: continue
         #if nj < 1: continue 
+        
+        minDeltaPhiMetJets = analysis_ntuples.minDeltaPhiMetJets25Pt2_4Eta(c)
+        if minDeltaPhiMetJets < 0.4: continue
+        if c.MHT < 100: continue
+        if c.MET < 120: continue
+
+        minCsv25, maxCsv25 = analysis_ntuples.minMaxCsv(c, 25)
+        
+        if maxCsv25 > 0.7:
+            continue
         
         genZL, genNonZL = analysis_ntuples.classifyGenZLeptons(c)
         if not genZL:
@@ -248,7 +277,7 @@ def main():
         zl = 0
         passedLep = 0
         
-        for lepVal in ["Electrons", -11], ["Muons", -13]:#[["Electrons", -11]]:#[["Muons", -13]]:#["Electrons", -11], ["Muons", -13]:
+        for lepVal in ["Electrons", -11], ["Muons", -13]:#[["Muons", -13]]:#[["Electrons", -11]]:
             #print lepVal
             lepFlavour = lepVal[0]
             lepCharge = lepVal[1]
@@ -273,8 +302,6 @@ def main():
                 
                 #print histograms
                 #exit(0)
-                
-                passedLep += 1
 
                 minZ, minCanZ = analysis_ntuples.minDeltaRGenParticles(l, genZL, c)
                 minNZ, minCanNZ = analysis_ntuples.minDeltaRGenParticles(l, genNonZL, c)
@@ -326,6 +353,8 @@ def main():
                     
                     if not passedCut(cut, c, lepFlavour, l, li, track, minCanT, ljet, params):
                         continue
+                    if cut['name'] == "all":
+                        passedLep += 1
                     passedCutsCount[type][cut['name']] += 1
                     for histDef in histoDefs:
                         name = histDef["name"] + "_" + cut["name"] + "_" + type
@@ -337,10 +366,17 @@ def main():
         elif zl == 1:
             singleLep += 1
         
+        # if passedLep != 1:
+#             print "What=", passedLep
+        
         if passedLep == 2:
             dileptonTotal += 1
         elif passedLep == 1:
             singleTotal += 1
+        elif passedLep == 0:
+            zeroTotal += 1
+        else:
+            moreTotal += 1
     
     print "totalEvents=", totalEvents
     print "Not Correct Procs=" + str(notCorrect)
@@ -353,6 +389,8 @@ def main():
     print "singleLep=", singleLep
     print "dileptonTotal=", dileptonTotal
     print "singleTotal=", singleTotal
+    print "zeroTotal=", zeroTotal
+    print "moreTotal=", moreTotal
     
     print passedCutsCount
 
@@ -362,6 +400,7 @@ def main():
         c1.SetBottomMargin(0.16)
         c1.SetLeftMargin(0.18)
     
+    plot_title = True
     if plot_single:
         plot_title = False
     

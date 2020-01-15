@@ -41,7 +41,7 @@ if args.input_dir:
     inputDir = args.input_dir[0]
 
 if inputDir is None:
-    inputDir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/lepton_track/cut_optimisation/tmva"
+    inputDir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track/cut_optimisation/tmva"
 
 ######## END OF CMDLINE ARGUMENTS ########
 
@@ -50,6 +50,7 @@ memory = []
 def plot_rocs():
     dirs = glob(inputDir + "/*")
     dirs.sort()
+    print dirs
 
     c2 = TCanvas("c2")
     c1 = TCanvas("c1")

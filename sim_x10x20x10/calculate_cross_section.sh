@@ -39,7 +39,7 @@ notification = Never
 priority = 0
 EOM
 
-for f in /nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggsino/M1M2Scan/slha/*; do
+for f in /afs/desy.de/user/n/nissanuv/ntupleHub/Slha/*; do
 	filename=$(basename $f .slha)
 	for p in "" "-"; do
 		cat << EOP  > "$CS_SIG_OUTPUT_DIR/def/${filename}$p"

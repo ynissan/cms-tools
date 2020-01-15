@@ -47,7 +47,9 @@ else:
     
     #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_signal_bdt/single/higgsino_mu100_dm2p51Chi20Chipm.root"
     input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_signal_bdt_no_bdt_cut/single/higgsino_mu100_dm2p51Chi20Chipm.root"
-    track_bdt = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track/cut_optimisation/tmva/low"
+    input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_signal_bdt/single/higgsino_mu100_dm1p13Chi20Chipm.root"
+    
+    track_bdt = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track/cut_optimisation/tmva/dm1"
     #input_file = "/afs/desy.de/user/n/nissanuv/nfs/old_leptons_x1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm2p51Chi20Chipm.root"
     
     
@@ -139,7 +141,7 @@ def trackBDT(c, ti):
     return c.trackBDT>0.2
 
 def trackBDTOnly(c, ti):
-    return c.trackBDT>0
+    return c.trackBDT>0.16
 
 def trackBDTLow(c, ti):
     return c.trackBDT>-0.2
@@ -248,8 +250,8 @@ def main():
     
     eventHists = ["trackBDT", "secondTrackBDT", "TrackLepMllTypes"]
     eventHistsTitle = ["trackBDT", "secondTrackBDT", "TrackLepMllTypes"]
-    eventHistsMinX = [-1,-1,0]
-    eventHistsMaxX = [1,1,30]
+    eventHistsMinX = [0,-1,0]
+    eventHistsMaxX = [0.4,1,30]
     eventHistsBins = [50,50,50]
     
     cuts = [{"name":"", "title": "No Cuts", "funcs":[]},
