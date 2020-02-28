@@ -32,6 +32,7 @@ parser.add_argument('-madHTlt', '--madHTlt', nargs=1, help='madHT uppper bound',
 
 parser.add_argument('-s', '--signal', dest='signal', help='Signal', action='store_true')
 parser.add_argument('-bg', '--background', dest='bg', help='Background', action='store_true')
+parser.add_argument('-skim', '--skim', dest='skim', help='Skim', action='store_true')
 parser.add_argument('-data', '--data', dest='data', help='Data', action='store_true')
 parser.add_argument('-tl', '--tl', dest='two_leptons', help='Two Leptons', action='store_true')
 args = parser.parse_args()
@@ -408,8 +409,6 @@ def main():
         
         nj, btags, ljet = analysis_ntuples.numberOfJets25Pt2_4Eta_Loose(c)
         
-        afterPreselection += 1
-        
         var_RunNum[0] = c.RunNum
         var_LumiBlockNum[0] = c.LumiBlockNum
         var_EvtNum[0] = c.EvtNum
@@ -430,6 +429,8 @@ def main():
         
         if var_MaxCsv25[0] > 0.7:
             continue
+        
+        afterPreselection += 1
         
         if not data:
             var_puWeight[0] = c.puWeight

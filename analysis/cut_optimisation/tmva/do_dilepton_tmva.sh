@@ -44,9 +44,6 @@ fi
 #check output directory
 if [ ! -d "$OUTPUT_DIR" ]; then
     mkdir $OUTPUT_DIR
-else
-    rm -rf $OUTPUT_DIR
-    mkdir $OUTPUT_DIR
 fi
 
 cat << EOM > $output_file

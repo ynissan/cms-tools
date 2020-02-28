@@ -17,6 +17,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --tl)
+        TWO_LEPTONS=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -35,12 +40,19 @@ cmsenv
 
 OUTPUT_DIR=$SKIM_DATA_SIG_DILEPTON_BDT_OUTPUT_DIR
 INPUT_DIR=$SKIM_DATA_BDT_OUTPUT_DIR
+BDT_DIR=$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt
+EXTRA_FLAGS=""
 
 if [ -n "$SC" ]; then
     echo "GOT SC"
     echo "HERE: $@"
     OUTPUT_DIR=$SKIM_DATA_SIG_DILEPTON_BDT_SC_OUTPUT_DIR
     INPUT_DIR=$SKIM_DATA_BDT_SC_OUTPUT_DIR
+elif [ -n "$TWO_LEPTONS" ]; then
+    OUTPUT_DIR=$SKIM_TWO_LEPTONS_DATA_SIG_DILEPTON_BDT_OUTPUT_DIR
+    INPUT_DIR=$TWO_LEPTONS_SKIM_DATA_OUTPUT_DIR/sum
+    BDT_DIR=$TWO_LEPTONS_OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt
+    EXTRA_FLAGS="--tl"
 fi
 
 timestamp=$(date +%Y%m%d_%H%M%S%N)
@@ -62,10 +74,9 @@ priority = 0
 EOM
 
 #for sim in $SKIM_BG_SIG_BDT_OUTPUT_DIR/*; do
-for sim in $INPUT_DIR/*; do    
+for sim in $BDT_DIR/*; do    
     filename=`echo $(basename $sim)`
     echo $filename
-    echo here
     tb=$filename
 
     if [ ! -d "$OUTPUT_DIR/$tb" ]; then
@@ -84,13 +95,20 @@ for sim in $INPUT_DIR/*; do
     if [ ! -d "$OUTPUT_DIR/$tb/stderr" ]; then
       mkdir "$OUTPUT_DIR/$tb/stderr"
     fi
+    
+    if [ -n "$TWO_LEPTONS" ]; then
+        DATA_DIR=$INPUT_DIR
+    else
+        DATA_DIR=$INPUT_DIR/$tb/single
+    fi
 
-    for data_file in $INPUT_DIR/$tb/single/*; do
+    for data_file in $DATA_DIR/*; do
         echo "Will run:"
         data_file_name=$(basename $data_file .root)
-        echo $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_dilepton_bdt.py -i $data_file -o ${OUTPUT_DIR}/$tb/single/${data_file_name}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$tb 
+        cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_dilepton_bdt.py --data -i $data_file -o ${OUTPUT_DIR}/$tb/single/${data_file_name}.root -bdt $BDT_DIR/$tb $EXTRA_FLAGS"
+        echo $cmd
 cat << EOM >> $output_file
-arguments = $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_dilepton_bdt.py -i $data_file -o ${OUTPUT_DIR}/$tb/single/${data_file_name}.root -bdt $OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt/$tb 
+arguments = $cmd
 error = ${OUTPUT_DIR}/$tb/stderr/${data_file_name}.err
 output = ${OUTPUT_DIR}/$tb/stdout/${data_file_name}.output
 Queue

@@ -1,8 +1,8 @@
-This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=pdflatex 2018.5.30)  27 FEB 2020 10:43
+This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=pdflatex 2018.5.23)  27 FEB 2020 15:45
 entering extended mode
  %&-line parsing enabled.
-**./CutFlowTables.tex
-(./CutFlowTables.tex
+**./Significance.tex
+(./Significance.tex
 LaTeX2e <2005/12/01>
 Babel <v3.8h> and hyphenation patterns for english, usenglishmax, dumylang, noh
 yphenation, arabic, basque, bulgarian, coptic, welsh, czech, slovak, german, ng
@@ -187,28 +187,31 @@ Package: mhsetup 2004/10/10 v1.0b programming setup (MH)
 \g_MT_multlinerow_int=\count110
 \l_MT_multwidth_dim=\dimen119
 )
+(/usr/share/texmf/tex/latex/multirow/multirow.sty
+\bigstrutjot=\dimen120
+)
 
 LaTeX Warning: Unused global option(s):
     [A4paper].
 
-(./CutFlowTables.aux)
-\openout1 = `CutFlowTables.aux'.
+(./Significance.aux)
+\openout1 = `Significance.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-Package hyperref Info: Link coloring OFF on input line 11.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+Package hyperref Info: Link coloring OFF on input line 9.
  (/usr/share/texmf/tex/latex/hyperref/nameref.sty
 Package: nameref 2006/12/27 v2.28 Cross-referencing by name of section
 
@@ -217,43 +220,52 @@ Package: refcount 2006/02/20 v3.0 Data extraction from references (HO)
 )
 \c@section@level=\count111
 )
-LaTeX Info: Redefining \ref on input line 11.
-LaTeX Info: Redefining \pageref on input line 11.
- (./CutFlowTables.out)
-(./CutFlowTables.out)
+LaTeX Info: Redefining \ref on input line 9.
+LaTeX Info: Redefining \pageref on input line 9.
+ (./Significance.out)
+(./Significance.out)
 \@outlinefile=\write3
-\openout3 = `CutFlowTables.out'.
+\openout3 = `Significance.out'.
 
  (/usr/share/texmf/tex/context/base/supp-pdf.tex
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count112
-\scratchdimen=\dimen120
+\scratchdimen=\dimen121
 \scratchbox=\box28
 \nofMPsegments=\count113
 \nofMParguments=\count114
 \MPscratchCnt=\count115
-\MPscratchDim=\dimen121
+\MPscratchDim=\dimen122
 \MPnumerator=\count116
 \everyMPtoPDFconversion=\toks22
-) [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}
+)
 
-] (./CutFlowTables.aux) ) 
+LaTeX Warning: No positions in optional float specifier.
+               Default added (so using `tbp') on input line 10.
+
+
+Overfull \hbox (15.28302pt too wide) in paragraph at lines 11--54
+[][] 
+ []
+
+
+LaTeX Warning: Float too large for page by 4.49939pt on input line 54.
+
+[1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] (./Significance.aux) ) 
 Here is how much of TeX's memory you used:
- 3775 strings out of 256214
- 51438 string characters out of 1917000
- 109428 words of memory out of 1500000
- 7046 multiletter control sequences out of 10000+200000
- 7219 words of font info for 27 fonts, out of 1200000 for 2000
+ 3773 strings out of 256214
+ 51503 string characters out of 1917000
+ 127523 words of memory out of 1500000
+ 7043 multiletter control sequences out of 10000+200000
+ 7050 words of font info for 26 fonts, out of 1200000 for 2000
  645 hyphenation exceptions out of 8191
- 27i,12n,21p,491b,336s stack positions out of 5000i,500n,6000p,200000b,15000s
-</usr/share/texmf/fonts/type1/bluesky/cm/cmmi12.pfb></
-usr/share/texmf/fonts/type1/bluesky/cm/cmmi8.pfb></usr/share/texmf/fonts/type1/
-bluesky/cm/cmr12.pfb></usr/share/texmf/fonts/type1/bluesky/cm/cmr8.pfb></usr/sh
-are/texmf/fonts/type1/bluesky/cm/cmsy10.pfb></usr/share/texmf/fonts/type1/blues
-ky/cm/cmtt12.pfb>
-Output written on CutFlowTables.pdf (1 page, 37308 bytes).
+ 27i,9n,21p,324b,332s stack positions out of 5000i,500n,6000p,200000b,15000s
+</
+usr/share/texmf/fonts/type1/bluesky/cm/cmmi12.pfb></usr/share/texmf/fonts/type1
+/bluesky/cm/cmr12.pfb>
+Output written on Significance.pdf (1 page, 14851 bytes).
 PDF statistics:
- 40 PDF objects out of 1000 (max. 8388607)
- 3 named destinations out of 1000 (max. 131072)
+ 22 PDF objects out of 1000 (max. 8388607)
+ 1 named destinations out of 1000 (max. 131072)
  17 words of extra memory for PDF output out of 10000 (max. 10000000)
 

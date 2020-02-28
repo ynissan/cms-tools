@@ -74,6 +74,17 @@ compoundTypes = {
     "TTJets": ["ST_t-channel_antitop", "ST_t-channel_top", "TTJets_DiLept", "TTJets_SingleLeptFromT", "TTJets_SingleLeptFromTbar"]
 }
 
+trainGroups = {
+    "dm0" : ["dm0p"],
+    "dm1" : ["dm1p"],
+    "low" : ["dm2p", "dm3p", "dm4p"],
+    "dm7" : ["dm7p"],
+    "dm9" : ["dm9p"],
+    "high" : ["dm12p", "dm13p"]
+}
+
+trainGroupsOrder = ["dm0", "dm1", "low", "dm7", "dm9", "high"]
+
 #Normal
 bgOrder = {
     "Rare" : 0,
@@ -536,3 +547,7 @@ def getLeptonCollection(currLeptonCollectionFileName):
     leptonCollectionMap = currLeptonCollectionFile.Get("leptonCollectionMap")
     currLeptonCollectionFile.Close()
     return leptonCollectionMap
+
+def getDmFromFileName(filename):
+    print "Filename: " + filename
+    return filename.split('_')[-1].split('Chi20Chipm')[0]
