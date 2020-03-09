@@ -180,16 +180,17 @@ def minDeltaRGenParticles(l, gens, c):
     return min, minCan
 
 def minDeltaRLepTracks(l, c):
-    min = None
-    minCan = None
-    #print "len(c.tracks) ", len(c.tracks)
-    for i, t in enumerate(c.tracks):
-        deltaR = abs(t.DeltaR(l))
-        #print deltaR
+    return minDeltaLepLeps(l, c.tracks)
+
+def minDeltaLepLeps(lep, leps):
+    min, minCan = None, None
+    for i, l in enumerate(leps):
+        deltaR = abs(lep.DeltaR(l))
         if min is None or deltaR < min:
             min = deltaR
             minCan = i
     return min, minCan
+
 
 def leadingLepton(c):
     ll = None

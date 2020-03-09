@@ -73,6 +73,9 @@ def main():
                 print "Processing " + str(ientry) + " weight=" + str(c.Weight)
             if analysis_ntuples.isX1X2X1Process(c):
                 genZL, genNonZL = analysis_ntuples.classifyGenZLeptons(c)
+                if genZL is None:
+                    print "WHAT?!"
+                    continue
                 nL = c.Electrons.size() + c.Muons.size()
                 l1 = None
                 l2 = None
@@ -83,12 +86,16 @@ def main():
                     l1 = c.Muons[0]
                     l2 = c.Muons[1]
                 if l1 is not None:
+                    if l1.Pt() < 5 or l2.Pt() < 5:
+                        continue
+                    #print l1, genZL, c
                     minZ, minCanZ = analysis_ntuples.minDeltaRGenParticles(l1, genZL, c)
                     if minZ > 0.1:
-                        print "NO"
+                        #print "NO"
+                        continue
                     minZ, minCanZ = analysis_ntuples.minDeltaRGenParticles(l2, genZL, c)
                     if minZ > 0.1:
-                        print "NO"
+                        #print "NO"
                         continue
                     sh.Fill((l1 + l2).M(), c.Weight)
                 else:
@@ -100,6 +107,8 @@ def main():
                         l1 = c.Muons[0]
                         ch1 = c.Muons_charge[0]
                     if not l1:
+                        continue
+                    if l1.Pt() < 5:
                         continue
                     if not genZL:
                         continue
@@ -141,7 +150,7 @@ def main():
             
     
     cpBlue = utils.colorPalette[2]
-    cpRed = utils.colorPalette[6]
+    cpRed = utils.colorPalette[7]
 
     #trainBGHist.SetTitle(name)
     bh.GetXaxis().SetTitle("M_{ll} [GeV]")
@@ -160,7 +169,7 @@ def main():
     bh.SetMaximum(900)
     bh.Draw("HIST")
 
-    legend.AddEntry(bh, "Two reconstructed", 'F')
+    legend.AddEntry(bh, "One reco one track", 'F')
 
     fillC = TColor.GetColor(cpBlue["fillColor"])
     lineC = TColor.GetColor(cpBlue["lineColor"])
@@ -171,7 +180,7 @@ def main():
     sh.SetOption("HIST")
     sh.Draw("HIST SAME")
     
-    legend.AddEntry(sh, "One reco one track", 'F')    
+    legend.AddEntry(sh, "Two reconstructed", 'F')    
     
     legend.Draw("SAME")
     gPad.SetLogy();

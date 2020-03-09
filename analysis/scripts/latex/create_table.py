@@ -9,11 +9,13 @@ print r"""
 \usepackage{mathtools}
 \usepackage{multirow}
 \begin{document}
+
 \begin{table}[]
-\begin{tabular}{llllllll}
-\cline{3-8}
-                                             & \multicolumn{1}{l|}{}       & \multicolumn{2}{c|}{lt}                                        & \multicolumn{2}{c|}{2l}                                        & \multicolumn{2}{c|}{Total}                                     \\ \hline 
-\multicolumn{1}{|l|}{$\mu$}                    & \multicolumn{1}{l|}{$\Delta\mathrm{M}$}     & \multicolumn{1}{l|}{category} & \multicolumn{1}{l|}{inclusive} & \multicolumn{1}{l|}{category} & \multicolumn{1}{l|}{inclusive} & \multicolumn{1}{l|}{category} & \multicolumn{1}{l|}{inclusive} \\ \hline
+\hspace*{-2cm}
+\begin{tabular}{lllllllllll}
+\cline{3-11}
+                                             & \multicolumn{1}{l|}{}       & \multicolumn{3}{c|}{lt}                                        & \multicolumn{3}{c|}{2l}                                        & \multicolumn{3}{c|}{Total}                                     \\ \hline 
+\multicolumn{1}{|l|}{$\mu$}                    & \multicolumn{1}{l|}{$\Delta\mathrm{M}$}     & \multicolumn{1}{l|}{category} & \multicolumn{1}{l|}{inclusive} & \multicolumn{1}{l|}{rect} & \multicolumn{1}{l|}{category} & \multicolumn{1}{l|}{inclusive} & \multicolumn{1}{l|}{rect} & \multicolumn{1}{l|}{category} & \multicolumn{1}{l|}{inclusive} & \multicolumn{1}{l|}{rect} \\ \hline
 """
 
 f = open("significance", "r")
@@ -37,17 +39,17 @@ for l in fl:
         mu = line[0]
         mun = line[0].split("mu")[1]
         dmn = line[1].split("dm")[1]
-        print r"""\multicolumn{1}{|l|}{\multirow{""" + str(muCount[line[0]]) + r"""}{*}{""" + mun + r"""}} & \multicolumn{1}{l|}{""" + dmn + r"""} & \multicolumn{1}{c|}{"""+line[2]+r"""}        & \multicolumn{1}{c|}{"""+line[3]+r"""}         & \multicolumn{1}{c|}{"""+line[4]+r"""}        & \multicolumn{1}{c|}{"""+line[5]+r"""}         & \multicolumn{1}{c|}{"""+line[6]+r"""}        & \multicolumn{1}{c|}{"""+line[7]+r"""}         \\ \cline{2-8} """
+        print r"""\multicolumn{1}{|l|}{\multirow{""" + str(muCount[line[0]]) + r"""}{*}{""" + mun + r"""}} & \multicolumn{1}{l|}{""" + dmn + r"""} & \multicolumn{1}{c|}{"""+line[2]+r"""}        & \multicolumn{1}{c|}{"""+line[3]+r"""}         & \multicolumn{1}{c|}{"""+line[4]+r"""}        & \multicolumn{1}{c|}{"""+line[5]+r"""}         & \multicolumn{1}{c|}{"""+line[6]+r"""}        & \multicolumn{1}{c|}{"""+line[7]+r"""}         & \multicolumn{1}{c|}{"""+line[8]+r"""}         & \multicolumn{1}{c|}{"""+line[9]+r"""}         & \multicolumn{1}{c|}{"""+line[10]+r"""}         \\ \cline{2-11} """
     else:
         currMuCount += 1
         dmn = line[1].split("dm")[1]
         ending = ""
         if currMuCount < muCount[line[0]]:
-            ending = r"""\cline{2-8}"""
+            ending = r"""\cline{2-11}"""
         else:
             ending = r"""\hline"""
             currMuCount = 0
-        print r"""\multicolumn{1}{|l|}{} & \multicolumn{1}{l|}{""" + dmn + r"""} & \multicolumn{1}{c|}{"""+line[2]+r"""}        & \multicolumn{1}{c|}{"""+line[3]+r"""}         & \multicolumn{1}{c|}{"""+line[4]+r"""}        & \multicolumn{1}{c|}{"""+line[5]+r"""}         & \multicolumn{1}{c|}{"""+line[6]+r"""}        & \multicolumn{1}{c|}{"""+line[7]+r"""}         \\ """ + ending
+        print r"""\multicolumn{1}{|l|}{} & \multicolumn{1}{l|}{""" + dmn + r"""} & \multicolumn{1}{c|}{"""+line[2]+r"""}        & \multicolumn{1}{c|}{"""+line[3]+r"""}         & \multicolumn{1}{c|}{"""+line[4]+r"""}        & \multicolumn{1}{c|}{"""+line[5]+r"""}         & \multicolumn{1}{c|}{"""+line[6]+r"""}        & \multicolumn{1}{c|}{"""+line[7]+r"""}        & \multicolumn{1}{c|}{"""+line[8]+r"""}        & \multicolumn{1}{c|}{"""+line[9]+r"""}        & \multicolumn{1}{c|}{"""+line[10]+r"""}         \\ """ + ending
     
     
 print r"""

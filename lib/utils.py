@@ -9,9 +9,13 @@ import json
 import time
 import array
 import commands
+import math
 
 gSystem.Load('LumiSectMap_C')
 from ROOT import LumiSectMap
+
+gStyle.SetOptStat(0)
+TH1D.SetDefaultSumw2()
 
 # gSystem.Load('LeptonCollectionMap_C')
 # from ROOT import LeptonCollectionMap
@@ -449,6 +453,7 @@ def getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=
     if tree.GetEntries() == 0:
         return None
     binsStr = ">>hsqrt(" + str(bins) + ","
+    #print """tree.Draw(""" + obs + binsStr + str(minX) + "," + str(maxX) + ")", condition+""")"""
     tree.Draw(obs + binsStr + str(minX) + "," + str(maxX) + ")", condition)
     hist = tree.GetHistogram().Clone(name)
     hist.SetDirectory(0)
@@ -551,3 +556,92 @@ def getLeptonCollection(currLeptonCollectionFileName):
 def getDmFromFileName(filename):
     print "Filename: " + filename
     return filename.split('_')[-1].split('Chi20Chipm')[0]
+
+def calcSignificance(sigHist, bgHist):
+    sig = 0
+    sigNum = 0
+    bgNum = 0
+    accumulate = False
+    binsNumber = sigHist.GetNbinsX()
+    #print "binsNumber=", binsNumber
+    for bin in range(1, binsNumber + 1):
+        if accumulate:
+            sigNum += sigHist.GetBinContent(bin)
+            bgNum += bgHist.GetBinContent(bin)
+        else:
+            sigNum = sigHist.GetBinContent(bin)
+            bgNum = bgHist.GetBinContent(bin)
+        if bgNum == 0:
+            accumulate = True
+        else:
+            accumulate = False
+            if bin <= binsNumber and bgHist.Integral(bin+1, binsNumber) == 0:
+                sigNum += sigHist.Integral(bin, binsNumber)
+                sig = math.sqrt(sig**2 + (0.1 * (sigNum / math.sqrt(bgNum)))**2)
+                #print "**sigNum=", sigNum, "bgNum=", bgNum, "sig=", sig
+                break
+            else:
+                #print "sigNum=", sigNum, "bgNum=", bgNum, "sig=", 0.1 * (sigNum / math.sqrt(bgNum))
+                sig = math.sqrt(sig**2 + (0.1 * (sigNum / math.sqrt(bgNum)))**2)
+    return sig
+
+def calcZ(lhdH1, lhdH0):
+    bayesfactor = lhdH1/lhdH0
+    z = math.log(bayesfactor)/abs(math.log(bayesfactor))*math.sqrt(2*abs(math.log(bayesfactor)))
+    return z
+
+def calcSignificanceLlhdSingleCount(sigHist, bgHist):
+    sig = 0
+    sigNum = 0
+    bgNum = 0
+    bgError = 0
+    accumulate = False
+    binsNumber = sigHist.GetNbinsX()
+    lhdH0 = 1
+    lhdH1 = 1
+    
+    #print "binsNumber=", binsNumber
+    for bin in range(1, binsNumber + 1):
+        if accumulate:
+            sigNum += sigHist.GetBinContent(bin)          
+            bgNum += bgHist.GetBinContent(bin)
+            bgError = math.sqrt(bgError**2 + bgHist.GetBinError(bin)**2)
+        else:
+            sigNum = sigHist.GetBinContent(bin)
+            bgNum = bgHist.GetBinContent(bin)
+            bgError = bgHist.GetBinError(bin)
+        if bgNum == 0:
+            accumulate = True
+        else:
+            accumulate = False
+            if bin <= binsNumber and bgHist.Integral(bin+1, binsNumber) == 0:
+                sigNum += sigHist.Integral(bin, binsNumber)
+                #lhd(double N,double s,double B,double dB)
+                lhdH0 *= lhd(bgNum,0,bgNum,bgError)
+                lhdH1 *= lhd(bgNum,0.1*sigNum,bgNum,bgError)
+                
+                if lhdH1 / lhdH0 != 1 and calcZ(lhdH1, lhdH0) > 0:
+                    print "OOOOOOPPPPS!", "lhdH1", lhdH1, "lhdH0", lhdH0, "sigNum", sigNum, "bgNum", bgNum, "bgError", bgError, "Z", calcZ(lhdH1, lhdH0)
+                #sig += 0.1 * (sigNum / math.sqrt(bgNum))
+                #print "**sigNum=", sigNum, "bgNum=", bgNum, "sig=", sig
+                break
+            else:
+                #print "sigNum=", sigNum, "bgNum=", bgNum, "sig=", 0.1 * (sigNum / math.sqrt(bgNum))
+                if lhdH1 / lhdH0 != 1 and calcZ(lhdH1, lhdH0) > 0:
+                    print "BEFORE OOOOOOPPPPS!", "lhdH1", lhdH1, "lhdH0", lhdH0, "sigNum", sigNum, "bgNum", bgNum, "bgError", bgError, "Z", calcZ(lhdH1, lhdH0)
+                
+                lhdH0 *= lhd(bgNum,0,bgNum,bgError)
+                lhdH1 *= lhd(bgNum,0.1*sigNum,bgNum,bgError)
+                
+                if lhdH1 / lhdH0 != 1 and calcZ(lhdH1, lhdH0) > 0:
+                    print "AFTER OOOOOOPPPPS!", "lhdH1", lhdH1, "lhdH0", lhdH0, "sigNum", sigNum, "bgNum", bgNum, "bgError", bgError, "Z", calcZ(lhdH1, lhdH0)
+                
+    
+    if lhdH1 / lhdH0 == 1:
+        return 0
+                
+    bayesfactor = lhdH1/lhdH0
+    if math.log(bayesfactor)/abs(math.log(bayesfactor)) >0:
+        print "WOW!! lhdH1", lhdH1, "lhdH0", lhdH0
+        
+    return calcZ(lhdH1, lhdH0)

@@ -19,6 +19,10 @@ import analysis_ntuples
 
 gROOT.SetBatch(True)
 gStyle.SetOptStat(0)
+TH1D.SetDefaultSumw2()
+
+gROOT.ProcessLine(open(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes/calcLlhdSingleCount.cc")).read())
+exec('from ROOT import *')
 
 ####### CMDLINE ARGUMENTS #########
 
@@ -37,6 +41,9 @@ else:
 
 binsNumber = 30
 
+sig_method = "rsb"
+#sig_method = "Llhd"
+
 histograms_defs = [    
     #NORMAL
     { "obs" : "invMass", "minX" : 0, "maxX" : 30, "bins" : 90, "units" : "GeV" },
@@ -44,19 +51,23 @@ histograms_defs = [
     { "obs" : "dilepBDT", "minX" : -0.2, "maxX" : 0.6, "bins" : 30 },
 ]
 
-cuts = [
-    #{"name":"MET", "title": "MET", "condition" : "Met >= 250 && invMass < 30"},
-    {"name":"dilepBDT", "title": "dilepBDT", "condition" : "Met >= 200 && dilepBDT > -0.3 && invMass < 30"}
-]
+cuts = {
+    "2l" : "deltaR <= 1.2  && leptons[0].Pt() < 15 && Ht >= 120 && leptons[1].Pt() <= 3 && deltaEta < 1 && mt1 <= 40 && mt2 <= 40 && dilepHt >= 170 && DeltaPhiLeadingJetDilepton >= 1.7",
+    "1t1l" : "lepton.Pt() < 15 && Mht >=140 && mtl <= 60 && deltaR <= 1.7 && MinDeltaPhiMhtJets >= 1 && DeltaEtaLeadingJetDilepton <= 2.2 && DeltaPhiLeadingJetDilepton >= 1.8 && deltaPhi <= 1.3 && deltaEta <= 1.2 && LeadingJetPt >= 100 && mtt <= 50 && mt1 <= 60 && mt2 <= 50 && Ht >= 140 &&  MinDeltaPhiMetJets >= 1.3"
+}
 
 paths = {
     "1t1l" : "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1",
     "2l" : "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1"
 }
 
-def performScanForFile(file, maxSignalRange=None):
+def performScanForFile(file, type, maxSignalRange=None):
     scan = []
-    basicCond = str(utils.LUMINOSITY) + " * Weight * (Met >= 200 && invMass < 30 && dilepBDT >= "
+    basicCond = None
+    if type == "2l":
+        basicCond = str(utils.LUMINOSITY) + " * Weight * (leptons[1].Pt() <= 3 && Met >= 200 && invMass < 30 && dilepBDT >= "
+    else:
+        basicCond = str(utils.LUMINOSITY) + " * Weight * (Met >= 200 && invMass < 30 && dilepBDT >= "
     rootFile = TFile(file)
     c = rootFile.Get('tEvent')
     i = 0
@@ -67,7 +78,7 @@ def performScanForFile(file, maxSignalRange=None):
             break
         cond = basicCond + "{:.2f}".format(dilepBDT) + ")"
         #print "cond=" + cond
-        hist = utils.getHistogramFromTree("sig_" + "{:.2f}".format(dilepBDT), c, "invMass", binsNumber, 0, 30, cond, True)
+        hist = utils.getHistogramFromTree("sig_" + "{:.2f}".format(dilepBDT), c, "invMass", binsNumber, 0, 15, cond, True)
         if not hist:
             print "WTF"
             exit(0)
@@ -80,15 +91,45 @@ def performScanForFile(file, maxSignalRange=None):
 def main():
     print "Start: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S')
     
-    bgHistograms = {}
-    signalHistograms = {}    
-    significance = {}
+    # AFTER OOOOOOPPPPS! lhdH1 9.06252290502e-16 lhdH0 7.19943784186e-16 sigNum 32.349407196 bgNum 7768.57617188 bgError 4855.31444616 Z 0.678446169087
+#     u = 100000.
+#     lhdH0 = lhd(double N,double s,double B,double dB)
+#     lhdH0 = lhd(7768.57617188,0,7768.57617188,4855.31444616)
+#     print "Npx", lhdH0.GetNpx()
+#     lhdH0.Draw()
+#     line = TLine()
+#     line.DrawLine(7768.576, 0, 7768.576, 100000)
+#     line2 = TLine()
+#     line2.DrawLine(7768.576 + 32, 0, 7768.576 + 32, 100000)
+#     c1.SetLogy(True)
+#     c1.Update()
+#     
+#     utils.pause()
+#     print lhdH0
+#     lhdH1 = lhd(7768.57617188,0.1 * 32.349407196,7768.57617188,4855.31444616)
+#     c1.Update()
+#     utils.pause()
+#     print "Z", utils.calcZ(lhdH1, lhdH0), lhdH0, lhdH1
+#     
+#     
+#     lhdH0 = lhd(u/10.,u/10.,u/10.,math.sqrt(u/10.))
+#     print str(lhdH0)
+#     lhdH1 = lhd(2*u/10.,u/10.,u/10.,math.sqrt(u/10.))
+#     #print "Z2", calcZ(lhdH1, lhdH0)
+#     print "Z3", calcZ(lhdH1**10, lhdH0**10)
+#     
+#     exit(0)
+# 
 
+    
+    significance = {}
     for type in ["1t1l","2l"]:
+        bgHistograms = {}
+        signalHistograms = {}    
         bgHistograms[type] = {}
         signalHistograms[type] = {}
         significance[type] = {}
-        for trainGroup in utils.trainGroupsOrder + ["all"]:
+        for trainGroup in utils.trainGroupsOrder + ["all", "1t1l","2l"]:
             print "Checking train group " + trainGroup
         
             signalHistograms[type][trainGroup] = {}
@@ -96,16 +137,15 @@ def main():
             maxSignalRange = 0
         
             groups = None
-            if trainGroup == "all":
-                groups = ["all"]
+            if trainGroup in ["all", "1t1l","2l"]:
+                groups = [trainGroup]
             else:
                 groups = utils.trainGroups[trainGroup]
-        
         
             for group in groups:
                 print "Checking group", group
                 signalFilesPath = None
-                if group == "all":
+                if group in ["all", "1t1l","2l"]:
                     signalFilesPath = paths[type] + "/signal/skim_dilepton_signal_bdt_all/single/*"
                 else:
                     signalFilesPath = paths[type] + "/signal/skim_dilepton_signal_bdt/single/*" + group + "*"
@@ -113,13 +153,23 @@ def main():
                 for signalFile in signalFiles:
                     signalFileName = os.path.basename(signalFile).split(".")[0]
                     print "Scanning file", signalFileName
-                    signalHistograms[type][trainGroup][signalFileName] = performScanForFile(signalFile)
-                    if len(signalHistograms[type][trainGroup][signalFileName]) > maxSignalRange:
-                        maxSignalRange = len(signalHistograms[type][trainGroup][signalFileName])
+                    if group in ["1t1l","2l"]:
+                        if group != type:
+                            continue
+                        cond = str(utils.LUMINOSITY) + " * Weight * (Met >= 200 && invMass < 30 && " + cuts[group] + ")"
+                        print "opening file", signalFile, "with cond ", cond
+                        rootFile = TFile(signalFile)
+                        c = rootFile.Get('tEvent')
+                        hist = utils.getHistogramFromTree("sig_" + group, c, "invMass", binsNumber, 0, 15, cond, True)
+                        signalHistograms[type][trainGroup][signalFileName] = hist
+                    else:
+                        signalHistograms[type][trainGroup][signalFileName] = performScanForFile(signalFile, type)
+                        if len(signalHistograms[type][trainGroup][signalFileName]) > maxSignalRange:
+                            maxSignalRange = len(signalHistograms[type][trainGroup][signalFileName])
         
             print "Maximum signal range for", trainGroup, " is", maxSignalRange
             bgFilesPath = None
-            if trainGroup == "all":
+            if trainGroup in ["all", "1t1l","2l"]:
                 bgFilesPath = paths[type] + "/bg/skim_dilepton_signal_bdt_all/single/*"
             else:
                 bgFilesPath = paths[type] + "/bg/skim_dilepton_signal_bdt/" + trainGroup + "/single/*"
@@ -129,74 +179,113 @@ def main():
         
             for bgFile in bgFiles:
                 print "Scanning", bgFile
-                scan = performScanForFile(bgFile, maxSignalRange)
-                if bgHistograms[type].get(trainGroup) is None:
-                    bgHistograms[type][trainGroup] = scan
+                if trainGroup in ["1t1l","2l"]:
+                    print ">>>>>>> trainGroup", trainGroup
+                    if trainGroup != type:
+                        print "Skipping trainGroup", trainGroup, "for type", type
+                        continue
+                    print "******* BG trainGroup", trainGroup
+                    cond = str(utils.LUMINOSITY) + " * Weight * (Met >= 200 && invMass < 30 && " + cuts[group] + ")"
+                    rootFile = TFile(bgFile)
+                    c = rootFile.Get('tEvent')
+                    hist = utils.getHistogramFromTree("bg_" + group, c, "invMass", binsNumber, 0, 15, cond, True)
+                    if bgHistograms[type].get(trainGroup) is None:
+                        bgHistograms[type][trainGroup] = hist
+                    else:
+                        bgHistograms[type][trainGroup].Add(hist)
                 else:
-                    for i in range(len(scan)):
-                        if i >= len(bgHistograms[type][trainGroup]):
-                            print "Expending scan"
-                            bgHistograms[type][trainGroup].append(scan[i])
-                        else:
-                            bgHistograms[type][trainGroup][i].Add(scan[i])
-        
-        for trainGroup in utils.trainGroupsOrder + ["all"]:
+                    scan = performScanForFile(bgFile, type, maxSignalRange)
+                    if bgHistograms[type].get(trainGroup) is None:
+                        bgHistograms[type][trainGroup] = scan
+                    else:
+                        for i in range(len(scan)):
+                            if i >= len(bgHistograms[type][trainGroup]):
+                                print "Expending scan"
+                                bgHistograms[type][trainGroup].append(scan[i])
+                            else:
+                                bgHistograms[type][trainGroup][i].Add(scan[i])
+            if bgHistograms[type].get(trainGroup) is None:
+                print "bgHistograms not ready for", trainGroup
+                continue
             bgScan = bgHistograms[type][trainGroup]
             for signalFileName in signalHistograms[type][trainGroup]:
-                #print "Calculating Significance for", signalFileName
-                sigScan = []
-                dilepBDT = -0.3
-                i = 0
-                for sigHist in signalHistograms[type][trainGroup][signalFileName]:
-                    #print "dilepBDT=" + str(dilepBDT)
-                    i += 1
-                    dilepBDT += 0.05
-                    if i > len(bgHistograms[type][trainGroup]):
-                        print "Breaking scan at ", dilepBDT
-                        break
-                    bgHist = bgHistograms[type][trainGroup][i-1]
+                if trainGroup in ["1t1l","2l"]:
+                    if trainGroup != type:
+                        continue
+                    sigHist = signalHistograms[type][trainGroup][signalFileName]
+                    bgHist = bgHistograms[type][trainGroup]
                     sig = 0
-                    sigNum = 0
-                    bgNum = 0
-                    accumulate = False
-                    for bin in range(1, binsNumber + 1):
-                        if accumulate:
-                            sigNum += sigHist.GetBinContent(bin)
-                            bgNum += bgHist.GetBinContent(bin)
+                    if sig_method == "rsb":
+                        sig = utils.calcSignificance(sigHist, bgHist)
+                    else:
+                        sig = utils.calcSignificanceLlhdSingleCount(sigHist, bgHist)
+                    
+                    #if sig > 0:
+                    #    print "Greater!", sig, "for rect", signalFileName
+                    if significance[type].get(trainGroup) is None:
+                        significance[type][trainGroup] = {}
+                    significance[type][trainGroup][signalFileName] = sig
+                else:
+                    #print "Calculating Significance for", signalFileName
+                    sigScan = []
+                    dilepBDT = -0.3
+                    i = 0
+                    for sigHist in signalHistograms[type][trainGroup][signalFileName]:
+                        #print "dilepBDT=" + str(dilepBDT)
+                        i += 1
+                        dilepBDT += 0.05
+                        if i > len(bgHistograms[type][trainGroup]):
+                            print "Breaking scan at ", dilepBDT
+                            break
+                        bgHist = bgHistograms[type][trainGroup][i-1]
+                        sig = 0
+                        if sig_method == "rsb":
+                            sig = utils.calcSignificance(sigHist, bgHist)
                         else:
-                            sigNum = sigHist.GetBinContent(bin)
-                            bgNum = bgHist.GetBinContent(bin)
-                        if bgNum == 0:
-                            accumulate = True
-                        else:
-                            accumulate = False
-                            if bin <= binsNumber and bgHist.Integral(bin+1, binsNumber) == 0:
-                                sigNum += sigHist.Integral(bin, binsNumber)
-                                sig += 0.1 * sigNum / math.sqrt(bgNum)
-                                break
-                            else:
-                                sig += 0.1 * sigNum / math.sqrt(bgNum)
-                    sigScan.append(sig)
+                            sig = utils.calcSignificanceLlhdSingleCount(sigHist, bgHist)
+                        #if sig > 0:
+                        #    print "Greater!", sig, "for", type, signalFileName
+                        sigScan.append(sig)
             
-                print "sigScan for", trainGroup, signalFileName, sigScan, "max", max(sigScan)
-                if significance[type].get(trainGroup) is None:
-                    significance[type][trainGroup] = {}
-                significance[type][trainGroup][signalFileName] = max(sigScan)
+                    print "sigScan for", trainGroup, signalFileName, sigScan#, "min", min(sigScan)
+                    if significance[type].get(trainGroup) is None:
+                        significance[type][trainGroup] = {}
+                    if len(sigScan) == 0:
+                        significance[type][trainGroup][signalFileName] = 0
+                    else:
+                        if sig_method == "rsb":
+                            significance[type][trainGroup][signalFileName] = max(sigScan)
+                        else:
+                            significance[type][trainGroup][signalFileName] = min(sigScan)
     
     print " "
     print " "
     print " "
     for trainGroup in significance["1t1l"]:
-        if trainGroup == "all":
+        if trainGroup in ["all", "1t1l","2l"]:
             continue
         for signalFileName in sorted(significance["1t1l"][trainGroup]):
             fileNameParts = signalFileName.split("_")
             mu = fileNameParts[1]
             dm = fileNameParts[2].split("Chi")[0]
-            print mu, dm, "{:.2f}".format(significance["1t1l"][trainGroup][signalFileName]), "{:.2f}".format(significance["1t1l"]["all"][signalFileName]), "{:.2f}".format(significance["2l"][trainGroup][signalFileName]), "{:.2f}".format(significance["2l"]["all"][signalFileName]), "{:.2f}".format(significance["1t1l"][trainGroup][signalFileName] + significance["2l"][trainGroup][signalFileName]), "{:.2f}".format(significance["2l"]["all"][signalFileName] + significance["1t1l"]["all"][signalFileName])
+            print mu, dm, "{:.2f}".format(significance["1t1l"][trainGroup][signalFileName]), "{:.2f}".format(significance["1t1l"]["all"][signalFileName]), "{:.2f}".format(significance["1t1l"]["1t1l"][signalFileName]), "{:.2f}".format(significance["2l"][trainGroup][signalFileName]), "{:.2f}".format(significance["2l"]["all"][signalFileName]), "{:.2f}".format(significance["2l"]["2l"][signalFileName]), "{:.2f}".format(math.sqrt((significance["1t1l"][trainGroup][signalFileName])**2 + (significance["2l"][trainGroup][signalFileName])**2)), "{:.2f}".format(math.sqrt((significance["2l"]["all"][signalFileName])**2 + (significance["1t1l"]["all"][signalFileName])**2)), "{:.2f}".format(math.sqrt((significance["2l"]["2l"][signalFileName])**2 + (significance["1t1l"]["1t1l"][signalFileName])**2))
 
-    
-    
+    # c1 = TCanvas("c1", "c1", 800, 800)
+#     c1.SetBottomMargin(0.16)
+#     c1.SetLeftMargin(0.18)
+#     c1.cd()
+#     histPad = c1
+#     histPad.Draw()
+#     c1.Print("output.pdf[");
+#     sigHist = signalHistograms["1t1l"]["low"]["higgsino_mu100_dm4p30Chi20Chipm"][10]
+#     bgHist = bgHistograms["1t1l"]["low"][10]
+#     utils.formatHist(bgHist, utils.signalCp[1], 0.8)
+#     bgHist.Draw("hist")
+#     sigHist.Draw("hist same")
+#     c1.Print("output.pdf");
+#     c1.Print("output.pdf]");
+#     sig = utils.calcSignificance(sigHist, [bgHist])
+#     print "sig=", sig
     
 #     trainGroups = {
 #     "dm0" : ["dm0p"],
