@@ -48,16 +48,20 @@ def main():
         f = TFile(nf,'read')
         leptonCollectionMapN = f.Get("leptonCollectionFilesMap")
         if leptonCollectionMap is None:
-            leptonCollectionMap = leptonCollectionMapN
-        else:
-            leptonCollectionMap.Merge(leptonCollectionMapN)
+            leptonCollectionMap = LeptonCollectionFilesMap()
+            #leptonCollectionMap = leptonCollectionMapN
+        #else:
+        leptonCollectionMap.Merge(leptonCollectionMapN)
+        leptonCollectionMapN.IsA().Destructor(leptonCollectionMapN)
         f.Close()
+        f.IsA().Destructor(f)
         if i % maxMapSize == 0:
             print "Writing map " + str(mapNum)
             newFile.cd()
             leptonCollectionMap.Write("leptonCollectionFilesMap" + str(mapNum))
             mapNum += 1
             shouldWrite = False
+            leptonCollectionMap.IsA().Destructor(leptonCollectionMap)
             leptonCollectionMap = None
         else:
             shouldWrite = True

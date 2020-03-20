@@ -35,7 +35,9 @@ fi
 
 LC_INTPUT="/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection/"
 
-files=(${LC_INTPUT}/Run2016*.MET*)
+#files=(${LC_INTPUT}/Run2016*.MET*)
+files=(${LC_INTPUT}/Run2016*.SingleMuon*)
+
 
 timestamp=$(date +%Y%m%d_%H%M%S%N)
 output_file="${WORK_DIR}/condor_submut.${timestamp}"

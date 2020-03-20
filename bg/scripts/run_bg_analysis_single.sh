@@ -49,6 +49,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --dy)
+        DY=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         -s|--simulation)
         SIMULATION=true
         shift # past argument
@@ -75,6 +80,8 @@ if [ -n "$SKIM" ]; then
     SCRIPT_PATH=$SKIMMER_PATH
     if [ -n "$TWO_LEPTONS" ]; then
         OUTPUT_DIR=$TWO_LEPTONS_SKIM_OUTPUT_DIR
+    elif [ -n "$DY" ]; then
+        OUTPUT_DIR=$DY_SKIM_OUTPUT_DIR
     else
         OUTPUT_DIR=$SKIM_OUTPUT_DIR
     fi

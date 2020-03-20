@@ -35,6 +35,7 @@ parser.add_argument('-bg', '--background', dest='bg', help='Background', action=
 parser.add_argument('-skim', '--skim', dest='skim', help='Skim', action='store_true')
 parser.add_argument('-data', '--data', dest='data', help='Data', action='store_true')
 parser.add_argument('-tl', '--tl', dest='two_leptons', help='Two Leptons', action='store_true')
+parser.add_argument('-dy', '--dy', dest='dy', help='Drell-Yan', action='store_true')
 args = parser.parse_args()
 
 print args
@@ -53,9 +54,13 @@ signal = args.signal
 bg = args.bg
 data = args.data
 two_leptons = args.two_leptons
+dy = args.dy
 
 if two_leptons:
     print "RUNNING TWO LEPTONS!"
+if dy:
+    print "Got Drell-Yan"
+    #exit(0)
 
 input_file = None
 if args.input_file:
@@ -104,6 +109,7 @@ def main():
     var_NJets = np.zeros(1,dtype=int)
     var_BTags = np.zeros(1,dtype=int)
     var_Ht = np.zeros(1,dtype=float)
+    var_MHTPhi = np.zeros(1,dtype=float)
     var_madHT = np.zeros(1,dtype=float)
     var_Mht = np.zeros(1,dtype=float)
     var_MetDHt = np.zeros(1,dtype=float)
@@ -128,6 +134,15 @@ def main():
     var_Muons_MiniIso = ROOT.std.vector(double)()
     var_Muons_MT2Activity = ROOT.std.vector(double)()
     var_Muons_MTW = ROOT.std.vector(double)()
+    
+    var_DYMuons = ROOT.std.vector(TLorentzVector)()
+    var_DYMuons_charge = ROOT.std.vector(int)()
+    var_DYMuons_mediumID = ROOT.std.vector(bool)()
+    var_DYMuons_passIso = ROOT.std.vector(bool)()
+    var_DYMuons_tightID = ROOT.std.vector(bool)()
+    var_DYMuons_MiniIso = ROOT.std.vector(double)()
+    var_DYMuons_MT2Activity = ROOT.std.vector(double)()
+    var_DYMuons_MTW = ROOT.std.vector(double)()
     
     var_GenParticles = ROOT.std.vector(TLorentzVector)()
     var_GenParticles_ParentId = ROOT.std.vector(int)()
@@ -209,6 +224,7 @@ def main():
     tEvent.Branch('Ht', var_Ht,'Ht/D')
     tEvent.Branch('madHT', var_madHT,'madHT/D')
     tEvent.Branch('Mht', var_Mht,'Mht/D')
+    tEvent.Branch('MHTPhi', var_MHTPhi,'MHTPhi/D')
     tEvent.Branch('MetDHt', var_MetDHt,'MetDHt/D')
     #tEvent.Branch('MetDHt2', var_MetDHt2,'MetDHt2/D')
     tEvent.Branch('Mt2', var_Mt2,'Mt2/D')
@@ -237,6 +253,16 @@ def main():
     tEvent.Branch('Muons_MiniIso', 'std::vector<double>', var_Muons_MiniIso)
     tEvent.Branch('Muons_MT2Activity', 'std::vector<double>', var_Muons_MT2Activity)
     tEvent.Branch('Muons_MTW', 'std::vector<double>', var_Muons_MTW)
+    
+    if dy:
+        tEvent.Branch('DYMuons', 'std::vector<TLorentzVector>', var_DYMuons)
+        tEvent.Branch('DYMuons_charge', 'std::vector<int>', var_DYMuons_charge)
+        tEvent.Branch('DYMuons_mediumID', 'std::vector<bool>', var_DYMuons_mediumID)
+        tEvent.Branch('DYMuons_passIso', 'std::vector<bool>', var_DYMuons_passIso)
+        tEvent.Branch('DYMuons_tightID', 'std::vector<bool>', var_DYMuons_tightID)
+        tEvent.Branch('DYMuons_MiniIso', 'std::vector<double>', var_DYMuons_MiniIso)
+        tEvent.Branch('DYMuons_MT2Activity', 'std::vector<double>', var_DYMuons_MT2Activity)
+        tEvent.Branch('DYMuons_MTW', 'std::vector<double>', var_DYMuons_MTW)
     
     tEvent.Branch('GenParticles', 'std::vector<TLorentzVector>', var_GenParticles)
     tEvent.Branch('GenParticles_ParentId', 'std::vector<int>', var_GenParticles_ParentId)
@@ -351,10 +377,6 @@ def main():
         if not data:
             hHtAfterMadHt.Fill(c.madHT)
         
-        nj, btags, ljet = analysis_ntuples.numberOfJets25Pt2_4Eta_Loose(c)
-        if ljet is None:
-            #print "No ljet:",ljet 
-            continue
         nL = c.Electrons.size() + c.Muons.size()
         nT = c.tracks.size()
         
@@ -394,29 +416,115 @@ def main():
         if not signal:
             if not analysis_ntuples.passed2016BTrigger(c, data): continue
         
-        afterMET += 1
-        #if btags > 0: continue
-        afterBTAGS += 1
-        #if nj < 1: continue
+        MET = c.MET
+        METPhi = c.METPhi
+        MHT = c.MHT
+        HT = c.HT
+        MHTPhi = c.MHTPhi
+        muons = []
+        if dy:
+            muons = [i for i in range(len(c.Muons)) if c.Muons[i].Pt() >= 15 and bool(c.Muons_mediumID[i]) and bool(c.Muons_passIso[i]) and abs(c.Muons[i].Eta()) <= 2.4]
+
+            if len(muons) != 2:
+                continue
+                
+            if c.Muons[muons[0]].Pt() < 30:
+                continue
+            
+            if c.Muons_charge[muons[0]] * c.Muons_charge[muons[1]] > 0:
+                continue
+            
+            invMass = (c.Muons[muons[0]] + c.Muons[muons[1]]).M()
+            if not abs(invMass-91.19)<10: continue
+            
+            metVec = TLorentzVector()
+            metVec.SetPtEtaPhiE(MET,0,METPhi,MET)
+            
+            metVec += c.Muons[muons[0]]
+            metVec += c.Muons[muons[1]]
+            
+            MET = abs(metVec.Pt())
+            METPhi = metVec.Phi()
+            
+            jetsHt = [i for i in range(len(c.Jets)) if c.Jets[i].Pt() >= 30 and abs(c.Jets[i].Eta()) <= 2.4 and abs(c.Muons[muons[0]].DeltaR(c.Jets[i])) > 0.1 and abs(c.Muons[muons[1]].DeltaR(c.Jets[i])) > 0.1]
+            jetsMht = [i for i in range(len(c.Jets)) if c.Jets[i].Pt() >= 30 and abs(c.Jets[i].Eta()) <= 5 and abs(c.Muons[muons[0]].DeltaR(c.Jets[i])) > 0.1 and abs(c.Muons[muons[1]].DeltaR(c.Jets[i])) > 0.1]
+            
+            #print "jetsHt=", jetsHt
+            #print "jetsMht=", jetsMht
+            
+            HT = 0
+            for i in jetsHt:
+                HT += c.Jets[i].Pt()
+            MhtVec = TLorentzVector()
+            for i in jetsMht:
+                MhtVec -= c.Jets[i]
+            MHT = MhtVec.Pt()
+            MHTPhi = MhtVec.Phi()
+            
+            #print "Before:"
+            #print "MET=", c.MET, "METPhi=", c.METPhi, "MHT=", c.MHT, "HT=", c.HT, "MHTPhi=", c.MHTPhi
+            
+            c.MET = MET
+            c.METPhi = METPhi
+            c.MHT = MHT
+            c.HT = HT
+            c.MHTPhi = MHTPhi
+            
+            #print "After:"
+        
+            #print "MET=", c.MET, "METPhi=", c.METPhi, "MHT=", c.MHT, "HT=", c.HT, "MHTPhi=", c.MHTPhi
+            #print "MET=", MET, "METPhi=", METPhi, "MHT=", MHT, "HT=", HT, "MHTPhi=", MHTPhi
+            
+            jets = ROOT.std.vector(TLorentzVector)()
+            jets_bDiscriminatorCSV = ROOT.std.vector(double)()
+            jets_partonFlavor = ROOT.std.vector(int)()
+            jets_qgLikelihood = ROOT.std.vector(double)()
+            
+            for i in range(c.Jets.size()):
+                if abs(c.Muons[muons[0]].DeltaR(c.Jets[i])) > 0.1 and abs(c.Muons[muons[1]].DeltaR(c.Jets[i])) > 0.1:
+                    jets.push_back(c.Jets[i])
+                    jets_bDiscriminatorCSV.push_back(c.Jets_bDiscriminatorCSV[i])
+                    jets_partonFlavor.push_back(c.Jets_partonFlavor[i])
+                    jets_qgLikelihood.push_back(c.Jets_qgLikelihood[i])
+            
+            c.Jets = jets
+            c.Jets_bDiscriminatorCSV = jets_bDiscriminatorCSV
+            c.Jets_partonFlavor = jets_partonFlavor
+            c.Jets_qgLikelihood = jets_qgLikelihood
+        
+        
+        nj, btags, ljet = analysis_ntuples.numberOfJets25Pt2_4Eta_Loose(c)
+        if ljet is None:
+            #print "No ljet:",ljet 
+            continue
+        
         afterNj += 1
+        
         #if not duoLepton: continue
         var_MinDeltaPhiMetJets[0] = analysis_ntuples.minDeltaPhiMetJets25Pt2_4Eta(c)
         var_MinDeltaPhiMhtJets[0] = analysis_ntuples.minDeltaPhiMhtJets25Pt2_4Eta(c)
+        #if not dy:
         if var_MinDeltaPhiMetJets[0] < 0.4: continue
-        if c.MHT < 100: continue
-        if c.MET < 120: continue
+        if MHT < 100: continue
+        if MET < 120: continue
         ## END PRECUTS##
         
-        nj, btags, ljet = analysis_ntuples.numberOfJets25Pt2_4Eta_Loose(c)
+        afterMET += 1
+        #if btags > 0: continue
+        
+        #if nj < 1: continue
+        
+        #nj, btags, ljet = analysis_ntuples.numberOfJets25Pt2_4Eta_Loose(c)
         
         var_RunNum[0] = c.RunNum
         var_LumiBlockNum[0] = c.LumiBlockNum
         var_EvtNum[0] = c.EvtNum
 
-        var_Met[0] = c.MET
-        var_METPhi[0] = c.METPhi
-        var_Mht[0] = c.MHT
-        var_Ht[0] = c.HT
+        var_Met[0] = MET
+        var_METPhi[0] = METPhi
+        var_Mht[0] = MHT
+        var_MHTPhi[0] = MHTPhi
+        var_Ht[0] = HT
         var_Mt2[0] = c.MT2
         var_CrossSection[0] = crossSection
         var_NJets[0] = nj
@@ -429,6 +537,8 @@ def main():
         
         if var_MaxCsv25[0] > 0.7:
             continue
+        
+        afterBTAGS += 1
         
         afterPreselection += 1
         
@@ -475,6 +585,71 @@ def main():
         else:
             takeLeptonsFrom = c
         
+        
+        if dy:
+            #print "muons=", muons
+            var_DYMuons = ROOT.std.vector(TLorentzVector)()
+            var_DYMuons_charge = ROOT.std.vector(int)()
+            var_DYMuons_mediumID = ROOT.std.vector(bool)()
+            var_DYMuons_passIso = ROOT.std.vector(bool)()
+            var_DYMuons_tightID = ROOT.std.vector(bool)()
+            var_DYMuons_MiniIso = ROOT.std.vector(double)()
+            var_DYMuons_MT2Activity = ROOT.std.vector(double)()
+            var_DYMuons_MTW = ROOT.std.vector(double)()
+            
+            var_DYMuons.push_back(takeLeptonsFrom.Muons[muons[0]])
+            var_DYMuons.push_back(takeLeptonsFrom.Muons[muons[1]])
+            
+            var_DYMuons_charge.push_back(takeLeptonsFrom.Muons_charge[muons[0]])
+            var_DYMuons_charge.push_back(takeLeptonsFrom.Muons_charge[muons[1]])
+            
+            var_DYMuons_mediumID.push_back(bool(takeLeptonsFrom.Muons_mediumID[muons[0]]))
+            var_DYMuons_mediumID.push_back(bool(takeLeptonsFrom.Muons_mediumID[muons[1]]))
+            
+            var_DYMuons_passIso.push_back(bool(takeLeptonsFrom.Muons_passIso[muons[0]]))
+            var_DYMuons_passIso.push_back(bool(takeLeptonsFrom.Muons_passIso[muons[1]]))
+            
+            var_DYMuons_tightID.push_back(bool(takeLeptonsFrom.Muons_tightID[muons[0]]))
+            var_DYMuons_tightID.push_back(bool(takeLeptonsFrom.Muons_tightID[muons[1]]))
+            
+            var_DYMuons_MiniIso.push_back(takeLeptonsFrom.Muons_MiniIso[muons[0]])
+            var_DYMuons_MiniIso.push_back(takeLeptonsFrom.Muons_MiniIso[muons[1]])
+            
+            var_DYMuons_MT2Activity.push_back(takeLeptonsFrom.Muons_MT2Activity[muons[0]])
+            var_DYMuons_MT2Activity.push_back(takeLeptonsFrom.Muons_MT2Activity[muons[1]])
+            
+            var_DYMuons_MTW.push_back(takeLeptonsFrom.Muons_MTW[muons[0]])
+            var_DYMuons_MTW.push_back(takeLeptonsFrom.Muons_MTW[muons[1]])
+            
+            var_Muons = ROOT.std.vector(TLorentzVector)()
+            var_Muons_charge = ROOT.std.vector(int)()
+            var_Muons_mediumID = ROOT.std.vector(bool)()
+            var_Muons_passIso = ROOT.std.vector(bool)()
+            var_Muons_tightID = ROOT.std.vector(bool)()
+            var_Muons_MiniIso = ROOT.std.vector(double)()
+            var_Muons_MT2Activity = ROOT.std.vector(double)()
+            var_Muons_MTW = ROOT.std.vector(double)()
+            
+            for i in range(takeLeptonsFrom.Muons.size()):
+                if i != muons[0] and i != muons[1]:
+                    var_Muons.push_back(takeLeptonsFrom.Muons[i])
+                    var_Muons_charge.push_back(takeLeptonsFrom.Muons_charge[i])
+                    var_Muons_mediumID.push_back(bool(takeLeptonsFrom.Muons_mediumID[i]))
+                    var_Muons_passIso.push_back(bool(takeLeptonsFrom.Muons_passIso[i]))
+                    var_Muons_tightID.push_back(bool(takeLeptonsFrom.Muons_tightID[i]))
+                    var_Muons_MiniIso.push_back(takeLeptonsFrom.Muons_MiniIso[i])
+                    var_Muons_MT2Activity.push_back(takeLeptonsFrom.Muons_MT2Activity[i])
+                    var_Muons_MTW.push_back(takeLeptonsFrom.Muons_MTW[i])
+            
+            takeLeptonsFrom.Muons = var_Muons
+            takeLeptonsFrom.Muons_charge = var_Muons_charge
+            takeLeptonsFrom.Muons_mediumID = var_Muons_mediumID
+            takeLeptonsFrom.Muons_passIso = var_Muons_passIso
+            takeLeptonsFrom.Muons_tightID = var_Muons_tightID
+            takeLeptonsFrom.Muons_MiniIso = var_Muons_MiniIso
+            takeLeptonsFrom.Muons_MT2Activity = var_Muons_MT2Activity
+            takeLeptonsFrom.Muons_MTW = var_Muons_MTW
+        
         ll, leptonCharge, leptonFlavour = None, None, None
         leptons, leptonsCharge = None, None
         
@@ -499,7 +674,7 @@ def main():
         var_Electrons_MT2Activity = takeLeptonsFrom.Electrons_MT2Activity
         var_Electrons_MTW = takeLeptonsFrom.Electrons_MTW
         var_Electrons_TrkEnergyCorr = takeLeptonsFrom.Electrons_TrkEnergyCorr
-    
+        
         var_Muons = takeLeptonsFrom.Muons
         var_Muons_charge = takeLeptonsFrom.Muons_charge
         var_Muons_mediumID = takeLeptonsFrom.Muons_mediumID
@@ -562,6 +737,19 @@ def main():
         tEvent.SetBranchAddress('Muons_MiniIso', var_Muons_MiniIso)
         tEvent.SetBranchAddress('Muons_MT2Activity', var_Muons_MT2Activity)
         tEvent.SetBranchAddress('Muons_MTW', var_Muons_MTW)
+        
+        if dy:
+            
+            tEvent.SetBranchAddress('DYMuons', var_DYMuons)
+            tEvent.SetBranchAddress('DYMuons_charge', var_DYMuons_charge)
+            
+            tEvent.SetBranchAddress('DYMuons_mediumID', var_DYMuons_mediumID)
+            tEvent.SetBranchAddress('DYMuons_passIso', var_DYMuons_passIso)
+            tEvent.SetBranchAddress('DYMuons_tightID', var_DYMuons_tightID)
+        
+            tEvent.SetBranchAddress('DYMuons_MiniIso', var_DYMuons_MiniIso)
+            tEvent.SetBranchAddress('DYMuons_MT2Activity', var_DYMuons_MT2Activity)
+            tEvent.SetBranchAddress('DYMuons_MTW', var_DYMuons_MTW)
 
         tEvent.SetBranchAddress('GenParticles', var_GenParticles)
         tEvent.SetBranchAddress('GenParticles_ParentId', var_GenParticles_ParentId)
@@ -607,13 +795,13 @@ def main():
             var_deltaEta[0] = abs(leptons[0].Eta() - leptons[1].Eta())
             var_deltaR[0] = abs(leptons[0].DeltaR(leptons[1]))
 
-            var_pt3[0] = analysis_tools.pt3(leptons[0].Pt(),leptons[0].Phi(),leptons[1].Pt(),leptons[1].Phi(),c.MET,c.METPhi)
+            var_pt3[0] = analysis_tools.pt3(leptons[0].Pt(),leptons[0].Phi(),leptons[1].Pt(),leptons[1].Phi(),MET,METPhi)
 
             pt = TLorentzVector()
-            pt.SetPtEtaPhiE(c.MET,0,c.METPhi,c.MET)
+            pt.SetPtEtaPhiE(MET,0,METPhi,MET)
 
-            var_mt1[0] = analysis_tools.MT2(c.MET, c.METPhi, leptons[0])
-            var_mt2[0] = analysis_tools.MT2(c.MET, c.METPhi, leptons[1])
+            var_mt1[0] = analysis_tools.MT2(MET, METPhi, leptons[0])
+            var_mt2[0] = analysis_tools.MT2(MET, METPhi, leptons[1])
 
             var_mtautau[0] = analysis_tools.Mtautau(pt, leptons[0], leptons[1])
     
@@ -629,7 +817,7 @@ def main():
 
         metDHt = 9999999
         if c.HT != 0:
-            metDHt = c.MET / c.HT
+            metDHt = MET / c.HT
 
         var_MetDHt[0] = metDHt
         var_LeadingJetPartonFlavor[0] = c.Jets_partonFlavor[ljet]

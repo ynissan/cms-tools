@@ -21,6 +21,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --dy)
+        DY=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -35,6 +40,8 @@ if [ -n "$SKIM" ]; then
     SCRIPT_PATH=$SKIMMER_PATH
     if [ -n "$TWO_LEPTONS" ]; then
         OUTPUT_DIR=$TWO_LEPTONS_SKIM_OUTPUT_DIR
+    elif [ -n "$DY" ]; then
+        OUTPUT_DIR=$DY_SKIM_OUTPUT_DIR
     else
         OUTPUT_DIR=$SKIM_OUTPUT_DIR
     fi
@@ -125,7 +132,7 @@ for fullname in "${files[@]}"; do
     fi
     
     if [ -f "$FILE_OUTPUT/$name" ]; then
-        #echo "$name exist. Skipping..."
+        echo "$name exist. Skipping..."
         continue
     fi
     input_files="$input_files $fullname"

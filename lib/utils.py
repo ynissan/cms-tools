@@ -501,7 +501,7 @@ def madHtCheck(current_file_name, madHT):
        ("HT-1200To2500_" in current_file_name and (madHT<1200 or madHT>2500)) or \
        ("HT-1500To2000_" in current_file_name and (madHT<1500 or madHT>2000)) or \
        ("HT-2500ToInf_" in current_file_name and madHT<2500):
-        print "MADHT FALSE"
+        #print "MADHT FALSE"
         return False
     else:
         return True
@@ -511,6 +511,8 @@ def getLeptonCollectionFileMapFile(baseFileName):
     mapNameFile = ""
     if "Run2016" in baseFileName and ".MET" in baseFileName:
         mapNameFile = "Run2016_MET.root"
+    elif "Run2016" in baseFileName and ".SingleMuon" in baseFileName:
+        mapNameFile = "Run2016_SingleMuon.root"
     else:
         mapNameFile = ("_".join(baseFileName.split(".")[1].split("_")[0:3])).split("AOD")[0] + ".root"
 
@@ -536,7 +538,8 @@ def getLeptonCollectionFileMap(currLeptonCollectionFileMapFile, runNum, lumiBloc
         print key.GetName()
         currLeptonCollectionFileMap = currLeptonCollectionFileMapFile.Get(key.GetName())
         if not currLeptonCollectionFileMap.contains(runNum, lumiBlockNum, evtNum):
-            currLeptonCollectionFileMap.Delete()
+            currLeptonCollectionFileMap.IsA().Destructor(currLeptonCollectionFileMap)
+            #currLeptonCollectionFileMap.Delete()
             currLeptonCollectionFileMap = None
             #gc.collect()
             continue

@@ -35,6 +35,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --dy)
+        DY=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -46,6 +51,8 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 
 if [ -n "$TWO_LEPTONS" ]; then
     OUTPUT_DIR=$TWO_LEPTONS_SKIM_DATA_OUTPUT_DIR
+elif [ -n "$DY" ]; then
+    OUTPUT_DIR=$DY_SKIM_DATA_OUTPUT_DIR
 else
     OUTPUT_DIR=$SKIM_DATA_OUTPUT_DIR
 fi

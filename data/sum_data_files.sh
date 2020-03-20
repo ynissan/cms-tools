@@ -17,6 +17,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --dy)
+        DRELL_YAN=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -28,9 +33,14 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 
 OUTPUT_DIR=$SKIM_DATA_OUTPUT_DIR/sum
 INPUT_DIR=$SKIM_DATA_OUTPUT_DIR/single
+pattern="METAOD_"
 if [ -n "$TWO_LEPTONS" ]; then
         OUTPUT_DIR=$TWO_LEPTONS_SKIM_DATA_OUTPUT_DIR/sum
         INPUT_DIR=$TWO_LEPTONS_SKIM_DATA_OUTPUT_DIR/single
+elif [ -n "$DRELL_YAN" ]; then
+    pattern="SingleMuonAOD_"
+    OUTPUT_DIR=$DY_SKIM_DATA_OUTPUT_DIR/sum
+    INPUT_DIR=$DY_SKIM_DATA_OUTPUT_DIR/single
 fi
 
 
@@ -47,7 +57,7 @@ for fullname in $INPUT_DIR/*; do
     input_files="$input_files $fullname"
     ((count+=1))
     if [ $(($count % $files_per_job)) == 0 ]; then
-        output_name=`echo $(basename $fullname .root) | awk -F"METAOD_" "{print \\$1\"METAOD_${output_count}.root\"}"`
+        output_name=`echo $(basename $fullname .root) | awk -F"$pattern" "{print \\$1\"${pattern}${output_count}.root\"}"`
         ((output_count+=1))
         echo hadd -f $OUTPUT_DIR/$output_name $input_files
         hadd -f $OUTPUT_DIR/$output_name $input_files
@@ -60,7 +70,7 @@ for fullname in $INPUT_DIR/*; do
 done
 
 if [ $(($count % $files_per_job)) != 0 ]; then
-    output_name=`echo $(basename $lastfile .root) | awk -F"METAOD_" "{print \\$1\"METAOD_${output_count}.root\"}"`
+    output_name=`echo $(basename $lastfile .root) | awk -F"$pattern" "{print \\$1\"${pattern}${output_count}.root\"}"`
     ((output_count+=1))
     echo hadd -f $OUTPUT_DIR/$output_name $input_files
     hadd -f $OUTPUT_DIR/$output_name $input_files

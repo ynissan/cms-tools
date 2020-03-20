@@ -24,6 +24,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --dy)
+        DY=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -36,6 +41,8 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 
 if [ -n "$TWO_LEPTONS" ]; then
     OUTPUT_DIR=$TWO_LEPTONS_SKIM_DATA_OUTPUT_DIR
+elif [ -n "$DY" ]; then
+    OUTPUT_DIR=$DY_SKIM_DATA_OUTPUT_DIR
 else
     OUTPUT_DIR=$SKIM_DATA_OUTPUT_DIR
 fi
@@ -78,8 +85,13 @@ files_per_job=20
 
 FILE_OUTPUT="${OUTPUT_DIR}/single"
 
+DATA_PATTERN="METAOD"
+if [ -n "$DY" ]; then
+    DATA_PATTERN="SingleMuon"
+fi
+
 #for fullname in ${DATA_NTUPLES_DIR}/Run2016*SingleMuon*; do
-for fullname in ${DATA_NTUPLES_DIR}/Run2016*METAOD*; do
+for fullname in ${DATA_NTUPLES_DIR}/Run2016*${DATA_PATTERN}*; do
     name=$(basename $fullname)
     if [ -f "$FILE_OUTPUT/$name" ]; then
         #echo "$name exist. Skipping..."
