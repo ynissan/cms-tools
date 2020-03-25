@@ -17,6 +17,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        -dy)
+        DRELL_YAN=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -39,11 +44,17 @@ output_file="${WORK_DIR}/condor_submut.${timestamp}"
 echo "output file: $output_file"
 
 OUTPUT_DIR=$SKIM_DATA_BDT_OUTPUT_DIR
+INPUT_DIR=$SKIM_DATA_OUTPUT_DIR
 
 if [ -n "$SC" ]; then
     echo "GOT SC"
     echo "HERE: $@"
     OUTPUT_DIR=$SKIM_DATA_BDT_SC_OUTPUT_DIR
+elif [ -n "$DRELL_YAN" ]; then
+    echo "GOT DY"
+    echo "HERE: $@"
+    OUTPUT_DIR=$SKIM_DATA_BDT_DY_OUTPUT_DIR
+    INPUT_DIR=$DY_SKIM_DATA_OUTPUT_DIR
 fi
 
 echo $OUTPUT_DIR
@@ -82,7 +93,7 @@ for sim in $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
     fi
 
     #for bg_file in $SKIM_OUTPUT_DIR/sum/type_sum/*ZJetsToNuNu_HT-100To200*; do
-    for data_file in $SKIM_DATA_OUTPUT_DIR/sum/*; do
+    for data_file in $INPUT_DIR/sum/*; do
         echo "Will run:"
         data_file_name=$(basename $data_file .root)
         echo $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_univ_bdt_track_bdt.py -i $data_file -o ${OUTPUT_DIR}/$filename/single/${data_file_name}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@

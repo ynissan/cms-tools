@@ -33,8 +33,10 @@ parser.add_argument('-s', '--signal', dest='signal', help='Signal', action='stor
 parser.add_argument('-bg', '--background', dest='bg', help='Background', action='store_true')
 parser.add_argument('-data', '--data', dest='data', help='Data', action='store_true')
 parser.add_argument('-tl', '--tl', dest='two_leptons', help='Two Leptons', action='store_true')
+parser.add_argument('-dy', '--dy', dest='dy', help='Drell-Yan', action='store_true')
 args = parser.parse_args()
-	
+
+print args
 
 signal = args.signal
 bg = args.bg
@@ -64,7 +66,20 @@ def main():
     iFile = TFile(input_file)
     #hHt = iFile.Get('hHt')
     c = iFile.Get('tEvent')
-
+    
+    triggerFileName = os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/susy-trig-plots.root")
+    print "Opening trigger file: " + triggerFileName
+    
+    triggerFile = TFile(triggerFileName, "read")
+    
+    tEffhMetMhtRealXMet2016 = analysis_ntuples.getTrigEffGraph(triggerFile, 'tEffhMetMhtRealXMet;1')
+    tEffhMetMhtRealXMet2017 = analysis_ntuples.getTrigEffGraph(triggerFile, 'tEffhMetMhtRealXMet;2')
+    tEffhMetMhtRealXMet2018 = analysis_ntuples.getTrigEffGraph(triggerFile, 'tEffhMetMhtRealXMet;3')
+    
+    tEffhMetMhtRealXMht2016 = analysis_ntuples.getTrigEffGraph(triggerFile, 'tEffhMetMhtRealXMht;1')
+    tEffhMetMhtRealXMht2017 = analysis_ntuples.getTrigEffGraph(triggerFile, 'tEffhMetMhtRealXMht;2')
+    tEffhMetMhtRealXMht2018 = analysis_ntuples.getTrigEffGraph(triggerFile, 'tEffhMetMhtRealXMht;3')
+    
     tree = c.CloneTree(0)
     tree.SetDirectory(0)
     var_dilepBDT = np.zeros(1,dtype=float)
@@ -73,7 +88,31 @@ def main():
     var_leptonParentPdgId = np.zeros(1,dtype=int)
     var_trackParentPdgId = np.zeros(1,dtype=int)
     
+    var_trackParentPdgId = np.zeros(1,dtype=int)
+    
+    var_tEffhMetMhtRealXMet2016 = np.zeros(1,dtype=float)
+    var_tEffhMetMhtRealXMet2017 = np.zeros(1,dtype=float)
+    var_tEffhMetMhtRealXMet2018 = np.zeros(1,dtype=float)
+    
+    var_tEffhMetMhtRealXMht2016 = np.zeros(1,dtype=float)
+    var_tEffhMetMhtRealXMht2017 = np.zeros(1,dtype=float)
+    var_tEffhMetMhtRealXMht2018 = np.zeros(1,dtype=float)
+    
+    var_passedMhtMet6pack = np.zeros(1,dtype=bool)
+    
     tree.Branch('dilepBDT', var_dilepBDT,'dilepBDT/D')
+    
+    tree.Branch('tEffhMetMhtRealXMet2016', var_tEffhMetMhtRealXMet2016,'tEffhMetMhtRealXMet2016/D')
+    tree.Branch('tEffhMetMhtRealXMet2017', var_tEffhMetMhtRealXMet2017,'tEffhMetMhtRealXMet2017/D')
+    tree.Branch('tEffhMetMhtRealXMet2018', var_tEffhMetMhtRealXMet2018,'tEffhMetMhtRealXMet2018/D')
+    
+    tree.Branch('tEffhMetMhtRealXMht2016', var_tEffhMetMhtRealXMht2016,'tEffhMetMhtRealXMht2016/D')
+    tree.Branch('tEffhMetMhtRealXMht2017', var_tEffhMetMhtRealXMht2017,'tEffhMetMhtRealXMht2017/D')
+    tree.Branch('tEffhMetMhtRealXMht2018', var_tEffhMetMhtRealXMht2018,'tEffhMetMhtRealXMht2018/D')
+    
+    tree.Branch('passedMhtMet6pack', var_passedMhtMet6pack,'passedMhtMet6pack/b')
+    
+    
     if not data:
         if two_leptons:
             print "TWO_LEPTONS!"
@@ -144,7 +183,7 @@ def main():
                 tree.SetBranchAddress('leptons_ParentPdgId', var_leptons_ParentPdgId)
             else:
                 min, minCan = analysis_ntuples.minDeltaRGenParticles(c.lepton, gens, c)
-                print min, minCan
+                #print min, minCan
                 pdgId = c.GenParticles_ParentId[minCan]
                 if min > 0.05:
                  #   print "BAD GEN LEPTON!!!"
@@ -160,6 +199,30 @@ def main():
                 #else:
                 #    print "GOOD TRACK ", pdgId
                 var_trackParentPdgId[0] = pdgId
+        if not data:            
+            var_tEffhMetMhtRealXMet2016[0] = tEffhMetMhtRealXMet2016.Eval(c.Met)
+            var_tEffhMetMhtRealXMet2017[0] = tEffhMetMhtRealXMet2017.Eval(c.Met)
+            var_tEffhMetMhtRealXMet2018[0] = tEffhMetMhtRealXMet2018.Eval(c.Met)
+    
+            var_tEffhMetMhtRealXMht2016[0] = tEffhMetMhtRealXMht2016.Eval(c.Mht)
+            var_tEffhMetMhtRealXMht2017[0] = tEffhMetMhtRealXMht2017.Eval(c.Mht)
+            var_tEffhMetMhtRealXMht2018[0] = tEffhMetMhtRealXMht2018.Eval(c.Mht)
+            
+            var_passedMhtMet6pack[0] = True
+            
+            #if c.Met < 200:
+            #    print "HERE:", var_tEffhMetMhtRealXMet2016[0]
+        else:
+            print "ELSE!!"
+            var_tEffhMetMhtRealXMet2016[0] = 1
+            var_tEffhMetMhtRealXMet2017[0] = 1
+            var_tEffhMetMhtRealXMet2018[0] = 1
+    
+            var_tEffhMetMhtRealXMht2016[0] = 1
+            var_tEffhMetMhtRealXMht2017[0] = 1
+            var_tEffhMetMhtRealXMht2018[0] = 1
+            
+            var_passedMhtMet6pack[0] = analysis_ntuples.passTrig(c, "MhtMet6pack")
                 
         tree.Fill()
 

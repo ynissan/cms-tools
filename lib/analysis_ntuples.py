@@ -18,6 +18,24 @@ BTAG_CSV_LOOSE2 = 0.46
 # 	for p in range(particle.numberOfDaughters()):
 # 		printTree(particle.daughter(p), space + 1)
 
+triggerIndeces = {}
+triggerIndeces['MhtMet6pack'] = [124,109,110,111,112,114,115,116]#123
+triggerIndeces['SingleMuon'] = [49,50,65]
+triggerIndeces['SingleElectron'] = [36,37,39,40]
+
+def passTrig(c,trigname):
+    for trigidx in triggerIndeces[trigname]: 
+        if c.TriggerPass[trigidx]==1: return True
+        #print "Passing trigger %s, index:%s"%(c.TriggerNames[trigidx],trigidx)
+    return False
+
+def getTrigEffGraph(file, name):
+    ttrig = file.Get(name)
+    hpass = ttrig.GetPassedHistogram().Clone('hpass')
+    htotal = ttrig.GetTotalHistogram().Clone('htotal')
+    gtrig = TGraphAsymmErrors(hpass, htotal)
+    return gtrig
+
 def minMaxCsv(event, pt):
     minimum = 1
     maximum = 0

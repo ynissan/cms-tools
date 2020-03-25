@@ -205,7 +205,12 @@ def main():
     var_deltaPhiMetLepton2 = np.zeros(1,dtype=float)
 
     # END DILEPTON
-
+    
+    # TRIGGER
+    var_triggerNames     = ROOT.std.vector(ROOT.std.string)()
+    var_triggerPass      = ROOT.std.vector(int)()
+    var_triggerPrescales = ROOT.std.vector(int)()
+    var_triggerVersion   = ROOT.std.vector(int)()
 
     tEvent = TTree('tEvent','tEvent')
     
@@ -319,6 +324,12 @@ def main():
     
         tEvent.Branch('deltaPhiMetLepton1', var_deltaPhiMetLepton1, 'deltaPhiMetLepton1/D')
         tEvent.Branch('deltaPhiMetLepton2', var_deltaPhiMetLepton2, 'deltaPhiMetLepton2/D')
+        
+    if not signal:
+        tEvent.Branch('TriggerNames', 'std::vector<string>', var_triggerNames)
+        tEvent.Branch('TriggerPass', 'std::vector<int>', var_triggerPass)
+        tEvent.Branch('TriggerPrescales', 'std::vector<int>', var_triggerPrescales)
+        tEvent.Branch('TriggerVersion', 'std::vector<int>', var_triggerVersion)
 
     nentries = c.GetEntries()
     print 'Analysing', nentries, "entries"
@@ -713,6 +724,12 @@ def main():
         var_tracks_trkMiniRelIso = c.tracks_trkMiniRelIso
         var_tracks_trkRelIso = c.tracks_trkRelIso
         var_tracks_trackQualityHighPurity = c.tracks_trackQualityHighPurity
+        
+        if not signal:
+            var_triggerNames = c.TriggerNames
+            var_triggerPass = c.TriggerPass
+            var_triggerPrescales = c.TriggerPrescales
+            var_triggerVersion = c.TriggerVersion
     
         tEvent.SetBranchAddress('Electrons', var_Electrons)
         tEvent.SetBranchAddress('Electrons_charge', var_Electrons_charge)
@@ -772,6 +789,12 @@ def main():
         
         tEvent.SetBranchAddress('LeadingJet', var_LeadingJet)
         
+        if not signal:
+            tEvent.SetBranchAddress('TriggerNames', var_triggerNames)
+            tEvent.SetBranchAddress('TriggerPass', var_triggerPass)
+            tEvent.SetBranchAddress('TriggerPrescales', var_triggerPrescales)
+            tEvent.SetBranchAddress('TriggerVersion', var_triggerVersion)
+
         var_leptons = ROOT.std.vector(TLorentzVector)()
         var_leptons_charge = ROOT.std.vector(int)()
         var_leptonFlavour = None

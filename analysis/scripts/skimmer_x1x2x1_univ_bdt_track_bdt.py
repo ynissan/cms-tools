@@ -33,6 +33,7 @@ parser.add_argument('-tb', '--track_bdt', nargs=1, help='Track BDT Folder', requ
 parser.add_argument('-s', '--signal', dest='signal', help='Signal', action='store_true')
 parser.add_argument('-bg', '--background', dest='bg', help='Background', action='store_true')
 parser.add_argument('-sc', '--same_charge', dest='sc', help='Same Charge', action='store_true')
+parser.add_argument('-dy', '--dy', dest='dy', help='Drell-Yan', action='store_true')
 args = parser.parse_args()
 
 

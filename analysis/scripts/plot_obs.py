@@ -65,15 +65,19 @@ signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signa
 #bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_dilepton_signal_bdt_sc/dm7/single"
 #data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_dilepton_signal_bdt_sc/dm7/single"
 
+#DY
+bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/dy_x1x2x1/bg/skim_dilepton_signal_bdt/all/single"
+data_dir = "/afs/desy.de/user/n/nissanuv/nfs/dy_x1x2x1/data/skim_dilepton_signal_bdt/all/single"
 
-plot_data = False
-plot_signal = True
+
+plot_data = True
+plot_signal = False
 plot_ratio = True
 plot_rand = False
 plot_fast = True
 plot_title = True
 plot_overflow = True
-plot_significance = True
+plot_significance = False
 
 if not plot_data:
     plot_ratio = False
@@ -190,6 +194,7 @@ histograms_defs = [
     
     #NORMAL
     { "obs" : "invMass", "minX" : 0, "maxX" : 15, "bins" : 30, "units" : "GeV" },
+    #{ "obs" : "(DYMuons[0]+DYMuons[1]).M()", "minX" : 0, "maxX" : 150, "bins" : 30, "units" : "GeV" },
     { "obs" : "dilepBDT", "minX" : -0.6, "maxX" : 0.6, "bins" : 30 },
     # { "obs" : "dileptonPt", "minX" : 0, "maxX" : 100, "bins" : 30 },
 #     { "obs" : "deltaPhi", "minX" : 0, "maxX" : 3.2, "bins" : 30 },
@@ -205,7 +210,9 @@ histograms_defs = [
 #     { "obs" : "dilepHt", "minX" : 0, "maxX" : 400, "bins" : 30 },
 #     { "obs" : "NJets", "minX" : 0, "maxX" : 7, "bins" : 7 },
 #     
-#     { "obs" : "Met", "minX" : 140, "maxX" : 700, "bins" : 30 },
+     { "obs" : "Met", "minX" : 120, "maxX" : 700, "bins" : 30 },
+     { "obs" : "DYMuons[0].Pt()", "minX" : 30, "maxX" : 100, "bins" : 30 },
+     { "obs" : "DYMuons[1].Pt()", "minX" : 15, "maxX" : 100, "bins" : 30 },
 #     { "obs" : "Mht", "minX" : 0, "maxX" : 700, "bins" : 30 },
 #     { "obs" : "Ht", "minX" : 0, "maxX" : 700, "bins" : 30 },
 #     { "obs" : "LeadingJetQgLikelihood", "minX" : 0, "maxX" : 1, "bins" : 30 },
@@ -285,14 +292,15 @@ histograms_defs = [
     
 ]
 
-cuts = [#{"name":"none", "title": "No Cuts", "condition" : "1"},
+cuts = [ {"name":"none", "title": "No Cuts", "condition" : "1"},
 #Z PEAK
 #        {"name":"metb", "title": "Met<20", "condition" : "Met < 20"},
 #        {"name":"mets", "title": "Met>20", "condition" : "Met > 20"},
 
 #NORMAL 
           {"name":"MET", "title": "MET", "condition" : "Met >= 125 && invMass < 30"},
-          {"name":"dilepBDT", "title": "dilepBDT", "condition" : "Met >= 125 && dilepBDT >= 0.45 && invMass < 30"},
+          {"name":"MET2", "title": "MET2", "condition" : "Met >= 200 && invMass < 30"},
+          {"name":"dilepBDT", "title": "dilepBDT", "condition" : "Met >= 125 && dilepBDT >= 0.35 && invMass < 30"},
           #{"name":"rectangular_leptons", "title": "rectangular_leptons", "condition" : "Met >= 200 && invMass < 30 && deltaR <= 1.2  && leptons[0].Pt() < 15 && Ht >= 120 && leptons[1].Pt() <= 9 && deltaEta < 1 && mt1 <= 40 && mt2 <= 40 && dilepHt >= 170 && DeltaPhiLeadingJetDilepton >= 1.7"},
           #{"name":"rectangular_track", "title": "rectangular_track", "condition" : "Met >= 200 && invMass < 30 && lepton.Pt() < 15 && Mht >=140 && mtl <= 60 && deltaR <= 1.7 && MinDeltaPhiMhtJets >= 1 && DeltaEtaLeadingJetDilepton <= 2.2 && DeltaPhiLeadingJetDilepton >= 1.8 && deltaPhi <= 1.3 && deltaEta <= 1.2 && LeadingJetPt >= 100 && mtt <= 50 && mt1 <= 60 && mt2 <= 50 && Ht >= 140 &&  MinDeltaPhiMetJets >= 1.3 "},
 
@@ -357,10 +365,9 @@ cuts = [#{"name":"none", "title": "No Cuts", "condition" : "1"},
         ]
 
 calculatedLumi = {
-    'MET' : 31.118664841
+    'MET' : 31.118664841,
+    'SingleMuon' : 35.262039358
 }
-
-
 
 def styleHist(hist):
     hist.GetYaxis().SetTitleSize(10);
@@ -471,6 +478,8 @@ def createPlotsFast(rootfiles, type, histograms, weight=1):
         rootFile.Close()
     
     if type == "data":
+        return calculatedLumi.get('SingleMuon')
+        
         if calculatedLumi.get('MET') is not None:
             print "Found lumi=" + str(calculatedLumi['MET'])
             return calculatedLumi['MET']
@@ -814,7 +823,7 @@ def main():
             elif plot_signal:
                 sigHist.Draw("HIST")
             
-            if hist_def["obs"] == "invMass":
+            if plot_significance and hist_def["obs"] == "invMass":
                 #significance = utils.calcSignificance(sigHist, newBgHist.GetHists())
                 sigNum = sigHist.Integral(1, sigHist.FindBin(8))
                 bgNum = 0

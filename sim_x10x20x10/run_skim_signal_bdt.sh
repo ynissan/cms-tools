@@ -80,6 +80,10 @@ for sim in ${SKIM_SIG_OUTPUT_DIR}/sum/*; do
     echo $filename
     tb=$filename
     for group in "${!SIM_GROUP[@]}"; do
+        if [[ $group == "all" ]]; then
+            echo "Skipping ALL!!!!!"
+            continue
+        fi
         echo checking group $group
         value=${SIM_GROUP[$group]}
         found=false
@@ -105,6 +109,56 @@ output = ${OUTPUT_DIR}/stdout/${filename}.output
 Queue
 EOM
 done
+
+## ALL GROUP
+
+echo -e "\n\nRUNNING ALL GROUP\n\n"
+
+OUTPUT_DIR=${SKIM_SIG_BDT_OUTPUT_DIR}_all
+#OUTPUT_DIR="$OUTPUT_WD/signal/skim_signal_bdt_tighter"
+
+if [ -n "$SC" ]; then
+    echo "GOT SC"
+    echo "HERE: $@"
+    OUTPUT_DIR=${SKIM_SIG_BDT_SC_OUTPUT_DIR}_all
+fi
+
+#check output directory
+if [ ! -d "$OUTPUT_DIR" ]; then
+  mkdir $OUTPUT_DIR
+else
+   rm -rf $OUTPUT_DIR
+   mkdir $OUTPUT_DIR
+fi
+
+#check output directory
+if [ ! -d "$OUTPUT_DIR/single" ]; then
+    mkdir "$OUTPUT_DIR/single"
+fi
+
+if [ ! -d "$OUTPUT_DIR/stdout" ]; then
+    mkdir "$OUTPUT_DIR/stdout"
+fi
+
+if [ ! -d "$OUTPUT_DIR/stderr" ]; then
+    mkdir "$OUTPUT_DIR/stderr"
+fi
+
+for sim in ${SKIM_SIG_OUTPUT_DIR}/sum/*; do
+    filename=`echo $(basename $sim .root) | awk -F"_" '{print $1"_"$2"_"$3}'`
+    echo $filename
+    tb=all
+    echo "Will run:"
+    echo $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_univ_bdt_track_bdt.py -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$tb  -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@
+cat << EOM >> $output_file
+arguments = $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_univ_bdt_track_bdt.py -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$tb  -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@
+error = ${OUTPUT_DIR}/stderr/${filename}.err
+output = ${OUTPUT_DIR}/stdout/${filename}.output
+Queue
+EOM
+done
+
+
 
 condor_submit $output_file
 rm $output_file

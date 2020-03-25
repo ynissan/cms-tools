@@ -17,6 +17,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        -dy)
+        DRELL_YAN=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -34,11 +39,17 @@ module load cmssw
 cmsenv
 
 OUTPUT_DIR=$SKIM_BG_SIG_BDT_OUTPUT_DIR
+INPUT_DIR=$SKIM_OUTPUT_DIR
 
 if [ -n "$SC" ]; then
     echo "GOT SC"
     echo "HERE: $@"
     OUTPUT_DIR=$SKIM_BG_SIG_BDT_SC_OUTPUT_DIR
+elif [ -n "$DRELL_YAN" ]; then
+    echo "GOT DY"
+    echo "HERE: $@"
+    OUTPUT_DIR=$SKIM_DY_BG_SIG_BDT_OUTPUT_DIR
+    INPUT_DIR=$DY_SKIM_OUTPUT_DIR
 fi
 
 timestamp=$(date +%Y%m%d_%H%M%S%N)
@@ -87,9 +98,10 @@ for sim in $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
     for bg_file in $SKIM_OUTPUT_DIR/sum/type_sum/*; do
         echo "Will run:"
         bg_file_name=$(basename $bg_file .root)
-        echo $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_univ_bdt_track_bdt.py -i $bg_file -o ${OUTPUT_DIR}/$filename/single/${bg_file_name}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@
+        cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_univ_bdt_track_bdt.py -i $bg_file -o ${OUTPUT_DIR}/$filename/single/${bg_file_name}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@"
+        echo $cmd
 cat << EOM >> $output_file
-arguments = $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_univ_bdt_track_bdt.py -i $bg_file -o ${OUTPUT_DIR}/$filename/single/${bg_file_name}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@
+arguments = $cmd
 error = ${OUTPUT_DIR}/$filename/stderr/${bg_file_name}.err
 output = ${OUTPUT_DIR}/$filename/stdout/${bg_file_name}.output
 Queue

@@ -13,7 +13,7 @@ declare -A SIM_GROUP=(["low"]="dm2p dm3p dm4p"\
            ["dm7"]="dm7p" \
            ["dm9"]="dm9p" \
            ["high"]="dm12p dm13p" \
-           #["all"]="dm" \
+           ["all"]="dm" \
            )
 
 #declare -A SIM_GROUP=(["all"]="dm")
@@ -70,6 +70,7 @@ CS_SIG_OUTPUT_DIR="$OUTPUT_WD/signal/cs"
 SKIM_SIG_BDT_OUTPUT_DIR="$OUTPUT_WD/signal/skim_signal_bdt"
 SKIM_DATA_BDT_OUTPUT_DIR="$OUTPUT_WD/data/skim_signal_bdt"
 SKIM_BG_SIG_BDT_OUTPUT_DIR="$OUTPUT_WD/bg/skim_signal_bdt"
+SKIM_DY_BG_SIG_BDT_OUTPUT_DIR="$DY_OUTPUT_WD/bg/skim_signal_bdt"
 SKIM_SIG_DILEPTON_BDT_OUTPUT_DIR="$OUTPUT_WD/signal/skim_dilepton_signal_bdt"
 SKIM_TWO_LEPTONS_SIG_DILEPTON_BDT_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/signal/skim_dilepton_signal_bdt"
 SKIM_TWO_LEPTONS_BG_DILEPTON_BDT_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/bg/skim_dilepton_signal_bdt"
@@ -80,10 +81,13 @@ SKIM_TWO_LEPTONS_DATA_SIG_DILEPTON_BDT_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/data/s
 
 SKIM_SIG_BDT_SC_OUTPUT_DIR="$OUTPUT_WD/signal/skim_signal_bdt_sc"
 SKIM_DATA_BDT_SC_OUTPUT_DIR="$OUTPUT_WD/data/skim_signal_bdt_sc"
+SKIM_DATA_BDT_DY_OUTPUT_DIR="$DY_OUTPUT_WD/data/skim_signal_bdt"
 SKIM_BG_SIG_BDT_SC_OUTPUT_DIR="$OUTPUT_WD/bg/skim_signal_bdt_sc"
 SKIM_SIG_DILEPTON_BDT_SC_OUTPUT_DIR="$OUTPUT_WD/signal/skim_dilepton_signal_bdt_sc"
 SKIM_BG_SIG_DILEPTON_BDT_SC_OUTPUT_DIR="$OUTPUT_WD/bg/skim_dilepton_signal_bdt_sc"
+SKIM_BG_SIG_DILEPTON_BDT_DY_OUTPUT_DIR="$DY_OUTPUT_WD/bg/skim_dilepton_signal_bdt"
 SKIM_DATA_SIG_DILEPTON_BDT_SC_OUTPUT_DIR="$OUTPUT_WD/data/skim_dilepton_signal_bdt_sc"
+SKIM_DATA_SIG_DILEPTON_BDT_DY_OUTPUT_DIR="$DY_OUTPUT_WD/data/skim_dilepton_signal_bdt"
 
 SIG_DUP_OUTPUT_DIR="$OUTPUT_WD/signal/dup"
 LEPTON_TRACK_SPLIT_DIR="$OUTPUT_WD/signal/lepton_track"

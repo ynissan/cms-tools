@@ -110,7 +110,7 @@ for sim in $BDT_DIR/*; do
         echo "Will run:"
         echo "error=${OUTPUT_DIR}/$tb/stderr/${bg_file_name}.err" 
         bg_file_name=$(basename $bg_file .root)
-        cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_dilepton_bdt.py -i $bg_file -o ${OUTPUT_DIR}/$tb/single/${bg_file_name}.root -bdt $BDT_DIR/$tb $@"
+        cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_dilepton_bdt.py -i $bg_file -o ${OUTPUT_DIR}/$tb/single/${bg_file_name}.root -bdt $BDT_DIR/$tb -bg $@"
         echo $cmd
 cat << EOM >> $output_file
 arguments = $cmd

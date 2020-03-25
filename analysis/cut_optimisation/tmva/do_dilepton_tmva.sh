@@ -56,6 +56,10 @@ priority = 0
 EOM
 
 for group in "${!SIM_GROUP[@]}"; do
+    if [[ -z "$TWO_LEPTONS" && $group == "all" ]]; then
+        echo "Skipping ALL!!!!!"
+        continue
+    fi
     value=${SIM_GROUP[$group]}
     input=""
     background=""
@@ -82,6 +86,30 @@ output = ${dir}/${group}.output
 Queue
 EOM
 done
+
+# RUN ALL CATEGORY - only for track+lepton
+
+if [[ -z "$TWO_LEPTONS" ]]; then
+    echo -e "\n\n\nRunning ALL category!!!!!\n\n\n"
+    group=all
+    value=${SIM_GROUP[$group]}
+    input=""
+    background=""
+    for pattern in $value; do        
+        input="$input ${INPUT_SIG_DIR}_all/single/*.root"
+    done
+    dir="$OUTPUT_DIR/${group}"
+    mkdir $dir
+    echo "Will run:"
+    cmd="$CONDOR_WRAPPER $CUT_OPTIMISATION_SCRIPTS/dilepton_tmva.py -i $input -bg  $BG_INPUT/${group}/single --no_norm -o $dir/${group}.root"
+    echo $cmd
+cat << EOM >> $output_file
+arguments = $cmd
+error = ${dir}/${group}.err
+output = ${dir}/${group}.output
+Queue
+EOM
+fi
 
 condor_submit $output_file
 rm $output_file
