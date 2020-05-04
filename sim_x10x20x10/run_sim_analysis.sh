@@ -22,6 +22,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --sam)
+        SAM=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -39,11 +44,22 @@ module load cmssw
 cmsenv
 
 OUTPUT_DIR=$SIM_DIR
+INPUT_DIR=$SIM_NTUPLES_DIR
 if [ -n "$SKIM" ]; then
     if [ -n "$TWO_LEPTONS" ]; then
-        OUTPUT_DIR=$TWO_LEPTONS_SKIM_SIG_OUTPUT_DIR
+        if [ -n "$SAM" ]; then
+            OUTPUT_DIR=$TWO_LEPTONS_SAM_SKIM_SIG_OUTPUT_DIR
+            INPUT_DIR=$SAM_SIM_NTUPLES_DIR
+        else
+            OUTPUT_DIR=$TWO_LEPTONS_SKIM_SIG_OUTPUT_DIR
+        fi
     else
-        OUTPUT_DIR=$SKIM_SIG_OUTPUT_DIR
+        if [ -n "$SAM" ]; then
+            OUTPUT_DIR=$SKIM_SIG_SAM_OUTPUT_DIR
+            INPUT_DIR=$SAM_SIM_NTUPLES_DIR
+        else
+            OUTPUT_DIR=$SKIM_SIG_OUTPUT_DIR
+        fi
     fi
 fi
 
@@ -78,14 +94,14 @@ priority = 0
 EOM
 
 #for sim in ${SIG_DUP_OUTPUT_DIR}/single/*; do
-for sim in ${SIM_NTUPLES_DIR}/*higgsino_*; do
+for sim in ${INPUT_DIR}/*higgsino*; do
     filename=$(basename $sim .root)
     if [ -f "${OUTPUT_DIR}/single/${filename}.root" ]; then
         echo "${OUTPUT_DIR}/single/${filename}.root exist. Skipping..."
         continue
     fi
     echo "Will run:"
-    cmd="$SIM_DIR/run_sim_analysis_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root ${POSITIONAL[@]} --signal"
+    cmd="$SIM_DIR/run_sim_analysis_single.sh -i $sim -o ${OUTPUT_DIR}/single/${filename}.root ${POSITIONAL[@]} --signal" 
     echo $cmd
 cat << EOM >> $output_file
 arguments = $cmd

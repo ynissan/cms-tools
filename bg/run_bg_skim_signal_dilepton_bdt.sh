@@ -22,6 +22,16 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        -dy)
+        DRELL_YAN=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
+        --tl)
+        TWO_LEPTONS=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -39,21 +49,38 @@ module load cmssw
 cmsenv
 
 if [ -n "$TWO_LEPTONS" ]; then
-    OUTPUT_DIR=$SKIM_TWO_LEPTONS_BG_DILEPTON_BDT_OUTPUT_DIR
-    INPUT_DIR="$TWO_LEPTONS_SKIM_OUTPUT_DIR/sum/type_sum"
+     echo "GOT TWO LEPTONS"
+    if [ -n "$SC" ]; then
+        echo "GOT SC"
+        OUTPUT_DIR=$SKIM_TWO_LEPTONS_BG_DILEPTON_BDT_SC_OUTPUT_DIR
+        INPUT_DIR="$TWO_LEPTONS_SAME_SIGN_SKIM_OUTPUT_DIR/sum/type_sum"
+    else
+        OUTPUT_DIR=$SKIM_TWO_LEPTONS_BG_DILEPTON_BDT_OUTPUT_DIR
+        INPUT_DIR="$TWO_LEPTONS_SKIM_OUTPUT_DIR/sum/type_sum"
+    fi
     BDT_DIR=$TWO_LEPTONS_OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt
+elif [ -n "$DRELL_YAN" ]; then
+    echo "GOT DY"
+    echo "HERE: $@"
+    OUTPUT_DIR=$SKIM_BG_SIG_DILEPTON_BDT_DY_OUTPUT_DIR
+    INPUT_DIR=$SKIM_DY_BG_SIG_BDT_OUTPUT_DIR
+    BDT_DIR=$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt
 else
-    OUTPUT_DIR=$SKIM_BG_SIG_DILEPTON_BDT_OUTPUT_DIR
-    INPUT_DIR=$SKIM_BG_SIG_BDT_OUTPUT_DIR
+    if [ -n "$SC" ]; then
+        echo "GOT SC"
+        echo "HERE: $@"
+        OUTPUT_DIR=$SKIM_BG_SIG_DILEPTON_BDT_SC_OUTPUT_DIR
+        INPUT_DIR=$SKIM_BG_SIG_BDT_SC_OUTPUT_DIR
+    else
+        OUTPUT_DIR=$SKIM_BG_SIG_DILEPTON_BDT_OUTPUT_DIR
+        INPUT_DIR=$SKIM_BG_SIG_BDT_OUTPUT_DIR
+    fi
     BDT_DIR=$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt
 fi
 
-if [ -n "$SC" ]; then
-    echo "GOT SC"
-    echo "HERE: $@"
-    OUTPUT_DIR=$SKIM_BG_SIG_DILEPTON_BDT_SC_OUTPUT_DIR
-    INPUT_DIR=$SKIM_BG_SIG_BDT_SC_OUTPUT_DIR
-fi
+echo OUTPUT_DIR=$OUTPUT_DIR
+echo INPUT_DIR=$INPUT_DIR
+echo BDT_DIR=$BDT_DIR
 
 timestamp=$(date +%Y%m%d_%H%M%S%N)
 output_file="${WORK_DIR}/condor_submut.${timestamp}"
@@ -110,7 +137,12 @@ for sim in $BDT_DIR/*; do
         echo "Will run:"
         echo "error=${OUTPUT_DIR}/$tb/stderr/${bg_file_name}.err" 
         bg_file_name=$(basename $bg_file .root)
-        cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_dilepton_bdt.py -i $bg_file -o ${OUTPUT_DIR}/$tb/single/${bg_file_name}.root -bdt $BDT_DIR/$tb -bg $@"
+        out_file=${OUTPUT_DIR}/$tb/single/${bg_file_name}.root
+        if [ -f "$out_file" ]; then
+            echo "$out_file exist. Skipping..."
+            continue
+        fi
+        cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_dilepton_bdt.py -i $bg_file -o $out_file -bdt $BDT_DIR/$tb -bg $@"
         echo $cmd
 cat << EOM >> $output_file
 arguments = $cmd

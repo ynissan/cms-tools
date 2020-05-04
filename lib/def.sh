@@ -7,8 +7,7 @@ SIMS=( ["dm13"]="/nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggs
 SIMS=(["dm051"]="/nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggsino/M1M2Scan/ntuple_sidecar/higgsino_mu100_dm0.51Chi20Chipm.root")
 
 declare -A SIM_GROUP=(["low"]="dm2p dm3p dm4p"\
-           ["dm0"]="dm0p" \
-           ["dm1"]="dm1p" \
+           ["dm1"]="dm1p dm0p" \
            ["dm5"]="dm5p" \
            ["dm7"]="dm7p" \
            ["dm9"]="dm9p" \
@@ -25,6 +24,7 @@ NEWEST_SIM_DIR="/pnfs/desy.de/cms/tier2/store/user/sbein/NtupleHub/Production201
 BG_NTUPLES="/pnfs/desy.de/cms/tier2/store/user/*/NtupleHub/ProductionRun2v3*"
 NEWESTEST_SIM_DIR="/nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggsino/M1M2Scan/ntuple_sidecar/"
 SIM_NTUPLES_DIR="/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/SignalNtuplesSplit"
+SAM_SIM_NTUPLES_DIR="/pnfs/desy.de/cms/tier2/store/user/sbein/CommonSamples/RadiativeMu_2016Fast/ntuple_sidecar"
 DATA_NTUPLES_DIR="/pnfs/desy.de/cms/tier2/store/user/*/NtupleHub/ProductionRun2v3*"
 BG_TYPES=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays DYJetsToLL WJetsToLNu ZJetsToNuNu WZZ WWZ WW WZ ZZZ ZZ TTWJetsToLNu)
 RARE=(WZZ WWZ ZZZ)
@@ -58,25 +58,34 @@ BG_DIR="$CMS_TOOLS/bg"
 BG_HIST_DIR="$OUTPUT_WD/bg/hist"
 SKIM_OUTPUT_DIR="$OUTPUT_WD/bg/skim"
 TWO_LEPTONS_SKIM_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/bg/skim"
+TWO_LEPTONS_SAME_SIGN_SKIM_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/bg/skim_sc"
 DY_SKIM_OUTPUT_DIR="$DY_OUTPUT_WD/bg/skim"
 LC_OUTPUT_DIR="$OUTPUT_WD/bg/lc"
 LC_DATA_OUTPUT_DIR="$OUTPUT_WD/data/lc"
 SKIM_SIG_OUTPUT_DIR="$OUTPUT_WD/signal/skim"
+SKIM_SIG_SAM_OUTPUT_DIR="$OUTPUT_WD/signal/skim_sam"
 TWO_LEPTONS_SKIM_SIG_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/signal/skim"
+TWO_LEPTONS_SAM_SKIM_SIG_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/signal/skim_sam"
 SKIM_DATA_OUTPUT_DIR="$OUTPUT_WD/data/skim"
 TWO_LEPTONS_SKIM_DATA_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/data/skim"
+TWO_LEPTONS_SAME_SIGN_SKIM_DATA_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/data/skim_sc"
 DY_SKIM_DATA_OUTPUT_DIR="$DY_OUTPUT_WD/data/skim"
 CS_SIG_OUTPUT_DIR="$OUTPUT_WD/signal/cs"
 SKIM_SIG_BDT_OUTPUT_DIR="$OUTPUT_WD/signal/skim_signal_bdt"
+SKIM_SAM_SIG_BDT_OUTPUT_DIR="$OUTPUT_WD/signal/skim_sam_signal_bdt"
 SKIM_DATA_BDT_OUTPUT_DIR="$OUTPUT_WD/data/skim_signal_bdt"
 SKIM_BG_SIG_BDT_OUTPUT_DIR="$OUTPUT_WD/bg/skim_signal_bdt"
 SKIM_DY_BG_SIG_BDT_OUTPUT_DIR="$DY_OUTPUT_WD/bg/skim_signal_bdt"
 SKIM_SIG_DILEPTON_BDT_OUTPUT_DIR="$OUTPUT_WD/signal/skim_dilepton_signal_bdt"
+SKIM_SAM_SIG_DILEPTON_BDT_OUTPUT_DIR="$OUTPUT_WD/signal/skim_sam_dilepton_signal_bdt"
 SKIM_TWO_LEPTONS_SIG_DILEPTON_BDT_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/signal/skim_dilepton_signal_bdt"
+SKIM_SAM_TWO_LEPTONS_SIG_DILEPTON_BDT_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/signal/skim_sam_dilepton_signal_bdt"
 SKIM_TWO_LEPTONS_BG_DILEPTON_BDT_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/bg/skim_dilepton_signal_bdt"
+SKIM_TWO_LEPTONS_BG_DILEPTON_BDT_SC_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/bg/skim_dilepton_signal_bdt_sc"
 SKIM_BG_SIG_DILEPTON_BDT_OUTPUT_DIR="$OUTPUT_WD/bg/skim_dilepton_signal_bdt"
 SKIM_DATA_SIG_DILEPTON_BDT_OUTPUT_DIR="$OUTPUT_WD/data/skim_dilepton_signal_bdt"
 SKIM_TWO_LEPTONS_DATA_SIG_DILEPTON_BDT_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/data/skim_dilepton_signal_bdt"
+SKIM_TWO_LEPTONS_DATA_SIG_DILEPTON_BDT_SC_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/data/skim_dilepton_signal_bdt_sc"
 
 
 SKIM_SIG_BDT_SC_OUTPUT_DIR="$OUTPUT_WD/signal/skim_signal_bdt_sc"

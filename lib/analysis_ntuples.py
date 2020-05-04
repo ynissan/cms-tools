@@ -36,42 +36,45 @@ def getTrigEffGraph(file, name):
     gtrig = TGraphAsymmErrors(hpass, htotal)
     return gtrig
 
-def minMaxCsv(event, pt):
+def minMaxCsv(jets, jets_bDiscriminatorCSV, pt):
     minimum = 1
     maximum = 0
-    for ijet in range(event.Jets.size()):
-        jet = event.Jets[ijet]
+    for ijet in range(jets.size()):
+        jet = jets[ijet]
         if jet.Pt() >= pt and abs(jet.Eta()) <= 2.4:
-            if event.Jets_bDiscriminatorCSV[ijet] >= 0 and event.Jets_bDiscriminatorCSV[ijet] < minimum:
-                minimum = event.Jets_bDiscriminatorCSV[ijet]
-            if event.Jets_bDiscriminatorCSV[ijet] >= 0 and event.Jets_bDiscriminatorCSV[ijet] > maximum:
-                maximum = event.Jets_bDiscriminatorCSV[ijet]
+            if jets_bDiscriminatorCSV[ijet] >= 0 and jets_bDiscriminatorCSV[ijet] < minimum:
+                minimum = jets_bDiscriminatorCSV[ijet]
+            if jets_bDiscriminatorCSV[ijet] >= 0 and jets_bDiscriminatorCSV[ijet] > maximum:
+                maximum = jets_bDiscriminatorCSV[ijet]
     return minimum, maximum
 
-def numberOfJets(event, pt, eta, csv):
+def numberOfJets(jets, jets_bDiscriminatorCSV, pt, eta, csv):
     nj = 0
     btags = 0
     leadingJet = None
-    for ijet in range(event.Jets.size()):
-        jet = event.Jets[ijet]
+    for ijet in range(jets.size()):
+        jet = jets[ijet]
         if jet.Pt() >= pt and abs(jet.Eta()) <= eta:
             nj +=1
             if leadingJet is None:
                 leadingJet = ijet
-            elif jet.Pt() > event.Jets[leadingJet].Pt():
+            elif jet.Pt() > jets[leadingJet].Pt():
                 leadingJet = ijet
-            if event.GetBranchStatus('Jets_bDiscriminatorCSV') and event.Jets_bDiscriminatorCSV[ijet] > csv:
+            if jets_bDiscriminatorCSV[ijet] > csv:
                 btags += 1
     return nj, btags, leadingJet
 
 def numberOfJets30Pt2_4Eta_Loose(event):
-	return numberOfJets(event, 30, 2.4, BTAG_CSV_LOOSE)
+	return numberOfJets(event.Jets, event.Jets_bDiscriminatorCSV, 30, 2.4, BTAG_CSV_LOOSE)
 
 def numberOfJets25Pt2_4Eta_Loose(event):
-	return numberOfJets(event, 25, 2.4, BTAG_CSV_LOOSE)
+	return numberOfJets(event.Jets, event.Jets_bDiscriminatorCSV, 25, 2.4, BTAG_CSV_LOOSE)
 
 def numberOfJets25Pt2_4Eta_Loose2(event):
-	return numberOfJets(event, 25, 2.4, BTAG_CSV_LOOSE2)
+	return numberOfJets(event.Jets, event.Jets_bDiscriminatorCSV, 25, 2.4, BTAG_CSV_LOOSE2)
+
+def eventNumberOfJets25Pt2_4Eta_Loose(jets, jets_bDiscriminatorCSV):
+    return numberOfJets(jets, jets_bDiscriminatorCSV, 25, 2.4, BTAG_CSV_LOOSE2)
 
 def numberOfLooseBTags(event):
 	loose = 0
@@ -86,29 +89,35 @@ def htJet25(event):
 	objects25 = [ j for j in cleanJets if j.Pt() > 25 ] + leps
 	return sum([x.Pt() for x in objects25])
 
-def htJet25Leps(event, leps):
-	cleanJets = [ j for j in event.Jets if min(j.DeltaR(l) for l in leps) > 0.4 ]
+def htJet25Leps(jets, leps):
+	cleanJets = [ j for j in jets if min(j.DeltaR(l) for l in leps) > 0.4 ]
 	objects25 = [ j for j in cleanJets if j.Pt() > 25 ] + leps
 	return sum([x.Pt() for x in objects25])
 
-def minDeltaPhiMetJets(event, pt, eta):
-	jets = [ j for j in event.Jets if j.Pt() > pt and abs(j.Eta()) <= eta ]
+def minDeltaPhiMetJets(jets, MET, METPhi, pt, eta):
+	jets = [ j for j in jets if j.Pt() > pt and abs(j.Eta()) <= eta ]
 	metvec = TLorentzVector()
-	metvec.SetPtEtaPhiE(event.MET, 0, event.METPhi, event.MET)
+	metvec.SetPtEtaPhiE(MET, 0, METPhi, MET)
 	return min([abs(j.DeltaPhi(metvec)) for j in jets])
 	
-def minDeltaPhiMhtJets(event, pt, eta):
-	jets = [ j for j in event.Jets if j.Pt() > pt and abs(j.Eta()) <= eta ]
+def minDeltaPhiMhtJets(jets, MHT, MHTPhi, pt, eta):
+	jets = [ j for j in jets if j.Pt() > pt and abs(j.Eta()) <= eta ]
 	mhtvec = TLorentzVector()
-	mhtvec.SetPtEtaPhiE(event.MHT, 0, event.MHTPhi, event.MHT)
+	mhtvec.SetPtEtaPhiE(MHT, 0, MHTPhi, MHT)
 	return min([abs(j.DeltaPhi(mhtvec)) for j in jets])
 
 def minDeltaPhiMetJets25Pt2_4Eta(event):
-	return minDeltaPhiMetJets(event, 25, 2.4)
+    return minDeltaPhiMetJets(event.Jets, event.MET, event.METPhi, 25, 2.4)
 
 def minDeltaPhiMhtJets25Pt2_4Eta(event):
-	return minDeltaPhiMhtJets(event, 25, 2.4)
-	
+    return minDeltaPhiMhtJets(event.Jets, event.MHT, event.MHTPhi, 25, 2.4)
+
+def eventMinDeltaPhiMetJets25Pt2_4Eta(jets, MET, METPhi):
+    return minDeltaPhiMetJets(jets, MET, METPhi, 25, 2.4)
+
+def eventMinDeltaPhiMhtJets25Pt2_4Eta(jets, MHT, MHTPhi):
+    return minDeltaPhiMhtJets(jets, MHT, MHTPhi, 25, 2.4)
+
 
 def numberOfMediumBTags(event):
 	#./analyzer_x1x2x1.py -bg -i /pnfs/desy.de/cms/tier2/store/user/sbein/CommonNtuples/Summer16.QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_24_RA2AnalysisTree.root -o test.root | tee output
@@ -261,7 +270,7 @@ def getSingleLeptonAfterSelection(c, leadingJet):
     
     return lep, lepCharge, lepFlavour
 
-def getTwoLeptonsAfterSelection(c, leadingJet):
+def getTwoLeptonsAfterSelection(c, leadingJet, same_sign = False):
     leps = []
     lepCharges = []
     lepFlavour = None
@@ -279,8 +288,12 @@ def getTwoLeptonsAfterSelection(c, leadingJet):
     if nL == 1:
         return None, None, None
     if nL == 2:
-        if lepCharges[0] * lepCharges[1] > 0:
-            return None, None, None
+        if same_sign:
+            if lepCharges[0] * lepCharges[1] < 0:
+                return None, None, None
+        else:
+            if lepCharges[0] * lepCharges[1] > 0:
+                return None, None, None
     
     for i in range(c.Muons.size()):
         m = c.Muons[i]
@@ -292,8 +305,15 @@ def getTwoLeptonsAfterSelection(c, leadingJet):
             lepCharges.append(c.Muons_charge[i])
             lepFlavour = "Muons"
     
-    if nL != 2 or lepCharges[0] * lepCharges[1] > 0:
+    if nL != 2:
         return None, None, None
+    
+    if same_sign:
+        if lepCharges[0] * lepCharges[1] < 0:
+            return None, None, None
+    else:
+        if lepCharges[0] * lepCharges[1] > 0:
+            return None, None, None
     
     if leps[0].Pt() < leps[1].Pt():
         leps = [leps[1], leps[0]]

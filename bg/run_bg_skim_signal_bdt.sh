@@ -52,6 +52,9 @@ elif [ -n "$DRELL_YAN" ]; then
     INPUT_DIR=$DY_SKIM_OUTPUT_DIR
 fi
 
+echo OUTPUT_DIR=$OUTPUT_DIR
+echo INPUT_DIR=$INPUT_DIR
+
 timestamp=$(date +%Y%m%d_%H%M%S%N)
 output_file="${WORK_DIR}/condor_submut.${timestamp}"
 echo "output file: $output_file"
@@ -95,10 +98,15 @@ for sim in $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
 
     #for bg_file in $SKIM_OUTPUT_DIR/sum/type_sum/*ZJetsToNuNu_HT-100To200*; do
     #for bg_file in $SKIM_OUTPUT_DIR/sum/type_sum/WW_TuneCUETP8M1*; do
-    for bg_file in $SKIM_OUTPUT_DIR/sum/type_sum/*; do
+    for bg_file in $INPUT_DIR/sum/type_sum/*; do
         echo "Will run:"
         bg_file_name=$(basename $bg_file .root)
-        cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_univ_bdt_track_bdt.py -i $bg_file -o ${OUTPUT_DIR}/$filename/single/${bg_file_name}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@"
+        out_file=${OUTPUT_DIR}/$filename/single/${bg_file_name}.root
+        if [ -f "$out_file" ]; then
+            echo "$out_file exist. Skipping..."
+            continue
+        fi
+        cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_univ_bdt_track_bdt.py -i $bg_file -o $out_file -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@"
         echo $cmd
 cat << EOM >> $output_file
 arguments = $cmd

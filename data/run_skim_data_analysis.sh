@@ -19,6 +19,11 @@ do
     key="$1"
 
     case $key in
+        --sc)
+        SAME_SIGN=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         --tl)
         TWO_LEPTONS=true
         POSITIONAL+=("$1")
@@ -40,7 +45,11 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 
 
 if [ -n "$TWO_LEPTONS" ]; then
-    OUTPUT_DIR=$TWO_LEPTONS_SKIM_DATA_OUTPUT_DIR
+    if [ -n "$SAME_SIGN" ]; then
+        OUTPUT_DIR=$TWO_LEPTONS_SAME_SIGN_SKIM_DATA_OUTPUT_DIR
+    else
+        OUTPUT_DIR=$TWO_LEPTONS_SKIM_DATA_OUTPUT_DIR
+    fi
 elif [ -n "$DY" ]; then
     OUTPUT_DIR=$DY_SKIM_DATA_OUTPUT_DIR
 else
@@ -81,7 +90,9 @@ file_limit=0
 i=0
 count=0
 input_files=""
-files_per_job=20
+files_per_job=10
+
+files_per_job=1
 
 FILE_OUTPUT="${OUTPUT_DIR}/single"
 

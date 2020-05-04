@@ -52,7 +52,7 @@ histograms_defs = [
 ]
 
 cuts = {
-    "2l" : "deltaR <= 1.2  && leptons[0].Pt() < 15 && Ht >= 120 && leptons[1].Pt() <= 3 && deltaEta < 1 && mt1 <= 40 && mt2 <= 40 && dilepHt >= 170 && DeltaPhiLeadingJetDilepton >= 1.7",
+    "2l" : "deltaR <= 1.2  && leptons[0].Pt() < 15 && Ht >= 120 && leptons[1].Pt() <= 3.5 && deltaEta < 1 && mt1 <= 40 && mt2 <= 40 && dilepHt >= 170 && DeltaPhiLeadingJetDilepton >= 1.7",
     "1t1l" : "lepton.Pt() < 15 && Mht >=140 && mtl <= 60 && deltaR <= 1.7 && MinDeltaPhiMhtJets >= 1 && DeltaEtaLeadingJetDilepton <= 2.2 && DeltaPhiLeadingJetDilepton >= 1.8 && deltaPhi <= 1.3 && deltaEta <= 1.2 && LeadingJetPt >= 100 && mtt <= 50 && mt1 <= 60 && mt2 <= 50 && Ht >= 140 &&  MinDeltaPhiMetJets >= 1.3"
 }
 
@@ -65,7 +65,7 @@ def performScanForFile(file, type, maxSignalRange=None):
     scan = []
     basicCond = None
     if type == "2l":
-        basicCond = str(utils.LUMINOSITY) + " * Weight * (leptons[1].Pt() <= 3 && Met >= 200 && invMass < 30 && dilepBDT >= "
+        basicCond = str(utils.LUMINOSITY) + " * Weight * (leptons[1].Pt() <= 3.5 && Met >= 200 && invMass < 30 && dilepBDT >= "
     else:
         basicCond = str(utils.LUMINOSITY) + " * Weight * (Met >= 200 && invMass < 30 && dilepBDT >= "
     rootFile = TFile(file)
@@ -169,8 +169,8 @@ def main():
         
             print "Maximum signal range for", trainGroup, " is", maxSignalRange
             bgFilesPath = None
-            if trainGroup in ["all", "1t1l","2l"]:
-                bgFilesPath = paths[type] + "/bg/skim_dilepton_signal_bdt_all/single/*"
+            if trainGroup in ["1t1l","2l"]:
+                bgFilesPath = paths[type] + "/bg/skim_dilepton_signal_bdt/all/single/*"
             else:
                 bgFilesPath = paths[type] + "/bg/skim_dilepton_signal_bdt/" + trainGroup + "/single/*"
             #print "Checking files", bgFilesPath
@@ -224,7 +224,10 @@ def main():
                     #    print "Greater!", sig, "for rect", signalFileName
                     if significance[type].get(trainGroup) is None:
                         significance[type][trainGroup] = {}
+                    print "Adding to significance file", signalFileName
                     significance[type][trainGroup][signalFileName] = sig
+                    #print "After addition"
+                    #print significance
                 else:
                     #print "Calculating Significance for", signalFileName
                     sigScan = []
@@ -257,7 +260,9 @@ def main():
                             significance[type][trainGroup][signalFileName] = max(sigScan)
                         else:
                             significance[type][trainGroup][signalFileName] = min(sigScan)
-    
+    print "=============="
+    print "\n\n\n\n"
+    print significance
     print " "
     print " "
     print " "

@@ -66,18 +66,37 @@ signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signa
 #data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_dilepton_signal_bdt_sc/dm7/single"
 
 #DY
-bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/dy_x1x2x1/bg/skim_dilepton_signal_bdt/all/single"
-data_dir = "/afs/desy.de/user/n/nissanuv/nfs/dy_x1x2x1/data/skim_dilepton_signal_bdt/all/single"
+bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_dilepton_signal_bdt/all/single"
+data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_dilepton_signal_bdt/all/single"
+signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signal_bdt_all/single/higgsino_mu100_dm3p28Chi20Chipm.root"
 
+sc_bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_dilepton_signal_bdt_sc/all/single"
+sc_data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_dilepton_signal_bdt_sc/all/single"
+
+calculatedLumi = {
+    'MET' : 35.380786178,
+    'SingleMuon' : 22.143021976
+}
+
+weightString = {
+    'MET' : "passedMhtMet6pack * tEffhMetMhtRealXMht2016",
+    'SingleMuon' : "1"
+}
+
+plot_kind = "MET"
 
 plot_data = True
-plot_signal = False
+plot_signal = True
 plot_ratio = True
 plot_rand = False
 plot_fast = True
 plot_title = True
 plot_overflow = True
 plot_significance = False
+plot_sc = True
+
+if plot_sc:
+    plot_signal = False
 
 if not plot_data:
     plot_ratio = False
@@ -192,44 +211,47 @@ histograms_defs = [
 #     { "obs" : "NJets", "minX" : 0, "maxX" : 7, "bins" : 7 },
     
     
+    #DY
+    #{ "obs" : "DYMuonsInvMass", "minX" : 0, "maxX" : 150, "bins" : 30, "units" : "GeV" },
+    #{ "obs" : "DYMuons[0].Pt()", "minX" : 30, "maxX" : 100, "bins" : 30 },
+    #{ "obs" : "DYMuons[1].Pt()", "minX" : 15, "maxX" : 100, "bins" : 30 },
+    
     #NORMAL
-    { "obs" : "invMass", "minX" : 0, "maxX" : 15, "bins" : 30, "units" : "GeV" },
-    #{ "obs" : "(DYMuons[0]+DYMuons[1]).M()", "minX" : 0, "maxX" : 150, "bins" : 30, "units" : "GeV" },
+    { "obs" : "invMass", "minX" : 0, "maxX" : 15, "bins" : 60, "units" : "GeV" },
+   
     { "obs" : "dilepBDT", "minX" : -0.6, "maxX" : 0.6, "bins" : 30 },
-    # { "obs" : "dileptonPt", "minX" : 0, "maxX" : 100, "bins" : 30 },
-#     { "obs" : "deltaPhi", "minX" : 0, "maxX" : 3.2, "bins" : 30 },
-#     { "obs" : "deltaEta", "minX" : 0, "maxX" : 4, "bins" : 30 },
-#     { "obs" : "deltaR", "minX" : 0, "maxX" : 4, "bins" : 30 },
-#     { "obs" : "pt3", "minX" : 230, "maxX" : 1000, "bins" : 30 },
-#     { "obs" : "Ht", "minX" : 0, "maxX" : 700, "bins" : 30 },
-#     { "obs" : "mtautau", "minX" : 0, "maxX" : 1000, "bins" : 30 },
-#     { "obs" : "mt1", "minX" : 0, "maxX" : 200, "bins" : 30 },
+    { "obs" : "dileptonPt", "minX" : 0, "maxX" : 100, "bins" : 30 },
+    { "obs" : "deltaPhi", "minX" : 0, "maxX" : 3.2, "bins" : 30 },
+    { "obs" : "deltaEta", "minX" : 0, "maxX" : 4, "bins" : 30 },
+    { "obs" : "deltaR", "minX" : 0, "maxX" : 4, "bins" : 30 },
+    { "obs" : "pt3", "minX" : 230, "maxX" : 1000, "bins" : 30 },
+    { "obs" : "Ht", "minX" : 0, "maxX" : 700, "bins" : 30 },
+    { "obs" : "mtautau", "minX" : 0, "maxX" : 1000, "bins" : 30 },
+    # { "obs" : "mt1", "minX" : 0, "maxX" : 200, "bins" : 30 },
 #     { "obs" : "mt2", "minX" : 0, "maxX" : 200, "bins" : 30 },
 #     { "obs" : "DeltaEtaLeadingJetDilepton", "minX" : 0, "maxX" : 4, "bins" : 30 },
 #     { "obs" : "DeltaPhiLeadingJetDilepton", "minX" : 0, "maxX" : 4, "bins" : 30 },
 #     { "obs" : "dilepHt", "minX" : 0, "maxX" : 400, "bins" : 30 },
 #     { "obs" : "NJets", "minX" : 0, "maxX" : 7, "bins" : 7 },
-#     
-     { "obs" : "Met", "minX" : 120, "maxX" : 700, "bins" : 30 },
-     { "obs" : "DYMuons[0].Pt()", "minX" : 30, "maxX" : 100, "bins" : 30 },
-     { "obs" : "DYMuons[1].Pt()", "minX" : 15, "maxX" : 100, "bins" : 30 },
-#     { "obs" : "Mht", "minX" : 0, "maxX" : 700, "bins" : 30 },
-#     { "obs" : "Ht", "minX" : 0, "maxX" : 700, "bins" : 30 },
-#     { "obs" : "LeadingJetQgLikelihood", "minX" : 0, "maxX" : 1, "bins" : 30 },
-#     { "obs" : "MinDeltaPhiMhtJets", "minX" : 0, "maxX" : 4, "bins" : 30 },
-#     { "obs" : "MinDeltaPhiMetJets", "minX" : 0, "maxX" : 4, "bins" : 30 },
-#     { "obs" : "Mt2", "minX" : 0, "maxX" : 100, "bins" : 30 },
-#     { "obs" : "LeadingJetPt", "minX" : 0, "maxX" : 800, "bins" : 30 },
-#     { "obs" : "abs(LeadingJet.Eta())", "minX" : 0, "maxX" : 4, "bins" : 30 },
-#     { "obs" : "MinCsv30", "minX" : 0, "maxX" : 1, "bins" : 30 },
-#     { "obs" : "MinCsv25", "minX" : 0, "maxX" : 1, "bins" : 30 },
-#     { "obs" : "MaxCsv30", "minX" : 0, "maxX" : 1, "bins" : 30 },
-#     { "obs" : "MaxCsv25", "minX" : 0, "maxX" : 1, "bins" : 30 },
+    
+     { "obs" : "Met", "minX" : 120, "maxX" : 2000, "bins" : 30 },
+     { "obs" : "Mht", "minX" : 0, "maxX" : 700, "bins" : 30 },
+     { "obs" : "Ht", "minX" : 0, "maxX" : 700, "bins" : 30 },
+     # { "obs" : "LeadingJetQgLikelihood", "minX" : 0, "maxX" : 1, "bins" : 30 },
+#      { "obs" : "MinDeltaPhiMhtJets", "minX" : 0, "maxX" : 4, "bins" : 30 },
+#      { "obs" : "MinDeltaPhiMetJets", "minX" : 0, "maxX" : 4, "bins" : 30 },
+#      { "obs" : "Mt2", "minX" : 0, "maxX" : 100, "bins" : 30 },
+#      { "obs" : "LeadingJetPt", "minX" : 0, "maxX" : 800, "bins" : 30 },
+#      { "obs" : "abs(LeadingJet.Eta())", "minX" : 0, "maxX" : 4, "bins" : 30 },
+#      { "obs" : "MinCsv30", "minX" : 0, "maxX" : 1, "bins" : 30 },
+#      { "obs" : "MinCsv25", "minX" : 0, "maxX" : 1, "bins" : 30 },
+#      { "obs" : "MaxCsv30", "minX" : 0, "maxX" : 1, "bins" : 30 },
+#      { "obs" : "MaxCsv25", "minX" : 0, "maxX" : 1, "bins" : 30 },
 #     
 #     #TRACK ONLY
-    # { "obs" : "trackBDT", "minX" : 0, "maxX" : 0.7, "bins" : 30 },
-#     { "obs" : "secondTrackBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
-#     { "obs" : "abs(track.Eta())", "minX" : 0, "maxX" : 3, "bins" : 60 },
+    { "obs" : "trackBDT", "minX" : -0.7, "maxX" : 0.7, "bins" : 30 },
+    { "obs" : "secondTrackBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
+    # { "obs" : "abs(track.Eta())", "minX" : 0, "maxX" : 3, "bins" : 60 },
 #     { "obs" : "abs(lepton.Eta())", "minX" : 0, "maxX" : 3, "bins" : 60 },
 #     { "obs" : "track.Pt()", "minX" : 0, "maxX" : 30, "bins" : 60 },
 #     { "obs" : "lepton.Pt()", "minX" : 2, "maxX" : 25, "bins" : 60 },
@@ -298,9 +320,10 @@ cuts = [ {"name":"none", "title": "No Cuts", "condition" : "1"},
 #        {"name":"mets", "title": "Met>20", "condition" : "Met > 20"},
 
 #NORMAL 
-          {"name":"MET", "title": "MET", "condition" : "Met >= 125 && invMass < 30"},
-          {"name":"MET2", "title": "MET2", "condition" : "Met >= 200 && invMass < 30"},
-          {"name":"dilepBDT", "title": "dilepBDT", "condition" : "Met >= 125 && dilepBDT >= 0.35 && invMass < 30"},
+          #{"name":"MET", "title": "MET >= 200", "condition" : "Met >= 200 && invMass < 30"},
+          #{"name":"MET2", "title": "MET >= 250", "condition" : "Met >= 250 && invMass < 30"},
+          #{"name":"dilepBDT", "title": "dilepBDT", "condition" : "Met >= 125 && dilepBDT >= 0 && invMass < 30"},
+          #{"name":"trackBDT", "title": "trackBDT", "condition" : "Met >= 125 && invMass < 30 && trackBDT >= 0.2"},
           #{"name":"rectangular_leptons", "title": "rectangular_leptons", "condition" : "Met >= 200 && invMass < 30 && deltaR <= 1.2  && leptons[0].Pt() < 15 && Ht >= 120 && leptons[1].Pt() <= 9 && deltaEta < 1 && mt1 <= 40 && mt2 <= 40 && dilepHt >= 170 && DeltaPhiLeadingJetDilepton >= 1.7"},
           #{"name":"rectangular_track", "title": "rectangular_track", "condition" : "Met >= 200 && invMass < 30 && lepton.Pt() < 15 && Mht >=140 && mtl <= 60 && deltaR <= 1.7 && MinDeltaPhiMhtJets >= 1 && DeltaEtaLeadingJetDilepton <= 2.2 && DeltaPhiLeadingJetDilepton >= 1.8 && deltaPhi <= 1.3 && deltaEta <= 1.2 && LeadingJetPt >= 100 && mtt <= 50 && mt1 <= 60 && mt2 <= 50 && Ht >= 140 &&  MinDeltaPhiMetJets >= 1.3 "},
 
@@ -364,23 +387,19 @@ cuts = [ {"name":"none", "title": "No Cuts", "condition" : "1"},
 #         {"name":"step3", "title": "No Cuts", "funcs" : [step3]},
         ]
 
-calculatedLumi = {
-    'MET' : 31.118664841,
-    'SingleMuon' : 35.262039358
-}
-
-def styleHist(hist):
+def styleHist(hist, onlyY = False):
     hist.GetYaxis().SetTitleSize(10);
     hist.GetYaxis().SetTitleFont(43);
     hist.GetYaxis().SetTitleOffset(2.5);
     hist.GetYaxis().SetLabelFont(43); 
     hist.GetYaxis().SetLabelSize(10);
-
-    hist.GetXaxis().SetTitleSize(10);
-    hist.GetXaxis().SetTitleFont(43);
-    hist.GetXaxis().SetTitleOffset(7.5);
-    hist.GetXaxis().SetLabelFont(43); 
-    hist.GetXaxis().SetLabelSize(10);
+    
+    if not onlyY:
+        hist.GetXaxis().SetTitleSize(10);
+        hist.GetXaxis().SetTitleFont(43);
+        hist.GetXaxis().SetTitleOffset(8);
+        hist.GetXaxis().SetLabelFont(43); 
+        hist.GetXaxis().SetLabelSize(10);
 
 def createPlots(rootfiles, type, histograms, weight=1):
     print "Processing "
@@ -440,7 +459,7 @@ def createPlots(rootfiles, type, histograms, weight=1):
         return 27.677964176
 
 
-def createPlotsFast(rootfiles, type, histograms, weight=1):
+def createPlotsFast(rootfiles, type, histograms, weight=1, prefix=""):
     print "Processing "
     print rootfiles
     lumiSecs = LumiSectMap()
@@ -457,19 +476,25 @@ def createPlotsFast(rootfiles, type, histograms, weight=1):
         
         for cut in cuts:
             for hist_def in histograms_defs:
-                histName =  cut["name"] + "_" + hist_def["obs"] + "_" + type
+                if prefix != "":
+                    histName =  prefix + "_" + cut["name"] + "_" + hist_def["obs"] + "_" + type
+                else:
+                    histName =  cut["name"] + "_" + hist_def["obs"] + "_" + type
                 #if type != "data" and type != "signal":
                 #    hist = utils.getHistogramFromTree(histName, c, hist_def["obs"], hist_def["bins"], hist_def["minX"], hist_def["maxX"], "puWeight * (" + cut["condition"] + ")")
                 #else:
-                hist = utils.getHistogramFromTree(histName, c, hist_def["obs"], hist_def["bins"], hist_def["minX"], hist_def["maxX"], cut["condition"], plot_overflow)
+                if type != "data":
+                    hist = utils.getHistogramFromTree(histName, c, hist_def["obs"], hist_def["bins"], hist_def["minX"], hist_def["maxX"], weightString[plot_kind] + " * " + str(weight) + "* Weight * (" + cut["condition"] + ")", plot_overflow)
+                else:
+                    hist = utils.getHistogramFromTree(histName, c, hist_def["obs"], hist_def["bins"], hist_def["minX"], hist_def["maxX"], weightString[plot_kind] + " * (" +cut["condition"] + ")", plot_overflow)
                 if hist is None:
                     continue
                 hist.GetXaxis().SetTitle("")
                 hist.SetTitle("")
-                #hist.Sumw2()
-                if type != "data":
-                    c.GetEntry(0)
-                    hist.Scale(c.Weight * weight)
+                hist.Sumw2()
+                #if type != "data":
+                #    c.GetEntry(0)
+                #    hist.Scale(c.Weight * weight)
                 if histograms.get(histName) is None:
                     histograms[histName] = hist
                 else:
@@ -478,7 +503,8 @@ def createPlotsFast(rootfiles, type, histograms, weight=1):
         rootFile.Close()
     
     if type == "data":
-        return calculatedLumi.get('SingleMuon')
+        return calculatedLumi.get(plot_kind)
+        #return calculatedLumi.get('SingleMuon')
         
         if calculatedLumi.get('MET') is not None:
             print "Found lumi=" + str(calculatedLumi['MET'])
@@ -498,31 +524,57 @@ def createRandomHist(name):
     styleHist(h)
     return h
     
-def createCRPads(pId, ratioPads):
-    histCPad = TPad("pad" + str(pId),"pad" + str(pId),0,0.21,1,1)
-    histRPad = TPad("rpad" + str(pId),"rpad" + str(pId),0,0,1,0.2);
+def createCRPads(pId, ratioPads, twoRations = False):
+    print "Creating pads for id", pId
+    histLowY = 0.21
+    if twoRations:
+        histLowY = 0.31
+    histCPad = TPad("pad" + str(pId),"pad" + str(pId),0,histLowY,1,1)
+    if twoRations:
+        histRPad = TPad("rpad" + str(pId),"rpad" + str(pId),0,0,1,0.15)
+        histR2Pad = TPad("r2pad" + str(pId),"r2pad" + str(pId),0,0.15,1,0.3)
+    else:
+        histRPad = TPad("rpad" + str(pId),"rpad" + str(pId),0,0,1,0.2)
     ratioPads[pId] = []
     ratioPads[pId].append(histCPad)
     ratioPads[pId].append(histRPad)
+    if twoRations:
+        histR2Pad.SetBottomMargin(0.2)
+        ratioPads[pId].append(histR2Pad)
+        histRPad.SetTopMargin(0)
     histCPad.SetBottomMargin(0)
-    histRPad.SetTopMargin(0.05)
-    histRPad.SetBottomMargin(0.25)
+    if not twoRations:
+        histRPad.SetTopMargin(0.05)
+    histRPad.SetBottomMargin(0.3)
+    #if twoRations:
+    #    histR2Pad.SetTopMargin(0.05)
+    #    histR2Pad.SetBottomMargin(0.25)
     histRPad.Draw()
     histCPad.Draw()
+    if twoRations:
+        histR2Pad.Draw()
+    if twoRations:
+        return histCPad, histRPad, histR2Pad
     return histCPad, histRPad
 
-def plotRatio(c1, pad, memory, dataHist, newBgHist, hist_def):
+def plotRatio(c1, pad, memory, dataHist, newBgHist, hist_def, title = "Data / BG",setTitle = True):
     pad.cd()
     pad.SetGridx()
     pad.SetGridy()
     rdataHist = dataHist.Clone()
     memory.append(rdataHist)
-    rdataHist.Divide(utils.getStackSum(newBgHist))
+    rdataHist.Divide(newBgHist)
     rdataHist.SetMinimum(0)
     rdataHist.SetMaximum(2)
-    rdataHist.GetXaxis().SetTitle(hist_def["obs"])
-    rdataHist.GetYaxis().SetTitle("Data / BG")
-    styleHist(rdataHist)
+    if setTitle:
+        rdataHist.GetXaxis().SetTitle(hist_def["obs"])
+    else:
+        rdataHist.GetXaxis().SetTitle("")
+    rdataHist.GetYaxis().SetTitle(title)
+    if setTitle:
+        styleHist(rdataHist)
+    else:
+        styleHist(rdataHist, True)
     rdataHist.GetYaxis().SetNdivisions(505)
     rdataHist.Draw("p")
     line = TLine(rdataHist.GetXaxis().GetXmin(),1,rdataHist.GetXaxis().GetXmax(),1);
@@ -615,6 +667,11 @@ def createAllHistograms(histograms, sumTypes):
         else:
             print "HERE"
             weight = utils.LUMINOSITY
+        
+        if plot_sc:
+            print "CREATING SC CATEGORY!"
+            dataFiles = glob(sc_data_dir + "/*")
+            createPlotsFast(dataFiles, "data", histograms, 1, "sc")
     
         if plot_signal:
             if plot_fast:
@@ -655,6 +712,11 @@ def createAllHistograms(histograms, sumTypes):
                     createPlots(rootFiles, cType, histograms, weight)
             else:
                 print "**Couldn't find file for " + cType
+        
+        if plot_sc:
+            print "CREATING SC CATEGORY!"
+            bgFiles = glob(sc_bg_dir + "/*")
+            createPlotsFast(bgFiles, "bg", histograms, weight, "sc")
 
 def main():
     print "Start: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S')
@@ -731,14 +793,22 @@ def main():
                 pad = histPad.cd(pId)
             histCPad = None
             histRPad = None
+            histR2Pad = None
             if plot_ratio:
                 if ratioPads.get(pId) is None:
-                    histCPad, histRPad = createCRPads(pId, ratioPads)
+                    if plot_sc:
+                        histCPad, histRPad, histR2Pad = createCRPads(pId, ratioPads, True)
+                    else:
+                        histCPad, histRPad = createCRPads(pId, ratioPads)
                 else:
                     histCPad = ratioPads[pId][0]
                     histRPad = ratioPads[pId][1]
+                    if plot_sc:
+                        histR2Pad = ratioPads[pId][2]
                 pad = histCPad
                 pad.cd()
+            
+            #print "*", ratioPads
             
             hs = THStack(str(plot_num),"")
             plot_num += 1
@@ -761,6 +831,7 @@ def main():
             dataHistName = cut["name"] + "_" + hist_def["obs"] + "_data"
             if plot_rand:
                 histograms[dataHistName] = createRandomHist(dataHistName)
+            
             dataHist = None
             sigHist = None
             sigMax = 0
@@ -824,12 +895,18 @@ def main():
                 sigHist.Draw("HIST")
             
             if plot_significance and hist_def["obs"] == "invMass":
-                #significance = utils.calcSignificance(sigHist, newBgHist.GetHists())
-                sigNum = sigHist.Integral(1, sigHist.FindBin(8))
-                bgNum = 0
+                accBgHist = None
                 for bgHist in newBgHist.GetHists():
-                    bgNum += bgHist.Integral(1, bgHist.FindBin(8))
-                significance = 0.1*sigNum/math.sqrt(bgNum)
+                    if accBgHist is None:
+                        accBgHist = bgHist.Clone()
+                    else:
+                        accBgHist.Add(bgHist)
+                significance = utils.calcSignificance(sigHist, accBgHist)
+                # sigNum = sigHist.Integral(1, sigHist.FindBin(8))
+#                 bgNum = 0
+#                 for bgHist in newBgHist.GetHists():
+#                     bgNum += bgHist.Integral(1, bgHist.FindBin(8))
+#                 significance = 0.1*sigNum/math.sqrt(bgNum)
                 print "cutName ", cutName, "sig", significance
                 if not plot_single and plot_significance:
                     pt = TPaveText(.60,.1,.95,.2, "NDC")
@@ -847,12 +924,48 @@ def main():
                 dataHist.Draw("P SAME")
                 legend.AddEntry(dataHist, "data", 'p')
             
+            scDataHist = None
+            scBgHist = None
+            if plot_sc:
+                scDataHistName = "sc_" + cut["name"] + "_" + hist_def["obs"] + "_data"
+                scBgHistName = "sc_" + cut["name"] + "_" + hist_def["obs"] + "_bg"
+                scDataHist = histograms[scDataHistName]
+                scDataHist.SetMinimum(0.01)
+                scDataHist.SetMarkerStyle(kFullCircle)
+                scDataHist.SetMarkerSize(0.5)
+                scDataHist.SetMarkerColor(kRed)
+                scDataHist.Draw("P SAME")
+                legend.AddEntry(scDataHist, "sc data", 'p')
+                
+                scBgHist = histograms[scBgHistName]
+                scBgHist.SetMinimum(0.01)
+                scBgHist.SetLineWidth(2)
+                scBgHist.SetLineColor(6)
+                scBgHist.Draw("HIST SAME")
+                
+                legend.AddEntry(scBgHist, "sc bg", 'l')
+            
             legend.Draw("SAME")
             pad.SetLogy()
             c1.Update()
             
+            #print "**", ratioPads
+            
             if plot_ratio:
-                plotRatio(c1, histRPad, memory, dataHist, newBgHist, hist_def)
+                if plot_sc:
+                    #print "Going to plot for ", histRPad, dataHist, scDataHist, hist_def
+                    plotRatio(c1, histRPad, memory, dataHist, scDataHist, hist_def, "Data / Data")
+                    #print "***********", pId, ratioPads
+                    stackSum = utils.getStackSum(newBgHist)
+                    memory.append(stackSum)
+                    plotRatio(c1, histR2Pad, memory, stackSum, scBgHist, hist_def, "Bg / Bg", False)
+                    #print "-------", pId, ratioPads
+                else:
+                    stackSum = utils.getStackSum(newBgHist)
+                    memory.append(stackSum)
+                    plotRatio(c1, histRPad, memory, dataHist, stackSum, hist_def)
+            
+            #print "***", ratioPads
             
             if plot_single:
                 utils.stamp_plot()
@@ -870,13 +983,27 @@ def main():
             linBgHist.SetMaximum(maximum*1.1)
             linBgHist.SetMinimum(0)
             
+            #print "****", ratioPads
+            
+            pad = histPad.cd(pId)
+            histCPad = None
+            histRPad = None
+            histR2Pad = None
             if plot_ratio:
                 if ratioPads.get(pId) is None:
-                    pad = histPad.cd(pId)
-                    histCPad, histRPad = createCRPads(pId, ratioPads)
+                    if plot_sc:
+                        histCPad, histRPad, histR2Pad = createCRPads(pId, ratioPads, True)
+                        #print "After:", histCPad, histRPad, histR2Pad
+                    else:
+                        histCPad, histRPad = createCRPads(pId, ratioPads)
                 else:
                     histCPad = ratioPads[pId][0]
                     histRPad = ratioPads[pId][1]
+                    if plot_sc:
+                        histR2Pad = ratioPads[pId][2]
+                    #print "Was trying to get Id", pId, ratioPads
+                    #print "After in here", histCPad, histRPad, histR2Pad
+                print "Assigning ", histCPad
                 pad = histCPad
                 pad.cd()
             else:
@@ -888,10 +1015,26 @@ def main():
                 sigHist.Draw("HIST SAME")
             if plot_data:
                 dataHist.Draw("P e SAME")
+            if plot_sc:
+                scDataHist.Draw("P e SAME")
+                linScBgHist = scBgHist.Clone()
+                memory.append(linScBgHist)
+                linScBgHist.SetMaximum(maximum*1.1)
+                linScBgHist.SetMinimum(0)
+                linScBgHist.Draw("HIST SAME")
+            
             legend.Draw("SAME")
             
             if plot_ratio:
-                plotRatio(c1, histRPad, memory, dataHist, newBgHist, hist_def)
+                if plot_sc:
+                    plotRatio(c1, histRPad, memory, dataHist, scDataHist, hist_def, "Data / Data")
+                    stackSum = utils.getStackSum(newBgHist)
+                    memory.append(stackSum)
+                    plotRatio(c1, histR2Pad, memory, stackSum, scBgHist, hist_def, "Bg / Bg", False)
+                else:
+                    stackSum = utils.getStackSum(newBgHist)
+                    memory.append(stackSum)
+                    plotRatio(c1, histRPad, memory, dataHist, stackSum, hist_def)
             
             pId += 1
 
@@ -908,6 +1051,8 @@ def main():
                 if plot_ratio:
                     ratioPads[pId][0].Clear()
                     ratioPads[pId][1].Clear()
+                    if plot_sc:
+                        ratioPads[pId][2].Clear()
                 else:
                     pad.Clear()
         if needToDraw:

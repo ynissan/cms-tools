@@ -94,11 +94,16 @@ for sim in $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
 
     #for bg_file in $SKIM_OUTPUT_DIR/sum/type_sum/*ZJetsToNuNu_HT-100To200*; do
     for data_file in $INPUT_DIR/sum/*; do
-        echo "Will run:"
         data_file_name=$(basename $data_file .root)
-        echo $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_univ_bdt_track_bdt.py -i $data_file -o ${OUTPUT_DIR}/$filename/single/${data_file_name}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@
+        out_file=${OUTPUT_DIR}/$filename/single/${data_file_name}.root
+        if [ -f "$out_file" ]; then
+            echo "$out_file exist. Skipping..."
+            continue
+        fi
+        echo "Will run:"
+        echo $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_univ_bdt_track_bdt.py -i $data_file -o $out_file -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@
 cat << EOM >> $output_file
-arguments = $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_univ_bdt_track_bdt.py -i $data_file -o ${OUTPUT_DIR}/$filename/single/${data_file_name}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@
+arguments = $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_univ_bdt_track_bdt.py -i $data_file -o $out_file -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@
 error = ${OUTPUT_DIR}/$filename/stderr/${data_file_name}.err
 output = ${OUTPUT_DIR}/$filename/stdout/${data_file_name}.output
 Queue

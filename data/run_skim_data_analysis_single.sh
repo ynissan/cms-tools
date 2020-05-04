@@ -30,6 +30,11 @@ do
         shift # past argument
         shift # past value
         ;;
+        --sc)
+        SAME_SIGN=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         --tl)
         TWO_LEPTONS=true
         POSITIONAL+=("$1")
@@ -50,7 +55,11 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 #---------- END OPTIONS ------------
 
 if [ -n "$TWO_LEPTONS" ]; then
-    OUTPUT_DIR=$TWO_LEPTONS_SKIM_DATA_OUTPUT_DIR
+    if [ -n "$SAME_SIGN" ]; then
+        OUTPUT_DIR=$TWO_LEPTONS_SAME_SIGN_SKIM_DATA_OUTPUT_DIR
+    else
+        OUTPUT_DIR=$TWO_LEPTONS_SKIM_DATA_OUTPUT_DIR
+    fi
 elif [ -n "$DY" ]; then
     OUTPUT_DIR=$DY_SKIM_DATA_OUTPUT_DIR
 else
@@ -98,6 +107,8 @@ for INPUT_FILE in $INPUT_FILES; do
             rm -rf $timestamp
             continue
         else
+            echo "Moving file"
+            echo mv $output_file "${FILE_OUTPUT}/"
             mv $output_file "${FILE_OUTPUT}/"
             rm -rf $timestamp
         fi

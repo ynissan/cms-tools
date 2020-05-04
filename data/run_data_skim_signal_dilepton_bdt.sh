@@ -22,6 +22,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        -dy)
+        DRELL_YAN=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -38,22 +43,42 @@ module use -a /afs/desy.de/group/cms/modulefiles/
 module load cmssw
 cmsenv
 
-OUTPUT_DIR=$SKIM_DATA_SIG_DILEPTON_BDT_OUTPUT_DIR
-INPUT_DIR=$SKIM_DATA_BDT_OUTPUT_DIR
+
 BDT_DIR=$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt
 EXTRA_FLAGS=""
 
-if [ -n "$SC" ]; then
-    echo "GOT SC"
-    echo "HERE: $@"
-    OUTPUT_DIR=$SKIM_DATA_SIG_DILEPTON_BDT_SC_OUTPUT_DIR
-    INPUT_DIR=$SKIM_DATA_BDT_SC_OUTPUT_DIR
-elif [ -n "$TWO_LEPTONS" ]; then
-    OUTPUT_DIR=$SKIM_TWO_LEPTONS_DATA_SIG_DILEPTON_BDT_OUTPUT_DIR
-    INPUT_DIR=$TWO_LEPTONS_SKIM_DATA_OUTPUT_DIR/sum
+
+if [ -n "$TWO_LEPTONS" ]; then
+    if [ -n "$SC" ]; then
+        echo "GOT SC"
+        echo "HERE: $@"
+        OUTPUT_DIR=$SKIM_TWO_LEPTONS_DATA_SIG_DILEPTON_BDT_SC_OUTPUT_DIR
+        INPUT_DIR=$TWO_LEPTONS_SAME_SIGN_SKIM_DATA_OUTPUT_DIR/sum
+    else
+        OUTPUT_DIR=$SKIM_TWO_LEPTONS_DATA_SIG_DILEPTON_BDT_OUTPUT_DIR
+        INPUT_DIR=$TWO_LEPTONS_SKIM_DATA_OUTPUT_DIR/sum
+    fi
     BDT_DIR=$TWO_LEPTONS_OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt
-    EXTRA_FLAGS="--tl"
+elif [ -n "$DRELL_YAN" ]; then
+    echo "GOT DY"
+    echo "HERE: $@"
+    OUTPUT_DIR=$SKIM_DATA_SIG_DILEPTON_BDT_DY_OUTPUT_DIR
+    INPUT_DIR=$SKIM_DATA_BDT_DY_OUTPUT_DIR
+else
+    if [ -n "$SC" ]; then
+        echo "GOT SC"
+        echo "HERE: $@"
+        OUTPUT_DIR=$SKIM_DATA_SIG_DILEPTON_BDT_SC_OUTPUT_DIR
+        INPUT_DIR=$SKIM_DATA_BDT_SC_OUTPUT_DIR
+        
+    else
+        OUTPUT_DIR=$SKIM_DATA_SIG_DILEPTON_BDT_OUTPUT_DIR
+        INPUT_DIR=$SKIM_DATA_BDT_OUTPUT_DIR
+    fi
 fi
+
+echo OUTPUT_DIR=$OUTPUT_DIR
+echo INPUT_DIR=$INPUT_DIR
 
 timestamp=$(date +%Y%m%d_%H%M%S%N)
 output_file="${WORK_DIR}/condor_submut.${timestamp}"
@@ -101,11 +126,16 @@ for sim in $BDT_DIR/*; do
     else
         DATA_DIR=$INPUT_DIR/$tb/single
     fi
-
+    
     for data_file in $DATA_DIR/*; do
         echo "Will run:"
         data_file_name=$(basename $data_file .root)
-        cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_dilepton_bdt.py --data -i $data_file -o ${OUTPUT_DIR}/$tb/single/${data_file_name}.root -bdt $BDT_DIR/$tb $EXTRA_FLAGS"
+        out_file=${OUTPUT_DIR}/$tb/single/${data_file_name}.root
+        if [ -f "$out_file" ]; then
+            echo "$out_file exist. Skipping..."
+            continue
+        fi
+        cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_dilepton_bdt.py --data -i $data_file -o $out_file -bdt $BDT_DIR/$tb $@"
         echo $cmd
 cat << EOM >> $output_file
 arguments = $cmd

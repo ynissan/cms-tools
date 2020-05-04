@@ -22,6 +22,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --sc)
+        SAME_SIGN=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -35,8 +40,13 @@ OUTPUT_DIR=$SKIM_DATA_OUTPUT_DIR/sum
 INPUT_DIR=$SKIM_DATA_OUTPUT_DIR/single
 pattern="METAOD_"
 if [ -n "$TWO_LEPTONS" ]; then
-        OUTPUT_DIR=$TWO_LEPTONS_SKIM_DATA_OUTPUT_DIR/sum
-        INPUT_DIR=$TWO_LEPTONS_SKIM_DATA_OUTPUT_DIR/single
+        if [ -n "$SAME_SIGN" ]; then
+            OUTPUT_DIR=$TWO_LEPTONS_SAME_SIGN_SKIM_DATA_OUTPUT_DIR/sum
+            INPUT_DIR=$TWO_LEPTONS_SAME_SIGN_SKIM_DATA_OUTPUT_DIR/single
+        else
+            OUTPUT_DIR=$TWO_LEPTONS_SKIM_DATA_OUTPUT_DIR/sum
+            INPUT_DIR=$TWO_LEPTONS_SKIM_DATA_OUTPUT_DIR/single
+        fi
 elif [ -n "$DRELL_YAN" ]; then
     pattern="SingleMuonAOD_"
     OUTPUT_DIR=$DY_SKIM_DATA_OUTPUT_DIR/sum

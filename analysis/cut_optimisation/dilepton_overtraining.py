@@ -50,7 +50,8 @@ cuts = {"low":9,
         "dm5":10,
         "dm7":12,
         "dm9":14,
-        "high":18}
+        "high":18,
+        "all" : 18}
 
 memory = []
 
@@ -95,7 +96,7 @@ def plot_rocs():
         #    break
 
         name = os.path.basename(dir)
-        cut = cuts[name]
+        #cut = cuts[name]
         print "Processing " + name
 
         file = [dir]

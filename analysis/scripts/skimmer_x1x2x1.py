@@ -36,6 +36,8 @@ parser.add_argument('-skim', '--skim', dest='skim', help='Skim', action='store_t
 parser.add_argument('-data', '--data', dest='data', help='Data', action='store_true')
 parser.add_argument('-tl', '--tl', dest='two_leptons', help='Two Leptons', action='store_true')
 parser.add_argument('-dy', '--dy', dest='dy', help='Drell-Yan', action='store_true')
+parser.add_argument('-sam', '--sam', dest='sam', help='Sam Samples', action='store_true')
+parser.add_argument('-sc', '--sc', dest='sc', help='Same Charge', action='store_true')
 args = parser.parse_args()
 
 print args
@@ -55,12 +57,16 @@ bg = args.bg
 data = args.data
 two_leptons = args.two_leptons
 dy = args.dy
+sam = args.sam
+sc = args.sc
 
 if two_leptons:
     print "RUNNING TWO LEPTONS!"
 if dy:
     print "Got Drell-Yan"
     #exit(0)
+if sc:
+    print "SAME SIGN!"
 
 input_file = None
 if args.input_file:
@@ -76,6 +82,23 @@ if (bg and signal):
 replace_lepton_collection = True
 if signal:
     replace_lepton_collection = False
+    
+def getDyMuons(c):
+    muons = [i for i in range(len(c.Muons)) if c.Muons[i].Pt() >= 15 and bool(c.Muons_mediumID[i]) and bool(c.Muons_passIso[i]) and abs(c.Muons[i].Eta()) <= 2.4]
+    
+    if len(muons) != 2:
+        return None, None
+        
+    if c.Muons[muons[0]].Pt() < 30:
+        return None, None
+    
+    if c.Muons_charge[muons[0]] * c.Muons_charge[muons[1]] > 0:
+        return None, None
+    
+    invMass = (c.Muons[muons[0]] + c.Muons[muons[1]]).M()
+    if not abs(invMass-91.19)<10: return None, None
+    
+    return muons, invMass
 
 ######## END OF CMDLINE ARGUMENTS ########
 def main():
@@ -136,6 +159,8 @@ def main():
     var_Muons_MTW = ROOT.std.vector(double)()
     
     var_DYMuons = ROOT.std.vector(TLorentzVector)()
+    var_DYMuonsSum = TLorentzVector()
+    var_DYMuonsInvMass = np.zeros(1,dtype=float)
     var_DYMuons_charge = ROOT.std.vector(int)()
     var_DYMuons_mediumID = ROOT.std.vector(bool)()
     var_DYMuons_passIso = ROOT.std.vector(bool)()
@@ -268,6 +293,8 @@ def main():
         tEvent.Branch('DYMuons_MiniIso', 'std::vector<double>', var_DYMuons_MiniIso)
         tEvent.Branch('DYMuons_MT2Activity', 'std::vector<double>', var_DYMuons_MT2Activity)
         tEvent.Branch('DYMuons_MTW', 'std::vector<double>', var_DYMuons_MTW)
+        tEvent.Branch('DYMuonsSum', 'TLorentzVector', var_DYMuonsSum)
+        tEvent.Branch('DYMuonsInvMass', var_DYMuonsInvMass,'DYMuonsInvMass/D')
     
     tEvent.Branch('GenParticles', 'std::vector<TLorentzVector>', var_GenParticles)
     tEvent.Branch('GenParticles_ParentId', 'std::vector<int>', var_GenParticles_ParentId)
@@ -346,8 +373,14 @@ def main():
     baseFileName = os.path.basename(input_file)
     crossSection = 1
     if signal:
-        filename = (os.path.basename(input_file).split("Chi20Chipm")[0]).replace("p", ".")
-        crossSection = utils.getCrossSection(filename)
+        if sam:
+            chiM = os.path.basename(input_file).split("_")[2]
+            print "Got chiM=" + chiM
+            crossSection = utils.samCrossSections.get(chiM)
+            print "Cross Section is", crossSection
+        else:
+            filename = (os.path.basename(input_file).split("Chi20Chipm")[0]).replace("p", ".")
+            crossSection = utils.getCrossSection(filename)
         if crossSection is None:
             if utils.crossSections.get(filename) is not None:
                 crossSection = utils.crossSections.get(filename)
@@ -369,7 +402,7 @@ def main():
         ### MADHT ###
         rightProcess = True
     
-        if signal:
+        if signal and not sam:
             rightProcess = analysis_ntuples.isX1X2X1Process(c)
         elif bg:
             if "DYJetsToLL_M-5to50_" not in input_file:
@@ -432,21 +465,28 @@ def main():
         MHT = c.MHT
         HT = c.HT
         MHTPhi = c.MHTPhi
+        
+        jets = c.Jets
+        jets_bDiscriminatorCSV = c.Jets_bDiscriminatorCSV
+        jets_partonFlavor = c.Jets_partonFlavor
+        jets_qgLikelihood = c.Jets_qgLikelihood
+        
+        var_tracks = c.tracks
+        var_tracks_charge = c.tracks_charge
+        var_tracks_chi2perNdof = c.tracks_chi2perNdof
+        var_tracks_dxyVtx = c.tracks_dxyVtx
+        var_tracks_dzVtx = c.tracks_dzVtx
+        var_tracks_trackJetIso = c.tracks_trackJetIso
+        var_tracks_trkMiniRelIso = c.tracks_trkMiniRelIso
+        var_tracks_trkRelIso = c.tracks_trkRelIso
+        var_tracks_trackQualityHighPurity = c.tracks_trackQualityHighPurity
+        
         muons = []
         if dy:
-            muons = [i for i in range(len(c.Muons)) if c.Muons[i].Pt() >= 15 and bool(c.Muons_mediumID[i]) and bool(c.Muons_passIso[i]) and abs(c.Muons[i].Eta()) <= 2.4]
-
-            if len(muons) != 2:
+           
+            muons, invMass = getDyMuons(c)
+            if muons is None:
                 continue
-                
-            if c.Muons[muons[0]].Pt() < 30:
-                continue
-            
-            if c.Muons_charge[muons[0]] * c.Muons_charge[muons[1]] > 0:
-                continue
-            
-            invMass = (c.Muons[muons[0]] + c.Muons[muons[1]]).M()
-            if not abs(invMass-91.19)<10: continue
             
             metVec = TLorentzVector()
             metVec.SetPtEtaPhiE(MET,0,METPhi,MET)
@@ -455,6 +495,13 @@ def main():
             metVec += c.Muons[muons[1]]
             
             MET = abs(metVec.Pt())
+            
+            if MET > 3000:
+                print "HERE WE GO!!!"
+                print "c.MET=", c.MET, "metVec=", metVec.Pt(), "MET=", MET
+                print "c.Muons[muons[0]].Pt()=", c.Muons[muons[0]].Pt(), "c.Muons[muons[1]].Pt()=", c.Muons[muons[1]].Pt()
+                print "-------"
+            
             METPhi = metVec.Phi()
             
             jetsHt = [i for i in range(len(c.Jets)) if c.Jets[i].Pt() >= 30 and abs(c.Jets[i].Eta()) <= 2.4 and abs(c.Muons[muons[0]].DeltaR(c.Jets[i])) > 0.1 and abs(c.Muons[muons[1]].DeltaR(c.Jets[i])) > 0.1]
@@ -467,24 +514,11 @@ def main():
             for i in jetsHt:
                 HT += c.Jets[i].Pt()
             MhtVec = TLorentzVector()
+            metVec.SetPtEtaPhiE(0,0,0,0)
             for i in jetsMht:
                 MhtVec -= c.Jets[i]
             MHT = MhtVec.Pt()
             MHTPhi = MhtVec.Phi()
-            
-            #print "Before:"
-            #print "MET=", c.MET, "METPhi=", c.METPhi, "MHT=", c.MHT, "HT=", c.HT, "MHTPhi=", c.MHTPhi
-            
-            c.MET = MET
-            c.METPhi = METPhi
-            c.MHT = MHT
-            c.HT = HT
-            c.MHTPhi = MHTPhi
-            
-            #print "After:"
-        
-            #print "MET=", c.MET, "METPhi=", c.METPhi, "MHT=", c.MHT, "HT=", c.HT, "MHTPhi=", c.MHTPhi
-            #print "MET=", MET, "METPhi=", METPhi, "MHT=", MHT, "HT=", HT, "MHTPhi=", MHTPhi
             
             jets = ROOT.std.vector(TLorentzVector)()
             jets_bDiscriminatorCSV = ROOT.std.vector(double)()
@@ -498,13 +532,29 @@ def main():
                     jets_partonFlavor.push_back(c.Jets_partonFlavor[i])
                     jets_qgLikelihood.push_back(c.Jets_qgLikelihood[i])
             
-            c.Jets = jets
-            c.Jets_bDiscriminatorCSV = jets_bDiscriminatorCSV
-            c.Jets_partonFlavor = jets_partonFlavor
-            c.Jets_qgLikelihood = jets_qgLikelihood
+            var_tracks          = ROOT.std.vector(TLorentzVector)()
+            var_tracks_charge   = ROOT.std.vector(int)()
+            var_tracks_chi2perNdof = ROOT.std.vector(double)()
+            var_tracks_dxyVtx   = ROOT.std.vector(double)()
+            var_tracks_dzVtx    = ROOT.std.vector(double)()
+            var_tracks_trackJetIso = ROOT.std.vector(double)()
+            var_tracks_trkMiniRelIso = ROOT.std.vector(double)()
+            var_tracks_trkRelIso = ROOT.std.vector(double)()
+            var_tracks_trackQualityHighPurity = ROOT.std.vector(bool)()
+            
+            for i in range(c.tracks.size()):
+                if abs(c.Muons[muons[0]].DeltaR(c.tracks[i])) > 0.01 and abs(c.Muons[muons[1]].DeltaR(c.tracks[i])) > 0.01:
+                    var_tracks.push_back(c.tracks[i])
+                    var_tracks_charge.push_back(c.tracks_charge[i])
+                    var_tracks_chi2perNdof.push_back(c.tracks_chi2perNdof[i])
+                    var_tracks_dxyVtx.push_back(c.tracks_dxyVtx[i])
+                    var_tracks_dzVtx.push_back(c.tracks_dzVtx[i])
+                    var_tracks_trackJetIso.push_back(c.tracks_trackJetIso[i])
+                    var_tracks_trkMiniRelIso.push_back(c.tracks_trkMiniRelIso[i])
+                    var_tracks_trkRelIso.push_back(c.tracks_trkRelIso[i])
+                    var_tracks_trackQualityHighPurity.push_back(bool(c.tracks_trackQualityHighPurity[i]))
         
-        
-        nj, btags, ljet = analysis_ntuples.numberOfJets25Pt2_4Eta_Loose(c)
+        nj, btags, ljet = analysis_ntuples.eventNumberOfJets25Pt2_4Eta_Loose(jets, jets_bDiscriminatorCSV)
         if ljet is None:
             #print "No ljet:",ljet 
             continue
@@ -512,8 +562,8 @@ def main():
         afterNj += 1
         
         #if not duoLepton: continue
-        var_MinDeltaPhiMetJets[0] = analysis_ntuples.minDeltaPhiMetJets25Pt2_4Eta(c)
-        var_MinDeltaPhiMhtJets[0] = analysis_ntuples.minDeltaPhiMhtJets25Pt2_4Eta(c)
+        var_MinDeltaPhiMetJets[0] = analysis_ntuples.eventMinDeltaPhiMetJets25Pt2_4Eta(jets, MET, METPhi)
+        var_MinDeltaPhiMhtJets[0] = analysis_ntuples.eventMinDeltaPhiMhtJets25Pt2_4Eta(jets, MHT, MHTPhi)
         #if not dy:
         if var_MinDeltaPhiMetJets[0] < 0.4: continue
         if MHT < 100: continue
@@ -540,11 +590,11 @@ def main():
         var_CrossSection[0] = crossSection
         var_NJets[0] = nj
         var_BTags[0] = btags
-        var_LeadingJetPt[0] = c.Jets[ljet].Pt()
-        var_LeadingJet = c.Jets[ljet]
-        
-        var_MinCsv30[0], var_MaxCsv30[0] = analysis_ntuples.minMaxCsv(c, 30)
-        var_MinCsv25[0], var_MaxCsv25[0] = analysis_ntuples.minMaxCsv(c, 25)
+        var_LeadingJetPt[0] = jets[ljet].Pt()
+        var_LeadingJet = jets[ljet]
+
+        var_MinCsv30[0], var_MaxCsv30[0] = analysis_ntuples.minMaxCsv(jets, jets_bDiscriminatorCSV, 30)
+        var_MinCsv25[0], var_MaxCsv25[0] = analysis_ntuples.minMaxCsv(jets, jets_bDiscriminatorCSV, 25)
         
         if var_MaxCsv25[0] > 0.7:
             continue
@@ -595,10 +645,32 @@ def main():
             takeLeptonsFrom = currLeptonCollectionMap.get(c.RunNum, c.LumiBlockNum, c.EvtNum)
         else:
             takeLeptonsFrom = c
-        
-        
+            # takeLeptonsFrom["Electrons"] = c.Electrons
+#             takeLeptonsFrom["Electrons_charge"] = c.Electrons_charge
+#             takeLeptonsFrom["Electrons_mediumID"] = c.Electrons_mediumID
+#             takeLeptonsFrom["Electrons_passIso"] = c.Electrons_passIso
+#             takeLeptonsFrom["Electrons_tightID"] = c.Electrons_tightID
+#             takeLeptonsFrom["Electrons_EnergyCorr"] = c.Electrons_EnergyCorr
+#             takeLeptonsFrom["Electrons_MiniIso"] = c.Electrons_MiniIso
+#             takeLeptonsFrom["Electrons_MT2Activity"] = c.Electrons_MT2Activity
+#             takeLeptonsFrom["Electrons_MTW"] = c.Electrons_MTW
+#             takeLeptonsFrom["Electrons_TrkEnergyCorr"] = c.Electrons_TrkEnergyCorr
+#         
+#             takeLeptonsFrom["Muons"] = c.Muons
+#             takeLeptonsFrom["Muons_charge"] = c.Muons_charge
+#             takeLeptonsFrom["Muons_mediumID"] = c.Muons_mediumID
+#             takeLeptonsFrom["Muons_passIso"] = c.Muons_passIso
+#             takeLeptonsFrom["Muons_tightID"] = c.Muons_tightID
+#             takeLeptonsFrom["Muons_MiniIso"] = c.Muons_MiniIso
+#             takeLeptonsFrom["Muons_MT2Activity"] = c.Muons_MT2Activity
+#             takeLeptonsFrom["Muons_MTW"] = c.Muons_MTW
+             
         if dy:
             #print "muons=", muons
+            muons, invMass = getDyMuons(takeLeptonsFrom)
+            if muons is None:
+                print "WHAT IS GOING ON?"
+            
             var_DYMuons = ROOT.std.vector(TLorentzVector)()
             var_DYMuons_charge = ROOT.std.vector(int)()
             var_DYMuons_mediumID = ROOT.std.vector(bool)()
@@ -610,6 +682,9 @@ def main():
             
             var_DYMuons.push_back(takeLeptonsFrom.Muons[muons[0]])
             var_DYMuons.push_back(takeLeptonsFrom.Muons[muons[1]])
+            
+            var_DYMuonsSum = takeLeptonsFrom.Muons[muons[0]] + takeLeptonsFrom.Muons[muons[1]]
+            var_DYMuonsInvMass[0] = var_DYMuonsSum.M()
             
             var_DYMuons_charge.push_back(takeLeptonsFrom.Muons_charge[muons[0]])
             var_DYMuons_charge.push_back(takeLeptonsFrom.Muons_charge[muons[1]])
@@ -665,11 +740,13 @@ def main():
         leptons, leptonsCharge = None, None
         
         if two_leptons:
-            leptons, leptonsCharge, leptonFlavour = analysis_ntuples.getTwoLeptonsAfterSelection(takeLeptonsFrom, c.Jets[ljet])
+            leptons, leptonsCharge, leptonFlavour = analysis_ntuples.getTwoLeptonsAfterSelection(takeLeptonsFrom, jets[ljet], sc)
             if leptons is None:
                 continue
         else:
-            ll, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(takeLeptonsFrom, c.Jets[ljet])
+            #print takeLeptonsFrom
+            #exit(0)
+            ll, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(takeLeptonsFrom, jets[ljet])
             if ll is None:
                 continue
         
@@ -695,8 +772,8 @@ def main():
         var_Muons_MT2Activity = takeLeptonsFrom.Muons_MT2Activity
         var_Muons_MTW = takeLeptonsFrom.Muons_MTW
         
-        var_Jets = c.Jets
-        var_Jets_bDiscriminatorCSV = c.Jets_bDiscriminatorCSV
+        var_Jets = jets
+        var_Jets_bDiscriminatorCSV = jets_bDiscriminatorCSV
         
         var_NL[0] = nL
         
@@ -712,18 +789,6 @@ def main():
             var_GenParticles_ParentIdx = c.GenParticles_ParentIdx
             var_GenParticles_PdgId = c.GenParticles_PdgId
             var_GenParticles_Status = c.GenParticles_Status
-    
-        ###### Tracks ######
-        var_tracks = c.tracks
-        var_tracks_charge = c.tracks_charge
-        var_tracks_chi2perNdof = c.tracks_chi2perNdof
-        var_tracks_dxyVtx = c.tracks_dxyVtx
-        var_tracks_dzVtx = c.tracks_dzVtx
-        var_tracks_trackJetIso = c.tracks_trackJetIso
-        #var_tracks_trackLeptonIso = c.tracks_trackLeptonIso
-        var_tracks_trkMiniRelIso = c.tracks_trkMiniRelIso
-        var_tracks_trkRelIso = c.tracks_trkRelIso
-        var_tracks_trackQualityHighPurity = c.tracks_trackQualityHighPurity
         
         if not signal:
             var_triggerNames = c.TriggerNames
@@ -759,6 +824,7 @@ def main():
             
             tEvent.SetBranchAddress('DYMuons', var_DYMuons)
             tEvent.SetBranchAddress('DYMuons_charge', var_DYMuons_charge)
+            tEvent.SetBranchAddress('DYMuonsSum', var_DYMuonsSum)
             
             tEvent.SetBranchAddress('DYMuons_mediumID', var_DYMuons_mediumID)
             tEvent.SetBranchAddress('DYMuons_passIso', var_DYMuons_passIso)
@@ -828,10 +894,10 @@ def main():
 
             var_mtautau[0] = analysis_tools.Mtautau(pt, leptons[0], leptons[1])
     
-            var_DeltaEtaLeadingJetDilepton[0] = abs((leptons[0] + leptons[1]).Eta() - c.Jets[ljet].Eta())
-            var_DeltaPhiLeadingJetDilepton[0] = abs((leptons[0] + leptons[1]).DeltaPhi(c.Jets[ljet]))
+            var_DeltaEtaLeadingJetDilepton[0] = abs((leptons[0] + leptons[1]).Eta() - jets[ljet].Eta())
+            var_DeltaPhiLeadingJetDilepton[0] = abs((leptons[0] + leptons[1]).DeltaPhi(jets[ljet]))
     
-            var_dilepHt[0] = analysis_ntuples.htJet25Leps(c, leptons)
+            var_dilepHt[0] = analysis_ntuples.htJet25Leps(jets, leptons)
         
             var_deltaPhiMetLepton1[0] = abs(leptons[0].DeltaPhi(pt))
             var_deltaPhiMetLepton2[0] = abs(leptons[1].DeltaPhi(pt))
@@ -839,12 +905,12 @@ def main():
             
 
         metDHt = 9999999
-        if c.HT != 0:
-            metDHt = MET / c.HT
+        if HT != 0:
+            metDHt = MET / HT
 
         var_MetDHt[0] = metDHt
-        var_LeadingJetPartonFlavor[0] = c.Jets_partonFlavor[ljet]
-        var_LeadingJetQgLikelihood[0] = c.Jets_qgLikelihood[ljet]
+        var_LeadingJetPartonFlavor[0] = jets_partonFlavor[ljet]
+        var_LeadingJetQgLikelihood[0] = jets_qgLikelihood[ljet]
     
         tEvent.Fill()
 

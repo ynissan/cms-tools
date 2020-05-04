@@ -34,6 +34,8 @@ parser.add_argument('-bg', '--background', dest='bg', help='Background', action=
 parser.add_argument('-data', '--data', dest='data', help='Data', action='store_true')
 parser.add_argument('-tl', '--tl', dest='two_leptons', help='Two Leptons', action='store_true')
 parser.add_argument('-dy', '--dy', dest='dy', help='Drell-Yan', action='store_true')
+parser.add_argument('-sc', '--same_charge', dest='sc', help='Same Charge', action='store_true')
+parser.add_argument('-sam', '--sam', dest='sam', help='Sam Samples', action='store_true')
 args = parser.parse_args()
 
 print args

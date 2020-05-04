@@ -27,6 +27,7 @@ parser.add_argument('-sn', '--signal_ntuples', dest='signal_ntuples', help='Sign
 parser.add_argument('-dlc', '--data_lepton_collection', dest='data_lepton_collection', help='Data Lepton Collection', action='store_true')
 parser.add_argument('-tl', '--tl', dest='two_leptons', help='Two Leptons', action='store_true')
 parser.add_argument('-dy', '--dy', dest='drell_yan', help='Two Leptons', action='store_true')
+parser.add_argument('-sc', '--sc', dest='sc', help='Same Charge', action='store_true')
 args = parser.parse_args()
 
 hadd = args.hadd
@@ -41,6 +42,7 @@ signal_ntuples = args.signal_ntuples
 data_lepton_collection = args.data_lepton_collection
 two_leptons = args.two_leptons
 drell_yan = args.drell_yan
+sc = args.sc
 
 if (bg and signal) or not (bg or signal):
     signal = True
@@ -53,7 +55,10 @@ if bg:
         if lepton_collection:
             WORK_DIR = "/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollectionFilesMaps/"
         elif two_leptons:
-            WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/bg/skim"
+            if sc:
+                WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/bg/skim_sc"
+            else:
+                WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/bg/skim"
         elif drell_yan:
             WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/dy_x1x2x1/bg/skim"
     else:

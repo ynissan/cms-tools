@@ -16,6 +16,11 @@ do
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
         ;;
+         --sc)
+        SAME_SIGN=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         --tl)
         TWO_LEPTONS=true
         POSITIONAL+=("$1")
@@ -39,7 +44,11 @@ SCRIPT_PATH=$ANALYZER_PATH
 if [ -n "$SKIM" ]; then
     SCRIPT_PATH=$SKIMMER_PATH
     if [ -n "$TWO_LEPTONS" ]; then
-        OUTPUT_DIR=$TWO_LEPTONS_SKIM_OUTPUT_DIR
+        if [ -n "$SAME_SIGN" ]; then
+            OUTPUT_DIR=$TWO_LEPTONS_SAME_SIGN_SKIM_OUTPUT_DIR
+        else
+            OUTPUT_DIR=$TWO_LEPTONS_SKIM_OUTPUT_DIR
+        fi
     elif [ -n "$DY" ]; then
         OUTPUT_DIR=$DY_SKIM_OUTPUT_DIR
     else

@@ -40,6 +40,21 @@ crossSections = {
     "dm20" : 1.21547
 }
 
+samCrossSections = {
+    'mChipm100GeV' : 16.7972,
+    'mChipm115GeV' : 10.6756,
+    'mChipm140GeV' : 5.00942,
+    'mChipm160GeV' : 2.99724,
+    'mChipm180GeV' : 1.90530,
+    'mChipm200GeV' : 1.33562,
+    'mChipm225GeV' : 0.807605,
+    'mChipm250GeV' : 0.577314,
+    'mChipm275GeV' : 0.373229,
+    'mChipm300GeV' : 0.284855,
+    'mChipm400GeV' : 0.0887325,
+    'mChipm500GeV' : 0.0338387
+}
+
 dyCrossSections = {
     "DYJetsToLL_M-5to50_HT-70to100" : 301.2,
     "DYJetsToLL_M-5to50_HT-100to200" : 224.2,

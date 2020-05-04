@@ -1,4 +1,4 @@
-This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=pdflatex 2018.12.12)  5 MAR 2020 08:13
+This is pdfTeXk, Version 3.141592-1.40.3 (Web2C 7.5.6) (format=pdflatex 2018.8.6)  3 APR 2020 18:10
 entering extended mode
  %&-line parsing enabled.
 **./Significance.tex
@@ -254,7 +254,7 @@ LaTeX Warning: Float too large for page by 4.49939pt on input line 56.
 [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] (./Significance.aux) ) 
 Here is how much of TeX's memory you used:
  3773 strings out of 256214
- 51503 string characters out of 1916999
+ 51503 string characters out of 1917001
  134523 words of memory out of 1500000
  7043 multiletter control sequences out of 10000+200000
  7050 words of font info for 26 fonts, out of 1200000 for 2000
@@ -263,7 +263,7 @@ Here is how much of TeX's memory you used:
 </
 usr/share/texmf/fonts/type1/bluesky/cm/cmmi12.pfb></usr/share/texmf/fonts/type1
 /bluesky/cm/cmr12.pfb>
-Output written on Significance.pdf (1 page, 15784 bytes).
+Output written on Significance.pdf (1 page, 15759 bytes).
 PDF statistics:
  22 PDF objects out of 1000 (max. 8388607)
  1 named destinations out of 1000 (max. 131072)
