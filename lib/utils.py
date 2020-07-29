@@ -31,6 +31,14 @@ colorPalette = [
     { "name" : "orange", "fillColor" : "#ffbb00", "lineColor" : "#b78b12", "fillStyle" : 3444 },
     { "name" : "lightgreen", "fillColor" : "#42f498", "lineColor" : "#28a363", "fillStyle" : 3444 },
     { "name" : "red", "fillColor" : "#e60000", "lineColor" : "#c60000", "fillStyle" : 3444 },
+    { "name" : "velvet", "fillColor" : "#ff00c9", "lineColor" : "#ff8ee7", "fillStyle" : 3444 },
+    { "name" : "darkblue", "fillColor" : "#1B00DC", "lineColor" : "#8373FA", "fillStyle" : 3444 },
+    
+    { "name" : "maroon", "fillColor" : "#800000", "lineColor" : "#A52A2A", "fillStyle" : 3444 },
+    { "name" : "darkslategray", "fillColor" : "#2F4F4F", "lineColor" : "#708090", "fillStyle" : 3444 },
+    { "name" : "wheat", "fillColor" : "#F5DEB3", "lineColor" : "#FFDEAD", "fillStyle" : 3444 },
+    { "name" : "lightgray", "fillColor" : "#D3D3D3", "lineColor" : "#DCDCDC", "fillStyle" : 3444 },
+    
     { "name" : "black", "fillColor" : kBlack, "lineColor" : kBlack, "fillStyle" : 3444 },
 ]
 
@@ -85,6 +93,7 @@ signalCp = [
     { "name" : "blue", "fillColor" : "#000f96", "lineColor" : "#1d0089", "fillStyle" : 0 },
     { "name" : "grey", "fillColor" : "#898989", "lineColor" : "#636363", "fillStyle" : 0 },
     { "name" : "black", "fillColor" : "#012a6d", "lineColor" : "#01173a", "fillStyle" : 0 },
+    { "name" : "red", "fillColor" : "#ff0000", "lineColor" : "#ff0000", "fillStyle" : 0 },
 ]
 
 compoundTypes = {
@@ -94,15 +103,14 @@ compoundTypes = {
 }
 
 trainGroups = {
-    "dm0" : ["dm0p"],
-    "dm1" : ["dm1p"],
+    "dm1" : ["dm0p", "dm1p"],
     "low" : ["dm2p", "dm3p", "dm4p"],
     "dm7" : ["dm7p"],
     "dm9" : ["dm9p"],
     "high" : ["dm12p", "dm13p"]
 }
 
-trainGroupsOrder = ["dm0", "dm1", "low", "dm7", "dm9", "high"]
+trainGroupsOrder = ["dm1", "low", "dm7", "dm9", "high"]
 
 #Normal
 bgOrder = {
@@ -113,6 +121,7 @@ bgOrder = {
     "ZJetsToNuNu" : 4,
     "QCD" : 5,
     "WJetsToLNu" : 6,
+    "TT" : 7,
 }
 
 #Z Jets
@@ -144,7 +153,14 @@ class UOFlowTH1F(TH1F):
         super(UOFlowTH1F, self).Fill(min(max(x,self.GetXaxis().GetBinLowEdge(1)+self.epsilon),self.GetXaxis().GetBinLowEdge(self.GetXaxis().GetNbins()+1)-self.epsilon),weight)
 
 
+def isCoumpoundType(key):
+    #print "Looking for:" + key + "|:
+    if key in compoundTypes:
+        return True
+    return False
+
 def existsInCoumpoundType(key):
+    #print "Looking for:" + key + "|:
     for cType in compoundTypes:
         if key in compoundTypes[cType]:
             return True
@@ -464,12 +480,33 @@ def getStackSum(hist):
         newHist.Add(hists[i])
     return newHist
 
-def getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=True):
+def mkhistlogx(name, title, nbins, xmin, xmax):
+    logxmin = TMath.Log10(xmin)
+    logxmax = TMath.Log10(xmax)
+    binwidth = (logxmax-logxmin)/nbins
+    xbins = array.array('d',[0]*(nbins+1))##might need to be defined out as 0's
+    #xbins[0] = TMath.Power(10,logxmin)#xmin
+    for i in range(0,nbins+1):
+        xbins[i] = xmin + TMath.Power(10,logxmin+i*binwidth)    
+    #print 'xbins', xbins        
+    h = TH1F(name,title,nbins,xbins);
+    return h
+
+def getRealLogxHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=True):
+    h = mkhistlogx(name + "_logx", "", bins, minX, maxX)
+    return getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow, name + "_logx", True)
+
+def getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=True, tmpName="hsqrt", predefBins = False):
     if tree.GetEntries() == 0:
         return None
-    binsStr = ">>hsqrt(" + str(bins) + ","
-    #print """tree.Draw(""" + obs + binsStr + str(minX) + "," + str(maxX) + ")", condition+""")"""
-    tree.Draw(obs + binsStr + str(minX) + "," + str(maxX) + ")", condition)
+    binsStr = None
+    if predefBins:
+        binsStr = ">>" + tmpName
+        tree.Draw(obs + binsStr, condition, "e")
+    else:
+        binsStr = ">>" + tmpName + "(" + str(bins) + ","
+        #print """tree.Draw(""" + obs + binsStr + str(minX) + "," + str(maxX) + ")", condition+""")"""
+        tree.Draw(obs + binsStr + str(minX) + "," + str(maxX) + ")", condition, "e")
     hist = tree.GetHistogram().Clone(name)
     hist.SetDirectory(0)
     if overflow:
@@ -575,12 +612,19 @@ def getDmFromFileName(filename):
     print "Filename: " + filename
     return filename.split('_')[-1].split('Chi20Chipm')[0]
 
-def calcSignificance(sigHist, bgHist):
+def getPointFromSamFileName(filename):
+    print "Filename: " + filename
+    return "_".join(os.path.basename(filename).split('_')[0:2])
+
+def calcSignificance(sigHist, bgHist, ignoreCrossSection = False):
     sig = 0
     sigNum = 0
     bgNum = 0
     accumulate = False
     binsNumber = sigHist.GetNbinsX()
+    cs = 1
+    if not ignoreCrossSection:
+        cs = 0.1
     #print "binsNumber=", binsNumber
     for bin in range(1, binsNumber + 1):
         if accumulate:
@@ -595,12 +639,14 @@ def calcSignificance(sigHist, bgHist):
             accumulate = False
             if bin <= binsNumber and bgHist.Integral(bin+1, binsNumber) == 0:
                 sigNum += sigHist.Integral(bin, binsNumber)
-                sig = math.sqrt(sig**2 + (0.1 * (sigNum / math.sqrt(bgNum)))**2)
+                bgErr = 0.2 * bgNum
+                sig = math.sqrt(sig**2 + (cs * (sigNum / math.sqrt(bgNum + bgErr**2)))**2)
                 #print "**sigNum=", sigNum, "bgNum=", bgNum, "sig=", sig
                 break
             else:
                 #print "sigNum=", sigNum, "bgNum=", bgNum, "sig=", 0.1 * (sigNum / math.sqrt(bgNum))
-                sig = math.sqrt(sig**2 + (0.1 * (sigNum / math.sqrt(bgNum)))**2)
+                bgErr = 0.2 * bgNum
+                sig = math.sqrt(sig**2 + (cs * (sigNum / math.sqrt(bgNum + bgErr**2)))**2)
     return sig
 
 def calcZ(lhdH1, lhdH0):
@@ -663,3 +709,6 @@ def calcSignificanceLlhdSingleCount(sigHist, bgHist):
         print "WOW!! lhdH1", lhdH1, "lhdH0", lhdH0
         
     return calcZ(lhdH1, lhdH0)
+
+
+

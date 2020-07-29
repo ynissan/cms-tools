@@ -129,6 +129,7 @@ def main():
     var_Met = np.zeros(1,dtype=float)
     var_METPhi = np.zeros(1,dtype=float)
     var_CrossSection = np.zeros(1,dtype=float)
+    var_BranchingRatio = np.zeros(1,dtype=float)
     var_NJets = np.zeros(1,dtype=int)
     var_BTags = np.zeros(1,dtype=int)
     var_Ht = np.zeros(1,dtype=float)
@@ -246,6 +247,7 @@ def main():
     tEvent.Branch('Met', var_Met,'Met/D')
     tEvent.Branch('METPhi', var_METPhi,'METPhi/D')
     tEvent.Branch('CrossSection', var_CrossSection,'CrossSection/D')
+    tEvent.Branch('BranchingRatio', var_BranchingRatio,'BranchingRatio/D')
     tEvent.Branch('NJets', var_NJets,'NJets/I')
     tEvent.Branch('BTags', var_BTags,'BTags/I')
     tEvent.Branch('NL', var_NL,'NL/I')
@@ -388,7 +390,9 @@ def main():
                 crossSection = 1.21547
     elif bg and "DYJetsToLL_M-5to50_" in input_file:
         fileBasename = os.path.basename(input_file).split(".root")[0].split("RunIISummer16MiniAODv3.")[1].split("_TuneCUETP8M1")[0]
+        print "Checking DY CS for", fileBasename
         cs = utils.dyCrossSections.get(fileBasename)
+        print "Got cs", cs
     
     currLeptonCollectionMap = None
     currLeptonCollectionFileMapFile = None
@@ -417,6 +421,14 @@ def main():
 
         if not rightProcess:
             continue
+        
+#         if madHTgt is not None and c.madHT < madHTgt:
+#             print "Skipping because got madHTgt of", madHTgt, "but value is", c.madHT 
+#             continue
+#         elif if madHTlt is not None and c.madHT > madHTlt:
+#             print "Skipping because got madHTlt of", madHTlt, "but value is", c.madHT 
+#             continue
+            
         count += 1
         if not data:
             hHtAfterMadHt.Fill(c.madHT)
@@ -430,6 +442,8 @@ def main():
         #### GEN LEVEL STUFF ####
         nLGen = 0
         nLGenZ = 0
+        nX20 = 0
+        branching_ratio = 1
         if not data:
             partSize = c.GenParticles.size()
             for ipart in range(partSize):
@@ -437,8 +451,10 @@ def main():
                     nLGen += 1
                     if c.GenParticles_ParentId[ipart] == 1000023 or c.GenParticles_ParentId[ipart] == 23:
                         nLGenZ += 1
-    
-    
+                if abs(c.GenParticles_PdgId[ipart]) == 1000023:
+                    nX20 += 1
+                
+            
             if nLMap.get(nL) is not None:
                 nLMap[nL] += 1
             else:
@@ -451,7 +467,70 @@ def main():
                 nLGenMapZ[nLGenZ] += 1
             else:
                 nLGenMapZ[nLGenZ] = 1
+            
+            if nX20 > 0:
+                #print "nX20", nX20, "nLGenZ", nLGenZ
+                if nX20 == 1 and nLGenZ == 2:
+                    branching_ratio *= 0.2
+                elif nX20 == 2 and nLGenZ == 4:
+                    branching_ratio *= 0.04
+                elif nX20 == 1 and nLGenZ == 0:
+                    branching_ratio *= 1.8
+                    #print "******", branching_ratio
+                elif nX20 == 2 and nLGenZ == 0:
+                    branching_ratio *= 3.24
+                    
         #### END OF GEN LEVEL STUFF ####
+        
+        var_BranchingRatio[0] = branching_ratio
+        # if branching_ratio == 1.8:
+#             print "YEY"
+#         
+        # if nX20 > 0:
+#             if nX20 * 2 != nLGenZ:
+#                 print "WTF", nX20, nLGenZ
+        
+        # nX20 = 0
+#         nX10 = 0
+#         nX1pm = 0
+#         susy = 0
+#         susy_map = {}
+#         susy_status = {}
+#         partSize = c.GenParticles.size()
+#         for ipart in range(partSize):
+#             
+#             if abs(c.GenParticles_PdgId[ipart]) == 1000023:
+#                 nX20 += 1
+#             if abs(c.GenParticles_PdgId[ipart]) == 1000022:
+#                 nX10 += 1
+#             if abs(c.GenParticles_PdgId[ipart]) == 1000024:
+#                 nX1pm += 1
+#             if  analysis_tools.isSusy(abs(c.GenParticles_PdgId[ipart])):
+#                 susy += 1
+#                 if susy_map.get(abs(c.GenParticles_PdgId[ipart])) is not None:
+#                     susy_map[abs(c.GenParticles_PdgId[ipart])] +=1
+#                     susy_status[abs(c.GenParticles_PdgId[ipart])].append(abs(c.GenParticles_Status[ipart]))
+#                 else:
+#                     susy_map[abs(c.GenParticles_PdgId[ipart])] = 1
+#                     susy_status[abs(c.GenParticles_PdgId[ipart])] = []
+#                     susy_status[abs(c.GenParticles_PdgId[ipart])].append(abs(c.GenParticles_Status[ipart]))
+#         print susy
+#         print susy_map
+#         print susy_status
+        
+        
+        
+        #continue
+#         if nX20>1:
+#             print "MORE THAN 1!"
+#         if nX20<1:
+#             print "LESS THAN 1!", nX1pm, nX10
+#         if  nX1pm !=1:
+#             print "nX1pm not 1", nX1pm, nX10
+#         if nX1pm == 0 and nX20 == 0 and nX10 == 0:
+#             print "ALL 0!"
+#         print "============"
+#         continue
     
         var_NLGen[0] = nLGen
         var_NLGenZ[0] = nLGenZ

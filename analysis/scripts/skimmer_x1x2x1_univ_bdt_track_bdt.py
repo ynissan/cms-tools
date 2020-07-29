@@ -181,7 +181,9 @@ def main():
     track_bdt_weights = track_bdt + "/dataset/weights/TMVAClassification_BDT.weights.xml"
     track_bdt_vars = cut_optimisation.getVariablesFromXMLWeightsFile(track_bdt_weights)
     track_bdt_vars_map = cut_optimisation.getVariablesMemMap(track_bdt_vars)
-    track_bdt_reader = cut_optimisation.prepareReader(track_bdt_weights, track_bdt_vars, track_bdt_vars_map)
+    track_bdt_specs = cut_optimisation.getSpecSpectatorFromXMLWeightsFile(track_bdt_vars)
+    track_bdt_specs_map = cut_optimisation.getSpectatorsMemMap(track_bdt_vars)
+    track_bdt_reader = cut_optimisation.prepareReader(track_bdt_weights, track_bdt_vars, track_bdt_vars_map, track_bdt_specs, track_bdt_specs_map)
 
     print track_bdt_vars_map
 

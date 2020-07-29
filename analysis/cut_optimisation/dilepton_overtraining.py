@@ -41,7 +41,7 @@ if args.input_dir:
     inputDir = args.input_dir[0]
     
 if inputDir is None:
-    inputDir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/cut_optimisation/tmva/dilepton_bdt"
+    inputDir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/cut_optimisation/tmva/dilepton_bdt"
 
 
 ######## END OF CMDLINE ARGUMENTS ########
@@ -54,6 +54,8 @@ cuts = {"low":9,
         "all" : 18}
 
 memory = []
+
+logScale = True
 
 def plot_rocs():
     dirs = glob(inputDir + "/*")
@@ -123,6 +125,8 @@ def plot_rocs():
             testBGHist, trainBGHist, testSignalHist, trainSignalHist, method, name, title = mode
             print "Title=" + title
             pad = histPad.cd(pId)
+            if logScale:
+                pad.SetLogy()
             legend = TLegend(0.75, 0.7, 0.95, 0.9)
             memory.append(legend)
             

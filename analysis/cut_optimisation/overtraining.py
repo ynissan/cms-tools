@@ -8,7 +8,10 @@ import sys
 import math
 import os
 
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib")
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
+
 import cut_optimisation
 import utils
 
@@ -72,6 +75,8 @@ def plot_rocs():
     trainBGHist.GetXaxis().SetTitle("BDT Output")
     trainBGHist.GetYaxis().SetTitle("Arbitrary Units")
     trainBGHist.SetMaximum(maxY + 0.02)
+    
+    canvas.SetLogy()
 
     fillC = TColor.GetColor(cpRed["fillColor"])
     lineC = TColor.GetColor(cpRed["lineColor"])

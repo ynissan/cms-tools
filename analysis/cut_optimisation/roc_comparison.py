@@ -10,7 +10,9 @@ import math
 import pickle
 import os
 
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib")
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
 
 import cut_optimisation
 
@@ -37,6 +39,8 @@ args = parser.parse_args()
 print args
 
 bdt_files = args.bdt
+print bdt_files
+#exit(0)
 mlp_files = args.mlp
 rgs_files = args.rgs
 outputFile = "roc_comparison.pdf"
@@ -73,7 +77,8 @@ def get_TMVA_effs(tmva_output_file):
 memory = []
 
 def plot_rocs():
-	
+	#print bdt_files
+	#exit(0)
 	(testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names) = cut_optimisation.get_bdt_hists(bdt_files)
 	cut_optimisation.get_mlp_hists(mlp_files, testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names)
 	

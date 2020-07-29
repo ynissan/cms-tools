@@ -28,23 +28,23 @@ def get_method_hists(folders, method, gtestBGHists=None, gtrainBGHists=None, gte
         print "Opening file", inputFile
         print "get_method_hists condition=" + condition
         fin = TFile(inputFile)
-        #weight
+
         trainTree = fin.Get("dataset/TrainTree")
         testTree = fin.Get("dataset/TestTree")
         binsStr = ">>hsqrt(" + str(bins) + ")"
-        testTree.Draw(method + binsStr, "weight * (classID==0"+condition+")")
+        testTree.Draw(method + binsStr, "Weight * (classID==0"+condition+")")
         testSignalHist = testTree.GetHistogram().Clone()
         #print method + " testSignalHist=" + str(testSignalHist.Integral())
         testSignalHist.SetDirectory(0)
-        testTree.Draw(method + binsStr, "weight * (classID==1"+condition+")")
+        testTree.Draw(method + binsStr, "Weight * (classID==1"+condition+")")
         testBgHist = testTree.GetHistogram().Clone()
         #print method + " testBgHist=" + str(testBgHist.Integral())
         testBgHist.SetDirectory(0)
-        trainTree.Draw(method + binsStr, "weight * (classID==0"+condition+")")
+        trainTree.Draw(method + binsStr, "Weight * (classID==0"+condition+")")
         trainSignalHist = trainTree.GetHistogram().Clone()
         #print method + " trainSignalHist=" + str(trainSignalHist.Integral())
         trainSignalHist.SetDirectory(0)
-        trainTree.Draw(method + binsStr, "weight * (classID==1"+condition+")")
+        trainTree.Draw(method + binsStr, "Weight * (classID==1"+condition+")")
         trainBgHist = trainTree.GetHistogram().Clone()
         #print method + " trainBgHist=" + str(trainBgHist.Integral())
         trainBgHist.SetDirectory(0)
@@ -56,19 +56,19 @@ def get_method_hists(folders, method, gtestBGHists=None, gtrainBGHists=None, gte
         #print "======="
         #print minX, maxX
         binsStr = ">>hsqrt(" + str(bins) + ","
-        testTree.Draw(method + binsStr + str(minX) + "," + str(maxX) + ")", "weight * (classID==0"+condition+")")
+        testTree.Draw(method + binsStr + str(minX) + "," + str(maxX) + ")", "Weight * (classID==0"+condition+")")
         testSignalHist = testTree.GetHistogram().Clone()
         testSignalHist.SetDirectory(0)
         #print method + " testSignalHist=" + str(testSignalHist.Integral())
-        testTree.Draw(method + binsStr + str(minX) + "," + str(maxX) + ")", "weight * (classID==1"+condition+")")
+        testTree.Draw(method + binsStr + str(minX) + "," + str(maxX) + ")", "Weight * (classID==1"+condition+")")
         testBgHist = testTree.GetHistogram().Clone()
         testBgHist.SetDirectory(0)
         #print method + " testBgHist=" + str(testBgHist.Integral())
-        trainTree.Draw(method + binsStr + str(minX) + "," + str(maxX) + "", "weight * (classID==0"+condition+")")
+        trainTree.Draw(method + binsStr + str(minX) + "," + str(maxX) + "", "Weight * (classID==0"+condition+")")
         trainSignalHist = trainTree.GetHistogram().Clone()
         trainSignalHist.SetDirectory(0)
         #print method + " trainSignalHist=" + str(trainSignalHist.Integral())
-        trainTree.Draw(method + binsStr + str(minX) + "," + str(maxX) + "", "weight * (classID==1"+condition+")")
+        trainTree.Draw(method + binsStr + str(minX) + "," + str(maxX) + "", "Weight * (classID==1"+condition+")")
         trainBgHist = trainTree.GetHistogram().Clone()
         trainBgHist.SetDirectory(0)
         #print method + " trainBgHist=" + str(trainBgHist.Integral())

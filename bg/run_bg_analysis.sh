@@ -97,14 +97,21 @@ for type in ${BG_TYPES[@]}; do
     fi
 done
 
-# madHtFilesGt600=()
-# madHtFilesLt600=()
-# for type in ${MAD_HT_SPLIT_TYPES[@]}; do 
-#     madHtFilesGt600=("${madHtFilesGt600[@]}" ${BG_NTUPLES}/Summer16*${type}*_HT-*)
-#     madHtFilesLt600=("${madHtFilesLt600[@]}" ${BG_NTUPLES}/Summer16*${type}_TuneCUETP8M1*)
-# done
 
-#files=(${BG_NTUPLES}/Summer16.WJetsToLNu_HT-2500ToInf_*)
+
+madHtFilesGt600=()
+madHtFilesLt600=()
+for type in ${MAD_HT_SPLIT_TYPES[@]}; do 
+    madHtFilesGt600=("${madHtFilesGt600[@]}" ${BG_NTUPLES}/Summer16*${type}*_HT-*)
+    madHtFilesLt600=("${madHtFilesLt600[@]}" ${BG_NTUPLES}/Summer16*${type}_TuneCUETP8M1*)
+done
+
+# echo ${MAD_HT_SPLIT_TYPES[@]}
+# echo ${madHtFilesGt600[@]}
+# echo ${madHtFilesLt600[@]}
+# exit
+
+#files=()
 
 timestamp=$(date +%Y%m%d_%H%M%S%N)
 output_file="${WORK_DIR}/condor_submut.${timestamp}"
@@ -119,62 +126,86 @@ priority = 0
 EOM
 
 file_limit=0
-i=0
-count=0
-input_files=""
 files_per_job=20
 
-for fullname in "${files[@]}"; do
-    name=$(basename $fullname)
-    #echo "Checking $FILE_OUTPUT/$name"
-    skip=0
-    for ef in ${FILE_EXCLUDE_LIST[@]}; do
-        if [[ $name == *"$ef"* ]]; then
-            #echo "Skipping file $name"
-            skip=1
+for type in reg madHtFilesGt600 madHtFilesLt600; do
+
+    i=0
+    count=0
+    input_files=""
+    
+    echo "In loop running $type"
+    
+    extra_params=""
+    list="${files[@]}"
+    
+    if [ "$type" = "madHtFilesGt600" ]; then
+        echo "Running now type madHtFilesGt600"
+        extra_params="-madHTgt 600"
+        list="${madHtFilesGt600[@]}"
+    elif [ "$type" = "madHtFilesLt600" ]; then
+        echo "Running now type madHtFilesLt600"
+        extra_params="-madHTlt 600"
+        list="${madHtFilesLt600[@]}"
+    fi
+    
+    echo "extra_params $extra_params"
+    #echo $list
+    
+    for fullname in $list; do
+        name=$(basename $fullname)
+        #echo "Checking $FILE_OUTPUT/$name"
+        skip=0
+        for ef in ${FILE_EXCLUDE_LIST[@]}; do
+            if [[ $name == *"$ef"* ]]; then
+                #echo "Skipping file $name"
+                skip=1
+            fi
+        done
+    
+        if [[ $skip == 1 ]]; then
+            #echo "Really skipping"
+            continue
+        fi
+    
+        if [ -f "$FILE_OUTPUT/$name" ]; then
+            echo "$name exist. Skipping..."
+            continue
+        fi
+        input_files="$input_files $fullname"
+        ((count+=1))
+        if [ $(($count % $files_per_job)) == 0 ]; then
+            cmd="$BG_SCRIPTS/run_bg_analysis_single.sh -i \"$input_files\" $extra_params ${POSITIONAL[@]}"
+            echo $cmd
+cat << EOM >> $output_file
+arguments = $BG_SCRIPTS/run_bg_analysis_single.sh -i \"$input_files\" $extra_params ${POSITIONAL[@]}
+error = $ERR_OUTPUT/$(basename $fullname .root).err
+output = $STD_OUTPUT/$(basename $fullname .root).output
+Queue
+EOM
+        input_files=""
+        fi
+    
+        if [ $file_limit -gt 0 ]; then
+            #check limit
+            ((i+=1)) 
+            if [ $i -ge $file_limit ]; then
+                break
+            fi
         fi
     done
-    
-    if [[ $skip == 1 ]]; then
-        #echo "Really skipping"
-        continue
-    fi
-    
-    if [ -f "$FILE_OUTPUT/$name" ]; then
-        echo "$name exist. Skipping..."
-        continue
-    fi
-    input_files="$input_files $fullname"
-    ((count+=1))
-    if [ $(($count % $files_per_job)) == 0 ]; then
-        echo $BG_SCRIPTS/run_bg_analysis_single.sh -i \"$input_files\" ${POSITIONAL[@]}
+
+    if [ $(($count % $files_per_job)) != 0 ]; then
+        cmd="$BG_SCRIPTS/run_bg_analysis_single.sh -i \"$input_files\" $extra_params ${POSITIONAL[@]}"
+        echo $cmd
 cat << EOM >> $output_file
-arguments = $BG_SCRIPTS/run_bg_analysis_single.sh -i \"$input_files\" ${POSITIONAL[@]}
+arguments = $BG_SCRIPTS/run_bg_analysis_single.sh -i \"$input_files\" $extra_params ${POSITIONAL[@]}
 error = $ERR_OUTPUT/$(basename $fullname .root).err
 output = $STD_OUTPUT/$(basename $fullname .root).output
 Queue
 EOM
-    input_files=""
-    fi
-    
-    if [ $file_limit -gt 0 ]; then
-        #check limit
-        ((i+=1)) 
-        if [ $i -ge $file_limit ]; then
-            break
-        fi
     fi
 done
-
-if [ $(($count % $files_per_job)) != 0 ]; then
-    echo $BG_SCRIPTS/run_bg_analysis_single.sh -i \"$input_files\" ${POSITIONAL[@]}
-cat << EOM >> $output_file
-arguments = $BG_SCRIPTS/run_bg_analysis_single.sh -i \"$input_files\" ${POSITIONAL[@]}
-error = $ERR_OUTPUT/$(basename $fullname .root).err
-output = $STD_OUTPUT/$(basename $fullname .root).output
-Queue
-EOM
-fi
 
 echo SUBMITTING JOBS....
 

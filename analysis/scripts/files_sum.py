@@ -196,6 +196,9 @@ if hadd or all:
                 sumTypes[type] = {}
             if bg:
                 #if type == "DYJetsToLL" or type == "ST":
+                #if type == "TT":
+                #    sumTypes[type][types[1]] = True
+                #else:
                 types[2] = types[2].split("AOD")[0]
                 sumTypes[type][types[1] + "_" + types[2]] = True
                 #else:
@@ -245,7 +248,7 @@ if hadd or all:
                         command = "./merge_lepton_collection_map.py -o " + file + " -i " + files
                         print "Perorming:", command 
                         system(command)
-                        command = "gfal-copy " + file + " " + "srm://dcache-se-cms.desy.de" + WORK_DIR
+                        command = "gfal-copy -f " + file + " " + "srm://dcache-se-cms.desy.de" + WORK_DIR
                         print "Perorming:", command 
                         system(command)
                         command = "rm -rf ./tmp"

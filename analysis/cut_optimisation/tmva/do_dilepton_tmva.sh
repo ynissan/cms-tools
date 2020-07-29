@@ -60,6 +60,11 @@ for group in "${!SIM_GROUP[@]}"; do
         echo "Skipping ALL!!!!!"
         continue
     fi
+    
+    # if [[ $group != "all" ]]; then
+#         continue
+#     fi
+    
     value=${SIM_GROUP[$group]}
     input=""
     background=""
@@ -74,9 +79,9 @@ for group in "${!SIM_GROUP[@]}"; do
     mkdir $dir
     echo "Will run:"
     if [ -n "$TWO_LEPTONS" ]; then
-        cmd="$CONDOR_WRAPPER $CUT_OPTIMISATION_SCRIPTS/dilepton_tmva.py -i $input -bg  $BG_INPUT --no_norm -o $dir/${group}.root  --tl"
+        cmd="$CONDOR_WRAPPER $CUT_OPTIMISATION_SCRIPTS/dilepton_tmva.py -i $input -bg  $BG_INPUT -o $dir/${group}.root  --tl"
     else
-        cmd="$CONDOR_WRAPPER $CUT_OPTIMISATION_SCRIPTS/dilepton_tmva.py -i $input -bg  $BG_INPUT/${group}/single --no_norm -o $dir/${group}.root"
+        cmd="$CONDOR_WRAPPER $CUT_OPTIMISATION_SCRIPTS/dilepton_tmva.py -i $input -bg  $BG_INPUT/${group}/single -o $dir/${group}.root"
     fi
     echo $cmd
 cat << EOM >> $output_file
@@ -101,7 +106,7 @@ if [[ -z "$TWO_LEPTONS" ]]; then
     dir="$OUTPUT_DIR/${group}"
     mkdir $dir
     echo "Will run:"
-    cmd="$CONDOR_WRAPPER $CUT_OPTIMISATION_SCRIPTS/dilepton_tmva.py -i $input -bg  $BG_INPUT/${group}/single --no_norm -o $dir/${group}.root"
+    cmd="$CONDOR_WRAPPER $CUT_OPTIMISATION_SCRIPTS/dilepton_tmva.py -i $input -bg  $BG_INPUT/${group}/single -o $dir/${group}.root"
     echo $cmd
 cat << EOM >> $output_file
 arguments = $cmd
@@ -111,5 +116,5 @@ Queue
 EOM
 fi
 
-condor_submit $output_file
+#condor_submit $output_file
 rm $output_file

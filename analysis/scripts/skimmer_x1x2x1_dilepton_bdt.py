@@ -102,6 +102,24 @@ def main():
     
     var_passedMhtMet6pack = np.zeros(1,dtype=bool)
     
+    var_tautau = np.zeros(1,dtype=bool)
+    var_rr = np.zeros(1,dtype=bool)
+    var_rf = np.zeros(1,dtype=bool)
+    var_ff = np.zeros(1,dtype=bool)
+    var_sc = np.zeros(1,dtype=bool)
+    var_n_body = np.zeros(1,dtype=bool)
+    var_tc = np.zeros(1,dtype=bool)
+    var_other = np.zeros(1,dtype=bool)
+    
+    var_omega = np.zeros(1,dtype=bool)
+    var_rho_0 = np.zeros(1,dtype=bool)
+    var_eta = np.zeros(1,dtype=bool)
+    var_phi = np.zeros(1,dtype=bool)
+    var_eta_prime = np.zeros(1,dtype=bool)
+    var_j_psi = np.zeros(1,dtype=bool)
+    var_upsilon_1 = np.zeros(1,dtype=bool)
+    var_upsilon_2 = np.zeros(1,dtype=bool)
+
     tree.Branch('dilepBDT', var_dilepBDT,'dilepBDT/D')
     
     tree.Branch('tEffhMetMhtRealXMet2016', var_tEffhMetMhtRealXMet2016,'tEffhMetMhtRealXMet2016/D')
@@ -119,6 +137,24 @@ def main():
         if two_leptons:
             print "TWO_LEPTONS!"
             tree.Branch('leptons_ParentPdgId', 'std::vector<int>', var_leptons_ParentPdgId)
+            if bg:
+                tree.Branch('tautau', var_tautau,'tautau/b')
+                tree.Branch('rr', var_rr,'rr/b')
+                tree.Branch('rf', var_rf,'rf/b')
+                tree.Branch('ff', var_ff,'ff/b')
+                tree.Branch('sc', var_sc,'sc/b')
+                tree.Branch('n_body', var_n_body,'n_body/b')
+                tree.Branch('tc', var_tc,'tc/b')
+                tree.Branch('other', var_other,'other/b')
+                
+                tree.Branch('omega', var_omega,'omega/b')
+                tree.Branch('rho_0', var_rho_0,'rho_0/b')
+                tree.Branch('eta', var_eta,'eta/b')
+                tree.Branch('phi', var_phi,'phi/b')
+                tree.Branch('eta_prime', var_eta_prime,'eta_prime/b')
+                tree.Branch('j_psi', var_j_psi,'j_psi/b')
+                tree.Branch('upsilon_1', var_upsilon_1,'upsilon_1/b')
+                tree.Branch('upsilon_2', var_upsilon_2,'upsilon_2/b')
         else:
             tree.Branch('leptonParentPdgId', var_leptonParentPdgId, 'leptonParentPdgId/I')
             tree.Branch('trackParentPdgId', var_trackParentPdgId, 'trackParentPdgId/I')
@@ -173,19 +209,111 @@ def main():
             gens = [i for i in range(c.GenParticles.size())]
             #print "c.GenParticles.size() ", c.GenParticles.size(), gens
             if two_leptons:
+                if bg:
+                    var_tautau[0] = False
+                    var_rr[0] = False
+                    var_rf[0] = False
+                    var_ff[0] = False
+                    var_sc[0] = False
+                    var_n_body[0] = False
+                    var_tc[0] = False
+                    var_other[0] = False
+                    
+                    var_omega[0] = False
+                    var_rho_0[0] = False
+                    var_eta[0] = False
+                    var_phi[0] = False
+                    var_eta_prime[0] = False
+                    var_j_psi[0] = False
+                    var_upsilon_1[0] = False
+                    var_upsilon_2[0] = False
                 var_leptons_ParentPdgId = ROOT.std.vector(int)()
+                lepCans = []
+                numRealLeptons = 0
+                
                 for i in range(c.leptons.size()):
                     lepton = c.leptons[i]
                     min, minCan = analysis_ntuples.minDeltaRGenParticles(lepton, gens, c)
                     pdgId = c.GenParticles_ParentId[minCan]
-                    if min > 0.05:
+                    if min > 0.01:
                         print "BAD GEN!!! ", min
                         pdgId = 0
+                    else:
+                        if ((abs(c.GenParticles_PdgId[minCan]) == 13 and c.leptonFlavour == "Muons") or (abs(c.GenParticles_PdgId[minCan]) == 11 and c.leptonFlavour == "Electrons")) and c.leptons_charge[i] * c.GenParticles_PdgId[minCan] < 0:
+                            numRealLeptons += 1
+                            lepCans.append(minCan)
+                        else:
+                            print "BAD GEN MATCH! "
+                            pdgId = 0
+                        # parentIdx = c.GenParticles_ParentIdx[minCan]
+#                         if c.GenParticles_PdgId[parentIdx] != pdgId:
+#                             print "WHAT?!?! ******** c.GenParticles_PdgId[parentIdx]", c.GenParticles_PdgId[parentIdx], "pdgId", pdgId, "parentIdx", parentIdx
+#                             print "c.GenParticles_ParentId[minCan]", c.GenParticles_ParentId[minCan], "c.GenParticles_PdgId[parentIdx]", c.GenParticles_PdgId[parentIdx]
                     var_leptons_ParentPdgId.push_back(pdgId)
                 tree.SetBranchAddress('leptons_ParentPdgId', var_leptons_ParentPdgId)
+                if bg:
+                    if numRealLeptons == 0:
+                        var_ff[0] = True
+                    elif numRealLeptons == 1:
+                        var_rf[0] = True
+                    else:
+                        var_rr[0] = True
+                        if abs(var_leptons_ParentPdgId[0]) == abs(var_leptons_ParentPdgId[1]) == 15:
+                            var_tautau[0] = True
+                        
+                        parentIdx = c.GenParticles_ParentIdx[lepCans[0]]
+                        parentIdx2 = c.GenParticles_ParentIdx[lepCans[1]]
+                        if parentIdx == -1 and parentIdx2 == -1:
+                            var_other[0] = True
+                            if abs(var_leptons_ParentPdgId[0]) == abs(var_leptons_ParentPdgId[1]) == 223:
+                                var_omega[0] = True
+                            elif abs(var_leptons_ParentPdgId[0]) == abs(var_leptons_ParentPdgId[1]) == 113:
+                                var_rho_0[0] = True
+                            elif abs(var_leptons_ParentPdgId[0]) == abs(var_leptons_ParentPdgId[1]) == 221:
+                                var_eta[0] = True
+                            elif abs(var_leptons_ParentPdgId[0]) == abs(var_leptons_ParentPdgId[1]) == 333:
+                                var_phi[0] = True
+                            elif abs(var_leptons_ParentPdgId[0]) == abs(var_leptons_ParentPdgId[1]) == 331:
+                                var_eta_prime[0] = True
+                            elif abs(var_leptons_ParentPdgId[0]) == abs(var_leptons_ParentPdgId[1]) == 443:
+                                var_j_psi[0] = True
+                            elif abs(var_leptons_ParentPdgId[0]) == abs(var_leptons_ParentPdgId[1]) == 553:
+                                var_upsilon_1[0] = True
+                            elif abs(var_leptons_ParentPdgId[0]) == abs(var_leptons_ParentPdgId[1]) == 100553:
+                                var_upsilon_2[0] = True
+                        else:
+                            if c.GenParticles_ParentIdx[lepCans[0]] == c.GenParticles_ParentIdx[lepCans[1]]:
+                                numOfParentChildren = 0
+                                for i in range(c.GenParticles.size()):
+                                    if c.GenParticles_Status[i] == 1 and c.GenParticles_ParentIdx[i] == parentIdx:
+                                        numOfParentChildren += 1
+                                #print "numOfParentChildren=", numOfParentChildren, "var_leptons_ParentPdgId[0]", var_leptons_ParentPdgId[0], "c.GenParticles_PdgId[parentIdx]", c.GenParticles_PdgId[parentIdx], "c.GenParticles_PdgId[parentIdx2]", c.GenParticles_PdgId[parentIdx2]
+                                #print lepCans
+                                if numOfParentChildren == 2:
+                                    var_sc[0] = True
+                                    if abs(c.GenParticles_PdgId[parentIdx]) == 223:
+                                        var_omega[0] = True
+                                    elif abs(c.GenParticles_PdgId[parentIdx]) == 113:
+                                        var_rho_0[0] = True
+                                    elif abs(c.GenParticles_PdgId[parentIdx]) == 221:
+                                        var_eta[0] = True
+                                    elif abs(c.GenParticles_PdgId[parentIdx]) == 333:
+                                        var_phi[0] = True
+                                    elif abs(c.GenParticles_PdgId[parentIdx]) == 331:
+                                        var_eta_prime[0] = True
+                                    elif abs(c.GenParticles_PdgId[parentIdx]) == 443:
+                                        var_j_psi[0] = True
+                                    elif abs(c.GenParticles_PdgId[parentIdx]) == 553:
+                                        var_upsilon_1[0] = True
+                                    elif abs(c.GenParticles_PdgId[parentIdx]) == 100553:
+                                        var_upsilon_2[0] = True
+                                else:
+                                    var_n_body[0] = True
+                            else:
+                                var_tc[0] = True
             else:
                 min, minCan = analysis_ntuples.minDeltaRGenParticles(c.lepton, gens, c)
-                #print min, minCan
+                #print min, m inCan
                 pdgId = c.GenParticles_ParentId[minCan]
                 if min > 0.05:
                  #   print "BAD GEN LEPTON!!!"

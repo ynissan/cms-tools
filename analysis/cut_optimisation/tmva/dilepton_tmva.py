@@ -88,12 +88,15 @@ signalWeight = weights / totalEvents
 print "Average weight=" + str(signalWeight)
 
 for sTree in sTrees:
-    dataloader.AddSignalTree(sTree, signalWeight);
+    #dataloader.AddSignalTree(sTree, signalWeight)
+    dataloader.AddSignalTree(sTree, 1)
 
-dataloader.SetBackgroundWeightExpression("Weight")
+#dataloader.SetBackgroundWeightExpression("Weight")
 bFileNames =  glob(bg_dir + "/*");
 for f in bFileNames:
     if "QCD" in f:
+        print "Skipping QCD", f
+        #exit(0)
         continue
     bFile = TFile(f, "update")
     bgFiles.append(bFile)
@@ -132,15 +135,11 @@ dataloader.AddVariable('deltaR', 'F')
 dataloader.AddVariable('pt3', 'F')
 if two_leptons:
     dataloader.AddVariable('dileptonPt', 'F')
-    dataloader.AddVariable('mtautau', 'F')
     dataloader.AddVariable('mt1', 'F')
-    dataloader.AddVariable('mt2', 'F')
     dataloader.AddVariable('leptons[0].Pt()', 'F')
     dataloader.AddVariable('leptons[1].Pt()', 'F')
     dataloader.AddVariable('leptons[0].Eta()', 'F')
-    dataloader.AddVariable('leptons[1].Eta()', 'F')
     dataloader.AddVariable('leptons[0].Phi()', 'F')
-    dataloader.AddVariable('leptons[1].Phi()', 'F')
     dataloader.AddVariable('deltaPhiMetLepton1', 'F')
     dataloader.AddVariable('deltaPhiMetLepton2', 'F')
 else:
@@ -154,22 +153,29 @@ else:
     dataloader.AddVariable('track.Eta()', 'F')
     dataloader.AddVariable('lepton.Phi()', 'F')
     dataloader.AddVariable('track.Phi()', 'F')
+    dataloader.AddVariable('Mt2', 'F')
 
 dataloader.AddVariable('DeltaEtaLeadingJetDilepton', 'F')
 dataloader.AddVariable('DeltaPhiLeadingJetDilepton', 'F')
 dataloader.AddVariable('dilepHt', 'F')
 dataloader.AddVariable('Ht', 'F')
-dataloader.AddVariable('LeadingJetQgLikelihood', 'F')
 dataloader.AddVariable('MinDeltaPhiMhtJets', 'F')
 dataloader.AddVariable('Mht', 'F')
 dataloader.AddVariable('LeadingJetPt', 'F')
 dataloader.AddVariable('LeadingJet.Eta()', 'F')
-dataloader.AddVariable('Mt2', 'F')
 dataloader.AddVariable('MaxCsv25', 'F')
 dataloader.AddVariable('invMass', 'F')
 
+#new removal
+#dataloader.AddVariable('mtautau', 'F')
+#dataloader.AddVariable('Mt2', 'F')
+#dataloader.AddVariable('mt2', 'F')
+#dataloader.AddVariable('LeadingJetQgLikelihood', 'F')
+#dataloader.AddVariable('leptons[1].Phi()', 'F')
+#dataloader.AddVariable('leptons[1].Eta()', 'F')
+
 # Spectators
-#dataloader.AddSpectator('invMass','F')
+dataloader.AddSpectator('Weight','F')
 
 # cuts defining the signal and background sample
 preselectionCut = TCut("")
@@ -177,7 +183,7 @@ if no_norm:
 	dataloader.PrepareTrainingAndTestTree(preselectionCut, "SplitMode=random:!V:NormMode=None")
 else:
 	dataloader.PrepareTrainingAndTestTree(preselectionCut, "SplitMode=random:!V")
-factory.BookMethod(dataloader, TMVA.Types.kBDT, "BDT", "NTrees=180:MaxDepth=3")
+factory.BookMethod(dataloader, TMVA.Types.kBDT, "BDT", "NTrees=120:MaxDepth=3")
 if all:
 	factory.BookMethod(dataloader, TMVA.Types.kMLP, "MLP", "H:!V:NeuronType=tanh:VarTransform=N:NCycles=600:HiddenLayers=N+5:TestRate=5:!UseRegulator" )
 #factory.BookMethod(dataloader, TMVA.Types.kMLP, "MLP_ANN", "" );

@@ -43,7 +43,7 @@ if args.input_dir:
     inputDir = args.input_dir[0]
 
 if inputDir is None:
-    inputDir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/cut_optimisation/tmva/dilepton_bdt"
+    inputDir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/cut_optimisation/tmva/dilepton_bdt"
 
 ######## END OF CMDLINE ARGUMENTS ########
 
@@ -91,7 +91,7 @@ def plot_rocs():
     for dir in dirs:
     
         name = os.path.basename(dir)
-        cut = cuts[name]
+        #cut = cuts[name]
         print "Processing " + name
     
         file = [dir]
