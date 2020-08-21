@@ -131,7 +131,10 @@ def main():
     var_CrossSection = np.zeros(1,dtype=float)
     var_BranchingRatio = np.zeros(1,dtype=float)
     var_NJets = np.zeros(1,dtype=int)
-    var_BTags = np.zeros(1,dtype=int)
+    var_BTagsLoose = np.zeros(1,dtype=int)
+    var_BTagsMedium = np.zeros(1,dtype=int)
+    var_BTagsDeepLoose = np.zeros(1,dtype=int)
+    var_BTagsDeepMedium = np.zeros(1,dtype=int)
     var_Ht = np.zeros(1,dtype=float)
     var_MHTPhi = np.zeros(1,dtype=float)
     var_madHT = np.zeros(1,dtype=float)
@@ -183,6 +186,9 @@ def main():
 
     var_Jets = ROOT.std.vector(TLorentzVector)()
     var_Jets_bDiscriminatorCSV = ROOT.std.vector(double)()
+    var_Jets_bJetTagDeepCSVBvsAll = ROOT.std.vector(double)()
+    var_Jets_electronEnergyFraction = ROOT.std.vector(double)()
+    var_Jets_muonEnergyFraction = ROOT.std.vector(double)()
 
     var_LeadingJetPartonFlavor = np.zeros(1,dtype=int)
     var_LeadingJetQgLikelihood = np.zeros(1,dtype=float)
@@ -193,6 +199,11 @@ def main():
     var_MinCsv25 = np.zeros(1,dtype=float)
     var_MaxCsv30 = np.zeros(1,dtype=float)
     var_MaxCsv25 = np.zeros(1,dtype=float)
+    
+    var_MinDeepCsv30 = np.zeros(1,dtype=float)
+    var_MinDeepCsv25 = np.zeros(1,dtype=float)
+    var_MaxDeepCsv30 = np.zeros(1,dtype=float)
+    var_MaxDeepCsv25 = np.zeros(1,dtype=float)
     #### TRACKS ####
 
     var_tracks          = ROOT.std.vector(TLorentzVector)()
@@ -207,6 +218,7 @@ def main():
     var_tracks_trackQualityHighPurity = ROOT.std.vector(bool)()
     
     var_leptons         = ROOT.std.vector(TLorentzVector)()
+    var_leptonsIdx      = ROOT.std.vector(int)()
     var_leptons_charge  = ROOT.std.vector(int)()
     var_leptonFlavour   = ROOT.std.string()
     
@@ -249,7 +261,11 @@ def main():
     tEvent.Branch('CrossSection', var_CrossSection,'CrossSection/D')
     tEvent.Branch('BranchingRatio', var_BranchingRatio,'BranchingRatio/D')
     tEvent.Branch('NJets', var_NJets,'NJets/I')
-    tEvent.Branch('BTags', var_BTags,'BTags/I')
+    tEvent.Branch('BTagsLoose', var_BTagsLoose,'BTagsLoose/I')
+    tEvent.Branch('BTagsMedium', var_BTagsMedium,'BTagsMedium/I')
+    tEvent.Branch('BTagsDeepLoose', var_BTagsDeepLoose,'BTagsDeepLoose/I')
+    tEvent.Branch('BTagsDeepMedium', var_BTagsDeepMedium,'BTagsDeepMedium/I')
+    
     tEvent.Branch('NL', var_NL,'NL/I')
     tEvent.Branch('NLGen', var_NLGen,'NLGen/I')
     tEvent.Branch('NLGenZ', var_NLGenZ,'NLGenZ/I')
@@ -306,6 +322,10 @@ def main():
 
     tEvent.Branch('Jets', 'std::vector<TLorentzVector>', var_Jets)
     tEvent.Branch('Jets_bDiscriminatorCSV', 'std::vector<double>', var_Jets_bDiscriminatorCSV)
+    tEvent.Branch('Jets_bJetTagDeepCSVBvsAll', 'std::vector<double>', var_Jets_bJetTagDeepCSVBvsAll)
+    
+    tEvent.Branch('Jets_electronEnergyFraction', 'std::vector<double>', var_Jets_electronEnergyFraction)
+    tEvent.Branch('Jets_muonEnergyFraction', 'std::vector<double>', var_Jets_muonEnergyFraction)
 
     tEvent.Branch('LeadingJetPartonFlavor', var_LeadingJetPartonFlavor,'LeadingJetPartonFlavor/I')
     tEvent.Branch('LeadingJetQgLikelihood', var_LeadingJetQgLikelihood,'LeadingJetQgLikelihood/D')
@@ -332,8 +352,14 @@ def main():
     tEvent.Branch('MaxCsv30', var_MaxCsv30,'MaxCsv30/D')
     tEvent.Branch('MaxCsv25', var_MaxCsv25,'MaxCsv25/D')
     
+    tEvent.Branch('MinDeepCsv30', var_MinDeepCsv30,'MinDeepCsv30/D')
+    tEvent.Branch('MinDeepCsv25', var_MinDeepCsv25,'MinDeepCsv25/D')
+    tEvent.Branch('MaxDeepCsv30', var_MaxDeepCsv30,'MaxDeepCsv30/D')
+    tEvent.Branch('MaxDeepCsv25', var_MaxDeepCsv25,'MaxDeepCsv25/D')
+    
     if two_leptons:
         tEvent.Branch('leptons', 'std::vector<TLorentzVector>', var_leptons)
+        tEvent.Branch('leptonsIdx', 'std::vector<int>', var_leptonsIdx)
         tEvent.Branch('leptons_charge', 'std::vector<int>', var_leptons_charge)
         tEvent.Branch('leptonFlavour', 'std::string', var_leptonFlavour)
         
@@ -547,6 +573,11 @@ def main():
         
         jets = c.Jets
         jets_bDiscriminatorCSV = c.Jets_bDiscriminatorCSV
+        jets_bJetTagDeepCSVBvsAll = c.Jets_bJetTagDeepCSVBvsAll
+        jets_electronEnergyFraction = c.Jets_electronEnergyFraction
+        jets_muonEnergyFraction = c.Jets_muonEnergyFraction
+        
+        
         jets_partonFlavor = c.Jets_partonFlavor
         jets_qgLikelihood = c.Jets_qgLikelihood
         
@@ -601,6 +632,11 @@ def main():
             
             jets = ROOT.std.vector(TLorentzVector)()
             jets_bDiscriminatorCSV = ROOT.std.vector(double)()
+            jets_bJetTagDeepCSVBvsAll = ROOT.std.vector(double)()
+            
+            jets_electronEnergyFraction = ROOT.std.vector(double)()
+            jets_muonEnergyFraction = ROOT.std.vector(double)()
+            
             jets_partonFlavor = ROOT.std.vector(int)()
             jets_qgLikelihood = ROOT.std.vector(double)()
             
@@ -608,6 +644,9 @@ def main():
                 if abs(c.Muons[muons[0]].DeltaR(c.Jets[i])) > 0.1 and abs(c.Muons[muons[1]].DeltaR(c.Jets[i])) > 0.1:
                     jets.push_back(c.Jets[i])
                     jets_bDiscriminatorCSV.push_back(c.Jets_bDiscriminatorCSV[i])
+                    jets_bJetTagDeepCSVBvsAll.push_back(c.Jets_bJetTagDeepCSVBvsAll[i])
+                    jets_electronEnergyFraction.push_back(c.Jets_electronEnergyFraction[i])
+                    jets_muonEnergyFraction.push_back(c.Jets_muonEnergyFraction[i])
                     jets_partonFlavor.push_back(c.Jets_partonFlavor[i])
                     jets_qgLikelihood.push_back(c.Jets_qgLikelihood[i])
             
@@ -633,7 +672,11 @@ def main():
                     var_tracks_trkRelIso.push_back(c.tracks_trkRelIso[i])
                     var_tracks_trackQualityHighPurity.push_back(bool(c.tracks_trackQualityHighPurity[i]))
         
-        nj, btags, ljet = analysis_ntuples.eventNumberOfJets25Pt2_4Eta_Loose(jets, jets_bDiscriminatorCSV)
+        nj, btagsLoose, ljet = analysis_ntuples.eventNumberOfJets25Pt2_4Eta_Loose(jets, jets_bDiscriminatorCSV)
+        nj, btagsMedium, ljet = analysis_ntuples.eventNumberOfJets25Pt2_4Eta_Medium(jets, jets_bDiscriminatorCSV)
+        nj, btagsDeepLoose, ljet = analysis_ntuples.eventNumberOfJets25Pt2_4Eta_DeepLoose(jets, jets_bJetTagDeepCSVBvsAll)
+        nj, btagsDeepsMedium, ljet = analysis_ntuples.eventNumberOfJets25Pt2_4Eta_DeepMedium(jets, jets_bJetTagDeepCSVBvsAll)
+        
         if ljet is None:
             #print "No ljet:",ljet 
             continue
@@ -647,6 +690,12 @@ def main():
         if var_MinDeltaPhiMetJets[0] < 0.4: continue
         if MHT < 100: continue
         if MET < 120: continue
+        #Keep 2 b-tags for two-leptons
+        # if two_leptons:
+#             if btags > 2: continue
+#         else:
+#             if btags > 0: continue
+                
         ## END PRECUTS##
         
         afterMET += 1
@@ -668,15 +717,22 @@ def main():
         var_Mt2[0] = c.MT2
         var_CrossSection[0] = crossSection
         var_NJets[0] = nj
-        var_BTags[0] = btags
+        var_BTagsLoose[0] = btagsLoose
+        var_BTagsMedium[0] = btagsMedium
+        var_BTagsDeepLoose[0] = btagsDeepLoose
+        var_BTagsDeepMedium[0] = btagsDeepsMedium
+        
         var_LeadingJetPt[0] = jets[ljet].Pt()
         var_LeadingJet = jets[ljet]
 
         var_MinCsv30[0], var_MaxCsv30[0] = analysis_ntuples.minMaxCsv(jets, jets_bDiscriminatorCSV, 30)
         var_MinCsv25[0], var_MaxCsv25[0] = analysis_ntuples.minMaxCsv(jets, jets_bDiscriminatorCSV, 25)
         
-        if var_MaxCsv25[0] > 0.7:
-            continue
+        var_MinDeepCsv30[0], var_MaxDeepCsv30[0] = analysis_ntuples.minMaxCsv(jets, jets_bJetTagDeepCSVBvsAll, 30)
+        var_MinDeepCsv25[0], var_MaxDeepCsv25[0] = analysis_ntuples.minMaxCsv(jets, jets_bJetTagDeepCSVBvsAll, 25)
+        
+        #if var_MaxCsv25[0] > 0.7:
+        #    continue
         
         afterBTAGS += 1
         
@@ -816,10 +872,10 @@ def main():
             takeLeptonsFrom.Muons_MTW = var_Muons_MTW
         
         ll, leptonCharge, leptonFlavour = None, None, None
-        leptons, leptonsCharge = None, None
+        leptons, leptonsIdx, leptonsCharge = None, None, None
         
         if two_leptons:
-            leptons, leptonsCharge, leptonFlavour = analysis_ntuples.getTwoLeptonsAfterSelection(takeLeptonsFrom, jets[ljet], sc)
+            leptons, leptonsIdx, leptonsCharge, leptonFlavour = analysis_ntuples.getTwoLeptonsAfterSelection(takeLeptonsFrom, jets[ljet], sc)
             if leptons is None:
                 continue
         else:
@@ -853,6 +909,9 @@ def main():
         
         var_Jets = jets
         var_Jets_bDiscriminatorCSV = jets_bDiscriminatorCSV
+        var_Jets_bJetTagDeepCSVBvsAll = jets_bJetTagDeepCSVBvsAll
+        var_Jets_electronEnergyFraction = jets_electronEnergyFraction
+        var_Jets_muonEnergyFraction = jets_muonEnergyFraction
         
         var_NL[0] = nL
         
@@ -920,7 +979,10 @@ def main():
         tEvent.SetBranchAddress('GenParticles_PdgId', var_GenParticles_PdgId)
         tEvent.SetBranchAddress('Jets', var_Jets)
         tEvent.SetBranchAddress('Jets_bDiscriminatorCSV', var_Jets_bDiscriminatorCSV)
-    
+        tEvent.SetBranchAddress('Jets_bJetTagDeepCSVBvsAll', var_Jets_bJetTagDeepCSVBvsAll)
+        tEvent.SetBranchAddress('Jets_electronEnergyFraction', var_Jets_electronEnergyFraction)
+        tEvent.SetBranchAddress('Jets_muonEnergyFraction', var_Jets_muonEnergyFraction)
+
         tEvent.SetBranchAddress('tracks', var_tracks)
         tEvent.SetBranchAddress('tracks_charge', var_tracks_charge)
         tEvent.SetBranchAddress('tracks_chi2perNdof', var_tracks_chi2perNdof)
@@ -941,12 +1003,16 @@ def main():
             tEvent.SetBranchAddress('TriggerVersion', var_triggerVersion)
 
         var_leptons = ROOT.std.vector(TLorentzVector)()
+        var_leptonsIdx = ROOT.std.vector(int)()
         var_leptons_charge = ROOT.std.vector(int)()
         var_leptonFlavour = None
         
         if two_leptons:
             var_leptons.push_back(leptons[0])
             var_leptons.push_back(leptons[1])
+            
+            var_leptonsIdx.push_back(leptonsIdx[0])
+            var_leptonsIdx.push_back(leptonsIdx[1])
         
             var_leptons_charge.push_back(leptonsCharge[0])
             var_leptons_charge.push_back(leptonsCharge[1])
@@ -954,6 +1020,7 @@ def main():
             var_leptonFlavour = ROOT.std.string(leptonFlavour)
             
             tEvent.SetBranchAddress('leptons', var_leptons)
+            tEvent.SetBranchAddress('leptonsIdx', var_leptonsIdx)
             tEvent.SetBranchAddress('leptons_charge', var_leptons_charge)
             tEvent.SetBranchAddress('leptonFlavour', var_leptonFlavour)
             
@@ -982,7 +1049,6 @@ def main():
             var_deltaPhiMetLepton2[0] = abs(leptons[1].DeltaPhi(pt))
             
             
-
         metDHt = 9999999
         if HT != 0:
             metDHt = MET / HT

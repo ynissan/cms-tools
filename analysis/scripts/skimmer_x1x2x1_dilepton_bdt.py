@@ -137,6 +137,7 @@ def main():
         if two_leptons:
             print "TWO_LEPTONS!"
             tree.Branch('leptons_ParentPdgId', 'std::vector<int>', var_leptons_ParentPdgId)
+            
             if bg:
                 tree.Branch('tautau', var_tautau,'tautau/b')
                 tree.Branch('rr', var_rr,'rr/b')
@@ -191,7 +192,7 @@ def main():
 
     for ientry in range(nentries):
         if ientry % 1000 == 0:
-            print "Processing " + str(ientry)
+            print "Processing " + str(ientry) + " out of " + str(nentries)
         c.GetEntry(ientry)
     
         for k, v in univ_bdt_vars_map.items():
@@ -236,14 +237,14 @@ def main():
                     min, minCan = analysis_ntuples.minDeltaRGenParticles(lepton, gens, c)
                     pdgId = c.GenParticles_ParentId[minCan]
                     if min > 0.01:
-                        print "BAD GEN!!! ", min
+                        #print "BAD GEN!!! ", min
                         pdgId = 0
                     else:
                         if ((abs(c.GenParticles_PdgId[minCan]) == 13 and c.leptonFlavour == "Muons") or (abs(c.GenParticles_PdgId[minCan]) == 11 and c.leptonFlavour == "Electrons")) and c.leptons_charge[i] * c.GenParticles_PdgId[minCan] < 0:
                             numRealLeptons += 1
                             lepCans.append(minCan)
                         else:
-                            print "BAD GEN MATCH! "
+                            #print "BAD GEN MATCH! "
                             pdgId = 0
                         # parentIdx = c.GenParticles_ParentIdx[minCan]
 #                         if c.GenParticles_PdgId[parentIdx] != pdgId:
@@ -353,12 +354,14 @@ def main():
             var_tEffhMetMhtRealXMht2018[0] = 1
             
             var_passedMhtMet6pack[0] = analysis_ntuples.passTrig(c, "MhtMet6pack")
-                
+        
         tree.Fill()
-
+        
+    print "DONE SKIMMING"
     if iFile.GetListOfKeys().Contains("lumiSecs") or tree.GetEntries() != 0:
         fnew = TFile(output_file,'recreate')
         tree.Write()
+        print "Done writing tree..."
         if iFile.GetListOfKeys().Contains("lumiSecs"):
             lumiSecs = iFile.Get("lumiSecs")
             lumiSecs.Write("lumiSecs")

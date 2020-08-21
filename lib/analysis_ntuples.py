@@ -7,6 +7,9 @@ BTAG_CSV_LOOSE = 0.5426
 BTAG_CSV_MEDIUM = 0.8484
 BTAG_CSV_LOOSE2 = 0.46
 
+BTAG_DEEP_CSV_LOOSE = 0.2219
+BTAG_DEEP_CSV_MEDIUM = 0.6324
+
 # def printTree(event, pId, space=0):
 # 	particle = event.GenParticles[l1]
 # 	delim = ""
@@ -64,17 +67,26 @@ def numberOfJets(jets, jets_bDiscriminatorCSV, pt, eta, csv):
                 btags += 1
     return nj, btags, leadingJet
 
-def numberOfJets30Pt2_4Eta_Loose(event):
-	return numberOfJets(event.Jets, event.Jets_bDiscriminatorCSV, 30, 2.4, BTAG_CSV_LOOSE)
-
-def numberOfJets25Pt2_4Eta_Loose(event):
-	return numberOfJets(event.Jets, event.Jets_bDiscriminatorCSV, 25, 2.4, BTAG_CSV_LOOSE)
-
-def numberOfJets25Pt2_4Eta_Loose2(event):
-	return numberOfJets(event.Jets, event.Jets_bDiscriminatorCSV, 25, 2.4, BTAG_CSV_LOOSE2)
+# def numberOfJets30Pt2_4Eta_Loose(event):
+# 	return numberOfJets(event.Jets, event.Jets_bDiscriminatorCSV, 30, 2.4, BTAG_CSV_LOOSE)
+# 
+# def numberOfJets25Pt2_4Eta_Loose(event):
+# 	return numberOfJets(event.Jets, event.Jets_bDiscriminatorCSV, 25, 2.4, BTAG_CSV_LOOSE)
+# 
+# def numberOfJets25Pt2_4Eta_Loose2(event):
+# 	return numberOfJets(event.Jets, event.Jets_bDiscriminatorCSV, 25, 2.4, BTAG_CSV_LOOSE2)
 
 def eventNumberOfJets25Pt2_4Eta_Loose(jets, jets_bDiscriminatorCSV):
-    return numberOfJets(jets, jets_bDiscriminatorCSV, 25, 2.4, BTAG_CSV_LOOSE2)
+    return numberOfJets(jets, jets_bDiscriminatorCSV, 25, 2.4, BTAG_CSV_LOOSE)
+
+def eventNumberOfJets25Pt2_4Eta_Medium(jets, jets_bDiscriminatorCSV):
+    return numberOfJets(jets, jets_bDiscriminatorCSV, 25, 2.4, BTAG_CSV_MEDIUM)
+
+def eventNumberOfJets25Pt2_4Eta_DeepLoose(jets, jets_bDiscriminatorCSV):
+    return numberOfJets(jets, jets_bDiscriminatorCSV, 25, 2.4, BTAG_DEEP_CSV_LOOSE)
+    
+def eventNumberOfJets25Pt2_4Eta_DeepMedium(jets, jets_bDiscriminatorCSV):
+    return numberOfJets(jets, jets_bDiscriminatorCSV, 25, 2.4, BTAG_DEEP_CSV_MEDIUM)
 
 def numberOfLooseBTags(event):
 	loose = 0
@@ -273,6 +285,7 @@ def getSingleLeptonAfterSelection(c, leadingJet):
 def getTwoLeptonsAfterSelection(c, leadingJet, same_sign = False):
     leps = []
     lepCharges = []
+    lepIdx = []
     lepFlavour = None
     nL = 0
     
@@ -281,44 +294,47 @@ def getTwoLeptonsAfterSelection(c, leadingJet, same_sign = False):
         if e.Pt() <= 25 and bool(c.Electrons_passIso[i]):
             nL += 1
             if nL > 2:
-                return None, None, None
+                return None, None, None, None
             leps.append(e)
+            lepIdx.append(i)
             lepCharges.append(c.Electrons_charge[i])
             lepFlavour = "Electrons"
     if nL == 1:
-        return None, None, None
+        return None, None, None, None
     if nL == 2:
         if same_sign:
             if lepCharges[0] * lepCharges[1] < 0:
-                return None, None, None
+                return None, None, None, None
         else:
             if lepCharges[0] * lepCharges[1] > 0:
-                return None, None, None
+                return None, None, None, None
     
     for i in range(c.Muons.size()):
         m = c.Muons[i]
         if m.Pt() <= 25 and m.Pt()>=2 and bool(c.Muons_mediumID[i]) and abs(m.DeltaR(leadingJet)) >= 0.4:
             nL += 1
             if nL > 2:
-                return None, None, None
+                return None, None, None, None
             leps.append(m)
+            lepIdx.append(i)
             lepCharges.append(c.Muons_charge[i])
             lepFlavour = "Muons"
     
     if nL != 2:
-        return None, None, None
+        return None, None, None, None
     
     if same_sign:
         if lepCharges[0] * lepCharges[1] < 0:
-            return None, None, None
+            return None, None, None, None
     else:
         if lepCharges[0] * lepCharges[1] > 0:
-            return None, None, None
+            return None, None, None, None
     
     if leps[0].Pt() < leps[1].Pt():
         leps = [leps[1], leps[0]]
+        lepIdx = [lepIdx[1], lepIdx[0]]
         lepCharges = [lepCharges[1], lepCharges[0]]
     
-    return leps, lepCharges, lepFlavour
+    return leps, lepIdx, lepCharges, lepFlavour
     
     

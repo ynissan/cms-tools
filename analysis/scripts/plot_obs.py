@@ -74,7 +74,7 @@ bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/bg/skim_dilepton_signal_bdt/
 # signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signal_bdt_all/single/higgsino_mu100_dm3p28Chi20Chipm.root"
 
 signal_dir = [#"/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm4p30Chi20Chipm.root",
-              #"/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm3p28Chi20Chipm.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm3p28Chi20Chipm.root",
               "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm1p92Chi20Chipm.root"]
 
 calculatedLumi = None
@@ -252,11 +252,13 @@ plot_fast = True
 plot_title = True
 plot_overflow = False
 plot_significance = False
-plot_error = True
+plot_error = False
 
 plot_sc = False
 plot_data = False
 plot_ratio = False
+
+create_canvas = False
 
 plot_custom_ratio = 0
 #cutomRatios = [  [["DiBoson"],["TTJets"]],  [["WJetsToLNu"],["ZJetsToNuNu"]]  ]
@@ -273,8 +275,8 @@ ignore_bg_files = ["TT_TuneCUETP8M2T4_13TeV-powheg-pythia8.root", "TTJets_TuneCU
 
 blind_data = True
 
-plot_log_x = True
-plot_real_log_x = True
+plot_log_x = False
+plot_real_log_x = False
 
 logXplots = ["invMass"]
 
@@ -400,8 +402,10 @@ histograms_defs = [
     #{ "obs" : "DYMuons[1].Pt()", "minX" : 15, "maxX" : 100, "bins" : 30 },
     
     #NORMAL
-    { "obs" : "invMass", "minX" : 0.1, "maxX" : 13, "bins" : 2000, "units" : "GeV" },
+    { "obs" : "invMass", "minX" : 0.1, "maxX" : 13, "bins" : 30, "units" : "GeV" },
     { "obs" : "dilepBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
+    { "obs" : "Electrons.Pt()", "minX" : 0, "maxX" : 500, "bins" : 50 },
+    { "obs" : "Muons.Pt()", "minX" : 0, "maxX" : 500, "bins" : 50 },
     { "obs" : "dileptonPt", "minX" : 0, "maxX" : 100, "bins" : 30 },
     { "obs" : "deltaPhi", "minX" : 0, "maxX" : 3.2, "bins" : 30 },
     { "obs" : "deltaEta", "minX" : 0, "maxX" : 4, "bins" : 30 },
@@ -415,6 +419,7 @@ histograms_defs = [
     { "obs" : "DeltaPhiLeadingJetDilepton", "minX" : 0, "maxX" : 4, "bins" : 30 },
     { "obs" : "dilepHt", "minX" : 0, "maxX" : 400, "bins" : 30 },
     { "obs" : "NJets", "minX" : 0, "maxX" : 7, "bins" : 7 },
+    { "obs" : "BTags", "minX" : 0, "maxX" : 3, "bins" : 3 },
     
      { "obs" : "Met", "minX" : 120, "maxX" : 2000, "bins" : 30 },
      { "obs" : "Mht", "minX" : 0, "maxX" : 700, "bins" : 30 },
@@ -463,9 +468,11 @@ if plot_2l:
     ])
     cuts.extend([
         {"name":"invMass", "title": "invMass", "condition" : "Met >= 200 && invMass < 12  && invMass > 0.4"},
-        {"name":"real", "title": "real", "condition" : "Met >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && !(invMass > 0.95 && invMass < 1.06)"},
+        #{"name":"real", "title": "real", "condition" : "Met >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && !(invMass > 0.95 && invMass < 1.06)"},
         
-        {"name":"dilepBDT", "title": "dilepBDT", "condition" : "Met >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1"},
+        #{"name":"dilepBDT", "title": "dilepBDT", "condition" : "Met >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && !(invMass > 0.95 && invMass < 1.06) && dilepBDT > 0.1"},
+        {"name":"noBDT", "title": "noBDT", "condition" : "BTags == 0 && (leptons[1].Pt() <= 3.5 || deltaR <= 0.3) && Mht >= 220 &&  Met >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81)"},
+        {"name":"orthSOS", "title": "orthSOS", "condition" : "BTags == 0 && (leptons[1].Pt() <= 3.5 || deltaR <= 0.3) && Mht >= 220 &&  Met >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1"},
         
         #{"name":"tc", "title": "tc", "condition" : 'Met >= 200 && invMass < 30 && leptonFlavour == "Muons" && tc * (!tautau)'},
         #{"name":"tautau", "title": "tautau", "condition" : '(Met >= 200 && invMass < 30 && leptonFlavour == "Muons") * (tautau)'},
@@ -785,25 +792,6 @@ def plotRatio(c1, pad, memory, dataHist, newBgHist, hist_def, title = "Data / BG
     memory.append(line)
     c1.Modified()
 
-def getFilesForCompoundType(cType, sumTypes, directory):
-    print "In getFilesForCompoundType"
-    bgFiles = []
-    print utils.compoundTypes[cType]
-    for miniType in utils.compoundTypes[cType]:
-        #if miniType not in sumTypes:
-        #    print "skipping", miniType, "because not in", sumTypes
-        #    continue
-        print "globbing", miniType
-        if "ST_" in miniType:
-            print "In ST***"
-            print "Globing " + directory + "/" + miniType + ".root"
-            bgFiles.extend(glob(directory + "/" + miniType + ".root"))
-        else:
-            print "Globing " + directory + "/" + miniType + "_*.root"
-            bgFiles.extend(glob(directory + "/" + miniType + "_*.root"))
-
-    return bgFiles
-
 def createAllHistograms(histograms, sumTypes):
     
     foundReqObs = False
@@ -918,7 +906,7 @@ def createAllHistograms(histograms, sumTypes):
                     for bgChooseType in choose_bg_files_list:
                         if utils.isCoumpoundType(bgChooseType):
                             print "Compound", bgChooseType
-                            bgFilesToPlot.extend(getFilesForCompoundType(bgChooseType, sumTypes, bg_dir))
+                            bgFilesToPlot.extend(utils.getFilesForCompoundType(bgChooseType, bg_dir))
                             print bgFilesToPlot
                         else:
                             print "Not in compound", bgChooseType
@@ -955,7 +943,7 @@ def createAllHistograms(histograms, sumTypes):
                 
                 print "Creating compound type", cType
                 
-                rootFiles = getFilesForCompoundType(cType, sumTypes, bg_dir)
+                rootFiles = utils.getFilesForCompoundType(cType, bg_dir)
                 if len(rootFiles):
                     if plot_fast:
                         createPlotsFast(rootFiles, cType, histograms, weight)
@@ -972,7 +960,7 @@ def createAllHistograms(histograms, sumTypes):
                 for bgChooseType in choose_bg_files_list:
                     if utils.isCoumpoundType(bgChooseType):
                         print bgChooseType, "is a compound type!"
-                        bgFilesToPlot.extend(getFilesForCompoundType(bgChooseType, sumTypes, sc_bg_dir))
+                        bgFilesToPlot.extend(utils.getFilesForCompoundType(bgChooseType, sc_bg_dir))
                     else:
                         bgFilesToPlot.extend(glob(sc_bg_dir + "/*" + bgChooseType + "_*.root"))
             else:
@@ -1073,7 +1061,9 @@ def main():
     if not plot_single:
         histPad.Divide(2,2)
     
-    canvasFile = TFile("canvas_" + output_file.split(".")[0] + ".root", "recreate")
+    canvasFile = None
+    if create_canvas:
+        canvasFile = TFile("canvas_" + output_file.split(".")[0] + ".root", "recreate")
     
     c1.Print(output_file+"[");
 
@@ -1229,7 +1219,7 @@ def main():
             if plot_signal:
                 for i in range(len(sigHists)):
                     sigHists[i].SetMinimum(0.01)
-                    sigHists[i].SetLineWidth(1)
+                    sigHists[i].SetLineWidth(2)
             if foundBg and plot_signal:
                 for i in range(len(sigHists)):
                     sigHists[i].Draw("HIST SAME " + errorStr)
@@ -1366,7 +1356,8 @@ def main():
             if pId > 4:
                 pId = 1
                 c1.Print(output_file);
-                c1.Write(cutName)
+                if create_canvas:
+                    c1.Write(cutName)
                 needToDraw = False;
             
             linBgHist = newBgHist.Clone()
@@ -1482,7 +1473,8 @@ def main():
             if pId > 4:
                 pId = 1
                 c1.Print(output_file);
-                c1.Write(cutName)
+                if create_canvas:
+                    c1.Write(cutName)
                 needToDraw = False;
             
         
@@ -1499,11 +1491,13 @@ def main():
                     pad.Clear()
         if needToDraw:
             c1.Print(output_file);
-            c1.Write(cutName)
+            if create_canvas:
+                c1.Write(cutName)
         
     c1.Print(output_file+"]");
-    print "Just created", canvasFile.GetName()
-    canvasFile.Close()
+    if create_canvas:
+        print "Just created", canvasFile.GetName()
+        canvasFile.Close()
     
     
     print "End: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S')

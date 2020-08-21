@@ -163,7 +163,6 @@ dataloader.AddVariable('MinDeltaPhiMhtJets', 'F')
 dataloader.AddVariable('Mht', 'F')
 dataloader.AddVariable('LeadingJetPt', 'F')
 dataloader.AddVariable('LeadingJet.Eta()', 'F')
-dataloader.AddVariable('MaxCsv25', 'F')
 dataloader.AddVariable('invMass', 'F')
 
 #new removal
@@ -173,12 +172,18 @@ dataloader.AddVariable('invMass', 'F')
 #dataloader.AddVariable('LeadingJetQgLikelihood', 'F')
 #dataloader.AddVariable('leptons[1].Phi()', 'F')
 #dataloader.AddVariable('leptons[1].Eta()', 'F')
+#dataloader.AddVariable('MaxCsv25', 'F')
 
 # Spectators
 dataloader.AddSpectator('Weight','F')
 
 # cuts defining the signal and background sample
-preselectionCut = TCut("")
+preselectionCut = None
+if two_leptons:
+    preselectionCut = TCut("BTagsDeepMedium == 0")
+else:
+    preselectionCut = TCut("")
+
 if no_norm:
 	dataloader.PrepareTrainingAndTestTree(preselectionCut, "SplitMode=random:!V:NormMode=None")
 else:
@@ -191,6 +196,11 @@ factory.TrainAllMethods()
 factory.TestAllMethods()
 factory.EvaluateAllMethods()
 outputFile.Close()
+
+# tEvent.Branch('BTagsLoose', var_BTagsLoose,'BTagsLoose/I')
+# tEvent.Branch('BTagsMedium', var_BTagsMedium,'BTagsMedium/I')
+# tEvent.Branch('BTagsDeepLoose', var_BTagsDeepLoose,'BTagsDeepLoose/I')
+# tEvent.Branch('BTagsDeepMedium', var_BTagsDeepMedium,'BTagsDeepMedium/I')
 
 
 

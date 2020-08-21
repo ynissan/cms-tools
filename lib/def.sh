@@ -6,16 +6,20 @@ SIMS=( ["dm13"]="/nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggs
 #SIMS=(["dm7"]="/nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggsino/pMSSM/pMSSM_MCMC1_38_870285_dm7_m160.root")
 SIMS=(["dm051"]="/nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggsino/M1M2Scan/ntuple_sidecar/higgsino_mu100_dm0.51Chi20Chipm.root")
 
-declare -A SIM_GROUP=(["low"]="dm2p dm3p dm4p"\
-           ["dm1"]="dm1p dm0p" \
-           ["dm5"]="dm5p" \
-           ["dm7"]="dm7p" \
-           ["dm9"]="dm9p" \
-           ["high"]="dm12p dm13p" \
-           ["all"]="dm1p dm0p dm2p dm3p dm4p" \
-           )
+# declare -A SIM_GROUP=(["low"]="dm2p dm3p dm4p"\
+#            ["dm1"]="dm1p dm0p" \
+#            ["dm5"]="dm5p" \
+#            ["dm7"]="dm7p" \
+#            ["dm9"]="dm9p" \
+#            ["high"]="dm12p dm13p" \
+#            ["all"]="dm1p dm0p dm2p dm3p dm4p" \
+#            )
 
 #declare -A SIM_GROUP=(["all"]="dm")
+
+declare -A SIM_GROUP=(
+           ["all"]="dm1p dm0p dm2p dm3p dm4p" \
+           )
 
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$CMSSW_BASE/src/cms-tools/lib/classes"
 

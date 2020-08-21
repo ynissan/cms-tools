@@ -8,3 +8,13 @@ sim_x10x20x10/simData*
 analysis/output/**
 *.pyc
 *.pdf
+analysis/scripts/latex/*.pdf
+analysis/scripts/latex/*.aux
+analysis/scripts/latex/*.log
+analysis/scripts/latex/*.out
+analysis/scripts/latex/*.tex
+analysis/scripts/*.root
+Production/test/condorSub/checkVomsTar.sh
+Production/test/condorSub/jobExecCondor.jdl
+Production/test/condorSub/jobExecCondor.sh
+Production/test/condorSub/step1.sh

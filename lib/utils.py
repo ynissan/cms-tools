@@ -10,6 +10,7 @@ import time
 import array
 import commands
 import math
+from glob import glob
 
 gSystem.Load('LumiSectMap_C')
 from ROOT import LumiSectMap
@@ -121,7 +122,7 @@ bgOrder = {
     "ZJetsToNuNu" : 4,
     "QCD" : 5,
     "WJetsToLNu" : 6,
-    "TT" : 7,
+    #"TT" : 7,
 }
 
 #Z Jets
@@ -165,6 +166,26 @@ def existsInCoumpoundType(key):
         if key in compoundTypes[cType]:
             return True
     return False
+
+def getFilesForCompoundType(cType, directory):
+    print "In getFilesForCompoundType"
+    bgFiles = []
+    #print compoundTypes[cType]
+    for miniType in compoundTypes[cType]:
+        #if miniType not in sumTypes:
+        #    print "skipping", miniType, "because not in", sumTypes
+        #    continue
+        #print "globbing", miniType
+        if "ST_" in miniType:
+            #print "In ST***"
+            #print "Globing " + directory + "/" + miniType + ".root"
+            bgFiles.extend(glob(directory + "/" + miniType + ".root"))
+        else:
+            #print "Globing " + directory + "/" + miniType + "_*.root"
+            bgFiles.extend(glob(directory + "/" + miniType + "_*.root"))
+
+    return bgFiles
+
 
 def createHistograms(definitions, cutsDef) :
     histograms = {}
@@ -507,6 +528,8 @@ def getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=
         binsStr = ">>" + tmpName + "(" + str(bins) + ","
         #print """tree.Draw(""" + obs + binsStr + str(minX) + "," + str(maxX) + ")", condition+""")"""
         tree.Draw(obs + binsStr + str(minX) + "," + str(maxX) + ")", condition, "e")
+        #print obs + binsStr + str(minX) + "," + str(maxX) + ")"
+        #print condition
     hist = tree.GetHistogram().Clone(name)
     hist.SetDirectory(0)
     if overflow:

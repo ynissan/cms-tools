@@ -107,6 +107,7 @@ if [ -z "$SAM" ]; then
         filename=`echo $(basename $sim .root) | awk -F"_" '{print $1"_"$2"_"$3}'`
         echo $filename
         tb=$filename
+        found_group=false
         for group in "${!SIM_GROUP[@]}"; do
             if [[ $group == "all" ]]; then
                 echo "Skipping ALL!!!!!"
@@ -125,9 +126,14 @@ if [ -z "$SAM" ]; then
                 fi
             done
             if [[ "$found" = "true" ]]; then
+                found_group=true
                 break
             fi
         done
+        if [[ $found_group == "false" ]]; then
+            echo "No Group. Skipping..."
+            continue
+        fi
         cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_dilepton_bdt.py -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -bdt $BDT_DIR/$tb $@"
         echo "Will run:"
         echo $cmd
