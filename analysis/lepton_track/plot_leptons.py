@@ -54,6 +54,11 @@ else:
 #     input_file = "/afs/desy.de/user/n/nissanuv/ntupleHub/SignalNtuples/higgsino_mu100_dm1p92Chi20Chipm_1.root"
     
     #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm2p51Chi20Chipm.root"
+    
+    input_file = "/afs/desy.de/user/n/nissanuv/ntupleHub/SignalNtuplesSplit/higgsino_mu100_dm3p28Chi20Chipm_1_1.root"
+    
+    input_file = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm3p28Chi20Chipm.root"
+    
 if args.output_file:
     output_file = args.output_file[0]
 else:
@@ -129,7 +134,7 @@ def main():
 #     print input_file
 #     c.Add(input_file)
     
-    c = TChain('TreeMaker2/PreSelection')
+    c = TChain('tEvent')
     print "Opening", input_file
     c.Add(input_file)
     
@@ -145,8 +150,12 @@ def main():
         #{"name":"mediumId", "title": "mediumId", "funcs":[mediumId, pt]},
         #{"name":"passIso", "title": "passIso", "funcs":[passIso, pt]},
         #{"name":"tightID", "title": "tightID", "funcs":[tightID, pt]},
+        
+        
         {"name":"mediuimId", "title": "mediuimId", "funcs": [mediumId, deltaRLJ]},
         {"name":"all", "title": "all", "funcs":[passIso, mediumId, pt, deltaRLJ, deltaPhiLJ]},
+        
+        
         #{"name":"pt", "title": "pt > 1.8", "funcs":[pt]},
         #{"name":"tightID", "title": "Eta < 2.6, deltaEtaLL < 1, deltaEtaLJ < 3.8", "funcs":[eta, deltaEtaLL, deltaEtaLJ]},
         #{"name":"Pt_Eta_dxy_dz", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06", "funcs":[eta, pt, dxy, dz]},
@@ -223,28 +232,28 @@ def main():
             print "Processing " + str(ientry)
         c.GetEntry(ientry)
         
-        if c.tracks.size() == 0:
-            continue
+        #if c.tracks.size() == 0:
+        #    continue
         
-        rightProcess = analysis_ntuples.isX1X2X1Process(c)
-        if not rightProcess:
-            print "No"
-            notCorrect += 1
-            continue
+#         rightProcess = analysis_ntuples.isX1X2X1Process(c)
+#         if not rightProcess:
+#             print "No"
+#             notCorrect += 1
+#             continue
             
-        nj, btags, ljet = analysis_ntuples.numberOfJets25Pt2_4Eta_Loose(c)
+        nj, btags, ljet = analysis_ntuples.eventNumberOfJets25Pt2_4Eta_DeepMedium(c.Jets, c.Jets_bJetTagDeepCSVBvsAll)
         if ljet is None: continue
-        #if btags > 0: continue
-        #if nj < 1: continue 
+        if btags > 0: continue
+        if nj < 1: continue 
         
-        minDeltaPhiMetJets = analysis_ntuples.minDeltaPhiMetJets25Pt2_4Eta(c)
-        if minDeltaPhiMetJets < 0.4: continue
-        if c.MHT < 100: continue
-        if c.MET < 120: continue
+        #minDeltaPhiMetJets = analysis_ntuples.minDeltaPhiMetJets25Pt2_4Eta(c)
+        if c.MinDeltaPhiMetJets < 0.4: continue
+        if c.Mht < 100: continue
+        if c.Met < 120: continue
 
-        minCsv25, maxCsv25 = analysis_ntuples.minMaxCsv(c, 25)
-        
-        if maxCsv25 > 0.7:
+        minCsv25, maxCsv25 = analysis_ntuples.minMaxCsv(c.Jets, c.Jets_bJetTagDeepCSVBvsAll, 25)
+        #csv medium b jet veto
+        if maxCsv25 > 0.6324:
             continue
         
         genZL, genNonZL = analysis_ntuples.classifyGenZLeptons(c)
@@ -268,6 +277,9 @@ def main():
         for i in genZL:
             l = c.GenParticles[i]
             minT, minCanT = analysis_ntuples.minDeltaRLepTracks(l, c)
+            if minCanT is None:
+                continue
+            #print "minT", minT, "minCanT", minCanT
             if minT < 0.01 and c.GenParticles_PdgId[i] * c.tracks_charge[minCanT] < 0:
                 #print "GenParticles_PdgId[i]=", c.GenParticles_PdgId[i], " tracks_charge[minCanT]=", c.tracks_charge[minCanT]
                 totalZlGenTracks += 1
@@ -277,7 +289,7 @@ def main():
         zl = 0
         passedLep = 0
         
-        for lepVal in ["Electrons", -11], ["Muons", -13]:#[["Muons", -13]]:#[["Electrons", -11]]:
+        for lepVal in [["Electrons", -11]]:#, ["Muons", -13]:#[["Muons", -13]]:#[["Electrons", -11]]:
             #print lepVal
             lepFlavour = lepVal[0]
             lepCharge = lepVal[1]
@@ -303,8 +315,8 @@ def main():
                 #print histograms
                 #exit(0)
 
-                minZ, minCanZ = analysis_ntuples.minDeltaRGenParticles(l, genZL, c)
-                minNZ, minCanNZ = analysis_ntuples.minDeltaRGenParticles(l, genNonZL, c)
+                minZ, minCanZ = analysis_ntuples.minDeltaRGenParticles(l, genZL, c.GenParticles)
+                minNZ, minCanNZ = analysis_ntuples.minDeltaRGenParticles(l, genNonZL, c.GenParticles)
                 min = 0
                 
                 type = None
@@ -345,7 +357,9 @@ def main():
                 if type == "Zl":
                     totalZlTracks += 1
                 
-                track = c.tracks[minCanT] if minT < 0.01 else None
+                track = None
+                if minCanT is not None:
+                    track = c.tracks[minCanT] if minT < 0.01 else None
                 
                 for cut in cuts:
                     if passedCutsCount[type].get(cut['name']) is None:

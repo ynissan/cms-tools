@@ -11,6 +11,8 @@ import array
 import commands
 import math
 from glob import glob
+import random
+import string
 
 gSystem.Load('LumiSectMap_C')
 from ROOT import LumiSectMap
@@ -24,8 +26,8 @@ TH1D.SetDefaultSumw2()
 # from ROOT import LeptonCollection
 
 colorPalette = [
-    { "name" : "green", "fillColor" : "#0bb200", "lineColor" : "#099300", "fillStyle" : 3444 },
     { "name" : "yellow", "fillColor" : "#fcf802", "lineColor" : "#e0dc00", "fillStyle" : 3444 },
+    { "name" : "green", "fillColor" : "#0bb200", "lineColor" : "#099300", "fillStyle" : 3444 },
     { "name" : "blue", "fillColor" : "#0033cc", "lineColor" : "#00279e", "fillStyle" : 3444 },
     { "name" : "purple", "fillColor" : "#f442f1", "lineColor" : "#a82ba6", "fillStyle" : 3444 },
     { "name" : "tourq", "fillColor" : "#00ffe9", "lineColor" : "#2a8c83", "fillStyle" : 3444 },
@@ -521,15 +523,23 @@ def getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=
     if tree.GetEntries() == 0:
         return None
     binsStr = None
+    # if tmpName == "hsqrt":
+#         letters = string.ascii_lowercase
+#         result_str = ''.join(random.choice(letters) for i in range(6))
+#         tmpName += result_str
+#         print "new tmp name is", tmpName
     if predefBins:
         binsStr = ">>" + tmpName
         tree.Draw(obs + binsStr, condition, "e")
     else:
-        binsStr = ">>" + tmpName + "(" + str(bins) + ","
-        #print """tree.Draw(""" + obs + binsStr + str(minX) + "," + str(maxX) + ")", condition+""")"""
-        tree.Draw(obs + binsStr + str(minX) + "," + str(maxX) + ")", condition, "e")
-        #print obs + binsStr + str(minX) + "," + str(maxX) + ")"
-        #print condition
+        if bins is not None:
+            binsStr = ">>" + tmpName + "(" + str(bins) + ","
+            #print """tree.Draw(""" + obs + binsStr + str(minX) + "," + str(maxX) + ")", condition+""")"""
+            tree.Draw(obs + binsStr + str(minX) + "," + str(maxX) + ")", condition, "e")
+            #print obs + binsStr + str(minX) + "," + str(maxX) + ")"
+            #print condition
+        else:
+            tree.Draw(obs + ">>" + tmpName, condition, "e")
     hist = tree.GetHistogram().Clone(name)
     hist.SetDirectory(0)
     if overflow:

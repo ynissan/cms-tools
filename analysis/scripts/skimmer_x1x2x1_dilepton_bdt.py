@@ -234,7 +234,7 @@ def main():
                 
                 for i in range(c.leptons.size()):
                     lepton = c.leptons[i]
-                    min, minCan = analysis_ntuples.minDeltaRGenParticles(lepton, gens, c)
+                    min, minCan = analysis_ntuples.minDeltaRGenParticles(lepton, gens, c.GenParticles)
                     pdgId = c.GenParticles_ParentId[minCan]
                     if min > 0.01:
                         #print "BAD GEN!!! ", min
@@ -313,7 +313,7 @@ def main():
                             else:
                                 var_tc[0] = True
             else:
-                min, minCan = analysis_ntuples.minDeltaRGenParticles(c.lepton, gens, c)
+                min, minCan = analysis_ntuples.minDeltaRGenParticles(c.lepton, gens, c.GenParticles)
                 #print min, m inCan
                 pdgId = c.GenParticles_ParentId[minCan]
                 if min > 0.05:
@@ -322,7 +322,7 @@ def main():
                 #else:
                 #    print "GOOD LEPTON ", pdgId
                 var_leptonParentPdgId[0] = pdgId
-                min, minCan = analysis_ntuples.minDeltaRGenParticles(c.track, gens, c)
+                min, minCan = analysis_ntuples.minDeltaRGenParticles(c.track, gens, c.GenParticles)
                 pdgId = c.GenParticles_ParentId[minCan]
                 if min > 0.05:
                     #print "BAD GEN TRACK!!!"

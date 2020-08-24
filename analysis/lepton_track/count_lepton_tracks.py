@@ -392,8 +392,8 @@ def main():
             leps = [ll]#getattr(c, lepFlavour)
             for li in range(len(leps)):
                 l = leps[li]
-                minZ, minCanZ = analysis_ntuples.minDeltaRGenParticles(l, genZL, c)
-                minNZ, minCanNZ = analysis_ntuples.minDeltaRGenParticles(l, genNonZL, c)
+                minZ, minCanZ = analysis_ntuples.minDeltaRGenParticles(l, genZL, c.GenParticles)
+                minNZ, minCanNZ = analysis_ntuples.minDeltaRGenParticles(l, genNonZL, c.GenParticles)
                 min = 0
                 if minNZ is None or minZ < minNZ:
                     min = minZ
@@ -467,8 +467,8 @@ def main():
         
             #if abs(t.Eta()) > 0.1:
             #	continue
-            minZ, minCanZ = analysis_ntuples.minDeltaRGenParticles(t, genZL, c)
-            minNZ, minCanNZ = analysis_ntuples.minDeltaRGenParticles(t, genNonZL, c)
+            minZ, minCanZ = analysis_ntuples.minDeltaRGenParticles(t, genZL, c.GenParticles)
+            minNZ, minCanNZ = analysis_ntuples.minDeltaRGenParticles(t, genNonZL, c.GenParticles)
         
             min = 0
             if minNZ is None or minZ < minNZ:

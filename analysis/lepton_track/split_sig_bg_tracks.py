@@ -138,8 +138,8 @@ def main():
             if (llMin is not None and llMin < 0.01):
                 continue
             clean += 1
-            minZ, minCanZ = analysis_ntuples.minDeltaRGenParticles(t, genZL, c)
-            minNZ, minCanNZ = analysis_ntuples.minDeltaRGenParticles(t, genNonZL, c)
+            minZ, minCanZ = analysis_ntuples.minDeltaRGenParticles(t, genZL, c.GenParticles)
+            minNZ, minCanNZ = analysis_ntuples.minDeltaRGenParticles(t, genNonZL, c.GenParticles)
         
             #if minNZ is None:
             #	print "minNZ is None for " + str(genNonZL)

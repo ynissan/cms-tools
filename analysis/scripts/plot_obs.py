@@ -74,8 +74,8 @@ bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/bg/skim_dilepton_signal_bdt/
 # signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signal_bdt_all/single/higgsino_mu100_dm3p28Chi20Chipm.root"
 
 signal_dir = [#"/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm4p30Chi20Chipm.root",
-              "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm3p28Chi20Chipm.root",
-              "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm1p92Chi20Chipm.root"]
+              "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_dilepton_signal_bdt_all/single/higgsino_mu100_dm3p28Chi20Chipm.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_dilepton_signal_bdt_all/single/higgsino_mu100_dm1p92Chi20Chipm.root"]
 
 calculatedLumi = None
 bg_dir = None
@@ -403,6 +403,7 @@ histograms_defs = [
     
     #NORMAL
     { "obs" : "invMass", "minX" : 0.1, "maxX" : 13, "bins" : 30, "units" : "GeV" },
+    { "obs" : 'int(leptonFlavour == "Muons")', "minX" : 0, "maxX" : 2, "bins" : 2},
     { "obs" : "dilepBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
     { "obs" : "Electrons.Pt()", "minX" : 0, "maxX" : 500, "bins" : 50 },
     { "obs" : "Muons.Pt()", "minX" : 0, "maxX" : 500, "bins" : 50 },
@@ -419,7 +420,10 @@ histograms_defs = [
     { "obs" : "DeltaPhiLeadingJetDilepton", "minX" : 0, "maxX" : 4, "bins" : 30 },
     { "obs" : "dilepHt", "minX" : 0, "maxX" : 400, "bins" : 30 },
     { "obs" : "NJets", "minX" : 0, "maxX" : 7, "bins" : 7 },
-    { "obs" : "BTags", "minX" : 0, "maxX" : 3, "bins" : 3 },
+    { "obs" : "BTagsLoose", "minX" : 0, "maxX" : 7, "bins" : 7 },
+    { "obs" : "BTagsMedium", "minX" : 0, "maxX" : 7, "bins" : 7 },
+    { "obs" : "BTagsDeepLoose", "minX" : 0, "maxX" : 7, "bins" : 7 },
+    { "obs" : "BTagsDeepMedium", "minX" : 0, "maxX" : 7, "bins" : 7 },
     
      { "obs" : "Met", "minX" : 120, "maxX" : 2000, "bins" : 30 },
      { "obs" : "Mht", "minX" : 0, "maxX" : 700, "bins" : 30 },
@@ -430,10 +434,8 @@ histograms_defs = [
      { "obs" : "Mt2", "minX" : 0, "maxX" : 100, "bins" : 30 },
      { "obs" : "LeadingJetPt", "minX" : 0, "maxX" : 800, "bins" : 30 },
      { "obs" : "abs(LeadingJet.Eta())", "minX" : 0, "maxX" : 4, "bins" : 30 },
-     { "obs" : "MinCsv30", "minX" : 0, "maxX" : 1, "bins" : 30 },
-     { "obs" : "MinCsv25", "minX" : 0, "maxX" : 1, "bins" : 30 },
-     { "obs" : "MaxCsv30", "minX" : 0, "maxX" : 1, "bins" : 30 },
      { "obs" : "MaxCsv25", "minX" : 0, "maxX" : 1, "bins" : 30 },
+     { "obs" : "MaxDeepCsv25", "minX" : 0, "maxX" : 1, "bins" : 30 },
     
 
 
@@ -449,7 +451,7 @@ histograms_defs = [
 ]
 
 cuts = [ #{"name":"none", "title": "No Cuts", "condition" : "1"},
-         {"name":"MET", "title": "MET >= 150", "condition" : 'Met >= 150 && invMass < 12 && leptonFlavour == "Muons"'},
+         #{"name":"MET", "title": "MET >= 150", "condition" : 'Met >= 150 && invMass < 12 && leptonFlavour == "Muons"'},
          #{"name":"dileptonPt", "title": "dileptonPt", "condition" : "Met >= 200 && invMass < 30 && dileptonPt < 30"},
          
          
@@ -471,8 +473,9 @@ if plot_2l:
         #{"name":"real", "title": "real", "condition" : "Met >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && !(invMass > 0.95 && invMass < 1.06)"},
         
         #{"name":"dilepBDT", "title": "dilepBDT", "condition" : "Met >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && !(invMass > 0.95 && invMass < 1.06) && dilepBDT > 0.1"},
-        {"name":"noBDT", "title": "noBDT", "condition" : "BTags == 0 && (leptons[1].Pt() <= 3.5 || deltaR <= 0.3) && Mht >= 220 &&  Met >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81)"},
-        {"name":"orthSOS", "title": "orthSOS", "condition" : "BTags == 0 && (leptons[1].Pt() <= 3.5 || deltaR <= 0.3) && Mht >= 220 &&  Met >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1"},
+        #{"name":"noBDT", "title": "noBDT", "condition" : "BTagsDeepMedium == 0 && (leptons[1].Pt() <= 3.5 || deltaR <= 0.3) && Mht >= 220 &&  Met >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81)"},
+        {"name":"noBVeto", "title": "noBVeto", "condition" : "(leptons[1].Pt() <= 3.5 || deltaR <= 0.3) && Mht >= 220 &&  Met >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1"},
+        {"name":"orthSOS", "title": "orthSOS", "condition" : "BTagsDeepMedium == 0 && (leptons[1].Pt() <= 3.5 || deltaR <= 0.3) && Mht >= 220 &&  Met >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1"},
         
         #{"name":"tc", "title": "tc", "condition" : 'Met >= 200 && invMass < 30 && leptonFlavour == "Muons" && tc * (!tautau)'},
         #{"name":"tautau", "title": "tautau", "condition" : '(Met >= 200 && invMass < 30 && leptonFlavour == "Muons") * (tautau)'},
@@ -684,16 +687,18 @@ def createPlotsFast(rootfiles, type, histograms, weight=1, prefix=""):
                     drawString = weightString[plot_kind] + " * " + str(weight) + "* Weight * (" + cut["condition"] + ")"
                     #print "drawString=" + drawString
                     if plot_log_x and hist_def["obs"] == "invMass":
-                        hist = utils.getRealLogxHistogramFromTree(histName, c, hist_def["obs"], hist_def["bins"], hist_def["minX"], hist_def["maxX"], drawString, plot_overflow)
+                        hist = utils.getRealLogxHistogramFromTree(histName, c, hist_def.get("obs"), hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), drawString, plot_overflow)
                     else:
-                        hist = utils.getHistogramFromTree(histName, c, hist_def["obs"], hist_def["bins"], hist_def["minX"], hist_def["maxX"], drawString, plot_overflow)
+                        hist = utils.getHistogramFromTree(histName, c, hist_def.get("obs"), hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), drawString, plot_overflow)
                 else:
                     if plot_log_x and hist_def["obs"] == "invMass":
-                        hist = utils.getRealLogxHistogramFromTree(histName, c, hist_def["obs"], hist_def["bins"], hist_def["minX"], hist_def["maxX"], weightString[plot_kind] + " * (" +cut["condition"] + ")", plot_overflow)
+                        hist = utils.getRealLogxHistogramFromTree(histName, c, hist_def.get("obs"), hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), weightString[plot_kind] + " * (" +cut["condition"] + ")", plot_overflow)
                     else:
-                        hist = utils.getHistogramFromTree(histName, c, hist_def["obs"], hist_def["bins"], hist_def["minX"], hist_def["maxX"], weightString[plot_kind] + " * (" +cut["condition"] + ")", plot_overflow)
+                        hist = utils.getHistogramFromTree(histName, c, hist_def.get("obs"), hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), weightString[plot_kind] + " * (" +cut["condition"] + ")", plot_overflow)
                 if hist is None:
                     continue
+                #if "leptonF" in histName:
+                #    print "Made leptonFlavour for", histName, hist.GetXaxis().GetNbins()
                 hist.GetXaxis().SetTitle("")
                 hist.SetTitle("")
                 hist.Sumw2()

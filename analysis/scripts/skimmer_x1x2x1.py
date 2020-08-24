@@ -38,6 +38,7 @@ parser.add_argument('-tl', '--tl', dest='two_leptons', help='Two Leptons', actio
 parser.add_argument('-dy', '--dy', dest='dy', help='Drell-Yan', action='store_true')
 parser.add_argument('-sam', '--sam', dest='sam', help='Sam Samples', action='store_true')
 parser.add_argument('-sc', '--sc', dest='sc', help='Same Charge', action='store_true')
+parser.add_argument('-nlp', '--no_lepton_selection', dest='no_lepton_selection', help='No Lepton Selection Skim', action='store_true')
 args = parser.parse_args()
 
 print args
@@ -59,6 +60,10 @@ two_leptons = args.two_leptons
 dy = args.dy
 sam = args.sam
 sc = args.sc
+no_lepton_selection = args.no_lepton_selection
+
+if no_lepton_selection:
+    two_leptons = False
 
 if two_leptons:
     print "RUNNING TWO LEPTONS!"
@@ -67,6 +72,8 @@ if dy:
     #exit(0)
 if sc:
     print "SAME SIGN!"
+if no_lepton_selection:
+    print "NO LEPTON SELECTION!"
 
 input_file = None
 if args.input_file:
@@ -153,6 +160,12 @@ def main():
     var_Electrons_MTW = ROOT.std.vector(double)()
     var_Electrons_TrkEnergyCorr = ROOT.std.vector(double)()
     
+    var_Electrons_isZ = ROOT.std.vector(bool)()
+    var_Electrons_deltaRLJ = ROOT.std.vector(double)()
+    var_Electrons_deltaPhiLJ = ROOT.std.vector(double)()
+    var_Electrons_deltaEtaLJ = ROOT.std.vector(double)()
+    var_Electrons_matchGen = ROOT.std.vector(bool)()
+    
     var_Muons = ROOT.std.vector(TLorentzVector)()
     var_Muons_charge = ROOT.std.vector(int)()
     var_Muons_mediumID = ROOT.std.vector(bool)()
@@ -161,6 +174,12 @@ def main():
     var_Muons_MiniIso = ROOT.std.vector(double)()
     var_Muons_MT2Activity = ROOT.std.vector(double)()
     var_Muons_MTW = ROOT.std.vector(double)()
+    
+    var_Muons_isZ = ROOT.std.vector(bool)()
+    var_Muons_deltaRLJ = ROOT.std.vector(double)()
+    var_Muons_deltaPhiLJ = ROOT.std.vector(double)()
+    var_Muons_deltaEtaLJ = ROOT.std.vector(double)()
+    var_Muons_matchGen = ROOT.std.vector(bool)()
     
     var_DYMuons = ROOT.std.vector(TLorentzVector)()
     var_DYMuonsSum = TLorentzVector()
@@ -189,9 +208,14 @@ def main():
     var_Jets_bJetTagDeepCSVBvsAll = ROOT.std.vector(double)()
     var_Jets_electronEnergyFraction = ROOT.std.vector(double)()
     var_Jets_muonEnergyFraction = ROOT.std.vector(double)()
+    var_Jets_minDeltaRElectrons = ROOT.std.vector(double)()
+    var_Jets_minDeltaRMuons = ROOT.std.vector(double)()
 
     var_LeadingJetPartonFlavor = np.zeros(1,dtype=int)
     var_LeadingJetQgLikelihood = np.zeros(1,dtype=float)
+    var_LeadingJetMinDeltaRMuons = np.zeros(1,dtype=float)
+    var_LeadingJetMinDeltaRElectrons = np.zeros(1,dtype=float)
+    
     var_MinDeltaPhiMetJets = np.zeros(1,dtype=float)
     var_MinDeltaPhiMhtJets = np.zeros(1,dtype=float)
     
@@ -221,6 +245,7 @@ def main():
     var_leptonsIdx      = ROOT.std.vector(int)()
     var_leptons_charge  = ROOT.std.vector(int)()
     var_leptonFlavour   = ROOT.std.string()
+    var_genFlavour      = ROOT.std.string()
     
     var_LeadingJet = TLorentzVector()
     
@@ -292,6 +317,12 @@ def main():
     tEvent.Branch('Electrons_passIso', 'std::vector<bool>', var_Electrons_passIso)
     tEvent.Branch('Electrons_tightID', 'std::vector<bool>', var_Electrons_tightID)
     
+    tEvent.Branch('Electrons_deltaRLJ', 'std::vector<double>', var_Electrons_deltaRLJ)
+    tEvent.Branch('Electrons_deltaPhiLJ', 'std::vector<double>', var_Electrons_deltaPhiLJ)
+    tEvent.Branch('Electrons_deltaEtaLJ', 'std::vector<double>', var_Electrons_deltaEtaLJ)
+    
+    tEvent.Branch('Electrons_matchGen', 'std::vector<bool>', var_Electrons_matchGen)    
+    
     tEvent.Branch('Muons', 'std::vector<TLorentzVector>', var_Muons)
     tEvent.Branch('Muons_charge', 'std::vector<int>', var_Muons_charge)
     tEvent.Branch('Muons_mediumID', 'std::vector<bool>', var_Muons_mediumID)
@@ -301,6 +332,18 @@ def main():
     tEvent.Branch('Muons_MiniIso', 'std::vector<double>', var_Muons_MiniIso)
     tEvent.Branch('Muons_MT2Activity', 'std::vector<double>', var_Muons_MT2Activity)
     tEvent.Branch('Muons_MTW', 'std::vector<double>', var_Muons_MTW)
+    
+    tEvent.Branch('Muons_deltaRLJ', 'std::vector<double>', var_Muons_deltaRLJ)
+    tEvent.Branch('Muons_deltaPhiLJ', 'std::vector<double>', var_Muons_deltaPhiLJ)
+    tEvent.Branch('Muons_deltaEtaLJ', 'std::vector<double>', var_Muons_deltaEtaLJ)
+    
+    tEvent.Branch('Muons_matchGen', 'std::vector<bool>', var_Muons_matchGen)
+    
+    if signal:
+        tEvent.Branch('Electrons_isZ', 'std::vector<bool>', var_Electrons_isZ)
+        tEvent.Branch('Muons_isZ', 'std::vector<bool>', var_Muons_isZ)
+        tEvent.Branch('genFlavour', 'std::string', var_genFlavour)
+   
     
     if dy:
         tEvent.Branch('DYMuons', 'std::vector<TLorentzVector>', var_DYMuons)
@@ -326,9 +369,15 @@ def main():
     
     tEvent.Branch('Jets_electronEnergyFraction', 'std::vector<double>', var_Jets_electronEnergyFraction)
     tEvent.Branch('Jets_muonEnergyFraction', 'std::vector<double>', var_Jets_muonEnergyFraction)
+    
+    tEvent.Branch('Jets_minDeltaRMuons', 'std::vector<double>', var_Jets_minDeltaRMuons)
+    tEvent.Branch('Jets_minDeltaRElectrons', 'std::vector<double>', var_Jets_minDeltaRElectrons)
 
     tEvent.Branch('LeadingJetPartonFlavor', var_LeadingJetPartonFlavor,'LeadingJetPartonFlavor/I')
     tEvent.Branch('LeadingJetQgLikelihood', var_LeadingJetQgLikelihood,'LeadingJetQgLikelihood/D')
+    tEvent.Branch('LeadingJetMinDeltaRMuons', var_LeadingJetMinDeltaRMuons,'LeadingJetMinDeltaRMuons/D')
+    tEvent.Branch('LeadingJetMinDeltaRElectrons', var_LeadingJetMinDeltaRElectrons,'LeadingJetMinDeltaRElectrons/D')
+    
     tEvent.Branch('MinDeltaPhiMetJets', var_MinDeltaPhiMetJets,'MinDeltaPhiMetJets/D')
     tEvent.Branch('MinDeltaPhiMhtJets', var_MinDeltaPhiMhtJets,'MinDeltaPhiMhtJets/D')
     tEvent.Branch('LeadingJetPt', var_LeadingJetPt,'LeadingJetPt/D')
@@ -874,16 +923,17 @@ def main():
         ll, leptonCharge, leptonFlavour = None, None, None
         leptons, leptonsIdx, leptonsCharge = None, None, None
         
-        if two_leptons:
-            leptons, leptonsIdx, leptonsCharge, leptonFlavour = analysis_ntuples.getTwoLeptonsAfterSelection(takeLeptonsFrom, jets[ljet], sc)
-            if leptons is None:
-                continue
-        else:
-            #print takeLeptonsFrom
-            #exit(0)
-            ll, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(takeLeptonsFrom, jets[ljet])
-            if ll is None:
-                continue
+        if not no_lepton_selection:
+            if two_leptons:
+                leptons, leptonsIdx, leptonsCharge, leptonFlavour = analysis_ntuples.getTwoLeptonsAfterSelection(takeLeptonsFrom, jets[ljet], sc)
+                if leptons is None:
+                    continue
+            else:
+                #print takeLeptonsFrom
+                #exit(0)
+                ll, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(takeLeptonsFrom, jets[ljet])
+                if ll is None:
+                    continue
         
         afterLeptons += 1
         
@@ -913,7 +963,31 @@ def main():
         var_Jets_electronEnergyFraction = jets_electronEnergyFraction
         var_Jets_muonEnergyFraction = jets_muonEnergyFraction
         
+        var_Jets_minDeltaRElectrons = ROOT.std.vector(double)()
+        var_Jets_minDeltaRMuons = ROOT.std.vector(double)()
+        
+        medium_muons = [ var_Muons[i] for i in range(var_Muons.size()) if analysis_ntuples.muonPassesLooseSelection(i, var_Muons, var_Muons_mediumID) ]
+        
+        for i in range(var_Jets.size()):
+            jet = var_Jets[i]
+            min, minCan = analysis_ntuples.minDeltaLepLeps(var_Jets[i], var_Electrons)
+            var_Jets_minDeltaRElectrons.push_back(min if min is not None else -1)
+            min, minCan = analysis_ntuples.minDeltaLepLeps(var_Jets[i], medium_muons)
+            var_Jets_minDeltaRMuons.push_back(min if min is not None else -1)
+        
         var_NL[0] = nL
+        
+        min, minCan = analysis_ntuples.minDeltaLepLeps(var_Jets[ljet], var_Electrons)
+        if minCan is None:
+            var_LeadingJetMinDeltaRElectrons[0] = -1
+        else:
+            var_LeadingJetMinDeltaRElectrons[0] = min
+            
+        min, minCan = analysis_ntuples.minDeltaLepLeps(var_Jets[ljet], medium_muons)
+        if minCan is None:
+            var_LeadingJetMinDeltaRMuons[0] = -1
+        else:
+            var_LeadingJetMinDeltaRMuons[0] = min
         
         if data:
             var_GenParticles = ROOT.std.vector(TLorentzVector)()
@@ -958,6 +1032,58 @@ def main():
         tEvent.SetBranchAddress('Muons_MT2Activity', var_Muons_MT2Activity)
         tEvent.SetBranchAddress('Muons_MTW', var_Muons_MTW)
         
+        var_Electrons_deltaRLJ = ROOT.std.vector(double)()
+        var_Electrons_deltaPhiLJ = ROOT.std.vector(double)()
+        var_Electrons_deltaEtaLJ = ROOT.std.vector(double)()
+    
+        var_Muons_deltaRLJ = ROOT.std.vector(double)()
+        var_Muons_deltaPhiLJ = ROOT.std.vector(double)()
+        var_Muons_deltaEtaLJ = ROOT.std.vector(double)()
+        
+        for i in range(var_Electrons.size()):
+            var_Electrons_deltaRLJ.push_back(var_Electrons[i].DeltaR(var_LeadingJet))
+            var_Electrons_deltaPhiLJ.push_back(abs(var_Electrons[i].DeltaPhi(var_LeadingJet)))
+            var_Electrons_deltaEtaLJ.push_back(abs(var_Electrons[i].Eta() - var_LeadingJet.Eta()))
+            
+        for i in range(var_Muons.size()):
+            var_Muons_deltaRLJ.push_back(var_Muons[i].DeltaR(var_LeadingJet))
+            var_Muons_deltaPhiLJ.push_back(abs(var_Muons[i].DeltaPhi(var_LeadingJet)))
+            var_Muons_deltaEtaLJ.push_back(abs(var_Muons[i].Eta() - var_LeadingJet.Eta()))
+        
+        var_Electrons_matchGen = ROOT.std.vector(bool)()
+        var_Muons_matchGen = ROOT.std.vector(bool)()
+        
+        if not data:
+            genElectrons = [ var_GenParticles[i] for i in range(var_GenParticles.size()) if abs(var_GenParticles_PdgId[i]) == 11 ]
+            genElectronsIdx = [ i for i in range(var_GenParticles.size()) if abs(var_GenParticles_PdgId[i]) == 11 ]
+            genMuons = [ var_GenParticles[i] for i in range(var_GenParticles.size()) if abs(var_GenParticles_PdgId[i]) == 13]
+            genMuonsIdx = [ i for i in range(var_GenParticles.size()) if abs(var_GenParticles_PdgId[i]) == 13]
+            for i in range(var_Electrons.size()):
+                signedGenElectrons = [ genElectrons[j] for j in range(len(genElectrons)) if var_GenParticles_PdgId[genElectronsIdx[j]] == -11 *  var_Electrons_charge[i] ]
+                min, minCan = analysis_ntuples.minDeltaLepLeps(var_Electrons[i], signedGenElectrons)
+                if min is None or min > 0.01:
+                    var_Electrons_matchGen.push_back(False)
+                else:
+                    var_Electrons_matchGen.push_back(True)
+            for i in range(var_Muons.size()):
+                signedGenMuons = [ genMuons[j] for j in range(len(genMuons)) if var_GenParticles_PdgId[genMuonsIdx[j]] == -13 *  var_Muons_charge[i] ]
+                min, minCan = analysis_ntuples.minDeltaLepLeps(var_Muons[i], signedGenMuons)
+                if min is None or min > 0.01:
+                    var_Muons_matchGen.push_back(False)
+                else:
+                    var_Muons_matchGen.push_back(True)
+        
+        tEvent.SetBranchAddress('Electrons_matchGen', var_Electrons_matchGen)
+        tEvent.SetBranchAddress('Muons_matchGen', var_Muons_matchGen)
+        
+        tEvent.SetBranchAddress('Electrons_deltaRLJ', var_Electrons_deltaRLJ)
+        tEvent.SetBranchAddress('Electrons_deltaPhiLJ', var_Electrons_deltaPhiLJ)
+        tEvent.SetBranchAddress('Electrons_deltaEtaLJ', var_Electrons_deltaEtaLJ)
+        
+        tEvent.SetBranchAddress('Muons_deltaRLJ', var_Muons_deltaRLJ)
+        tEvent.SetBranchAddress('Muons_deltaPhiLJ', var_Muons_deltaPhiLJ)
+        tEvent.SetBranchAddress('Muons_deltaEtaLJ', var_Muons_deltaEtaLJ)
+        
         if dy:
             
             tEvent.SetBranchAddress('DYMuons', var_DYMuons)
@@ -982,6 +1108,8 @@ def main():
         tEvent.SetBranchAddress('Jets_bJetTagDeepCSVBvsAll', var_Jets_bJetTagDeepCSVBvsAll)
         tEvent.SetBranchAddress('Jets_electronEnergyFraction', var_Jets_electronEnergyFraction)
         tEvent.SetBranchAddress('Jets_muonEnergyFraction', var_Jets_muonEnergyFraction)
+        tEvent.SetBranchAddress('Jets_minDeltaRElectrons', var_Jets_minDeltaRElectrons)
+        tEvent.SetBranchAddress('Jets_minDeltaRMuons', var_Jets_minDeltaRMuons)
 
         tEvent.SetBranchAddress('tracks', var_tracks)
         tEvent.SetBranchAddress('tracks_charge', var_tracks_charge)
@@ -995,6 +1123,36 @@ def main():
         tEvent.SetBranchAddress('tracks_trackQualityHighPurity', var_tracks_trackQualityHighPurity)
         
         tEvent.SetBranchAddress('LeadingJet', var_LeadingJet)
+        
+        if signal:
+            var_Electrons_isZ = ROOT.std.vector(bool)()
+            var_Muons_isZ = ROOT.std.vector(bool)()
+            
+            genZL, genNonZL = analysis_ntuples.classifyGenZLeptons(c)
+            
+            if genZL is None:
+                var_genFlavour = ROOT.std.string("")
+                for i in range(var_Electrons.size()):
+                    var_Electrons_isZ.push_back(False)
+                for i in range(var_Muons.size()):
+                    var_Muons_isZ.push_back(False)
+            else:
+                if abs(c.GenParticles_PdgId[genZL[0]]) == 11:
+                    var_genFlavour = ROOT.std.string("Electrons")
+                    for i in range(var_Electrons.size()):
+                        var_Electrons_isZ.push_back(analysis_ntuples.isLeptonMatchedGen(c.GenParticles, c.GenParticles_PdgId, genZL, genNonZL, i, var_Electrons, var_Electrons_charge, -11))
+                    for i in range(c.Muons.size()):
+                        var_Muons_isZ.push_back(False)
+                else:
+                    var_genFlavour = ROOT.std.string("Muons")
+                    for i in range(c.Muons.size()):
+                        var_Muons_isZ.push_back(analysis_ntuples.isLeptonMatchedGen(c.GenParticles, c.GenParticles_PdgId, genZL, genNonZL, i, var_Muons, var_Muons_charge, -13))
+                    for i in range(c.Electrons.size()):
+                        var_Electrons_isZ.push_back(False)
+                        
+            tEvent.SetBranchAddress('genFlavour', var_genFlavour)
+            tEvent.SetBranchAddress('Electrons_isZ', var_Electrons_isZ)
+            tEvent.SetBranchAddress('Muons_isZ', var_Muons_isZ)
         
         if not signal:
             tEvent.SetBranchAddress('TriggerNames', var_triggerNames)

@@ -164,6 +164,7 @@ dataloader.AddVariable('Mht', 'F')
 dataloader.AddVariable('LeadingJetPt', 'F')
 dataloader.AddVariable('LeadingJet.Eta()', 'F')
 dataloader.AddVariable('invMass', 'F')
+dataloader.AddVariable('NJets', 'I')
 
 #new removal
 #dataloader.AddVariable('mtautau', 'F')

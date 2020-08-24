@@ -89,11 +89,11 @@ def main():
                     if l1.Pt() < 5 or l2.Pt() < 5:
                         continue
                     #print l1, genZL, c
-                    minZ, minCanZ = analysis_ntuples.minDeltaRGenParticles(l1, genZL, c)
+                    minZ, minCanZ = analysis_ntuples.minDeltaRGenParticles(l1, genZL, c.GenParticles)
                     if minZ > 0.1:
                         #print "NO"
                         continue
-                    minZ, minCanZ = analysis_ntuples.minDeltaRGenParticles(l2, genZL, c)
+                    minZ, minCanZ = analysis_ntuples.minDeltaRGenParticles(l2, genZL, c.GenParticles)
                     if minZ > 0.1:
                         #print "NO"
                         continue
@@ -122,8 +122,8 @@ def main():
                         if (elecMin is not None and elecMin < 0.1) or (muonMin is not None and muonMin < 0.1):
                             continue
  
-                        minZ, minCanZ = analysis_ntuples.minDeltaRGenParticles(t, genZL, c)
-                        minNZ, minCanNZ = analysis_ntuples.minDeltaRGenParticles(t, genNonZL, c)
+                        minZ, minCanZ = analysis_ntuples.minDeltaRGenParticles(t, genZL, c.GenParticles)
+                        minNZ, minCanNZ = analysis_ntuples.minDeltaRGenParticles(t, genNonZL, c.GenParticles)
             
                         min = None
                         if minNZ is None or minZ < minNZ:

@@ -206,12 +206,30 @@ def classifyGenZLeptons(c):
         
     return genZL, genNonZL
 
-def minDeltaRGenParticles(l, gens, c):
+def isLeptonMatchedGen(genParticles, genParticles_PdgId, genL, genNL, lidx, leptons, leptonsCharge, lepSignedPdgId):
+    l = leptons[lidx]
+    minZ, minCanZ = minDeltaRGenParticles(l, genL, genParticles)
+    minNZ, minCanNZ = minDeltaRGenParticles(l, genNL, genParticles)
+    min = 0
+    if minNZ is None or minZ < minNZ:
+        min = minZ
+    else:
+        min = minNZ
+    if min > 0.01:
+        return False
+    elif minNZ is None or minZ < minNZ:
+        if genParticles_PdgId[minCanZ] == lepSignedPdgId * leptonsCharge[lidx]:
+            return True
+        else:
+            return False
+    return False
+
+def minDeltaRGenParticles(l, gens, genParticles):
     min = None
     minCan = None
 
     for ipart in gens:
-        genV = c.GenParticles[ipart]
+        genV = genParticles[ipart]
         deltaR = abs(genV.DeltaR(l))
         if min is None or deltaR < min:
             min = deltaR
@@ -255,6 +273,18 @@ def passed2016BTrigger(t, data=False):
     #    if not t.ecalBadCalibReducedFilter: return False
     return True
 
+def electronPassesLooseSelection(i, electrons, electrons_passIso):
+    return bool(electrons_passIso[i])
+
+def electronPassesTightSelection(i, electrons, electrons_passIso):
+    return electrons[i].Pt <= 25 and doesElectronPassLooseSelection(i, electrons, electrons_passIso)
+
+def muonPassesLooseSelection(i, muons, muons_mediumID):
+    return muons[i].Pt()>=2 and bool(muons_mediumID[i])
+
+def muonPassesTightSelection(i, muons, muons_mediumID, leadingJet):
+    return muonPassesLooseSelection(i, muons, muons_mediumID) and muons[i].Pt() <= 25 and abs(muons[i].DeltaR(leadingJet)) >= 0.4
+
 def getSingleLeptonAfterSelection(c, leadingJet):
     lep = None
     lepCharge = None
@@ -263,7 +293,7 @@ def getSingleLeptonAfterSelection(c, leadingJet):
     
     for i in range(c.Electrons.size()):
         e = c.Electrons[i]
-        if e.Pt() <= 25 and bool(c.Electrons_passIso[i]):
+        if electronPassesTightSelection(i, c.Electrons, c.Electrons_passIso):
             nL += 1
             if nL > 1:
                 return None, None, None
@@ -272,7 +302,7 @@ def getSingleLeptonAfterSelection(c, leadingJet):
             lepFlavour = "Electrons"
     for i in range(c.Muons.size()):
         m = c.Muons[i]
-        if m.Pt() <= 25 and m.Pt()>=2 and bool(c.Muons_mediumID[i]) and abs(m.DeltaR(leadingJet)) >= 0.4:
+        if muonPassesTightSelection(i, c.Muons, c.Muons_mediumID, leadingJet):
             nL += 1
             if nL > 1:
                 return None, None, None

@@ -27,6 +27,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        -nlp)
+        NLP=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -60,6 +65,9 @@ if [ -n "$SKIM" ]; then
         else
             OUTPUT_DIR=$SKIM_SIG_OUTPUT_DIR
         fi
+    fi
+    if [ -n "$NLP" ]; then
+        OUTPUT_DIR=$SKIM_SIG_NLP_OUTPUT_DIR
     fi
 fi
 
