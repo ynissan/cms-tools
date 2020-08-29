@@ -20,14 +20,15 @@ parser.add_argument('-cp', '--create_plots', dest='cp', help='Create plots', act
 parser.add_argument('-a', '--all', dest='all', help='Perform all', action='store_true')
 parser.add_argument('-s', '--stack', dest='stack', help='Perform stack', action='store_true')
 parser.add_argument('-skim', '--skim', dest='skim', help='Work on skim', action='store_true')
-parser.add_argument('-bg', '--background', dest='bg', help='Signal', action='store_true')
-parser.add_argument('-sig', '--signal', dest='sig', help='Background', action='store_true')
+parser.add_argument('-bg', '--background', dest='bg', help='Background', action='store_true')
+parser.add_argument('-sig', '--signal', dest='sig', help='Signal', action='store_true')
 parser.add_argument('-lp', '--lepton_collection', dest='lepton_collection', help='Lepton Collection', action='store_true')
 parser.add_argument('-sn', '--signal_ntuples', dest='signal_ntuples', help='Signal Ntuples', action='store_true')
 parser.add_argument('-dlc', '--data_lepton_collection', dest='data_lepton_collection', help='Data Lepton Collection', action='store_true')
 parser.add_argument('-tl', '--tl', dest='two_leptons', help='Two Leptons', action='store_true')
 parser.add_argument('-dy', '--dy', dest='drell_yan', help='Two Leptons', action='store_true')
 parser.add_argument('-sc', '--sc', dest='sc', help='Same Charge', action='store_true')
+parser.add_argument('-nlp', '--no_lepton_selection', dest='no_lepton_selection', help='No Lepton Selection Skim', action='store_true')
 args = parser.parse_args()
 
 hadd = args.hadd
@@ -43,6 +44,7 @@ data_lepton_collection = args.data_lepton_collection
 two_leptons = args.two_leptons
 drell_yan = args.drell_yan
 sc = args.sc
+no_lepton_selection = args.no_lepton_selection
 
 if (bg and signal) or not (bg or signal):
     signal = True
@@ -61,6 +63,8 @@ if bg:
                 WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/bg/skim"
         elif drell_yan:
             WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/dy_x1x2x1/bg/skim"
+        elif no_lepton_selection:
+            WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/bg/skim_nlp"
     else:
         WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/hist"
 else:
@@ -95,12 +99,12 @@ else:
 
     if not os.path.isdir(OUTPOUT_TYPE_SUM):
         os.mkdir(OUTPOUT_TYPE_SUM)
+    if not skim:
+        if not os.path.isdir(OUTPOUT_PROCESSED):
+            os.mkdir(OUTPOUT_PROCESSED)
 
-    if not os.path.isdir(OUTPOUT_PROCESSED):
-        os.mkdir(OUTPOUT_PROCESSED)
-
-    if not os.path.isdir(OUTPOUT_STACK):
-        os.mkdir(OUTPOUT_STACK)
+        if not os.path.isdir(OUTPOUT_STACK):
+            os.mkdir(OUTPOUT_STACK)
 
 sumTypes = {}
 

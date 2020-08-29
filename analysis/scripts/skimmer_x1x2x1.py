@@ -165,6 +165,8 @@ def main():
     var_Electrons_deltaPhiLJ = ROOT.std.vector(double)()
     var_Electrons_deltaEtaLJ = ROOT.std.vector(double)()
     var_Electrons_matchGen = ROOT.std.vector(bool)()
+    var_Electrons_minDeltaRJets = ROOT.std.vector(double)()
+    var_Electrons_closestJet = ROOT.std.vector(int)()
     
     var_Muons = ROOT.std.vector(TLorentzVector)()
     var_Muons_charge = ROOT.std.vector(int)()
@@ -180,6 +182,8 @@ def main():
     var_Muons_deltaPhiLJ = ROOT.std.vector(double)()
     var_Muons_deltaEtaLJ = ROOT.std.vector(double)()
     var_Muons_matchGen = ROOT.std.vector(bool)()
+    var_Muons_minDeltaRJets = ROOT.std.vector(double)()
+    var_Muons_closestJet = ROOT.std.vector(int)()
     
     var_DYMuons = ROOT.std.vector(TLorentzVector)()
     var_DYMuonsSum = TLorentzVector()
@@ -210,6 +214,9 @@ def main():
     var_Jets_muonEnergyFraction = ROOT.std.vector(double)()
     var_Jets_minDeltaRElectrons = ROOT.std.vector(double)()
     var_Jets_minDeltaRMuons = ROOT.std.vector(double)()
+    var_Jets_muonMultiplicity = ROOT.std.vector(int)()
+    var_Jets_multiplicity = ROOT.std.vector(int)()
+    var_Jets_electronMultiplicity = ROOT.std.vector(int)()
 
     var_LeadingJetPartonFlavor = np.zeros(1,dtype=int)
     var_LeadingJetQgLikelihood = np.zeros(1,dtype=float)
@@ -323,6 +330,9 @@ def main():
     
     tEvent.Branch('Electrons_matchGen', 'std::vector<bool>', var_Electrons_matchGen)    
     
+    tEvent.Branch('Electrons_minDeltaRJets', 'std::vector<double>', var_Electrons_minDeltaRJets)
+    tEvent.Branch('Electrons_closestJet', 'std::vector<int>', var_Electrons_closestJet)
+    
     tEvent.Branch('Muons', 'std::vector<TLorentzVector>', var_Muons)
     tEvent.Branch('Muons_charge', 'std::vector<int>', var_Muons_charge)
     tEvent.Branch('Muons_mediumID', 'std::vector<bool>', var_Muons_mediumID)
@@ -338,6 +348,9 @@ def main():
     tEvent.Branch('Muons_deltaEtaLJ', 'std::vector<double>', var_Muons_deltaEtaLJ)
     
     tEvent.Branch('Muons_matchGen', 'std::vector<bool>', var_Muons_matchGen)
+    
+    tEvent.Branch('Muons_minDeltaRJets', 'std::vector<double>', var_Muons_minDeltaRJets)
+    tEvent.Branch('Muons_closestJet', 'std::vector<int>', var_Muons_closestJet)
     
     if signal:
         tEvent.Branch('Electrons_isZ', 'std::vector<bool>', var_Electrons_isZ)
@@ -369,6 +382,10 @@ def main():
     
     tEvent.Branch('Jets_electronEnergyFraction', 'std::vector<double>', var_Jets_electronEnergyFraction)
     tEvent.Branch('Jets_muonEnergyFraction', 'std::vector<double>', var_Jets_muonEnergyFraction)
+    
+    tEvent.Branch('Jets_muonMultiplicity', 'std::vector<int>', var_Jets_muonMultiplicity)
+    tEvent.Branch('Jets_multiplicity', 'std::vector<int>', var_Jets_multiplicity)
+    tEvent.Branch('Jets_electronMultiplicity', 'std::vector<int>', var_Jets_electronMultiplicity)
     
     tEvent.Branch('Jets_minDeltaRMuons', 'std::vector<double>', var_Jets_minDeltaRMuons)
     tEvent.Branch('Jets_minDeltaRElectrons', 'std::vector<double>', var_Jets_minDeltaRElectrons)
@@ -626,6 +643,10 @@ def main():
         jets_electronEnergyFraction = c.Jets_electronEnergyFraction
         jets_muonEnergyFraction = c.Jets_muonEnergyFraction
         
+        jets_muonMultiplicity = c.Jets_muonMultiplicity
+        jets_multiplicity = c.Jets_multiplicity
+        jets_electronMultiplicity = c.Jets_electronMultiplicity
+        
         
         jets_partonFlavor = c.Jets_partonFlavor
         jets_qgLikelihood = c.Jets_qgLikelihood
@@ -686,6 +707,10 @@ def main():
             jets_electronEnergyFraction = ROOT.std.vector(double)()
             jets_muonEnergyFraction = ROOT.std.vector(double)()
             
+            jets_muonMultiplicity = ROOT.std.vector(int)()
+            jets_multiplicity = ROOT.std.vector(int)()
+            jets_electronMultiplicity = ROOT.std.vector(int)()
+            
             jets_partonFlavor = ROOT.std.vector(int)()
             jets_qgLikelihood = ROOT.std.vector(double)()
             
@@ -698,6 +723,9 @@ def main():
                     jets_muonEnergyFraction.push_back(c.Jets_muonEnergyFraction[i])
                     jets_partonFlavor.push_back(c.Jets_partonFlavor[i])
                     jets_qgLikelihood.push_back(c.Jets_qgLikelihood[i])
+                    jets_muonMultiplicity.push_back(c.Jets_muonMultiplicity[i])
+                    jets_multiplicity.push_back(c.Jets_multiplicity[i])
+                    jets_electronMultiplicity.push_back(c.Jets_electronMultiplicity[i])
             
             var_tracks          = ROOT.std.vector(TLorentzVector)()
             var_tracks_charge   = ROOT.std.vector(int)()
@@ -728,6 +756,9 @@ def main():
         
         if ljet is None:
             #print "No ljet:",ljet 
+            continue
+            
+        if no_lepton_selection and btagsDeepsMedium > 0:
             continue
         
         afterNj += 1
@@ -963,14 +994,20 @@ def main():
         var_Jets_electronEnergyFraction = jets_electronEnergyFraction
         var_Jets_muonEnergyFraction = jets_muonEnergyFraction
         
+        
+        var_Jets_muonMultiplicity = jets_muonMultiplicity
+        var_Jets_multiplicity = jets_multiplicity
+        var_Jets_electronMultiplicity = jets_electronMultiplicity
+        
         var_Jets_minDeltaRElectrons = ROOT.std.vector(double)()
         var_Jets_minDeltaRMuons = ROOT.std.vector(double)()
-        
+
+        loose_electrons = [ var_Electrons[i] for i in range(var_Electrons.size()) if analysis_ntuples.electronPassesLooseSelection(i, var_Electrons, var_Electrons_passIso) ]
         medium_muons = [ var_Muons[i] for i in range(var_Muons.size()) if analysis_ntuples.muonPassesLooseSelection(i, var_Muons, var_Muons_mediumID) ]
         
         for i in range(var_Jets.size()):
             jet = var_Jets[i]
-            min, minCan = analysis_ntuples.minDeltaLepLeps(var_Jets[i], var_Electrons)
+            min, minCan = analysis_ntuples.minDeltaLepLeps(var_Jets[i], loose_electrons)
             var_Jets_minDeltaRElectrons.push_back(min if min is not None else -1)
             min, minCan = analysis_ntuples.minDeltaLepLeps(var_Jets[i], medium_muons)
             var_Jets_minDeltaRMuons.push_back(min if min is not None else -1)
@@ -1084,6 +1121,34 @@ def main():
         tEvent.SetBranchAddress('Muons_deltaPhiLJ', var_Muons_deltaPhiLJ)
         tEvent.SetBranchAddress('Muons_deltaEtaLJ', var_Muons_deltaEtaLJ)
         
+        
+        var_Electrons_minDeltaRJets = ROOT.std.vector(double)()
+        var_Electrons_closestJet = ROOT.std.vector(int)()
+        var_Muons_minDeltaRJets = ROOT.std.vector(double)()
+        var_Muons_closestJet = ROOT.std.vector(int)()
+        
+        for i in range(var_Electrons.size()):
+            min, minCan = analysis_ntuples.minDeltaLepLeps(var_Electrons[i], var_Jets)
+            if min is None:
+                var_Electrons_minDeltaRJets.push_back(-1)
+                var_Electrons_closestJet.push_back(-1)
+            else:
+                var_Electrons_minDeltaRJets.push_back(min)
+                var_Electrons_closestJet.push_back(minCan)
+        for i in range(var_Muons.size()):
+            min, minCan = analysis_ntuples.minDeltaLepLeps(var_Muons[i], var_Jets)
+            if min is None:
+                var_Muons_minDeltaRJets.push_back(-1)
+                var_Muons_closestJet.push_back(-1)
+            else:
+                var_Muons_minDeltaRJets.push_back(min)
+                var_Muons_closestJet.push_back(minCan)
+        
+        tEvent.SetBranchAddress('Electrons_minDeltaRJets', var_Electrons_minDeltaRJets)
+        tEvent.SetBranchAddress('Electrons_closestJet', var_Electrons_closestJet)
+        tEvent.SetBranchAddress('Muons_minDeltaRJets', var_Muons_minDeltaRJets)
+        tEvent.SetBranchAddress('Muons_closestJet', var_Muons_closestJet)
+        
         if dy:
             
             tEvent.SetBranchAddress('DYMuons', var_DYMuons)
@@ -1110,6 +1175,9 @@ def main():
         tEvent.SetBranchAddress('Jets_muonEnergyFraction', var_Jets_muonEnergyFraction)
         tEvent.SetBranchAddress('Jets_minDeltaRElectrons', var_Jets_minDeltaRElectrons)
         tEvent.SetBranchAddress('Jets_minDeltaRMuons', var_Jets_minDeltaRMuons)
+        tEvent.SetBranchAddress('Jets_muonMultiplicity', var_Jets_muonMultiplicity)
+        tEvent.SetBranchAddress('Jets_multiplicity', var_Jets_multiplicity)
+        tEvent.SetBranchAddress('Jets_electronMultiplicity', var_Jets_electronMultiplicity)
 
         tEvent.SetBranchAddress('tracks', var_tracks)
         tEvent.SetBranchAddress('tracks_charge', var_tracks_charge)

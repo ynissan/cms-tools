@@ -63,6 +63,11 @@ do
         SIMULATION=true
         shift # past argument
         ;;
+        -nlp)
+        NLP=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -92,6 +97,9 @@ if [ -n "$SKIM" ]; then
         OUTPUT_DIR=$DY_SKIM_OUTPUT_DIR
     else
         OUTPUT_DIR=$SKIM_OUTPUT_DIR
+    fi
+    if [ -n "$NLP" ]; then
+        OUTPUT_DIR=$NLP_SKIM_OUTPUT_DIR
     fi
 fi
 

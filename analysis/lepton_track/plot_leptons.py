@@ -19,6 +19,7 @@ from lib import analysis_ntuples
 from lib import analysis_tools
 from lib import utils
 from utils import UOFlowTH1F
+from datetime import datetime
 
 gROOT.SetBatch(1)
 gStyle.SetOptStat(0)
@@ -40,24 +41,11 @@ input_file = None
 output_file = None
 if args.input_file:
     input_file = args.input_file[0]
-else:
-    #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm3p28Chi20Chipm.root"
-    #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm12p84Chi20Chipm.root"
-    #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm7p39Chi20Chipm.root"
+else:    
+    input_files = ["/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm3p28Chi20Chipm.root"]
+    #input_files = ["/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/bg/skim_nlp/sum/type_sum/*"]
     
-    input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm4p30Chi20Chipm.root"
-    input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm2p51Chi20Chipm.root"
-    #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm1p92Chi20Chipm.root"
-    input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm12p84Chi20Chipm.root"
-    # input_file = "/afs/desy.de/user/n/nissanuv/ntupleHub/SignalNtuples/higgsino_mu100_dm2p51Chi20Chipm_1.root"
-    input_file = "/afs/desy.de/user/n/nissanuv/ntupleHub/SignalNtuples/higgsino_mu100_dm1p13Chi20Chipm_1.root"
-#     input_file = "/afs/desy.de/user/n/nissanuv/ntupleHub/SignalNtuples/higgsino_mu100_dm1p92Chi20Chipm_1.root"
-    
-    #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm2p51Chi20Chipm.root"
-    
-    input_file = "/afs/desy.de/user/n/nissanuv/ntupleHub/SignalNtuplesSplit/higgsino_mu100_dm3p28Chi20Chipm_1_1.root"
-    
-    input_file = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm3p28Chi20Chipm.root"
+    input_files = ["/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm1p47Chi20Chipm.root"]
     
 if args.output_file:
     output_file = args.output_file[0]
@@ -83,332 +71,134 @@ if plot_single:
 
 lepTypes = ["MM", "Zl"]
 
-def passedCut(cut, c, lepFlavour, l, li, track, minCanT, ljet, params):
-    for func in cut["funcs"]:
-        if not func(c, lepFlavour, l, li, track, minCanT, ljet, params):
-            return False
-    return True
-
-class CustomInsertTH1F(UOFlowTH1F):
-    def setInsertFunc(self, func):
-        self.insertFunc = func
-    def insert(self, c, lepFlavour, lep, li, track, ti, lj, params):
-        #print "In", self.GetName()
-        #print "Value", self.insertFunc(c, lepFlavour, lep, li, track, ti, lj, params)
-        self.Fill(self.insertFunc(c, lepFlavour, lep, li, track, ti, lj, params))
-
-def mediumId(c, lepFlavour, l, li, track, minCanT, ljet, params):
-    if lepFlavour == "Electrons":
-        return True
-    return bool(eval("c." + lepFlavour + "_mediumID")[li])
+plot_overflow = True
 
 def tightID(c, lepFlavour, l, li, track, minCanT, ljet, params):
     return bool(eval("c." + lepFlavour + "_tightID")[li])
-
-def pt(c, lepFlavour, l, li, track, minCanT, ljet, params):
-    if lepFlavour == "Muons" and l.Pt() < 2:
-        return False
-    return l.Pt() < 25
-
-def deltaRLJ(c, lepFlavour, l, li, track, minCanT, ljet, params):
-    if lepFlavour == "Electrons":
-        return True
-    return abs(l.DeltaR(c.Jets[ljet])) > 0.4
 
 def deltaPhiLJ(c, lepFlavour, l, li, track, minCanT, ljet, params):
     if lepFlavour == "Electrons":
         return True
     return abs(l.DeltaPhi(c.Jets[ljet])) > 1
 
+lepConds = {
+    "e" : { "Zl" : "Electrons_matchGen == 1",
+            "MM" : "Electrons_matchGen == 0"},
+    "m" : { "Zl" : "Muons_matchGen == 1",
+            "MM" : "Muons_matchGen == 0"},
+}
 
-def passIso(c, lepFlavour, l, li, track, minCanT, ljet, params):
-    if lepFlavour == "Muons":
-        return True
-    return bool(eval("c." + lepFlavour + "_passIso")[li])
+lepConds = {
+    "e" : { "Zl" : "Electrons_isZ == 1",
+            "MM" : "Electrons_isZ == 0"},
+    "m" : { "Zl" : "Muons_isZ == 1",
+            "MM" : "Muons_isZ == 0"},
+}
+
+
+cuts = [{"name":"none", "title": "No Cuts", "condition": {"e" : "1", "m" : "1"  }},
+        {"name":"pt_lt5", "title": "2 < Pt < 5 and muon mediuimId and deltaRLJ > 0.4", "condition": {"e" : "Electrons.Pt() < 5", "m" : "Muons.Pt() < 5 && Muons.Pt() > 2 && Muons_mediumID == 1 && Muons_deltaRLJ > 0.4"  }},
+        {"name":"pt_lt10", "title": "5 < Pt < 10 and Electrons_passIso and Muons_mediuimId", "condition": {"e" : "Electrons_passIso == 1 && Electrons.Pt() < 10 && Electrons.Pt() > 5 && Electrons_deltaRLJ > 0.4", "m" : "Muons.Pt() < 10 && Muons.Pt() > 5 && Muons_mediumID == 1 && Muons_deltaRLJ > 0.4"  }},
+        {"name":"pt_gt10", "title": "10 < Pt < 25 and Electrons_passIso and Muons_mediuimId", "condition": {"e" : "Electrons_passIso == 1 && Electrons.Pt() < 25 && Electrons.Pt() > 10 && Electrons_deltaRLJ > 0.4", "m" : "Muons.Pt() < 25 && Muons.Pt() > 10 && Muons_mediumID == 1 && Muons_deltaRLJ > 0.4"  }},
+        {"name":"pt_gt20", "title": "Pt > 25", "condition": {"e" : "Electrons.Pt() > 25", "m" : "Muons.Pt() > 25"  }},
+        {"name":"pt_gt20_iso_meduim", "title": "Pt > 25 and Electrons_passIso and muon Muons_mediumID and deltaRLJ ", "condition": {"e" : "Electrons_passIso == 1 && Electrons.Pt() > 25 && Electrons_deltaRLJ > 0.4", "m" : "Muons.Pt() > 25 && Muons_mediumID == 1 && Muons_deltaRLJ > 0.4"  }},
+        {"name":"pt_gt20_iso", "title": "Pt > 25 and passIso", "condition": {"e" : "Electrons_passIso == 1 && Electrons.Pt() > 25", "m" : "Muons_passIso == 1 && Muons.Pt() > 25"  }},
+        #{"name":"mediuimId", "title": "mediuimId", "condition": {"e" : "1", "m" : "Muons_mediumID == 1 && Muons_deltaRLJ > 0.4"  }},
+        #{"name":"all", "title": "all", "condition": {"e" : "Electrons_passIso == 1 && Electrons.Pt() < 25", "m" : "Muons_mediumID == 1 && Muons_deltaRLJ > 0.4 && Muons.Pt() < 25 && Muons.Pt() > 2"  }, "funcs":[deltaPhiLJ]},
+    
+    
+        #{"name":"mediumId", "title": "mediumId", "funcs":[mediumId, pt]},
+    #{"name":"passIso", "title": "passIso", "funcs":[passIso, pt]},
+    #{"name":"tightID", "title": "tightID", "funcs":[tightID, pt]},
+    
+    
+    #{"name":"pt", "title": "pt > 1.8", "funcs":[pt]},
+    #{"name":"tightID", "title": "Eta < 2.6, deltaEtaLL < 1, deltaEtaLJ < 3.8", "funcs":[eta, deltaEtaLL, deltaEtaLJ]},
+    #{"name":"Pt_Eta_dxy_dz", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06", "funcs":[eta, pt, dxy, dz]},
+    #{"name":"Pt_Eta_dxy_dz_deltaEtaLL", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06, deltaEtaLL < 1", "funcs":[eta, pt, dxy, dz, deltaEtaLL]},
+    #{"name":"Pt_Eta_dxy_dz_deltaEtaLL_deltaEtaLJ", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06, deltaEtaLL < 1, deltaEtaLJ < 3.8", "funcs":[eta, pt, dxy, dz, deltaEtaLL, deltaEtaLJ]},
+    #{"name":"Pt_Eta_dxy_dz_deltaEtaLL_deltaRLJ", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06, deltaEtaLL < 1, deltaRLJ > 1.8", "funcs":[eta, pt, dxy, dz, deltaEtaLL, deltaRLJ]},
+    #{"name":"Pt_Eta_dxy_dz_deltaEtaLL_deltaRLJ_deltaRLL", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06, deltaEtaLL < 1, deltaRLJ > 1.8, deltaRLL < 1.1", "funcs":[eta, pt, dxy, dz, deltaEtaLL, deltaRLJ, deltaRLL]}
+]
+
+histoDefs = [
+    {"obs" : "abs(Electrons.Eta())", "bins" : 50, "minX" : 0, "maxX" : 2.5, "lep" : "e" },
+    {"obs" : "abs(Muons.Eta())", "bins" : 50, "minX" : 0, "maxX" : 2.5, "lep" : "m" },
+    #{"obs" : "abs(Electrons.Phi())", "bins" : 50, "minX" : 0, "maxX" : 3.5, "lep" : "e"},
+    #{"obs" : "abs(Muons.Phi())", "bins" : 50, "minX" : 0, "maxX" : 3.5, "lep" : "m" },
+    {"obs" : "abs(Electrons.Pt())", "bins" : 60, "minX" : 0, "maxX" : 30, "lep" : "e" },
+    {"obs" : "abs(Muons.Pt())", "bins" : 60, "minX" : 0, "maxX" : 30, "lep" : "m" },
+    {"obs" : "Muons_minDeltaRJets", "bins" : 30, "minX" : 0, "maxX" : 1, "lep" : "m" },
+    {"obs" : "Electrons_minDeltaRJets", "bins" : 30, "minX" : 0, "maxX" : 1, "lep" : "e" },
+    
+    
+    {"obs" : "Jets_muonEnergyFraction[Muons_closestJet]", "bins" : 60, "minX" : 0, "maxX" : 1, "lep" : "m" },
+    {"obs" : "Jets_electronEnergyFraction[Electrons_closestJet]", "bins" : 60, "minX" : 0, "maxX" : 1, "lep" : "e" },
+    
+    {"obs" : "Jets_muonMultiplicity[Muons_closestJet]", "bins" : 7, "minX" : 0, "maxX" : 7, "lep" : "m" },
+    {"obs" : "Jets_electronMultiplicity[Electrons_closestJet]", "bins" : 7, "minX" : 0, "maxX" : 7, "lep" : "e" },
+    
+    {"obs" : "Electrons_passIso", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "e" },
+    {"obs" : "Muons_passIso", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "m" },
+    {"obs" : "Electrons_mediumID", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "e" },
+    {"obs" : "Muons_mediumID", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "m" },
+    {"obs" : "Electrons_tightID", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "e" },
+    {"obs" : "Muons_tightID", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "m" },
+    {"obs" : "Electrons_deltaRLJ", "bins" : 50, "minX" : 0, "maxX" : 6, "lep" : "e"},
+    {"obs" : "Muons_deltaRLJ", "bins" : 50, "minX" : 0, "maxX" : 6, "lep" : "m"},
+    {"obs" : "Electrons_deltaEtaLJ", "bins" : 50, "minX" : 0, "maxX" : 6, "lep" : "e"},
+    {"obs" : "Muons_deltaEtaLJ", "bins" : 50, "minX" : 0, "maxX" : 6, "lep" : "m"},
+    
+#     
+#     {"obs" : "MT2Activity", "title" : "MT2Activity", "bins" : 50, "minX" : 0, "maxX" : 0.1, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params: eval("c." + lepFlavour + "_MT2Activity")[li] },
+#     
+#     {"obs" : "deltaRLJ", "title" : "deltaRLJ", "bins" : 50, "minX" : 0, "maxX" : 6, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params:  abs(lep.DeltaR(c.Jets[lj])) },
+#     {"obs" : "deltaPhiLJ", "title" : "deltaPhiLJ", "bins" : 50, "minX" : 0, "maxX" : 6, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params:  abs(lep.DeltaPhi(c.Jets[lj])) },
+#     {"obs" : "deltaEtaLJ", "title" : "deltaEtaLJ", "bins" : 50, "minX" : 0, "maxX" : 6, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params:  abs(lep.Eta() - c.Jets[lj].Eta()) },
+   
+]
+
+def createAllHistograms(files_to_process, histograms):
+    for f in files_to_process:
+        print f
+        rootFile = TFile(f)
+        c = rootFile.Get('tEvent')
+        for cut in cuts:
+            if plot_single and cut["name"] != req_cut:
+                continue
+            for hist_def in histoDefs:
+                if plot_single and hist_def["obs"] != req_obs:
+                    continue
+                for lepType in lepTypes:
+                    histName = (hist_def["name"] if hist_def.get("name") is not None else hist_def["obs"]) + "_" + cut["name"] + "_" + lepType
+                    drawString = lepConds[hist_def["lep"]][lepType] + " && (" + cut["condition"][hist_def["lep"]] + ")"
+                    print "Drawing histogram", histName, "with cond", drawString
+                    hist = utils.getHistogramFromTree(histName, c, hist_def.get("obs"), hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), drawString, plot_overflow)
+                    hist.Sumw2()
+                    hist.SetTitle("")
+                    if histograms[lepType].get(histName) is None:
+                        histograms[lepType][histName] = hist
+                    else:
+                        histograms[lepType][histName].Add(hist)
+        rootFile.Close()
 
 
 def main():
+    print "Start: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S')
     
-#     c = TChain('tEvent')
-#     print "Going to open the file"
-#     print input_file
-#     c.Add(input_file)
-    
-    c = TChain('tEvent')
-    print "Opening", input_file
-    c.Add(input_file)
-    
-    nentries = c.GetEntries()
-    print 'Analysing', nentries, "entries"
-
     histograms = {"Zl" : {}, "MM" : {}}
     memory = []
     
-    global mediumId, tightID, pt, passIso
+    files_to_process = []
+    for file_pattern in input_files:
+        files_to_process.extend(glob(file_pattern))
+    
+    print "Going to process the following files:"
+    print files_to_process
+    
+    createAllHistograms(files_to_process, histograms)
 
-    cuts = [{"name":"none", "title": "No Cuts", "funcs":[]},
-        #{"name":"mediumId", "title": "mediumId", "funcs":[mediumId, pt]},
-        #{"name":"passIso", "title": "passIso", "funcs":[passIso, pt]},
-        #{"name":"tightID", "title": "tightID", "funcs":[tightID, pt]},
-        
-        
-        {"name":"mediuimId", "title": "mediuimId", "funcs": [mediumId, deltaRLJ]},
-        {"name":"all", "title": "all", "funcs":[passIso, mediumId, pt, deltaRLJ, deltaPhiLJ]},
-        
-        
-        #{"name":"pt", "title": "pt > 1.8", "funcs":[pt]},
-        #{"name":"tightID", "title": "Eta < 2.6, deltaEtaLL < 1, deltaEtaLJ < 3.8", "funcs":[eta, deltaEtaLL, deltaEtaLJ]},
-        #{"name":"Pt_Eta_dxy_dz", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06", "funcs":[eta, pt, dxy, dz]},
-        #{"name":"Pt_Eta_dxy_dz_deltaEtaLL", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06, deltaEtaLL < 1", "funcs":[eta, pt, dxy, dz, deltaEtaLL]},
-        #{"name":"Pt_Eta_dxy_dz_deltaEtaLL_deltaEtaLJ", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06, deltaEtaLL < 1, deltaEtaLJ < 3.8", "funcs":[eta, pt, dxy, dz, deltaEtaLL, deltaEtaLJ]},
-        #{"name":"Pt_Eta_dxy_dz_deltaEtaLL_deltaRLJ", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06, deltaEtaLL < 1, deltaRLJ > 1.8", "funcs":[eta, pt, dxy, dz, deltaEtaLL, deltaRLJ]},
-        #{"name":"Pt_Eta_dxy_dz_deltaEtaLL_deltaRLJ_deltaRLL", "title": "Eta < 2.6, Pt > 2.5, dxy < 0.05, dz < 0.06, deltaEtaLL < 1, deltaRLJ > 1.8, deltaRLL < 1.1", "funcs":[eta, pt, dxy, dz, deltaEtaLL, deltaRLJ, deltaRLL]}
-        ]
-    histoDefs = [
-        {"name" : "Eta", "title" : "Eta", "bins" : 50, "minX" : 0, "maxX" : 2.5, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params: abs(lep.Eta()) },
-        {"name" : "Phi", "title" : "Phi", "bins" : 50, "minX" : 0, "maxX" : 3, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params: abs(lep.Phi()) },
-        {"name" : "Pt", "title" : "Pt", "bins" : 50, "minX" : 0, "maxX" : 25, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params: abs(lep.Pt()) },
-        
-        {"name" : "passIso", "title" : "passIso", "bins" : 2, "minX" : 0, "maxX" : 1, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params: bool(eval("c." + lepFlavour + "_passIso")[li]) },
-        {"name" : "mediumID", "title" : "mediumID", "bins" : 2, "minX" : 0, "maxX" : 1, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params: bool(eval("c." + lepFlavour + "_mediumID")[li]) },
-        {"name" : "tightID", "title" : "tightID", "bins" : 2, "minX" : 0, "maxX" : 1, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params: bool(eval("c." + lepFlavour + "_tightID")[li]) },
-        #{"name" : "iso", "title" : "iso", "bins" : 50, "minX" : 0, "maxX" : 1, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params: eval("c." + lepFlavour + "_MiniIso")[li] },
-        {"name" : "MT2Activity", "title" : "MT2Activity", "bins" : 50, "minX" : 0, "maxX" : 0.1, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params: eval("c." + lepFlavour + "_MT2Activity")[li] },
-        
-        {"name" : "deltaRLJ", "title" : "deltaRLJ", "bins" : 50, "minX" : 0, "maxX" : 6, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params:  abs(lep.DeltaR(c.Jets[lj])) },
-        {"name" : "deltaPhiLJ", "title" : "deltaPhiLJ", "bins" : 50, "minX" : 0, "maxX" : 6, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params:  abs(lep.DeltaPhi(c.Jets[lj])) },
-        {"name" : "deltaEtaLJ", "title" : "deltaEtaLJ", "bins" : 50, "minX" : 0, "maxX" : 6, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params:  abs(lep.Eta() - c.Jets[lj].Eta()) },
-        #{"name" : "MT", "title" : "MT", "bins" : 50, "minX" : 0, "maxX" : 90, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params:  analysis_tools.MT2(c.Met, c.METPhi, lep) },
-        
-        
-        # {"name" : "EnergyCorr", "title" : "EnergyCorr", "bins" : 50, "minX" : 0, "maxX" : 2, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params:  bool(eval("c." + lepFlavour + "_EnergyCorr")[li])  },
-#         {"name" : "MTW", "title" : "MTW", "bins" : 50, "minX" : 0, "maxX" : 2, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params:  bool(eval("c." + lepFlavour + "_MTW")[li])  },
-#         {"name" : "TrkEnergyCorr", "title" :  "TrkEnergyCorr", "bins" : 50, "minX" : 0, "maxX" : 2, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params:  bool(eval("c." + lepFlavour + "_TrkEnergyCorr")[li])  },
-#         
-        
-        
-        
-       
-        
-        # {"name" : "tracks_chi2perNdof", "title" : "tracks_chi2perNdof", "bins" : 50, "minX" : 0, "maxX" : 1, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params: eval("c.tracks_chi2perNdof")[ti] },
-#         {"name" : "tracks_dxyVtx", "title" : "tracks_dxyVtx", "bins" : 50, "minX" : 0, "maxX" : 1, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params: eval("c.tracks_dxyVtx")[ti] },
-#         {"name" : "tracks_dzVtx", "title" : "tracks_dzVtx", "bins" : 50, "minX" : 0, "maxX" : 1, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params: eval("c.tracks_dzVtx")[ti] },
-#         {"name" : "tracks_trackJetIso", "title" : "tracks_trackJetIso", "bins" : 50, "minX" : 0, "maxX" : 1, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params: eval("c.tracks_trackJetIso")[ti] },
-#         {"name" : "tracks_trkMiniRelIso", "title" : "tracks_trkMiniRelIso", "bins" : 50, "minX" : 0, "maxX" : 1, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params: eval("c.tracks_trkMiniRelIso")[ti] },
-#         {"name" : "tracks_trackQualityHighPurity", "title" : "tracks_trackQualityHighPurity", "bins" : 2, "minX" : 0, "maxX" : 1, "func" : lambda c, lepFlavour, lep, li, track, ti, lj, params: bool(eval("c.tracks_trackQualityHighPurity")[ti]) },
-    ]
-    
-    singlePerCut = {}
-    
-    for cut in cuts:
-        singlePerCut[cut["name"]] = 0
-        for lepType in lepTypes:
-            for histDef in histoDefs:
-                name = histDef["name"] + "_" + cut["name"] + "_" + lepType
-                #print name
-                histograms[lepType][name] = CustomInsertTH1F(name, "", histDef["bins"], histDef["minX"], histDef["maxX"])
-                histograms[lepType][name].setInsertFunc(histDef["func"])
-    
-    notCorrect = 0
-    
-    totalZl = 0
-    totalZlTracks = 0
-    totalGenZl = 0
-    totalRecoLeps = 0
-    totalZlGenTracks = 0
-    dileptonCorrect = 0
-    singleLep = 0
-    totalEvents = 0
-    dileptonTotal = 0
-    singleTotal = 0
-    zeroTotal = 0
-    moreTotal = 0
-    
-    passedCutsCount = {"Zl" : {}, "MM" : {}}
-    
-    
-    for ientry in range(nentries):
-        if ientry % 5000 == 0:
-            print "Processing " + str(ientry)
-        c.GetEntry(ientry)
-        
-        #if c.tracks.size() == 0:
-        #    continue
-        
-#         rightProcess = analysis_ntuples.isX1X2X1Process(c)
-#         if not rightProcess:
-#             print "No"
-#             notCorrect += 1
-#             continue
-            
-        nj, btags, ljet = analysis_ntuples.eventNumberOfJets25Pt2_4Eta_DeepMedium(c.Jets, c.Jets_bJetTagDeepCSVBvsAll)
-        if ljet is None: continue
-        if btags > 0: continue
-        if nj < 1: continue 
-        
-        #minDeltaPhiMetJets = analysis_ntuples.minDeltaPhiMetJets25Pt2_4Eta(c)
-        if c.MinDeltaPhiMetJets < 0.4: continue
-        if c.Mht < 100: continue
-        if c.Met < 120: continue
-
-        minCsv25, maxCsv25 = analysis_ntuples.minMaxCsv(c.Jets, c.Jets_bJetTagDeepCSVBvsAll, 25)
-        #csv medium b jet veto
-        if maxCsv25 > 0.6324:
-            continue
-        
-        genZL, genNonZL = analysis_ntuples.classifyGenZLeptons(c)
-        if not genZL:
-            continue
-        #Only Electrons or Muons
-        # if abs(c.GenParticles_PdgId[genZL[0]]) == 13:
-#             continue
-#         for i in  genZL:
-#             if abs(c.GenParticles_PdgId[i]) == 13:
-#                 print "WHAT"
-#                 exit(0)
-        
-        totalEvents += 1
-        
-        totalGenZl += len(genZL)
-        totalRecoLeps += len(c.Electrons) + len(c.Muons)
-        
-        zlTracksNonMatching = 0
-        
-        for i in genZL:
-            l = c.GenParticles[i]
-            minT, minCanT = analysis_ntuples.minDeltaRLepTracks(l, c)
-            if minCanT is None:
-                continue
-            #print "minT", minT, "minCanT", minCanT
-            if minT < 0.01 and c.GenParticles_PdgId[i] * c.tracks_charge[minCanT] < 0:
-                #print "GenParticles_PdgId[i]=", c.GenParticles_PdgId[i], " tracks_charge[minCanT]=", c.tracks_charge[minCanT]
-                totalZlGenTracks += 1
-        
-        params = {}
-        
-        zl = 0
-        passedLep = 0
-        
-        for lepVal in [["Electrons", -11]]:#, ["Muons", -13]:#[["Muons", -13]]:#[["Electrons", -11]]:
-            #print lepVal
-            lepFlavour = lepVal[0]
-            lepCharge = lepVal[1]
-            
-            leps = getattr(c, lepFlavour)
-            for li in range(leps.size()):
-                l = leps[li]
-                
-                passIso = bool(eval("c." + lepFlavour + "_passIso")[li])
-                mediumID = bool(eval("c." + lepFlavour + "_mediumID")[li])
-                tightID = bool(eval("c." + lepFlavour + "_tightID")[li])
-                iso = eval("c." + lepFlavour + "_MiniIso")[li]
-                MT2Activity = eval("c." + lepFlavour + "_MT2Activity")[li]
-                
-                #if not passIso:
-                #    continue
-                
-                #if l.Pt() < 5:
-                #    continue
-                
-                #print iso
-                
-                #print histograms
-                #exit(0)
-
-                minZ, minCanZ = analysis_ntuples.minDeltaRGenParticles(l, genZL, c.GenParticles)
-                minNZ, minCanNZ = analysis_ntuples.minDeltaRGenParticles(l, genNonZL, c.GenParticles)
-                min = 0
-                
-                type = None
-                
-                if minNZ is None or minZ < minNZ:
-                    min = minZ
-                else:
-                    min = minNZ
-                if min > 0.01:
-                    type = "MM"
-                elif minNZ is None or minZ < minNZ:
-                    if c.GenParticles_PdgId[minCanZ] == lepCharge * getattr(c, lepFlavour + "_charge")[li]:
-                        type = "Zl"
-                        totalZl += 1
-                        zl += 1
-                    else:
-                        type = "MM"
-                else:
-                    type = "MM"
-                
-                minT, minCanT = analysis_ntuples.minDeltaRLepTracks(l, c)
-                
-                # if minT > 0.01:
-#                     if type == "Zl":
-#                         print "--------"
-#                         print "min=", min
-#                         print "type=", type
-#                         print "iso=", iso
-#                         print "passIso=", passIso
-#                         print "mediumId=", mediumID
-#                         print "tightId=", tightID
-#                         print "MT2Activity=", MT2Activity
-#                         print minT, minCanT
-#                         print "NO TRACK!!! len=", len(c.tracks) 
-#                         print "--------"
-                    #continue
-                    
-                if type == "Zl":
-                    totalZlTracks += 1
-                
-                track = None
-                if minCanT is not None:
-                    track = c.tracks[minCanT] if minT < 0.01 else None
-                
-                for cut in cuts:
-                    if passedCutsCount[type].get(cut['name']) is None:
-                        passedCutsCount[type][cut['name']] = 0
-                    
-                    if not passedCut(cut, c, lepFlavour, l, li, track, minCanT, ljet, params):
-                        continue
-                    if cut['name'] == "all":
-                        passedLep += 1
-                    passedCutsCount[type][cut['name']] += 1
-                    for histDef in histoDefs:
-                        name = histDef["name"] + "_" + cut["name"] + "_" + type
-                        h = histograms[type][name]
-                        h.insert(c, lepFlavour, l, li, track, minCanT, ljet, params)
-                
-        if zl == 2:
-            dileptonCorrect += 1
-        elif zl == 1:
-            singleLep += 1
-        
-        # if passedLep != 1:
-#             print "What=", passedLep
-        
-        if passedLep == 2:
-            dileptonTotal += 1
-        elif passedLep == 1:
-            singleTotal += 1
-        elif passedLep == 0:
-            zeroTotal += 1
-        else:
-            moreTotal += 1
-    
-    print "totalEvents=", totalEvents
-    print "Not Correct Procs=" + str(notCorrect)
-    print "totalZl=", totalZl
-    print "totalZlTracks=", totalZlTracks
-    print "totalGenZl=", totalGenZl
-    print "totalRecoLeps=", totalRecoLeps
-    print "totalZlGenTracks=", totalZlGenTracks
-    print "dileptonCorrect=", dileptonCorrect
-    print "singleLep=", singleLep
-    print "dileptonTotal=", dileptonTotal
-    print "singleTotal=", singleTotal
-    print "zeroTotal=", zeroTotal
-    print "moreTotal=", moreTotal
-    
-    print passedCutsCount
-
-    c1 = TCanvas("c1", "c1", 800, 800)
+    c1 = TCanvas("c2", "c2", 800, 800)
     
     if plot_single:
         c1.SetBottomMargin(0.16)
@@ -457,7 +247,6 @@ def main():
         for histDef in histoDefs:
             if plot_single and req_obs != histDef["name"]:
                 continue
-            #print histDef
             
             for log in [True, False]:
                 if plot_single and log:
@@ -474,11 +263,11 @@ def main():
                 maxY = 0
                 drawSame = False
                 for lepType in lepTypes:
-                    name = histDef["name"] + "_" + cut["name"] + "_" + lepType
+                    name = (histDef["name"] if histDef.get("name") is not None else histDef["obs"]) + "_" + cut["name"] + "_" + lepType
                     h = histograms[lepType][name]
                     maxY = max(maxY, h.GetMaximum())
                 for lepType in lepTypes:
-                    name = histDef["name"] + "_" + cut["name"] + "_" + lepType
+                    name = (histDef["name"] if histDef.get("name") is not None else histDef["obs"]) + "_" + cut["name"] + "_" + lepType
                     h = histograms[lepType][name]
                     utils.formatHist(h, utils.colorPalette[cP], 0.35, True)
                     if plot_single:
@@ -498,7 +287,7 @@ def main():
                     else:
                         #print "DRAW", name, lepType
                         needToDraw = True
-                        h.GetXaxis().SetTitle(histDef['title'])
+                        h.GetXaxis().SetTitle(histDef["name"] if histDef.get("name") is not None else histDef["obs"])
                         h.Draw("HIST")
                         drawSame = True
                 legend.Draw("SAME")
@@ -521,5 +310,8 @@ def main():
         utils.stamp_plot()
         c1.Print(OUTPUT_FILE);
     c1.Print(OUTPUT_FILE+"]");
-
+    
+    print "End: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S')
+    exit(0)
+    
 main()

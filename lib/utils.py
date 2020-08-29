@@ -155,6 +155,11 @@ class UOFlowTH1F(TH1F):
         #print "Called UOFlowTH1F Fill"
         super(UOFlowTH1F, self).Fill(min(max(x,self.GetXaxis().GetBinLowEdge(1)+self.epsilon),self.GetXaxis().GetBinLowEdge(self.GetXaxis().GetNbins()+1)-self.epsilon),weight)
 
+class UOFlowTH2F(TH1F):
+    epsilon = 0.0000000001
+    def Fill(self, x, y, weight=1):
+        #print "Called UOFlowTH1F Fill"
+        super(UOFlowTH2F, self).Fill(min(max(x,h.GetXaxis().GetBinLowEdge(1)+epsilon),h.GetXaxis().GetBinLowEdge(h.GetXaxis().GetNbins()+1)-epsilon), min(max(y,h.GetYaxis().GetBinLowEdge(1)+epsilon),h.GetYaxis().GetBinLowEdge(h.GetYaxis().GetNbins()+1)-epsilon),weight)
 
 def isCoumpoundType(key):
     #print "Looking for:" + key + "|:
