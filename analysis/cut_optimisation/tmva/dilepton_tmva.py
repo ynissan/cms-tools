@@ -181,7 +181,7 @@ dataloader.AddSpectator('Weight','F')
 # cuts defining the signal and background sample
 preselectionCut = None
 if two_leptons:
-    preselectionCut = TCut("BTagsDeepMedium == 0")
+    preselectionCut = TCut("vetoElectronsTightID == 0 && vetoMuonsPassIso == 0 && BTagsDeepMedium == 0")
 else:
     preselectionCut = TCut("")
 

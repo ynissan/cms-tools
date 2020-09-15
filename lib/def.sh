@@ -34,7 +34,7 @@ DATA_NTUPLES_DIR="/pnfs/desy.de/cms/tier2/store/user/*/NtupleHub/ProductionRun2v
 
 BG_TYPES=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays DYJetsToLL WJetsToLNu ZJetsToNuNu WZZ WWZ WW WZ ZZZ ZZ)
 
-BG_TYPES=(ZJetsToNuNu)
+BG_TYPES=(WJetsToLNu ZJetsToNuNu TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT)
 
 RARE=(WZZ WWZ ZZZ)
 DiBoson=(WZ WW ZZ)

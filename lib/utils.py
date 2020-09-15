@@ -356,6 +356,52 @@ def barchTreeFromVarsDef(tree, treeVarsDef):
         else:
             tree.Branch(v["name"], v["var"], v["name"] + "/" + v["type"])
 
+def get_histogram_from_tree(tree, var, cutstring="", drawoptions="", nBinsX=False, xmin=False, xmax=False, nBinsY=False, ymin=False, ymax=False, numevents=-1, add_overflow = False):
+
+    hName = str(uuid.uuid1()).replace("-", "")
+
+    canvas = TCanvas("c_" + hName)
+
+    if not nBinsY:
+        histo = TH1F(hName, hName, nBinsX, xmin, xmax)
+    else:
+        histo = TH2F(hName, hName, nBinsX, xmin, xmax, nBinsY, ymin, ymax)
+
+    if numevents>0:
+        tree.Draw("%s>>%s" % (var, hName), cutstring, drawoptions, numevents)
+    else:
+        tree.Draw("%s>>%s" % (var, hName), cutstring, drawoptions)
+
+    # add overflow bin(s) for 1D and 2D histograms:
+    if add_overflow:
+        if not nBinsY:
+            bin = histo.GetNbinsX()+1
+            overflow = histo.GetBinContent(bin)
+            histo.AddBinContent((bin-1), overflow)
+        else:
+            binX = histo.GetNbinsX()+1
+            binY = histo.GetNbinsX()+1
+        
+            # read and set overflow x values:
+            for x in range(0, binX-1):
+                overflow_up = histo.GetBinContent(x, binY)
+                bin = histo.GetBin(x, binY-1)
+                histo.SetBinContent(bin, overflow_up)
+        
+            # read and set overflow y values:
+            for y in range(0, binY-1):
+                overflow_right = histo.GetBinContent(binX, y)
+                bin = histo.GetBin(binX-1, y)
+                histo.SetBinContent(bin, overflow_right)
+        
+            # read and set overflow diagonal values:
+            overflow_diag = histo.GetBinContent(binX, binY)
+            bin = histo.GetBin(binX-1, binY-1)
+            histo.SetBinContent(bin, overflow_diag)
+   
+    histo.SetDirectory(0)
+    return histo
+
 def getCrossSection(filename):
     cs = 0
     p = re.compile("^NLO\+NLL.*")
@@ -523,8 +569,8 @@ def mkhistlogx(name, title, nbins, xmin, xmax):
 def getRealLogxHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=True):
     h = mkhistlogx(name + "_logx", "", bins, minX, maxX)
     return getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow, name + "_logx", True)
-
-def getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=True, tmpName="hsqrt", predefBins = False):
+    
+def getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=True, tmpName="hsqrt", predefBins = False, twoD = False, binsY = None, minBinsY = None, maxBinsY = None):
     if tree.GetEntries() == 0:
         return None
     binsStr = None

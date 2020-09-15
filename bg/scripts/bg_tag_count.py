@@ -59,7 +59,7 @@ bgReTaggingOrder = {
     "n_body" : 6,
 }
 
-hist_def = { "obs" : "dilepBDT", "minX" : 0.1, "maxX" : 1, "bins" : 30, "cond" : str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * ((leptons[1].Pt() <= 3.5 || deltaR <= 0.3) && Mht >= 220 &&  Met >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1 && BTagsDeepMedium == 0)" }
+hist_def = { "obs" : "dilepBDT", "minX" : 0.1, "maxX" : 1, "bins" : 30, "cond" : str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * ((leptons[1].Pt() <= 3.5 || deltaR <= 0.3) && Mht >= 220 &&  Met >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1 && BTagsDeepMedium == 0 && vetoElectronsTightID == 0 && vetoMuonsPassJetIso == 0)" }
 #hist_def = { "obs" : "dilepBDT", "minX" : -1, "maxX" : 1, "bins" : 60, "cond" : str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * ((leptons[1].Pt() <= 3.5 || deltaR <= 0.3) && (invMass < 10 && invMass > 5) && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81))" }
 ignore_bg_files = ["TT_TuneCUETP8M2T4_13TeV-powheg-pythia8.root", "TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root"]
 
