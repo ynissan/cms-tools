@@ -18,7 +18,7 @@ SIMS=(["dm051"]="/nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggs
 #declare -A SIM_GROUP=(["all"]="dm")
 
 declare -A SIM_GROUP=(
-           ["all"]="dm1p dm0p dm2p dm3p dm4p" \
+           ["all"]="dm1p dm2p dm3p dm4p" \
            )
 
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$CMSSW_BASE/src/cms-tools/lib/classes"
@@ -34,7 +34,8 @@ DATA_NTUPLES_DIR="/pnfs/desy.de/cms/tier2/store/user/*/NtupleHub/ProductionRun2v
 
 BG_TYPES=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays DYJetsToLL WJetsToLNu ZJetsToNuNu WZZ WWZ WW WZ ZZZ ZZ)
 
-BG_TYPES=(WJetsToLNu ZJetsToNuNu TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT)
+#BG_TYPES=(WJetsToLNu ZJetsToNuNu TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT)
+#BG_TYPES=(ST_s-channel_4f_leptonDecays ST_tW_antitop_5f_inclusiveDecays ST_tW_top_5f_inclusiveDecays WGToLNuG ZGTo2LG)
 
 RARE=(WZZ WWZ ZZZ)
 DiBoson=(WZ WW ZZ)

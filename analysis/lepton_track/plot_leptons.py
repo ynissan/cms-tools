@@ -49,7 +49,8 @@ else:
     
     #input_files = ["/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm9p73Chi20Chipm.root"]
     input_files = ["/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm1p47Chi20Chipm.root"]
-    #input_files = ["/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm3p28Chi20Chipm.root"]
+    input_files = ["/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal_jet_iso_cat/skim_nlp/sum/higgsino_mu100_dm3p28Chi20Chipm.root"]
+    input_files = ["/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm3p28Chi20Chipm.root"]
     #input_files = ["/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/bg/skim_nlp/sum/type_sum/*ZJetsToNuNu_HT-600To800*"]
     #input_files = ["/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/bg/skim_nlp/sum/type_sum/*TTJets_DiLept*"]
     
@@ -119,12 +120,12 @@ cuts = [{"name":"none", "title": "No Cuts", "condition": {"e" : "1", "m" : "1"  
         
 
         {"name":"no_iso", "title": "no_iso", "condition": {"e" : "Electrons_deltaRLJ > 0.4 && Electrons.Pt() < 25", "m" : "Muons.Pt() < 25 && Muons.Pt() > 2 && Muons_deltaRLJ > 0.4 && Muons_mediumID == 1 "  }},
-        {"name":"no_iso_lt2", "title": "no_iso lt2", "condition": {"e" : "Electrons_deltaRLJ > 0.4 && Electrons.Pt() < 2", "m" : "Muons.Pt() > 1.5 && Muons.Pt() < 2 && Muons_deltaRLJ > 0.4 && Muons_mediumID == 1 "  }},
-        {"name":"no_iso_lt2_iso", "title": "no_iso lt2_iso", "condition": {"e" : "Electrons_deltaRLJ > 0.4 && Electrons.Pt() < 2", "m" : "Muons.Pt() > 1.5 && Muons.Pt() < 2 && Muons_deltaRLJ > 0.4 && Muons_mediumID == 1 && Muons_passCorrJetIso15 == 1"  }},
-        {"name":"no_iso_lt2_tight", "title": "no_iso lt2 tight", "condition": {"e" : "Electrons_deltaRLJ > 0.4 && Electrons.Pt() < 2", "m" : "Muons.Pt() > 1.5 && Muons.Pt() < 2 && Muons_deltaRLJ > 0.4 && Muons_tightID == 1 "  }},
-        {"name":"no_iso_2_5", "title": "no_iso 2_5", "condition": {"e" : "Electrons_deltaRLJ > 0.4 && Electrons.Pt() < 5", "m" : "Muons.Pt() < 5 && Muons.Pt() > 2 && Muons_deltaRLJ > 0.4 && Muons_mediumID == 1 "  }},
-        {"name":"no_iso_5_10", "title": "no_iso 5_10", "condition": {"e" : "Electrons_deltaRLJ > 0.4 && Electrons.Pt() < 10", "m" : "Muons.Pt() < 10 && Muons.Pt() > 5 && Muons_deltaRLJ > 0.4 && Muons_mediumID == 1 "  }},
-        {"name":"no_iso_10_25", "title": "no_iso 10_25", "condition": {"e" : "Electrons_deltaRLJ > 0.4 && Electrons.Pt() > 10 && Electrons.Pt() < 25", "m" : "Muons.Pt() < 25 && Muons.Pt() > 10 && Muons_deltaRLJ > 0.4 && Muons_mediumID == 1 "  }},
+        {"name":"no_iso_lt2", "title": "no_iso lt2", "condition": {"e" : "Electrons_deltaRLJ > 0.4 && Electrons.Pt() < 2", "m" : "Muons.Pt() > 1.6 && Muons.Pt() < 2 && Muons_deltaRLJ > 0.4 && Muons_mediumID == 1 "  }},
+        {"name":"no_iso_lt2_iso", "title": "no_iso lt2_iso", "condition": {"e" : "Electrons_deltaRLJ > 0.4 && Electrons.Pt() < 2", "m" : "Muons.Pt() > 1.6 && Muons.Pt() < 2 && Muons_deltaRLJ > 0.4 && Muons_mediumID == 1 && Muons_passCorrJetIso15 == 1"  }},
+        {"name":"no_iso_lt2_tight", "title": "no_iso lt2 tight", "condition": {"e" : "Electrons_deltaRLJ > 0.4 && Electrons.Pt() < 2", "m" : "Muons.Pt() > 1.6 && Muons.Pt() < 2 && Muons_deltaRLJ > 0.4 && Muons_tightID == 1 "  }},
+        {"name":"no_iso_2_25", "title": "no_iso 2_25", "condition": {"e" : "Electrons_deltaRLJ > 0.4 && Electrons.Pt() > 2", "m" : "Muons.Pt() < 25 && Muons.Pt() > 2 && Muons_deltaRLJ > 0.4 && Muons_mediumID == 1 "  }},
+        #{"name":"no_iso_5_10", "title": "no_iso 5_10", "condition": {"e" : "Electrons_deltaRLJ > 0.4 && Electrons.Pt() < 10", "m" : "Muons.Pt() < 10 && Muons.Pt() > 5 && Muons_deltaRLJ > 0.4 && Muons_mediumID == 1 "  }},
+        #{"name":"no_iso_10_25", "title": "no_iso 10_25", "condition": {"e" : "Electrons_deltaRLJ > 0.4 && Electrons.Pt() > 10 && Electrons.Pt() < 25", "m" : "Muons.Pt() < 25 && Muons.Pt() > 10 && Muons_deltaRLJ > 0.4 && Muons_mediumID == 1 "  }},
 
 
 
@@ -147,7 +148,7 @@ cuts = [{"name":"none", "title": "No Cuts", "condition": {"e" : "1", "m" : "1"  
         
         
         #{"name":"mediuimId", "title": "mediuimId", "condition": {"e" : "1", "m" : "Muons_mediumID == 1 && Muons_deltaRLJ > 0.4"  }},
-        #{"name":"all", "title": "all", "condition": {"e" : "Electrons_passIso == 1 && Electrons.Pt() < 25", "m" : "Muons_mediumID == 1 && Muons_deltaRLJ > 0.4 && Muons.Pt() < 25 && Muons.Pt() > 2"  }, "funcs":[deltaPhiLJ]},
+        {"name":"all", "title": "all", "condition": {"e" : "Electrons_passJetIso == 1 && Electrons.Pt() < 25 && Electrons_deltaRLJ > 0.4", "m" : "Muons_passJetIso == 1  && Muons_mediumID == 1 && Muons_deltaRLJ > 0.4 && Muons.Pt() < 25 && Muons.Pt() > 2"  }, "funcs":[deltaPhiLJ]},
     
     
         #{"name":"mediumId", "title": "mediumId", "funcs":[mediumId, pt]},
@@ -187,18 +188,23 @@ histoDefs = [
     {"obs" : "Muons_mediumID", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "m" },
     {"obs" : "Electrons_tightID", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "e" },
     {"obs" : "Muons_tightID", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "m" },
-    #{"obs" : "Electrons_deltaRLJ", "bins" : 50, "minX" : 0, "maxX" : 6, "lep" : "e"},
-    #{"obs" : "Muons_deltaRLJ", "bins" : 50, "minX" : 0, "maxX" : 6, "lep" : "m"},
+    {"obs" : "Electrons_deltaRLJ", "bins" : 50, "minX" : 0, "maxX" : 6, "lep" : "e"},
+    {"obs" : "Muons_deltaRLJ", "bins" : 50, "minX" : 0, "maxX" : 6, "lep" : "m"},
     #{"obs" : "Electrons_deltaEtaLJ", "bins" : 50, "minX" : 0, "maxX" : 6, "lep" : "e"},
     #{"obs" : "Muons_deltaEtaLJ", "bins" : 50, "minX" : 0, "maxX" : 6, "lep" : "m"},
-    {"obs" : "Electrons_passJetIso", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "e" },
-    {"obs" : "Muons_passJetIso", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "m" },
     
+    
+    {"obs" : "Electrons_passJetIso", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "e" },
+    {"obs" : "Electrons_passNonJetIso", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "e" },
+    {"obs" : "Electrons_passCorrJetIso0", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "e" },
     {"obs" : "Electrons_passCorrJetIso1", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "e" },
     {"obs" : "Electrons_passCorrJetIso5", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "e" },
     {"obs" : "Electrons_passCorrJetIso10", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "e" },
     {"obs" : "Electrons_passCorrJetIso15", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "e" },
     
+    {"obs" : "Muons_passJetIso", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "m" },
+    {"obs" : "Muons_passNonJetIso", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "m" },
+    {"obs" : "Muons_passCorrJetIso0", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "m" },
     {"obs" : "Muons_passCorrJetIso1", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "m" },
     {"obs" : "Muons_passCorrJetIso5", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "m" },
     {"obs" : "Muons_passCorrJetIso10", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "m" },
@@ -207,6 +213,12 @@ histoDefs = [
     {"obs" : "twoLeptonsJetIso", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "g" },
     {"obs" : "twoLeptonsJetIsoLowPt", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "g" },
     {"obs" : "twoLeptonsJetIsoLowPtTight", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "g" },
+    {"obs" : "twoLeptonsNonJetIso", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "g" },
+    {"obs" : "twoLeptonsNonJetIsoLowPt", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "g" },
+    {"obs" : "twoLeptonsNonJetIsoLowPtTight", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "g" },
+    {"obs" : "twoLeptonsCorrJetIso0", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "g" },
+    {"obs" : "twoLeptonsCorrJetIso0LowPt", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "g" },
+    {"obs" : "twoLeptonsCorrJetIso0LowPtTight", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "g" },
     {"obs" : "twoLeptonsCorrJetIso1", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "g" },
     {"obs" : "twoLeptonsCorrJetIso1LowPt", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "g" },
     {"obs" : "twoLeptonsCorrJetIso1LowPtTight", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "g" },
@@ -235,11 +247,7 @@ histoDefs = [
 #     
 #     
     {"name" : "electronMultiplicity - Jets_electronCorrected[Electrons_correctedClosestJet].Pt()","obs" : "((Jets_electronCorrected[Electrons_correctedClosestJet].E() > 0 && Electrons_correctedMinDeltaRJets < 0.4) * Jets_electronCorrected[Electrons_correctedClosestJet].Pt())", "bins" : 100, "minX" : 0, "maxX" : 25, "lep" : "e", "extraConds" : "Jets_multiplicity[Electrons_correctedClosestJet] < 10"},
-    {"name" : "muonMultiplicity - Jets_muonCorrected[Muons_correctedClosestJet].Pt()", "obs" : "((Jets_muonCorrected[Muons_correctedClosestJet].E() > 0 && Muons_correctedMinDeltaRJets < 0.4) * Jets_muonCorrected[Muons_correctedClosestJet].Pt())", "bins" : 100, "minX" : 0, "maxX" : 25, "lep" : "m", "extraConds" : "Jets_multiplicity[Muons_correctedClosestJet] < 10" },
-    
-    {"name" : "electronMultiplicity2 - Jets_electronCorrected[Electrons_correctedClosestJet].Pt()","obs" : "((Jets_electronCorrected[Electrons_correctedClosestJet].E() > 0 && Electrons_correctedMinDeltaRJets < 0.4) * Jets_electronCorrected[Electrons_correctedClosestJet].Pt())", "bins" : 100, "minX" : 0, "maxX" : 25, "lep" : "e", "extraConds" : "Jets_multiplicity[Electrons_correctedClosestJet] >= 10"},
-    {"name" : "muonMultiplicity2 - Jets_muonCorrected[Muons_correctedClosestJet].Pt()", "obs" : "((Jets_muonCorrected[Muons_correctedClosestJet].E() > 0 && Muons_correctedMinDeltaRJets < 0.4) * Jets_muonCorrected[Muons_correctedClosestJet].Pt())", "bins" : 100, "minX" : 0, "maxX" : 25, "lep" : "m", "extraConds" : "Jets_multiplicity[Muons_correctedClosestJet] >= 10" },
-#     
+    {"name" : "muonMultiplicity - Jets_muonCorrected[Muons_correctedClosestJet].Pt()", "obs" : "((Jets_muonCorrected[Muons_correctedClosestJet].E() > 0 && Muons_correctedMinDeltaRJets < 0.4) * Jets_muonCorrected[Muons_correctedClosestJet].Pt())", "bins" : 100, "minX" : 0, "maxX" : 25, "lep" : "m", "extraConds" : "Jets_multiplicity[Muons_correctedClosestJet] < 10" },  
    
     # {"obs" : "Jets_multiplicity[Electrons_closestJet]:Electrons_minDeltaRJets", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "e", "extraConds" = "" },
 #     {"obs" : "Jets_multiplicity[Muons_closestJet]:Muons_minDeltaRJets", "bins" : 2, "minX" : 0, "maxX" : 1, "lep" : "m",  "extraConds" = ""},

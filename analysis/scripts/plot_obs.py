@@ -73,11 +73,19 @@ bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/bg/skim_dilepton_signal_bdt/
 # data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_dilepton_signal_bdt/all/single"
 # signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signal_bdt_all/single/higgsino_mu100_dm3p28Chi20Chipm.root"
 
-signal_dir = [#"/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm4p30Chi20Chipm.root",
+signal_dir = [
               "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_dilepton_signal_bdt_all/single/higgsino_mu100_dm1p92Chi20Chipm.root",
               "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_dilepton_signal_bdt_all/single/higgsino_mu100_dm3p28Chi20Chipm.root",
-              "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_dilepton_signal_bdt_all/single/higgsino_mu100_dm9p73Chi20Chipm.root"
+              "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_dilepton_signal_bdt_all/single/higgsino_mu100_dm4p30Chi20Chipm.root",
+              #"/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_dilepton_signal_bdt_all/single/higgsino_mu100_dm9p73Chi20Chipm.root"
               ]
+
+
+# signal_dir = [#"/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm4p30Chi20Chipm.root",
+#               "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim/sum/higgsino_mu100_dm1p92Chi20Chipm.root",
+#               "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim/sum/higgsino_mu100_dm3p28Chi20Chipm.root",
+#               "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim/sum/higgsino_mu100_dm9p73Chi20Chipm.root"
+#               ]
 
 calculatedLumi = None
 bg_dir = None
@@ -87,6 +95,7 @@ sc_data_dir = None
 
 if plot_2l:
     bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/bg/skim_dilepton_signal_bdt/all/single"
+    #bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/bg/skim_nlp/sum/type_sum"
     #signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_dilepton_signal_bdt_all/single/higgsino_mu100_dm3p28Chi20Chipm.root"
     data_dir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/data/skim_dilepton_signal_bdt/all/single"
     sc_bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/bg/skim_dilepton_signal_bdt_sc/all/single"
@@ -423,9 +432,10 @@ histograms_defs = [
     #{ "obs" : "DYMuons[1].Pt()", "minX" : 15, "maxX" : 100, "bins" : 30 },
     
     #NORMAL
-    { "obs" : "invMass", "minX" : 0.1, "maxX" : 13, "bins" : 30, "units" : "GeV" },
+    { "obs" : "invMass", "units" : "M_{ll}", "minX" : 0.1, "maxX" : 13, "bins" : 30 },
     { "obs" : 'int(leptonFlavour == "Muons")', "minX" : 0, "maxX" : 2, "bins" : 2},
-    { "obs" : "dilepBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
+    #{ "obs" : "dilepBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
+    { "obs" : "dilepBDT", "units" : "BDT output", "minX" : 0.1, "maxX" : 0.8, "bins" : 30 },
     { "obs" : "Electrons.Pt()", "minX" : 0, "maxX" : 50, "bins" : 50 },
     { "obs" : "Muons.Pt()", "minX" : 0, "maxX" : 50, "bins" : 50 },
     { "obs" : "dileptonPt", "minX" : 0, "maxX" : 100, "bins" : 30 },
@@ -650,7 +660,29 @@ else:
 #         {"name":"step2_250", "title": "No Cuts", "funcs" : [step2_250]},
 #         {"name":"step3", "title": "No Cuts", "funcs" : [step3]},
 
+# histograms_defs = [
+#     { "obs" : 'int(twoLeptonsJetIso)', "minX" : 1, "maxX" : 2, "bins" : 1},
+#     { "obs" : 'int(twoLeptonsJetIsoLowPt)', "minX" : 1, "maxX" : 2, "bins" : 1},
+#     { "obs" : 'int(twoLeptonsJetIsoLowPtTight)', "minX" : 1, "maxX" : 2, "bins" : 1},
+#     { "obs" : 'int(twoLeptonsCorrJetIso1)', "minX" : 1, "maxX" : 2, "bins" : 1},
+#     { "obs" : 'int(twoLeptonsCorrJetIso1LowPt)', "minX" : 1, "maxX" : 2, "bins" : 1},
+#     { "obs" : 'int(twoLeptonsCorrJetIso1LowPtTight)', "minX" : 1, "maxX" : 2, "bins" : 1},
+#     { "obs" : 'int(twoLeptonsCorrJetIso5)', "minX" : 1, "maxX" : 2, "bins" : 1},
+#     { "obs" : 'int(twoLeptonsCorrJetIso5LowPt)', "minX" : 1, "maxX" : 2, "bins" : 1},
+#     { "obs" : 'int(twoLeptonsCorrJetIso5LowPtTight)', "minX" : 1, "maxX" : 2, "bins" : 1},
+#     { "obs" : 'int(twoLeptonsCorrJetIso10)', "minX" : 1, "maxX" : 2, "bins" : 1},
+#     { "obs" : 'int(twoLeptonsCorrJetIso10LowPt)', "minX" : 1, "maxX" : 2, "bins" : 1},
+#     { "obs" : 'int(twoLeptonsCorrJetIso10LowPtTight)', "minX" : 1, "maxX" : 2, "bins" : 1},
+#     { "obs" : 'int(twoLeptonsCorrJetIso15)', "minX" : 1, "maxX" : 2, "bins" : 1},
+#     { "obs" : 'int(twoLeptonsCorrJetIso15LowPt)', "minX" : 1, "maxX" : 2, "bins" : 1},
+#     { "obs" : 'int(twoLeptonsCorrJetIso15LowPtTight)', "minX" : 1, "maxX" : 2, "bins" : 1},
+# 
+# ]
 
+# cuts = [ {"name":"none", "title": "No Cuts", "condition" : "1"},
+#          #{"name":"MET", "title": "MET >= 150", "condition" : 'Met >= 150 && invMass < 12 && leptonFlavour == "Muons"'},
+#          #{"name":"dileptonPt", "title": "dileptonPt", "condition" : "Met >= 200 && invMass < 30 && dileptonPt < 30"}        
+# ]
 
 
 def styleHist(hist, onlyY = False):
@@ -1231,16 +1263,18 @@ def main():
                 for i in range(len(signal_dir)):
                     signalFile = signal_dir[i]
                     signalBasename = os.path.basename(signalFile)
-                    sigHistsBaseNames.append(signalBasename.split(".")[0])
+                    sigHistsBaseNames.append(signalBasename.split(".")[0].split("_")[-1])
                     sigHistName = cut["name"] + "_" + hist_def["obs"] + "_" + signalBasename
                     sigHistsNames.append(sigHistName)
                     sigHist = histograms[sigHistName]
+                    print sigHistName, sigHist.GetMaximum()
                     sigHists.append(sigHist)
                     utils.formatHist(sigHist, utils.signalCp[i], 0.8)
                     sigMax = max(sigHist.GetMaximum(), sigMax)
             maximum = sigMax
             if foundBg:
                 bgMax = hs.GetMaximum()
+                print "Bg coung:", bgMax
                 maximum = max(bgMax, sigMax)
             if plot_data:
                 dataHist = histograms[dataHistName]
@@ -1277,7 +1311,7 @@ def main():
                             print hist_def
                             print newBgHist
                             print newBgHist.GetXaxis()
-                            newBgHist.GetXaxis().SetTitle(hist_def["obs"])
+                            newBgHist.GetXaxis().SetTitle(hist_def["units"] if hist_def.get("units") is not None else hist_def["obs"])
                 if newBgHist.GetHists() is not None and newBgHist.GetNhists() > 0:
                     newBgHist.GetYaxis().SetTitle("Number of events")
                 if plot_single:

@@ -90,9 +90,9 @@ file_limit=0
 i=0
 count=0
 input_files=""
-files_per_job=10
+files_per_job=20
 
-files_per_job=1
+#files_per_job=1
 
 FILE_OUTPUT="${OUTPUT_DIR}/single"
 

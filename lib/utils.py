@@ -138,6 +138,51 @@ bgOrder = {
 #     "QCD" : 2,
 # }
 
+leptonsCorrJetVecList = {
+    "CorrJetIso" : "bool",
+    "NonJetIso" : "bool",
+    "JetIso" : "bool"
+}
+
+leptonCorrJetIsoPtRange = [0, 1, 5, 10, 15]
+
+dileptonObservablesVecList = {
+    "leptons" : "TLorentzVector",
+    "leptonsIdx" : "int",
+    "leptons_charge" : "int"
+}
+
+dileptonObservablesStringList = ["leptonFlavour"]
+dileptonObservablesDTypesList = {
+    "twoLeptons" : "bool",
+    "invMass" : "float",
+    "dileptonPt" : "float",
+    "deltaPhi" : "float",
+    "deltaEta" : "float",
+    "deltaR" : "float",
+    "pt3" : "float",
+    "mtautau" : "float",
+    "mt1" : "float",
+    "mt2" : "float",
+    "deltaEtaLeadingJetDilepton" : "float",
+    "deltaPhiLeadingJetDilepton" : "float",
+    "dilepHt" : "float",
+    "deltaPhiMetLepton1" : "float",
+    "deltaPhiMetLepton2" : "float"
+}
+
+leptonIsolationList = [ "JetIso", "CorrJetIso", "NonJetIso" ]
+leptonIsolationCategories = {
+    "" : { "lowPtTightMuons" : False, "muonPt" : 2},
+    "LowPt" : { "lowPtTightMuons" : False, "muonPt" : 1.5},
+    "LowPtTight" : { "lowPtTightMuons" : True, "muonPt" : 1.5}
+}
+
+typeTranslation = {
+    "float" : "D",
+    "bool" : "O"
+}
+
 tl = TLatex()
 tl.SetNDC()
 cmsTextFont = 61
