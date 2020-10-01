@@ -73,11 +73,21 @@ def main():
         varsDict[v["name"]] = i
 
     utils.addMemToTreeVarsDef(vars)
-
-    tSig = TTree('tEvent','tEvent')
-    utils.barchTreeFromVarsDef(tSig, vars)
-    tBg = TTree('tEvent','tEvent')
-    utils.barchTreeFromVarsDef(tBg, vars)
+    
+    signalTrees = {}
+    bgTrees = {}
+    
+    for lep in ["Electrons", "Muons"]:
+        for iso in utils.leptonIsolationList:
+            for cat in utils.leptonIsolationCategories:
+                ptRanges = [""]
+                if iso == "CorrJetIso":
+                    ptRanges = utils.leptonCorrJetIsoPtRange
+                for ptRange in ptRanges:
+                    signalTrees[lep + iso + str(ptRange) + cat] = TTree(lep + iso + str(ptRange) + cat, lep + iso + str(ptRange) + cat)
+                    utils.barchTreeFromVarsDef(signalTrees[lep + iso + str(ptRange) + cat], vars)
+                    bgTrees[lep + iso + str(ptRange) + cat] = TTree(lep + iso + str(ptRange) + cat, lep + iso + str(ptRange) + cat)
+                    utils.barchTreeFromVarsDef(bgTrees[lep + iso + str(ptRange) + cat], vars)
 
     c = TChain('tEvent')
     print "Going to open the file"
@@ -91,11 +101,13 @@ def main():
     noReco = 0
     clean = 0
     sigTrack = 0
-    appEvents = 0
     for ientry in range(nentries):
         if ientry % 5000 == 0:
             print "Processing " + str(ientry)
         c.GetEntry(ientry)
+        #No exclusive track category
+        if c.category == 0:
+            continue
         rightProcess = analysis_ntuples.isX1X2X1Process(c)
         if not rightProcess:
             print "No"
@@ -117,98 +129,121 @@ def main():
         if len(genZL) != 2:
             print "What:", len(genZL)
         
-        ll, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(c, c.LeadingJet)
+        for iso in utils.leptonIsolationList:
+            for cat in utils.leptonIsolationCategories:
+                ptRanges = [""]
+                if iso == "CorrJetIso":
+                    ptRanges = utils.leptonCorrJetIsoPtRange
+                for ptRange in ptRanges:
+                    
+                    ll, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(c.Electrons, getattr(c, "Electrons_pass" + iso + str(ptRange)), c.Electrons_deltaRLJ, c.Electrons_charge, c.Muons, getattr(c, "Muons_pass" + iso + str(ptRange)), c.Muons_mediumID, c.Muons_deltaRLJ, c.Muons_charge, utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], c.Muons_tightID)
+                    
+                    if ll is None:
+                        continue
+                    
+                    if leptonFlavour != getattr(c, "leptonFlavour" + iso + str(ptRange)):
+                        continue
         
-        metvec = TLorentzVector()
-        metvec.SetPtEtaPhiE(c.Met, 0, c.METPhi, c.Met)
+                    metvec = TLorentzVector()
+                    metvec.SetPtEtaPhiE(c.Met, 0, c.METPhi, c.Met)
         
-        appEvent = False
-        for ti in range(c.tracks.size()):
-            if c.tracks_trkRelIso[ti] > 0.1:
-                continue 
-            if c.tracks_dxyVtx[ti] > 0.02:
-                continue
-            if c.tracks_dzVtx[ti] > 0.05:
-                continue
-
-            t = c.tracks[ti]
+                    appEvent = False
+        
+                    for ti in range(c.tracks.size()):
+                        t = c.tracks[ti]
+                        if c.tracks_trkRelIso[ti] > 0.1:
+                            continue 
+                        if c.tracks_dxyVtx[ti] > 0.02:
+                            continue
+                        if c.tracks_dzVtx[ti] > 0.05:
+                            continue            
             
-            llMin = analysis_tools.minDeltaR(t, [ll])
+                        llMin = analysis_tools.minDeltaR(t, [ll])
             
-            if (llMin is not None and llMin < 0.01):
-                continue
-            clean += 1
-            minZ, minCanZ = analysis_ntuples.minDeltaRGenParticles(t, genZL, c.GenParticles)
-            minNZ, minCanNZ = analysis_ntuples.minDeltaRGenParticles(t, genNonZL, c.GenParticles)
+                        if (llMin is not None and llMin < 0.01):
+                            continue
+                        clean += 1
+                        minZ, minCanZ = analysis_ntuples.minDeltaRGenParticles(t, genZL, c.GenParticles)
+                        minNZ, minCanNZ = analysis_ntuples.minDeltaRGenParticles(t, genNonZL, c.GenParticles)
         
-            #if minNZ is None:
-            #	print "minNZ is None for " + str(genNonZL)
+                        #if minNZ is None:
+                        #	print "minNZ is None for " + str(genNonZL)
             
-            min = None
-            if minNZ is None or minZ < minNZ:
-                min = minZ
-            else:
-                min = minNZ
+                        min = None
+                        if minNZ is None or minZ < minNZ:
+                            min = minZ
+                        else:
+                            min = minNZ
         
-            result = ""
+                        result = ""
         
-            if min > 0.1:
-                result = "MM"
-            elif minNZ is None or minZ < minNZ:
-                if c.tracks_charge[ti] * c.GenParticles_PdgId[minCanZ] < 0:
-                    result = "Zl"
-                    #print "Found!"
-                else:
-                    result = "MM"
-            else:
-                result = "MM"
+                        if min > 0.1:
+                            result = "MM"
+                        elif minNZ is None or minZ < minNZ:
+                            if c.tracks_charge[ti] * c.GenParticles_PdgId[minCanZ] < 0:
+                                result = "Zl"
+                                #print "Found!"
+                            else:
+                                result = "MM"
+                        else:
+                            result = "MM"
         
-            vars[varsDict["track"]]["var"] = t
-            for j, v in enumerate(tracksVars):
-                i = len(otherVars) + j
-                vars[i]["var"][0] = eval("c.tracks_" + vars[i]["name"] + "[" + str(ti) + "]")
-            if ll is not None:
-                vars[varsDict["deltaEtaLL"]]["var"][0] = abs(t.Eta()-ll.Eta()) 
-                vars[varsDict["deltaRLL"]]["var"][0] = abs(t.DeltaR(ll))
-            else:
-                vars[varsDict["deltaEtaLL"]]["var"][0] = -1 
-                vars[varsDict["deltaRLL"]]["var"][0] = -1
-            vars[varsDict["deltaEtaLJ"]]["var"][0] = abs(t.Eta() - c.LeadingJet.Eta())
-            vars[varsDict["deltaRLJ"]]["var"][0] = abs(t.DeltaR(c.LeadingJet))
-            vars[varsDict["mtt"]]["var"][0] = analysis_tools.MT2(c.Met, c.METPhi, t)
-            vars[varsDict["deltaRMet"]]["var"][0] = abs(t.DeltaR(metvec))
-            vars[varsDict["deltaPhiMet"]]["var"][0] = abs(t.DeltaPhi(metvec))
-            vars[varsDict["lepton"]]["var"] = ll
-            vars[varsDict["invMass"]]["var"][0] = (ll + t).M()
+                        vars[varsDict["track"]]["var"] = t
+                        for j, v in enumerate(tracksVars):
+                            i = len(otherVars) + j
+                            vars[i]["var"][0] = eval("c.tracks_" + vars[i]["name"] + "[" + str(ti) + "]")
+                        if ll is not None:
+                            vars[varsDict["deltaEtaLL"]]["var"][0] = abs(t.Eta()-ll.Eta()) 
+                            vars[varsDict["deltaRLL"]]["var"][0] = abs(t.DeltaR(ll))
+                        else:
+                            vars[varsDict["deltaEtaLL"]]["var"][0] = -1 
+                            vars[varsDict["deltaRLL"]]["var"][0] = -1
+                        vars[varsDict["deltaEtaLJ"]]["var"][0] = abs(t.Eta() - c.LeadingJet.Eta())
+                        vars[varsDict["deltaRLJ"]]["var"][0] = abs(t.DeltaR(c.LeadingJet))
+                        vars[varsDict["mtt"]]["var"][0] = analysis_tools.MT2(c.Met, c.METPhi, t)
+                        vars[varsDict["deltaRMet"]]["var"][0] = abs(t.DeltaR(metvec))
+                        vars[varsDict["deltaPhiMet"]]["var"][0] = abs(t.DeltaPhi(metvec))
+                        vars[varsDict["lepton"]]["var"] = ll
+                        vars[varsDict["invMass"]]["var"][0] = (ll + t).M()
         
-            tree = None
-            if result == "Zl":
-                tree = tSig
-                sigTrack += 1
-                appEvent = True
-                #print "Pt=" + str(vars[varsDict["track"]]["var"].Pt())
-            else:
-                tree = tBg
+                        tree = None
+                        if result == "Zl":
+                            tree = signalTrees[leptonFlavour + iso + str(ptRange) + cat]
+                            sigTrack += 1
+                            #print "Pt=" + str(vars[varsDict["track"]]["var"].Pt())
+                        else:
+                            tree = bgTrees[leptonFlavour + iso + str(ptRange) + cat]
         
-            tree.SetBranchAddress('track', vars[varsDict["track"]]["var"])
-            tree.SetBranchAddress('lepton', vars[varsDict["lepton"]]["var"])
-            tree.Fill()
-        if appEvent:
-            appEvents += 1
+                        tree.SetBranchAddress('track', vars[varsDict["track"]]["var"])
+                        tree.SetBranchAddress('lepton', vars[varsDict["lepton"]]["var"])
+                        tree.Fill()
 
     print "notCorrect=" + str(notCorrect)
     print "afterAtLeastOneReco=" + str(afterAtLeastOneReco)
     print "clean=" + str(clean)
     print "noReco=" + str(noReco)
     print "sigTrack=" + str(sigTrack)
-    print "appEvents=" + str(appEvents)
 
     fnew = TFile(output_file + "_sig.root",'recreate')
-    tSig.Write()
+    for lep in ["Electrons", "Muons"]:
+        for iso in utils.leptonIsolationList:
+            for cat in utils.leptonIsolationCategories:
+                ptRanges = [""]
+                if iso == "CorrJetIso":
+                    ptRanges = utils.leptonCorrJetIsoPtRange
+                for ptRange in ptRanges:
+                    signalTrees[lep + iso + str(ptRange) + cat].Write()
     fnew.Close()
 
     fnew = TFile(output_file + "_bg.root",'recreate')
-    tBg.Write()
+    for lep in ["Electrons", "Muons"]:
+        for iso in utils.leptonIsolationList:
+            for cat in utils.leptonIsolationCategories:
+                ptRanges = [""]
+                if iso == "CorrJetIso":
+                    ptRanges = utils.leptonCorrJetIsoPtRange
+                for ptRange in ptRanges:
+                    bgTrees[lep + iso + str(ptRange) + cat].Write()
     fnew.Close()
     
     print "Done writing"

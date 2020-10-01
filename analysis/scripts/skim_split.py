@@ -56,26 +56,28 @@ output_file = os.path.splitext(input_file)[0]
 fnew = TFile(output_file + "_" + str(filenum) + ".root",'recreate')
 new_entries = False
 
+print "Starting loop."
+
 for ientry in range(nentries):
-	if ientry % 5000 == 0:
-		print "Processing " + str(ientry)
-	if ientry != 0 and ientry % max_per_file == 0:
-		print "Done copying. Writing to file"
-		tree.Write('tEvent')
-		print "Done writing to file."
-		tree.Reset()
-		fnew.Close()
-		filenum +=1
-		fnew = TFile(output_file + "_" + str(filenum) + ".root",'recreate')
-		new_entries = False
-	chain.GetEntry(ientry)
-	tree.Fill()
-	new_entries = True
+    if ientry % 5000 == 0:
+        print "Processing " + str(ientry) + " out of " + str(nentries)
+    if ientry != 0 and ientry % max_per_file == 0:
+        print "Done copying. Writing to file"
+        tree.Write('tEvent')
+        print "Done writing to file."
+        tree.Reset()
+        fnew.Close()
+        filenum +=1
+        fnew = TFile(output_file + "_" + str(filenum) + ".root",'recreate')
+        new_entries = False
+    chain.GetEntry(ientry)
+    tree.Fill()
+    new_entries = True
 
 if new_entries:
-	print "Done copying. Writing to file"
-	tree.Write('tEvent')
-	print "Done writing to file."
-	fnew.Close()
+    print "Done copying. Writing to file"
+    tree.Write('tEvent')
+    print "Done writing to file."
+    fnew.Close()
 
 os.remove(input_file)

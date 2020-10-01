@@ -206,7 +206,7 @@ def main():
 #     c.Add(input_file)
     c= None
     c = TChain('tEvent')
-    
+    print "Opening file", input_file
     c.Add(input_file)
     #c.Add('/nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggsino/M1M2Scan/ntuple_sidecar/higgsino_mu100_dm7.39Chi20Chipm.root')
 
@@ -247,9 +247,9 @@ def main():
     h2DHistsYMin = [0,0]
     h2DHistsYMax = [5,5]
 
-    tracksFuncs = ["tracks_trkRelIso", "tracks_chi2perNdof", "tracks_dxyVtx", "tracks_dzVtx", "tracks_trackQualityHighPurity", "tracks_trackLeptonIso"]
+    tracksFuncs = ["tracks_trkRelIso", "tracks_chi2perNdof", "tracks_dxyVtx", "tracks_dzVtx", "tracks_trackQualityHighPurity"]
     maxX = [15, 3.5, 3.5]
-    tracksMaxX = [0.1, 10, 0.1, 0.1, 2, 1, 0.2]
+    tracksMaxX = [0.01, 10, 0.1, 0.1, 2, 1]
 
     binNum = 50
     
@@ -259,16 +259,16 @@ def main():
     eventHistsNoTypeMaxX = [30,30,30,30]
     eventHistsNoTypeBins = [50,50,50,50]
     
-    eventHists = ["trackBDT", "secondTrackBDT", "TrackLepMllTypes"]
-    eventHistsTitle = ["trackBDT", "secondTrackBDT", "TrackLepMllTypes"]
-    eventHistsMinX = [0,-1,0]
-    eventHistsMaxX = [0.4,1,30]
-    eventHistsBins = [50,50,50]
+#     eventHists = ["trackBDT", "secondTrackBDT", "TrackLepMllTypes"]
+#     eventHistsTitle = ["trackBDT", "secondTrackBDT", "TrackLepMllTypes"]
+#     eventHistsMinX = [0,-1,0]
+#     eventHistsMaxX = [0.4,1,30]
+#     eventHistsBins = [50,50,50]
     
     cuts = [{"name":"", "title": "No Cuts", "funcs":[]},
-            {"name": "trackBDT", "title": "trackBDT", "funcs":[trackBDT]},
-            {"name": "trackBDTLow", "title": "trackBDTLow", "funcs":[trackBDTLow]},
-            {"name": "trackBDTOnly", "title": "trackBDTOnly", "funcs":[trackBDTOnly]},
+ #            {"name": "trackBDT", "title": "trackBDT", "funcs":[trackBDT]},
+#             {"name": "trackBDTLow", "title": "trackBDTLow", "funcs":[trackBDTLow]},
+#             {"name": "trackBDTOnly", "title": "trackBDTOnly", "funcs":[trackBDTOnly]},
             #{"name": "deltaRLL", "title": "deltaRLL", "funcs":[deltaRLL]},
         ]
         #{"name":"Eta_deltaEtaLL", "title": "Eta < 2.6, deltaEtaLL < 1", "funcs":[eta, deltaEtaLL]},
@@ -350,21 +350,43 @@ def main():
         h.SetMinimum(0.001)
     
     notCorrect = 0
+    genFlavour = "Muons"
+    genFlavourBefore = 0
+    genFlavourAfter = 0
     for ientry in range(nentries):
         if ientry % 5000 == 0:
             print "Processing " + str(ientry)
         c.GetEntry(ientry)
+        
+        if c.category == 0:
+            continue
+        
+        if c.genFlavour != genFlavour:
+            continue
         
         rightProcess = analysis_ntuples.isX1X2X1Process(c)
         if not rightProcess:
             print "No"
             notCorrect += 1
             continue
-                                                           #getSingleLeptonAfterSelection(Electrons, Electrons_passJetIso, Electrons_deltaRLJ, Electrons_charge, Muons, Muons_passJetIso, Muons_mediumID, Muons_deltaRLJ, Muons_charge, muonLowerPt = 2, muonLowerPtTight = False, muons_tightID = None):
-        ll, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(c.Electrons, c.Electrons_passCorrJetIso15, c.Electrons_deltaRLJ, c.Electrons_charge, c.Muons, c.Muons_passCorrJetIso15, c.Muons_mediumID, c.Muons_deltaRLJ, c.Muons_charge)
         
+        ll, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(c.Electrons, c.Electrons_passCorrJetIso15, c.Electrons_deltaRLJ, c.Electrons_charge, c.Muons, c.Muons_passCorrJetIso15, c.Muons_mediumID, c.Muons_deltaRLJ, c.Muons_charge, 1.5, True, c.Muons_tightID)
+        
+        #if ll is None or leptonFlavour != genFlavour:
+            #print ll
+            #print leptonFlavour, genFlavour
+        #    continue
         if ll is None:
             continue
+        
+        genFlavourBefore += 1
+        
+        if leptonFlavour != genFlavour:
+            print leptonFlavour, genFlavour
+            continue
+        
+        genFlavourAfter += 1
+        
         
         #recoNum = c.Electrons.size() + c.Muons.size()
         recoNum = 1
@@ -474,6 +496,8 @@ def main():
             #	continue
             minZ, minCanZ = analysis_ntuples.minDeltaRGenParticles(t, genZL, c.GenParticles)
             minNZ, minCanNZ = analysis_ntuples.minDeltaRGenParticles(t, genNonZL, c.GenParticles)
+            
+            
         
             min = 0
             if minNZ is None or minZ < minNZ:
@@ -493,14 +517,14 @@ def main():
             elif minNZ is None or minZ < minNZ:
                 if c.tracks_charge[ti] * c.GenParticles_PdgId[minCanZ] < 0:
                     result = "Zl"
-                    if c.tracks_charge[ti] * c.leptonCharge < 0:
+                    if c.tracks_charge[ti] * leptonCharge < 0:
                         #Opposite charge! Good!
                         for i, cut in enumerate(cuts):
                             #print "Checking cut " + cut["name"]
                             if not passedCut(cut, c, ti):
                                 #print "not passed"
                                 continue
-                            histograms["GenTrackLepMll_" + cut["name"]].Fill((c.tracks[ti] + c.lepton).M())
+                            histograms["GenTrackLepMll_" + cut["name"]].Fill((c.tracks[ti] + ll).M())
                 else:
                     result = "MM"
             else:
@@ -609,7 +633,7 @@ def main():
                             val = 0
                         histograms[name].Fill(val)
                     else:
-                        print func
+                        #print func
                         histograms[name].Fill(abs(getattr(c, func)[ti]))
         for i, cut in enumerate(cuts):
             histograms["Track_NumIso_" + cut["name"]].Fill(numIsoTracks[i])
@@ -619,6 +643,7 @@ def main():
                 histograms["NM_ZL_Track_NumIso_Per_Reco_" + cut["name"]].Fill(recoNum, numMMZlIsoTracks[i])
 
     print "Not Correct Procs=" + str(notCorrect)
+    print "genFlavourBefore", genFlavourBefore, "genFlavourAfter", genFlavourAfter
 
     hNM = histograms["NM_Track_NumIso_Per_Reco_" + cuts[-1]["name"]]
     xNMAxis = hNM.GetXaxis()
@@ -694,7 +719,7 @@ def main():
                             name += "_" + cut["name"]
                         print name
                         h =  histograms[name]
-                        utils.formatHist(h, utils.colorPalette[cP], True)
+                        utils.formatHist(h, utils.colorPalette[cP], 0.35, True)
                         cP += 1
                         h.SetMaximum(maxY)
                         legend.AddEntry(h, lepType, 'F')
@@ -721,7 +746,7 @@ def main():
                 needToDraw = True
                 pad = histPad.cd(pId)
                 h =  histograms[name]
-                utils.formatHist(h, utils.colorPalette[cP], True)
+                utils.formatHist(h, utils.colorPalette[cP], 0.35, True)
                 h.Draw("HIST")
                 if logScale:
                     pad.SetLogy()
@@ -775,7 +800,7 @@ def main():
                 needToDraw = True
                 pad = histPad.cd(pId)
                 h =  histograms[name]
-                utils.formatHist(h, utils.colorPalette[cP], True)
+                utils.formatHist(h, utils.colorPalette[cP], 0.35, True)
                 h.Draw("HIST")
                 if logScale:
                     pad.SetLogy()
@@ -799,7 +824,7 @@ def main():
                 c1.Print(OUTPUT_FILE);
                 needToDraw = False
 
-        for func in tracksFuncs + trackHists + eventHists:
+        for func in tracksFuncs + trackHists :#+ eventHists:
             maxY = 0
             for lepType in lepTypes:
                 name = func + "_" + lepType + "_" + cut["name"]
@@ -815,7 +840,7 @@ def main():
                 name = func + "_" + lepType + "_" + cut["name"]
                 print name
                 h =  histograms[name]
-                utils.formatHist(h, utils.colorPalette[cP], True)
+                utils.formatHist(h, utils.colorPalette[cP], 0.35, True)
                 cP += 1
                 h.SetMaximum(maxY)
                 legend.AddEntry(h, lepType, 'F')

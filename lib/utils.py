@@ -138,6 +138,19 @@ bgOrder = {
 #     "QCD" : 2,
 # }
 
+tracksVars = (
+        {"name":"dxyVtx", "type":"double"},
+        {"name":"dzVtx", "type":"double"},
+        {"name":"chi2perNdof", "type":"double"},
+        {"name":"trkMiniRelIso", "type":"double"},
+        {"name":"trkRelIso", "type":"double"},
+        {"name":"charge", "type":"int"},
+        {"name":"trackJetIso", "type":"double"},
+        {"name":"trackQualityHighPurity", "type":"bool"},
+        #{"name":"trackLeptonIso", "type":"double"}
+)
+
+
 leptonsCorrJetVecList = {
     "CorrJetIso" : "bool",
     "NonJetIso" : "bool",
@@ -153,8 +166,8 @@ dileptonObservablesVecList = {
 }
 
 dileptonObservablesStringList = ["leptonFlavour"]
-dileptonObservablesDTypesList = {
-    "twoLeptons" : "bool",
+
+commonObservablesDTypesList = {
     "invMass" : "float",
     "dileptonPt" : "float",
     "deltaPhi" : "float",
@@ -168,7 +181,39 @@ dileptonObservablesDTypesList = {
     "deltaPhiLeadingJetDilepton" : "float",
     "dilepHt" : "float",
     "deltaPhiMetLepton1" : "float",
-    "deltaPhiMetLepton2" : "float"
+    "deltaPhiMetLepton2" : "float",
+}
+
+dileptonObservablesDTypesList = {
+    "twoLeptons" : "bool",
+}
+
+dileptonObservablesDTypesList.update(commonObservablesDTypesList)
+
+exclusiveTrackObservablesStringList = ["exclusiveTrackLeptonFlavour"]
+exclusiveTrackObservablesDTypesList = {
+    "exclusiveTrackLeptonCharge" : "int",
+    "exclusiveTrack" : "bool",
+    "ti" : "int",
+    "sti" : "int",
+    "track_charge" : "int",
+    "lepton_charge" : "int",
+    "leptonIdx" : "int",
+    "mtt" : "float",
+    "mtl" : "float",
+    "NTracks" : "int",
+    "deltaRMetTrack" : "float",
+    "deltaRMetLepton" : "float",
+    "deltaPhiMetTrack" : "float",
+    "deltaPhiMetLepton" : "float",
+}
+
+exclusiveTrackObservablesClassList = {
+    "track" : "TLorentzVector",
+    "lepton" : "TLorentzVector",
+    "secondTrack" : "TLorentzVector",
+    "l1" : "TLorentzVector",
+    "l2" : "TLorentzVector",
 }
 
 leptonIsolationList = [ "JetIso", "CorrJetIso", "NonJetIso" ]
