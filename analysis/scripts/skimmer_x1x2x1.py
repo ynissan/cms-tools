@@ -1289,7 +1289,7 @@ def main():
                             else:
                                 dileptonVars[DTypeObs + iso + str(ptRange) + cat][0] = -1
                             
-                        ll, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(var_Electrons, leptonsCorrJetVars["Electrons_pass" + iso + str(ptRange)], var_Electrons_deltaRLJ, var_Electrons_charge, var_Muons, leptonsCorrJetVars["Muons_pass" + iso + str(ptRange)], var_Muons_mediumID, var_Muons_deltaRLJ, var_Muons_charge, utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], var_Muons_tightID)
+                        ll, leptonIdx, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(var_Electrons, leptonsCorrJetVars["Electrons_pass" + iso + str(ptRange)], var_Electrons_deltaRLJ, var_Electrons_charge, var_Muons, leptonsCorrJetVars["Muons_pass" + iso + str(ptRange)], var_Muons_mediumID, var_Muons_deltaRLJ, var_Muons_charge, utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], var_Muons_tightID)
                 
                         if ll is not None:
                             if nT > 0 and var_BTagsLoose[0] == 0 or var_BTagsMedium[0] == 0 or var_BTagsDeepLoose[0] == 0 or var_BTagsDeepMedium[0] == 0:

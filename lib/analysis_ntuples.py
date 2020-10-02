@@ -304,6 +304,7 @@ def getSingleLeptonAfterSelection(Electrons, Electrons_passJetIso, Electrons_del
     lep = None
     lepCharge = None
     lepFlavour = None
+    lepIdx = None
     nL = 0
     
     for i in range(Electrons.size()):
@@ -311,21 +312,23 @@ def getSingleLeptonAfterSelection(Electrons, Electrons_passJetIso, Electrons_del
         if electronPassesTightSelection(i, Electrons, Electrons_passJetIso, Electrons_deltaRLJ):
             nL += 1
             if nL > 1:
-                return None, None, None
+                return None, None, None, None
             lep = e
             lepCharge = Electrons_charge[i]
             lepFlavour = "Electrons"
+            lepIdx = i
     for i in range(Muons.size()):
         m = Muons[i]
         if muonPassesTightSelection(i, Muons, Muons_mediumID, Muons_passJetIso, Muons_deltaRLJ, muonLowerPt, muonLowerPtTight, muons_tightID):
             nL += 1
             if nL > 1:
-                return None, None, None
+                return None, None, None, None
             lep = m
             lepCharge = Muons_charge[i]
             lepFlavour = "Muons"
+            lepIdx = i
     
-    return lep, lepCharge, lepFlavour
+    return lep, lepIdx, lepCharge, lepFlavour
 
 def getTwoLeptonsAfterSelection(Electrons, Electrons_passJetIso, Electrons_deltaRLJ, Electrons_charge, Muons, Muons_passJetIso, Muons_mediumID, Muons_deltaRLJ, Muons_charge, same_sign = False, muonLowerPt = 2, muonLowerPtTight = False, muons_tightID = None):
     leps = []

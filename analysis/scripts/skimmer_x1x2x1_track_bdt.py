@@ -8,6 +8,7 @@ import sys
 import numpy as np
 import os
 import xml.etree.ElementTree as ET
+from math import *
 
 sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools"))
 sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
@@ -56,9 +57,57 @@ if args.track_bdt:
 
 ######## END OF CMDLINE ARGUMENTS ########
 
+exTrackVars = {}
+track_bdt_vars_maps = {}
+track_bdt_specs_maps = {}
+track_bdt_readers = {}
+branches = {}
+
+
+def fillInNonTrackInfo(c, iso, cat, ptRange):
+    for stringObs in utils.exclusiveTrackObservablesStringList:
+        exTrackVars[stringObs + iso + str(ptRange) + cat] = ROOT.std.string("")
+        #print "*"
+        #print branches[stringObs + iso + str(ptRange) + cat]
+        #print "**"
+        #print exTrackVars[stringObs + iso + str(ptRange) + cat]
+        #branches[stringObs + iso + str(ptRange) + cat].ResetAddress()
+        c.SetBranchAddress(stringObs + iso + str(ptRange) + cat, exTrackVars[stringObs + iso + str(ptRange) + cat])
+        #branches[stringObs + iso + str(ptRange) + cat].SetAddress(exTrackVars[stringObs + iso + str(ptRange) + cat])
+        #print "**"
+        branches[stringObs + iso + str(ptRange) + cat].Fill()
+        #print "***"
+    for DTypeObs in utils.commonObservablesDTypesList:
+        exTrackVars["exTrack_" + DTypeObs + iso + str(ptRange) + cat][0] = -1
+        #print "****"
+        branches["exTrack_" + DTypeObs + iso + str(ptRange) + cat].Fill()
+        #print "*****"
+    for DTypeObs in utils.exclusiveTrackObservablesDTypesList:
+        if DTypeObs == "exclusiveTrack":
+            exTrackVars[DTypeObs + iso + str(ptRange) + cat][0] = 0
+            #print "******"
+        else:
+            exTrackVars[DTypeObs + iso + str(ptRange) + cat][0] = -1
+            #print "******"
+        branches[DTypeObs + iso + str(ptRange) + cat].Fill()         
+        #print "*******"
+    for CTypeObs in utils.exclusiveTrackObservablesClassList:
+        exTrackVars[CTypeObs + iso + str(ptRange) + cat] = eval(utils.exclusiveTrackObservablesClassList[CTypeObs])()
+        #print "********"
+        c.SetBranchAddress(CTypeObs + iso + str(ptRange) + cat, exTrackVars[CTypeObs + iso + str(ptRange) + cat])
+        #branches[CTypeObs + iso + str(ptRange) + cat].SetAddress(exTrackVars[CTypeObs + iso + str(ptRange) + cat])
+        #print "*********"
+        branches[CTypeObs + iso + str(ptRange) + cat].Fill()
+        #print "**********"
+
 def main():
     
-    exTrackVars = {}
+    file = TFile(input_file, "update")
+    
+    c = file.Get("tEvent")
+    nentries = c.GetEntriesFast()
+    
+    # CREATE VARS, BRANCHES, AND BDT READERS
     
     for iso in utils.leptonIsolationList:
         for cat in utils.leptonIsolationCategories:
@@ -66,178 +115,65 @@ def main():
             if iso == "CorrJetIso":
                 ptRanges = utils.leptonCorrJetIsoPtRange
             for ptRange in ptRanges:
-                for vecObs in utils.dileptonObservablesVecList:
-                    dileptonVars[vecObs + iso + str(ptRange) + cat] = ROOT.std.vector(eval(utils.dileptonObservablesVecList[vecObs]))()
-                for stringObs in utils.dileptonObservablesStringList:
-                    dileptonVars[stringObs + iso + str(ptRange) + cat] = ROOT.std.string("")
+                for stringObs in utils.exclusiveTrackObservablesStringList:
+                    exTrackVars[stringObs + iso + str(ptRange) + cat] = ROOT.std.string("")
+                    if c.GetBranchStatus(stringObs + iso + str(ptRange) + cat):
+                        print "Reseting branch", stringObs + iso + str(ptRange) + cat
+                        branches[stringObs + iso + str(ptRange) + cat] = c.GetBranch(stringObs + iso + str(ptRange) + cat)
+                        branches[stringObs + iso + str(ptRange) + cat].Reset()
+                        c.SetBranchAddress(stringObs + iso + str(ptRange) + cat, exTrackVars[stringObs + iso + str(ptRange) + cat])
+                    else:
+                        print "Branching", stringObs + iso + str(ptRange) + cat
+                        branches[stringObs + iso + str(ptRange) + cat] = c.Branch(stringObs + iso + str(ptRange) + cat, 'std::string', exTrackVars[stringObs + iso + str(ptRange) + cat])
+                        c.SetBranchAddress(stringObs + iso + str(ptRange) + cat, exTrackVars[stringObs + iso + str(ptRange) + cat])
                 for DTypeObs in utils.commonObservablesDTypesList:
-                    dileptonVars[DTypeObs + iso + str(ptRange) + cat] = np.zeros(1,dtype=utils.dileptonObservablesDTypesList[DTypeObs])
+                    exTrackVars["exTrack_" + DTypeObs + iso + str(ptRange) + cat] = np.zeros(1,dtype=utils.commonObservablesDTypesList[DTypeObs])
+                    if c.GetBranchStatus("exTrack_" + DTypeObs + iso + str(ptRange) + cat):
+                        print "Reseting branch", "exTrack_" + DTypeObs + iso + str(ptRange) + cat
+                        branches["exTrack_" + DTypeObs + iso + str(ptRange) + cat] = c.GetBranch("exTrack_" + DTypeObs + iso + str(ptRange) + cat)
+                        branches["exTrack_" + DTypeObs + iso + str(ptRange) + cat].Reset()
+                        c.SetBranchAddress("exTrack_" + DTypeObs + iso + str(ptRange) + cat, exTrackVars["exTrack_" + DTypeObs + iso + str(ptRange) + cat])
+                        #branches["exTrack_" + DTypeObs + iso + str(ptRange) + cat].SetAddress(exTrackVars["exTrack_" + DTypeObs + iso + str(ptRange) + cat])
+                    else:
+                        print "Branching", "exTrack_" + DTypeObs + iso + str(ptRange) + cat
+                        branches["exTrack_" + DTypeObs + iso + str(ptRange) + cat] = c.Branch("exTrack_" + DTypeObs + iso + str(ptRange) + cat, exTrackVars[stringObs + iso + str(ptRange) + cat], "exTrack_" + DTypeObs + iso + str(ptRange) + cat + "/" + utils.typeTranslation[utils.commonObservablesDTypesList[DTypeObs]])
+                        c.SetBranchAddress("exTrack_" + DTypeObs + iso + str(ptRange) + cat, exTrackVars["exTrack_" + DTypeObs + iso + str(ptRange) + cat])
+                for DTypeObs in utils.exclusiveTrackObservablesDTypesList:
+                    exTrackVars[DTypeObs + iso + str(ptRange) + cat] = np.zeros(1,dtype=utils.exclusiveTrackObservablesDTypesList[DTypeObs])
+                    if c.GetBranchStatus(DTypeObs + iso + str(ptRange) + cat):
+                        print "Reseting branch", DTypeObs + iso + str(ptRange) + cat
+                        branches[DTypeObs + iso + str(ptRange) + cat] = c.GetBranch(DTypeObs + iso + str(ptRange) + cat)
+                        branches[DTypeObs + iso + str(ptRange) + cat].Reset()
+                        c.SetBranchAddress(DTypeObs + iso + str(ptRange) + cat, exTrackVars[DTypeObs + iso + str(ptRange) + cat])
+                        #branches[DTypeObs + iso + str(ptRange) + cat].SetAddress(exTrackVars[DTypeObs + iso + str(ptRange) + cat])
+                    else:
+                        print "Branching", DTypeObs + iso + str(ptRange) + cat
+                        branches[DTypeObs + iso + str(ptRange) + cat] = c.Branch(DTypeObs + iso + str(ptRange) + cat, exTrackVars[DTypeObs + iso + str(ptRange) + cat], DTypeObs + iso + str(ptRange) + cat + "/" + utils.typeTranslation[utils.exclusiveTrackObservablesDTypesList[DTypeObs]])
+                        c.SetBranchAddress(DTypeObs + iso + str(ptRange) + cat, exTrackVars[DTypeObs + iso + str(ptRange) + cat])
+                for CTypeObs in utils.exclusiveTrackObservablesClassList:
+                    exTrackVars[CTypeObs + iso + str(ptRange) + cat] = eval(utils.exclusiveTrackObservablesClassList[CTypeObs])()
+                    if c.GetBranchStatus(CTypeObs + iso + str(ptRange) + cat):
+                        print "Reseting branch", CTypeObs + iso + str(ptRange) + cat
+                        branches[CTypeObs + iso + str(ptRange) + cat] = c.GetBranch(CTypeObs + iso + str(ptRange) + cat)
+                        branches[CTypeObs + iso + str(ptRange) + cat].Reset()
+                        c.SetBranchAddress(CTypeObs + iso + str(ptRange) + cat, exTrackVars[CTypeObs + iso + str(ptRange) + cat])
+                    else:
+                        print "Branching", CTypeObs + iso + str(ptRange) + cat
+                        branches[CTypeObs + iso + str(ptRange) + cat] = c.Branch(CTypeObs + iso + str(ptRange) + cat, utils.exclusiveTrackObservablesClassList[CTypeObs], exTrackVars[CTypeObs + iso + str(ptRange) + cat])
+                        c.SetBranchAddress(CTypeObs + iso + str(ptRange) + cat, exTrackVars[CTypeObs + iso + str(ptRange) + cat])
+                    
+                track_bdt_weights = track_bdt + "/dataset/weights/TMVAClassification_Muons" + iso + str(ptRange) + cat + ".weights.xml"
+                track_bdt_vars = cut_optimisation.getVariablesFromXMLWeightsFile(track_bdt_weights)
+                track_bdt_vars_map = cut_optimisation.getVariablesMemMap(track_bdt_vars)
+                track_bdt_specs = cut_optimisation.getSpecSpectatorFromXMLWeightsFile(track_bdt_weights)
+                track_bdt_specs_map = cut_optimisation.getSpectatorsMemMap(track_bdt_vars)
+                track_bdt_reader = cut_optimisation.prepareReader(track_bdt_weights, track_bdt_vars, track_bdt_vars_map, track_bdt_specs, track_bdt_specs_map)
 
-    print dileptonVars
-    
-    exit(0)
-    
-    
-    iFile = TFile(input_file)
-    #hHt = iFile.Get('hHt')
-    c = iFile.Get('tEvent')
+                track_bdt_vars_maps[iso + str(ptRange) + cat] = track_bdt_vars_map
+                track_bdt_specs_maps[iso + str(ptRange) + cat] = track_bdt_specs_map
+                track_bdt_readers[iso + str(ptRange) + cat] = track_bdt_reader
 
-    tree = c.CloneTree(0)
-    tree.SetDirectory(0)
-
-    var_univBDT = np.zeros(1,dtype=float)
-    tree.Branch('univBDT', var_univBDT,'univBDT/D')
-    var_trackBDT = np.zeros(1,dtype=float)
-    tree.Branch('trackBDT', var_trackBDT,'trackBDT/D')
-    
-    var_secondTrackBDT = np.zeros(1,dtype=float)
-    tree.Branch('secondTrackBDT', var_secondTrackBDT,'secondTrackBDT/D')
-
-    var_l1 = TLorentzVector()
-    var_l2 = TLorentzVector()
-    
-    var_lepton = TLorentzVector()
-    var_track = TLorentzVector()
-    var_secondTrack = TLorentzVector()
-    
-    var_leptonFlavour = ROOT.std.string()
-
-    tree.Branch('l1', 'TLorentzVector', var_l1)
-    tree.Branch('l2', 'TLorentzVector', var_l2)
-    
-    tree.Branch('lepton', 'TLorentzVector', var_lepton)
-    tree.Branch('track', 'TLorentzVector', var_track)
-    tree.Branch('secondTrack', 'TLorentzVector', var_secondTrack)
-    
-    var_ti = np.zeros(1,dtype=int)
-    tree.Branch('ti', var_ti,'ti/I')
-    
-    var_sti = np.zeros(1,dtype=int)
-    tree.Branch('sti', var_sti,'sti/I')
-
-    var_invMass = np.zeros(1,dtype=float)
-    var_dileptonPt = np.zeros(1,dtype=float)
-    var_deltaPhi = np.zeros(1,dtype=float)
-    var_deltaEta = np.zeros(1,dtype=float)
-    var_deltaR = np.zeros(1,dtype=float)
-    var_pt3 = np.zeros(1,dtype=float)
-    var_mtautau = np.zeros(1,dtype=float)
-    var_mt1 = np.zeros(1,dtype=float)
-    var_mt2 = np.zeros(1,dtype=float)
-    var_mtt = np.zeros(1,dtype=float)
-    var_mtl = np.zeros(1,dtype=float)
-    var_DeltaEtaLeadingJetDilepton = np.zeros(1,dtype=float)
-    var_DeltaPhiLeadingJetDilepton = np.zeros(1,dtype=float)
-    var_dilepHt = np.zeros(1,dtype=float)
-    var_NTracks = np.zeros(1,dtype=int)
-    var_leptonCharge = np.zeros(1,dtype=int)
-    var_deltaRMetTrack = np.zeros(1,dtype=float)
-    var_deltaRMetLepton = np.zeros(1,dtype=float)
-    var_deltaPhiMetTrack = np.zeros(1,dtype=float)
-    var_deltaPhiMetLepton = np.zeros(1,dtype=float)
-
-    
-    t = f.Get("tEvent")
-    t.GetEntry(0)
-    cs = t.CrossSection
-    print "CrossSection:", cs
-    weight = cs/numOfEvents
-    print "weight:", weight
-    var_Weight = np.zeros(1,dtype=float)
-    var_Weight[0] = weight
-    nentries = t.GetEntries();
-    if t.GetBranchStatus("Weight"):
-        if not force:
-            print "This tree is already weighted! Skipping..."
-        else:
-            branch = t.GetBranch("Weight")
-            branch.Reset()
-            branch.SetAddress(var_Weight)
-            for ientry in range(nentries):
-                branch.Fill()
-            t.Write("tEvent",TObject.kOverwrite)
-            print "Done"
-        f.Close()
-        
-    
-    newBranch = t.Branch("Weight",var_Weight,"Weight/D");
-    for ientry in range(nentries):
-        newBranch.Fill()
-    print "Writing Tree"
-    t.Write("tEvent",TObject.kOverwrite)
-    print "Done"
-    f.Close()
-    
-    tree.Branch('leptonCharge', var_leptonCharge, 'leptonCharge/I')
-    #tree.Branch('leptonFlavour', var_leptonFlavour,'leptonCharge/C')
-    tree.Branch('leptonFlavour', 'std::string', var_leptonFlavour)
-    
-    tree.Branch('invMass', var_invMass,'invMass/D')
-    tree.Branch('dileptonPt', var_dileptonPt,'dileptonPt/D')
-    tree.Branch('deltaPhi', var_deltaPhi,'deltaPhi/D')
-    tree.Branch('deltaEta', var_deltaEta,'deltaEta/D')
-    tree.Branch('deltaR', var_deltaR,'deltaR/D')
-    tree.Branch('pt3', var_pt3,'pt3/D')
-    tree.Branch('mtautau', var_mtautau,'mtautau/D')
-    tree.Branch('mt1', var_mt1,'mt1/D')
-    tree.Branch('mt2', var_mt2,'mt2/D')
-    tree.Branch('mtt', var_mtt,'mtt/D')
-    tree.Branch('mtl', var_mtl,'mtl/D')
-    tree.Branch('DeltaEtaLeadingJetDilepton', var_DeltaEtaLeadingJetDilepton,'DeltaEtaLeadingJetDilepton/D')
-    tree.Branch('DeltaPhiLeadingJetDilepton', var_DeltaPhiLeadingJetDilepton,'DeltaPhiLeadingJetDilepton/D')
-    tree.Branch('dilepHt', var_dilepHt,'dilepHt/D')
-    tree.Branch('NTracks', var_NTracks,'NTracks/I')
-    
-    tree.Branch('deltaRMetTrack', var_deltaRMetTrack, 'deltaRMetTrack/D')
-    tree.Branch('deltaRMetLepton', var_deltaRMetLepton, 'deltaRMetLepton/D')
-    tree.Branch('deltaPhiMetTrack', var_deltaPhiMetTrack, 'deltaPhiMetTrack/D')
-    tree.Branch('deltaPhiMetLepton', var_deltaPhiMetLepton, 'deltaPhiMetLepton/D')
-
-    nentries = c.GetEntries()
     print 'Analysing', nentries, "entries"
-
-    # (univ_testBGHists, univ_trainBGHists, univ_testSignalHists, univ_trainSignalHists, univ_methods, univ_names) = cut_optimisation.get_bdt_hists([univ_bdt])
-#     univ_trainSignalHist, univ_trainBGHist, univ_testSignalHist, univ_testBGHist = univ_trainSignalHists[0], univ_trainBGHists[0], univ_testSignalHists[0], univ_testBGHists[0]
-#     univ_highestZ, univ_highestS, univ_highestB, univ_highestMVA, univ_ST, univ_BT = cut_optimisation.getHighestZ(univ_trainSignalHist, univ_trainBGHist, univ_testSignalHist, univ_testBGHist)
-# 
-#     univ_bdt_weights = univ_bdt + "/dataset/weights/TMVAClassification_BDT.weights.xml"
-#     univ_bdt_vars = cut_optimisation.getVariablesFromXMLWeightsFile(univ_bdt_weights)
-#     univ_bdt_vars_map = cut_optimisation.getVariablesMemMap(univ_bdt_vars)
-#     univ_bdt_reader = cut_optimisation.prepareReader(univ_bdt_weights, univ_bdt_vars, univ_bdt_vars_map)
-
-
-    (track_testBGHists, track_trainBGHists, track_testSignalHists, track_trainSignalHists, track_methods, track_names) = cut_optimisation.get_bdt_hists([track_bdt])
-    track_trainSignalHist, track_trainBGHist, track_testSignalHist, track_testBGHist = track_trainSignalHists[0], track_trainBGHists[0], track_testSignalHists[0], track_testBGHists[0]
-    track_highestZ, track_highestS, track_highestB, track_highestMVA, track_ST, track_BT = cut_optimisation.getHighestZ(track_trainSignalHist, track_trainBGHist, track_testSignalHist, track_testBGHist)
-
-    track_bdt_weights = track_bdt + "/dataset/weights/TMVAClassification_BDT.weights.xml"
-    track_bdt_vars = cut_optimisation.getVariablesFromXMLWeightsFile(track_bdt_weights)
-    track_bdt_vars_map = cut_optimisation.getVariablesMemMap(track_bdt_vars)
-    track_bdt_specs = cut_optimisation.getSpecSpectatorFromXMLWeightsFile(track_bdt_vars)
-    track_bdt_specs_map = cut_optimisation.getSpectatorsMemMap(track_bdt_vars)
-    track_bdt_reader = cut_optimisation.prepareReader(track_bdt_weights, track_bdt_vars, track_bdt_vars_map, track_bdt_specs, track_bdt_specs_map)
-
-    print track_bdt_vars_map
-
-#     print "-------------------"
-# 
-#     print "univ_highestZ=" + str(univ_highestZ)
-#     print "univ_highestS=" + str(univ_highestS)
-#     print "univ_highestB=" + str(univ_highestB)
-#     print "univ_highestMVA=" + str(univ_highestMVA)
-#     print "univ_ST=" + str(univ_ST)
-#     print "univ_BT=" + str(univ_BT)
-
-    print "-------------------"
-
-    print "track_highestZ=" + str(track_highestZ)
-    print "track_highestS=" + str(track_highestS)
-    print "track_highestB=" + str(track_highestB)
-    print "track_highestMVA=" + str(track_highestMVA)
-    print "track_ST=" + str(track_ST)
-    print "track_BT=" + str(track_BT)
-
-    print "-------------------"
 
     afterMonoLepton = 0
     afterUniversalBdt = 0
@@ -248,226 +184,194 @@ def main():
     totalSurvivedTracks = 0
     eventsWithGreaterThanOneOppSignTracks = 0
     noSurvivingTracks = 0
-
+    
+    file.cd()
+    
     for ientry in range(nentries):
-        if ientry % 1000 == 0:
-            print "Processing " + str(ientry)
+        if ientry % 100 == 0:
+            print "Processing " + str(ientry) + " out of " + str(nentries)
         c.GetEntry(ientry)
         
-        if c.MaxCsv25 > 0.7:
-            continue
+        for iso in utils.leptonIsolationList:
+            for cat in utils.leptonIsolationCategories:
+                ptRanges = [""]
+                if iso == "CorrJetIso":
+                    ptRanges = utils.leptonCorrJetIsoPtRange
+                for ptRange in ptRanges:
+                    exTrackVars["exclusiveTrack" + iso + str(ptRange) + cat][0] = 0
+                    
+                    ll, lepIdx, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(c.Electrons, getattr(c, "Electrons_pass" + iso + str(ptRange)), c.Electrons_deltaRLJ, c.Electrons_charge, c.Muons, getattr(c, "Muons_pass" + iso + str(ptRange)), c.Muons_mediumID, c.Muons_deltaRLJ, c.Muons_charge, utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], c.Muons_tightID)
         
-        ll, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(c, c.LeadingJet)
-        
-        if ll is None:
-            continue
-        if leptonCharge == 0:
-            print "WHAT?! leptonCharge=0"
-        var_leptonCharge[0] = leptonCharge
-        var_leptonFlavour = ROOT.std.string(leptonFlavour)
+                    if ll is None:
+                        # NOT TWO TRACKS
+                        #print "**** BEFORE FILL ***" 
+                        fillInNonTrackInfo(c, iso, cat, ptRange)
+                        #print "**** AFTER FILL ***"
+                        continue
+                    
+                    if leptonCharge == 0:
+                        print "WHAT?! leptonCharge=0"
+                    
+                    exTrackVars["lepton_charge" + iso + str(ptRange) + cat][0] = leptonCharge
+                    exTrackVars["exclusiveTrackLeptonFlavour" + iso + str(ptRange) + cat] = ROOT.std.string(leptonFlavour)
     
-        afterMonoLepton += 1
-    
-        # for k, v in univ_bdt_vars_map.items():
-#             v[0] = eval("c." + k)
-        univ_tmva_value = 0#univ_bdt_reader.EvaluateMVA("BDT")
-        var_univBDT[0] = univ_tmva_value
-        #if univ_tmva_value < univ_highestMVA:
-        #	continue
-    
-        afterUniversalBdt += 1
+                    afterMonoLepton += 1
+                    
+                    exTrackVars["secondTrackBDT" + iso + str(ptRange) + cat][0] = -1
         
-        var_secondTrackBDT[0] = -1
+                    metvec = TLorentzVector()
+                    metvec.SetPtEtaPhiE(c.Met, 0, c.METPhi, c.Met)
         
-        metvec = TLorentzVector()
-        metvec.SetPtEtaPhiE(c.Met, 0, c.METPhi, c.Met)
-        
-        highestOppositeTrackScore = None
-        secondTrackScore = None
-        secondTrack = None
-        oppositeChargeTrack = None
-        ntracks = 0
-        for ti in range(c.tracks.size()):
-            t = c.tracks[ti]
-            tcharge = c.tracks_charge[ti]
-            #Try lowering to 0!!
+                    highestOppositeTrackScore = None
+                    secondTrackScore = None
+                    secondTrack = None
+                    oppositeChargeTrack = None
+                    ntracks = 0
+                    for ti in range(c.tracks.size()):
+                        t = c.tracks[ti]
+                        if t.Pt() > 15:
+                            continue
+                        tcharge = c.tracks_charge[ti]
+                        #Try lowering to 0!!
             
-            if c.tracks_trkRelIso[ti] > 0.1:
-                continue 
-            if c.tracks_dxyVtx[ti] > 0.02:
-                continue
-            if c.tracks_dzVtx[ti] > 0.05:
-                continue
-            
-            if sc:
-                if tcharge * leptonCharge < 0:
-                    continue
-            else:
-                if tcharge * leptonCharge > 0:
-                    continue
-            
-            totalTracks +=1
-        
-            deltaRLL = abs(t.DeltaR(ll))
-            if deltaRLL < 0.01:
-                continue
-            ntracks += 1
-        
-            track_bdt_vars_map["deltaEtaLJ"][0] = abs(t.Eta() - c.LeadingJet.Eta())
-            track_bdt_vars_map["deltaRLJ"][0] = abs(t.DeltaR(c.LeadingJet))
-            track_bdt_vars_map["track.Phi()"][0] = t.Phi()
-            track_bdt_vars_map["track.Pt()"][0] = t.Pt()
-            track_bdt_vars_map["track.Eta()"][0] = t.Eta()
-            
-            
-            track_bdt_vars_map["deltaEtaLL"][0] = abs(t.Eta()-ll.Eta()) 
-            track_bdt_vars_map["deltaRLL"][0] = abs(t.DeltaR(ll))
-            track_bdt_vars_map["mtt"][0] = analysis_tools.MT2(c.Met, c.METPhi, t)
-            #track_bdt_vars_map["deltaRMet"][0] = abs(t.DeltaR(metvec))
-            track_bdt_vars_map["deltaPhiMet"][0] = abs(t.DeltaPhi(metvec))
-            
-            track_bdt_vars_map["lepton.Eta()"][0] = ll.Eta()
-            track_bdt_vars_map["lepton.Phi()"][0] = ll.Phi()
-            track_bdt_vars_map["lepton.Pt()"][0] = ll.Pt()
-            track_bdt_vars_map["invMass"][0] = (t + ll).M()
-            
-            
-            for trackVar in ['dxyVtx', 'dzVtx','trkMiniRelIso','trkRelIso']:#, 'trkMiniRelIso', 'trkRelIso']:
-                track_bdt_vars_map[trackVar][0] = eval("c.tracks_" + trackVar + "[" + str(ti) + "]")
-            
-            track_tmva_value = track_bdt_reader.EvaluateMVA("BDT")
-            
-            if  highestOppositeTrackScore is None or highestOppositeTrackScore < track_tmva_value:
-                if highestOppositeTrackScore is not None:
-                    secondTrackScore = highestOppositeTrackScore
-                    var_secondTrackBDT[0] = var_trackBDT[0]
-                    secondTrack = oppositeChargeTrack
-                highestOppositeTrackScore = track_tmva_value
-                var_trackBDT[0] = track_tmva_value
-                oppositeChargeTrack = ti
+                        if c.tracks_trkRelIso[ti] > 0.1:
+                            continue 
+                        if c.tracks_dxyVtx[ti] > 0.02:
+                            continue
+                        if c.tracks_dzVtx[ti] > 0.05:
+                            continue
 
-        #print "-------------"
-        #print "Total Tracks=" + str(c.tracks.size())
-        #print "Passed Tracks=" + str(len(survivedTracks))
-    
-        #print "survivedTracks=" + str(len(survivedTracks))
-    
-#         if len(survivedTracks) == 0:
-#             noSurvivingTracks += 1
-#             continue
-        if highestOppositeTrackScore is None or highestOppositeTrackScore<0:
-            continue
-        afterAtLeastOneTrack += 1
-        #numberOfOppositeChargeTracks = 0
-    
-    
-        #for i in survivedTracks:
-        #    if c.tracks_charge[i] * leptonCharge < 0:
-        #        numberOfOppositeChargeTracks +=1
-        #        oppositeChargeTrack = i
-    
-        #if numberOfOppositeChargeTracks > 1:
-        #    eventsWithGreaterThanOneOppSignTracks += 1
+                        if sc:
+                            if tcharge * leptonCharge < 0:
+                                continue
+                        else:
+                            if tcharge * leptonCharge > 0:
+                                continue
+            
+                        totalTracks +=1
         
-        #if numberOfOppositeChargeTracks != 1:
-        #    continue
-    
-        #print "Track charge=" + str(c.tracks_charge[survivedTracks[0]])
-        #print "Lepton charge=" + str(leptonCharge)
-    
-        #if c.tracks_charge[survivedTracks[0]] * leptonCharge > 0:
-        #	continue
-    
-        afterMonoTrack += 1
+                        deltaRLL = abs(t.DeltaR(ll))
+                        if deltaRLL < 0.01:
+                            continue
+                        ntracks += 1
+      
+                        track_bdt_vars_maps[iso + str(ptRange) + cat]["deltaEtaLJ"][0] = abs(t.Eta() - c.LeadingJet.Eta())
+                        track_bdt_vars_maps[iso + str(ptRange) + cat]["deltaRLJ"][0] = abs(t.DeltaR(c.LeadingJet))
+                        track_bdt_vars_maps[iso + str(ptRange) + cat]["track.Phi()"][0] = t.Phi()
+                        track_bdt_vars_maps[iso + str(ptRange) + cat]["track.Pt()"][0] = t.Pt()
+                        track_bdt_vars_maps[iso + str(ptRange) + cat]["track.Eta()"][0] = t.Eta()
+            
+            
+                        track_bdt_vars_maps[iso + str(ptRange) + cat]["deltaEtaLL"][0] = abs(t.Eta()-ll.Eta()) 
+                        track_bdt_vars_maps[iso + str(ptRange) + cat]["deltaRLL"][0] = abs(t.DeltaR(ll))
+                        track_bdt_vars_maps[iso + str(ptRange) + cat]["mtt"][0] = analysis_tools.MT2(c.Met, c.METPhi, t)
+                        #track_bdt_vars_map["deltaRMet"][0] = abs(t.DeltaR(metvec))
+                        track_bdt_vars_maps[iso + str(ptRange) + cat]["deltaPhiMet"][0] = abs(t.DeltaPhi(metvec))
+            
+                        track_bdt_vars_maps[iso + str(ptRange) + cat]["lepton.Eta()"][0] = ll.Eta()
+                        track_bdt_vars_maps[iso + str(ptRange) + cat]["lepton.Phi()"][0] = ll.Phi()
+                        track_bdt_vars_maps[iso + str(ptRange) + cat]["lepton.Pt()"][0] = ll.Pt()
+                        track_bdt_vars_maps[iso + str(ptRange) + cat]["invMass"][0] = (t + ll).M()
+            
+            
+                        for trackVar in ['dxyVtx', 'dzVtx']:#, 'trkMiniRelIso', 'trkRelIso']:
+                            track_bdt_vars_maps[iso + str(ptRange) + cat]["log(" + trackVar + ")"][0] = log(eval("c.tracks_" + trackVar + "[" + str(ti) + "]"))
+            
+                        track_tmva_value = track_bdt_readers[iso + str(ptRange) + cat].EvaluateMVA("BDT")
+            
+                        if  highestOppositeTrackScore is None or highestOppositeTrackScore < track_tmva_value:
+                            if highestOppositeTrackScore is not None:
+                                secondTrackScore = highestOppositeTrackScore
+                                exTrackVars["secondTrackBDT" + iso + str(ptRange) + cat][0] = exTrackVars["trackBDT" + iso + str(ptRange) + cat][0]
+                                secondTrack = oppositeChargeTrack
+                            highestOppositeTrackScore = track_tmva_value
+                            exTrackVars["trackBDT" + iso + str(ptRange) + cat][0] = track_tmva_value
+                            oppositeChargeTrack = ti
+
         
-        var_ti[0] = oppositeChargeTrack
-        if secondTrack is not None:
-            var_sti[0] = secondTrack
-        else:
-            var_sti[0] = -1
+                    if highestOppositeTrackScore is None or highestOppositeTrackScore<0:
+                        fillInNonTrackInfo(c, iso, cat, ptRange)
+                        #print "2"
+                        continue
+                    #print "REAL ONE"
+                    afterAtLeastOneTrack += 1
+                    afterMonoTrack += 1
+                    
+                    exTrackVars["exclusiveTrack" + iso + str(ptRange) + cat][0] = 1
+                    
+                    exTrackVars["ti" + iso + str(ptRange) + cat][0] = oppositeChargeTrack
+                    if secondTrack is not None:
+                        exTrackVars["sti" + iso + str(ptRange) + cat][0] = secondTrack
+                    else:
+                        exTrackVars["sti" + iso + str(ptRange) + cat][0] = -1
         
-        # tracksMem = {}
-#         tracksMem["tracks"] = ROOT.std.vector(TLorentzVector)()
-#         tracksMem["tracks"].push_back(c.tracks[oppositeChargeTrack])
-#         tree.SetBranchAddress('tracks', tracksMem["tracks"])
+                    l1 = None
+                    l2 = None
+                    if ll.Pt() > c.tracks[oppositeChargeTrack].Pt():
+                        l1 = ll
+                        l2 = c.tracks[oppositeChargeTrack]
+                    else:
+                        l1 = c.tracks[oppositeChargeTrack]
+                        l2 = ll
+                    
+                    exTrackVars["l1" + iso + str(ptRange) + cat] = l1
+                    exTrackVars["l2" + iso + str(ptRange) + cat] = l2
+                    exTrackVars["lepton" + iso + str(ptRange) + cat] = ll
+                    exTrackVars["track" + iso + str(ptRange) + cat] = c.tracks[oppositeChargeTrack]
+                    exTrackVars["leptonIdx" + iso + str(ptRange) + cat][0] = lepIdx
+                    
+                    if secondTrack is not None:
+                        exTrackVars["secondTrack" + iso + str(ptRange) + cat] = c.tracks[secondTrack]
+                    else:
+                        exTrackVars["secondTrack" + iso + str(ptRange) + cat] = TLorentzVector()
+                    
+                    exTrackVars["exTrack_invMass" + iso + str(ptRange) + cat][0] = (l1 + l2).M()
+                    exTrackVars["exTrack_dileptonPt" + iso + str(ptRange) + cat][0] = abs((l1 + l2).Pt())
+                    exTrackVars["exTrack_deltaPhi" + iso + str(ptRange) + cat][0] =  abs(l1.DeltaPhi(l2))
+                    exTrackVars["exTrack_deltaEta" + iso + str(ptRange) + cat][0] = abs(l1.Eta() - l2.Eta())
+                    exTrackVars["exTrack_deltaR" + iso + str(ptRange) + cat][0] = abs(l1.DeltaR(l2))
+                    exTrackVars["NTracks" + iso + str(ptRange) + cat][0] = ntracks
 
-        # for v in tracksVars:
-#             tracksMem[v["name"]] = eval("ROOT.std.vector(" + v["type"] + ")()")
-#             #print eval("c.tracks_" + v["name"] + "[survivedTracks[0]]")
-#             tracksMem[v["name"]].push_back(eval(v["type"] + "(c.tracks_" + v["name"] + "[oppositeChargeTrack])"))
-#             tree.SetBranchAddress('tracks_' + v["name"], tracksMem[v["name"]])
-#     
-    
-        l1 = None
-        l2 = None
-        if ll.Pt() > c.tracks[oppositeChargeTrack].Pt():
-            l1 = ll
-            l2 = c.tracks[oppositeChargeTrack]
-        else:
-            l1 = c.tracks[oppositeChargeTrack]
-            l2 = ll
-    
-        var_l1 = l1
-        var_l2 = l2
-        var_lepton = ll
-        var_track = c.tracks[oppositeChargeTrack]
-        
-        if secondTrack is not None:
-            var_secondTrack = c.tracks[secondTrack]
-        else:
-            var_secondTrack = TLorentzVector()
-    
-        tree.SetBranchAddress('l1', var_l1)
-        tree.SetBranchAddress('l2', var_l2)
-        tree.SetBranchAddress('lepton', var_lepton)
-        tree.SetBranchAddress('track', var_track)
-        tree.SetBranchAddress('secondTrack', var_secondTrack)
-        tree.SetBranchAddress('leptonFlavour', var_leptonFlavour)
-    
-        var_invMass[0] = (l1 + l2).M()
-        var_dileptonPt[0] = abs((l1 + l2).Pt())
-        var_deltaPhi[0] = abs(l1.DeltaPhi(l2))
-        var_deltaEta[0] = abs(l1.Eta() - l2.Eta())
-        var_deltaR[0] = abs(l1.DeltaR(l2))
-        var_NTracks[0] = ntracks
+                    exTrackVars["exTrack_pt3" + iso + str(ptRange) + cat][0] = analysis_tools.pt3(l1.Pt(),l1.Phi(),l2.Pt(),l2.Phi(),c.Met,c.METPhi)
 
-        var_pt3[0] = analysis_tools.pt3(l1.Pt(),l1.Phi(),l2.Pt(),l2.Phi(),c.Met,c.METPhi)
+                    pt = TLorentzVector()
+                    pt.SetPtEtaPhiE(c.Met,0,c.METPhi,c.Met)
 
-        pt = TLorentzVector()
-        pt.SetPtEtaPhiE(c.Met,0,c.METPhi,c.Met)
+                    exTrackVars["exTrack_mt1" + iso + str(ptRange) + cat][0] = analysis_tools.MT2(c.Met, c.METPhi, l1)
+                    exTrackVars["exTrack_mt2" + iso + str(ptRange) + cat][0] = analysis_tools.MT2(c.Met, c.METPhi, l2)
 
-        var_mt1[0] = analysis_tools.MT2(c.Met, c.METPhi, l1)
-        var_mt2[0] = analysis_tools.MT2(c.Met, c.METPhi, l2)
+                    exTrackVars["mtt" + iso + str(ptRange) + cat][0] = analysis_tools.MT2(c.Met, c.METPhi, c.tracks[oppositeChargeTrack])
+                    exTrackVars["mtl" + iso + str(ptRange) + cat][0] = analysis_tools.MT2(c.Met, c.METPhi, ll)
+                    
+                    exTrackVars["exTrack_mtautau" + iso + str(ptRange) + cat][0] = analysis_tools.Mtautau(pt, l1, l2)
+                    
+                    exTrackVars["exTrack_deltaEtaLeadingJetDilepton" + iso + str(ptRange) + cat][0] = abs((l1 + l2).Eta() - c.LeadingJet.Eta())
+                    exTrackVars["exTrack_deltaPhiLeadingJetDilepton" + iso + str(ptRange) + cat][0] = abs((l1 + l2).DeltaPhi(c.LeadingJet))
+                    
+                    exTrackVars["exTrack_dilepHt" + iso + str(ptRange) + cat][0] = analysis_ntuples.htJet25Leps(c.Jets, [l1,l2])
+                    
+                    exTrackVars["deltaRMetTrack" + iso + str(ptRange) + cat][0] = abs(c.tracks[oppositeChargeTrack].DeltaR(pt))
+                    exTrackVars["deltaPhiMetTrack" + iso + str(ptRange) + cat][0] = abs(c.tracks[oppositeChargeTrack].DeltaPhi(pt))
+                    exTrackVars["deltaRMetLepton" + iso + str(ptRange) + cat][0] = abs(ll.DeltaR(pt))
+                    exTrackVars["deltaPhiMetLepton" + iso + str(ptRange) + cat][0] = abs(ll.DeltaPhi(pt))
+                    #print "HERE!!!"
+                    for stringObs in utils.exclusiveTrackObservablesStringList:
+                        c.SetBranchAddress(stringObs + iso + str(ptRange) + cat, exTrackVars[stringObs + iso + str(ptRange) + cat])
+                        #branches[stringObs + iso + str(ptRange) + cat].SetAddress(exTrackVars[stringObs + iso + str(ptRange) + cat])
+                        branches[stringObs + iso + str(ptRange) + cat].Fill()
+                    for DTypeObs in utils.commonObservablesDTypesList:
+                        branches["exTrack_" + DTypeObs + iso + str(ptRange) + cat].Fill()
+                    for DTypeObs in utils.exclusiveTrackObservablesDTypesList:
+                        branches[DTypeObs + iso + str(ptRange) + cat].Fill()         
+                    for CTypeObs in utils.exclusiveTrackObservablesClassList:
+                        c.SetBranchAddress(CTypeObs + iso + str(ptRange) + cat, exTrackVars[CTypeObs + iso + str(ptRange) + cat])
+                        #branches[CTypeObs + iso + str(ptRange) + cat].SetAddress(exTrackVars[CTypeObs + iso + str(ptRange) + cat])
+                        branches[CTypeObs + iso + str(ptRange) + cat].Fill()
+                    #print "AFTER!!!"
 
-        var_mtt[0] = analysis_tools.MT2(c.Met, c.METPhi, c.tracks[oppositeChargeTrack])
-        var_mtl[0] = analysis_tools.MT2(c.Met, c.METPhi, ll)
-
-        var_mtautau[0] = analysis_tools.Mtautau(pt, l1, l2)
+    c.Write("tEvent",TObject.kOverwrite)
     
-        var_DeltaEtaLeadingJetDilepton[0] = abs((l1 + l2).Eta() - c.LeadingJet.Eta())
-        var_DeltaPhiLeadingJetDilepton[0] = abs((l1 + l2).DeltaPhi(c.LeadingJet))
-    
-        var_dilepHt[0] = analysis_ntuples.htJet25Leps(c.Jets, [l1,l2])
-        
-        var_deltaRMetTrack[0] = abs(c.tracks[oppositeChargeTrack].DeltaR(pt))
-        var_deltaPhiMetTrack[0] = abs(c.tracks[oppositeChargeTrack].DeltaPhi(pt))
-        var_deltaRMetLepton[0] = abs(ll.DeltaR(pt))
-        var_deltaPhiMetLepton[0] = abs(ll.DeltaPhi(pt))
-
-        tree.Fill()
-    
-    
-    if iFile.GetListOfKeys().Contains("lumiSecs") or tree.GetEntries() != 0:
-        fnew = TFile(output_file,'recreate')
-        tree.Write()
-        if iFile.GetListOfKeys().Contains("lumiSecs"):
-            lumiSecs = iFile.Get("lumiSecs")
-            lumiSecs.Write("lumiSecs")
-        #hHt.Write()
-        fnew.Close()
-    else:
-        print "*** RESULT EMPTY"
-    iFile.Close()
+    file.Close()
 
     print "nentries=" + str(nentries)
     print "totalTracks=" + str(totalTracks)

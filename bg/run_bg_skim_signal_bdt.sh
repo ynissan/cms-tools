@@ -38,35 +38,35 @@ module use -a /afs/desy.de/group/cms/modulefiles/
 module load cmssw
 cmsenv
 
-OUTPUT_DIR=$SKIM_BG_SIG_BDT_OUTPUT_DIR
+#OUTPUT_DIR=$SKIM_BG_SIG_BDT_OUTPUT_DIR
 INPUT_DIR=$SKIM_OUTPUT_DIR
 
 if [ -n "$SC" ]; then
     echo "GOT SC"
     echo "HERE: $@"
-    OUTPUT_DIR=$SKIM_BG_SIG_BDT_SC_OUTPUT_DIR
+    #OUTPUT_DIR=$SKIM_BG_SIG_BDT_SC_OUTPUT_DIR
 elif [ -n "$DRELL_YAN" ]; then
     echo "GOT DY"
     echo "HERE: $@"
-    OUTPUT_DIR=$SKIM_DY_BG_SIG_BDT_OUTPUT_DIR
+    #OUTPUT_DIR=$SKIM_DY_BG_SIG_BDT_OUTPUT_DIR
     INPUT_DIR=$DY_SKIM_OUTPUT_DIR
 fi
 
-echo OUTPUT_DIR=$OUTPUT_DIR
+#echo OUTPUT_DIR=$OUTPUT_DIR
 echo INPUT_DIR=$INPUT_DIR
 
 timestamp=$(date +%Y%m%d_%H%M%S%N)
 output_file="${WORK_DIR}/condor_submut.${timestamp}"
 echo "output file: $output_file"
 
-echo $OUTPUT_DIR
-#check output directory
-if [ ! -d "$OUTPUT_DIR" ]; then
-  mkdir $OUTPUT_DIR
-else
-  #rm -rf $OUTPUT_DIR
-  mkdir $OUTPUT_DIR
-fi
+# echo $OUTPUT_DIR
+# #check output directory
+# if [ ! -d "$OUTPUT_DIR" ]; then
+#   mkdir $OUTPUT_DIR
+# else
+#   #rm -rf $OUTPUT_DIR
+#   mkdir $OUTPUT_DIR
+# fi
 
 cat << EOM > $output_file
 universe = vanilla
@@ -79,22 +79,22 @@ EOM
 for sim in $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
     filename=$(basename $sim .root)
 
-    if [ ! -d "$OUTPUT_DIR/$filename" ]; then
-      mkdir $OUTPUT_DIR/$filename
-    fi
-
-    #check output directory
-    if [ ! -d "$OUTPUT_DIR/$filename/single" ]; then
-      mkdir "$OUTPUT_DIR/$filename/single"
-    fi
-
-    if [ ! -d "$OUTPUT_DIR/$filename/stdout" ]; then
-      mkdir "$OUTPUT_DIR/$filename/stdout" 
-    fi
-
-    if [ ! -d "$OUTPUT_DIR/$filename/stderr" ]; then
-      mkdir "$OUTPUT_DIR/$filename/stderr"
-    fi
+    # if [ ! -d "$OUTPUT_DIR/$filename" ]; then
+#       mkdir $OUTPUT_DIR/$filename
+#     fi
+# 
+#     #check output directory
+#     if [ ! -d "$OUTPUT_DIR/$filename/single" ]; then
+#       mkdir "$OUTPUT_DIR/$filename/single"
+#     fi
+# 
+#     if [ ! -d "$OUTPUT_DIR/$filename/stdout" ]; then
+#       mkdir "$OUTPUT_DIR/$filename/stdout" 
+#     fi
+# 
+#     if [ ! -d "$OUTPUT_DIR/$filename/stderr" ]; then
+#       mkdir "$OUTPUT_DIR/$filename/stderr"
+#     fi
 
     #for bg_file in $SKIM_OUTPUT_DIR/sum/type_sum/*ZJetsToNuNu_HT-100To200*; do
     #for bg_file in $SKIM_OUTPUT_DIR/sum/type_sum/WW_TuneCUETP8M1*; do
@@ -106,12 +106,13 @@ for sim in $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
             echo "$out_file exist. Skipping..."
             continue
         fi
-        cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_univ_bdt_track_bdt.py -i $bg_file -o $out_file -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@"
+        #cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_univ_bdt_track_bdt.py -i $bg_file -o $out_file -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@"
+        cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_univ_bdt_track_bdt.py -i $bg_file -o -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename $@"
         echo $cmd
 cat << EOM >> $output_file
 arguments = $cmd
-error = ${OUTPUT_DIR}/$filename/stderr/${bg_file_name}.err
-output = ${OUTPUT_DIR}/$filename/stdout/${bg_file_name}.output
+error = ${INPUT_DIR}/stderr/${bg_file_name}_track_bdt.err
+output = ${INPUT_DIR}/stdoutput/${bg_file_name}_track_bdt.output
 Queue
 EOM
     done

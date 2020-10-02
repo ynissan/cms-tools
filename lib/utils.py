@@ -180,23 +180,21 @@ commonObservablesDTypesList = {
     "deltaEtaLeadingJetDilepton" : "float",
     "deltaPhiLeadingJetDilepton" : "float",
     "dilepHt" : "float",
-    "deltaPhiMetLepton1" : "float",
-    "deltaPhiMetLepton2" : "float",
 }
 
 dileptonObservablesDTypesList = {
     "twoLeptons" : "bool",
+    "deltaPhiMetLepton1" : "float",
+    "deltaPhiMetLepton2" : "float",
 }
 
 dileptonObservablesDTypesList.update(commonObservablesDTypesList)
 
 exclusiveTrackObservablesStringList = ["exclusiveTrackLeptonFlavour"]
 exclusiveTrackObservablesDTypesList = {
-    "exclusiveTrackLeptonCharge" : "int",
     "exclusiveTrack" : "bool",
     "ti" : "int",
     "sti" : "int",
-    "track_charge" : "int",
     "lepton_charge" : "int",
     "leptonIdx" : "int",
     "mtt" : "float",
@@ -206,6 +204,8 @@ exclusiveTrackObservablesDTypesList = {
     "deltaRMetLepton" : "float",
     "deltaPhiMetTrack" : "float",
     "deltaPhiMetLepton" : "float",
+    "trackBDT" : "float",
+    "secondTrackBDT" : "float"
 }
 
 exclusiveTrackObservablesClassList = {
@@ -225,7 +225,8 @@ leptonIsolationCategories = {
 
 typeTranslation = {
     "float" : "D",
-    "bool" : "O"
+    "bool" : "O",
+    "int" : "I"
 }
 
 tl = TLatex()
