@@ -41,60 +41,23 @@ output_file = None
 plot_2l = args.lep
 bg_retag = args.bg_retag
 
-#signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/old_leptons_x1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm7p39Chi20Chipm.root"
-# signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/old_leptons_x1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm3p28Chi20Chipm.root"
-# bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/old_leptons_x1x2x1/bg/skim_dilepton_signal_bdt/low/single"
-# data_dir = "/afs/desy.de/user/n/nissanuv/nfs/old_leptons_x1x2x1/data/skim_dilepton_signal_bdt/low/single"
 
-signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm4p30Chi20Chipm.root"
-#signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm2p51Chi20Chipm.root"
-
-#signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm3p28Chi20Chipm.root"
-#signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm12p84Chi20Chipm.root"
-bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/bg/skim_dilepton_signal_bdt/low/single"
-
-
-#bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_dilepton_signal_bdt/dm0/single"
-#signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm0p86Chi20Chipm.root"
-
-#signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm7p39Chi20Chipm.root"
-
-#Z peak
-#bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_z/sum/type_sum"
-#data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_z/sum"
-
-#SC
-#signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signal_bdt_sc/single/higgsino_mu100_dm7p39Chi20Chipm.root"
-#bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_dilepton_signal_bdt_sc/dm7/single"
-#data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_dilepton_signal_bdt_sc/dm7/single"
-
-#DY
-# bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_dilepton_signal_bdt/all/single"
-# data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_dilepton_signal_bdt/all/single"
-# signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signal_bdt_all/single/higgsino_mu100_dm3p28Chi20Chipm.root"
+bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum/"
 
 signal_dir = [
-              "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_dilepton_signal_bdt_all/single/higgsino_mu100_dm1p92Chi20Chipm.root",
-              "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_dilepton_signal_bdt_all/single/higgsino_mu100_dm3p28Chi20Chipm.root",
-              "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_dilepton_signal_bdt_all/single/higgsino_mu100_dm4p30Chi20Chipm.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm1p92Chi20Chipm.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm3p28Chi20Chipm.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm4p30Chi20Chipm.root",
               #"/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_dilepton_signal_bdt_all/single/higgsino_mu100_dm9p73Chi20Chipm.root"
               ]
 
-
-# signal_dir = [#"/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm4p30Chi20Chipm.root",
-#               "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim/sum/higgsino_mu100_dm1p92Chi20Chipm.root",
-#               "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim/sum/higgsino_mu100_dm3p28Chi20Chipm.root",
-#               "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim/sum/higgsino_mu100_dm9p73Chi20Chipm.root"
-#               ]
-
 calculatedLumi = None
-bg_dir = None
 #signal_dir = None
 sc_bg_dir = None
 sc_data_dir = None
 
 if plot_2l:
-    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/bg/skim_dilepton_signal_bdt/all/single"
+    #bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/bg/skim_dilepton_signal_bdt/all/single"
     #bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/bg/skim_nlp/sum/type_sum"
     #signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_dilepton_signal_bdt_all/single/higgsino_mu100_dm3p28Chi20Chipm.root"
     data_dir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/data/skim_dilepton_signal_bdt/all/single"
@@ -105,7 +68,7 @@ if plot_2l:
         'SingleMuon' : 22.143021976
     }
 else:
-    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_dilepton_signal_bdt/all/single"
+    #bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_dilepton_signal_bdt/all/single"
     #signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signal_bdt_all/single/higgsino_mu100_dm3p28Chi20Chipm.root"
     data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_dilepton_signal_bdt/all/single"
     sc_bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_dilepton_signal_bdt_sc/all/single"
@@ -136,6 +99,24 @@ bgReTaggingOrder = {
     "rf" : 4,
     "ff" : 1
 }
+
+# tree.Branch('tautau', var_tautau,'tautau/b')
+# tree.Branch('rr', var_rr,'rr/b')
+# tree.Branch('rf', var_rf,'rf/b')
+# tree.Branch('ff', var_ff,'ff/b')
+# tree.Branch('sc', var_sc,'sc/b')
+# tree.Branch('n_body', var_n_body,'n_body/b')
+# tree.Branch('tc', var_tc,'tc/b')
+# tree.Branch('other', var_other,'other/b')
+# 
+# tree.Branch('omega', var_omega,'omega/b')
+# tree.Branch('rho_0', var_rho_0,'rho_0/b')
+# tree.Branch('eta', var_eta,'eta/b')
+# tree.Branch('phi', var_phi,'phi/b')
+# tree.Branch('eta_prime', var_eta_prime,'eta_prime/b')
+# tree.Branch('j_psi', var_j_psi,'j_psi/b')
+# tree.Branch('upsilon_1', var_upsilon_1,'upsilon_1/b')
+# tree.Branch('upsilon_2', var_upsilon_2,'upsilon_2/b')
 
 bgReTagging = {
     #"tautau" : "tautau",
@@ -254,48 +235,6 @@ bgReTaggingOrder = {
 #     #"ff" : 1
 # }
 
-bgReTagging = {
-    "tc" : "tc * (!tautau)",
-    "tautau" : "tautau",
-    "other" : "other * (!tautau) * (!omega) * (!rho_0) * (!eta) * (!phi) * (!eta_prime) * (!j_psi) * (!upsilon_1) * (!upsilon_2)",
-    "omega" : "omega",
-    "rho" : "rho_0",
-    "eta" : "eta",
-    "phi" : "phi",
-    "etaprime" : "eta_prime",
-    "jpsi" : "j_psi",
-    "upsilon1" : "upsilon_1",
-    "upsilon2" : "upsilon_2",
-    "nbody" : "n_body",
-    "scother" : "sc * (!tautau) * (!omega) * (!rho_0) * (!eta) * (!phi) * (!eta_prime) * (!j_psi) * (!upsilon_1) * (!upsilon_2)"
-
-    # "tautau" : "tautau",
-#     "n_body" : "n_body",
-#     
-#     "sc" : "sc * (!tautau)"
-}
-
-bgReTaggingOrder = {
-#    "tcmuons" : -4,
-#    "tctautau" : -3,
-    "tautau" : -2,
-    "other" : -1,
-    "omega" : 0,
-    "rho" : 1,
-    "eta" : 2,
-    "phi" : 3,
-    "etaprime" : 4,
-    "jpsi" : 5,
-    "upsilon1" : 6,
-    "upsilon2" : 7,
-    "tc" : 8,
-    "nbody" : 9,
-    "scother" : 10
-
-
-    # "tautau" : 0,
-#     "sc" : 1,
-}
 
 
 plot_kind = "MET"
@@ -361,83 +300,6 @@ if plot_single:
     req_obs = args.obs[0]
 
 ######## END OF CMDLINE ARGUMENTS ########
-
-# def trackBDT(c):
-#     return c.trackBDT >= 0.2
-# 
-# def univBDT(c):
-#     return c.univBDT >= 0
-#     
-# def dilepBDT(c):
-#     return c.dilepBDT >= 0.4
-# 
-# def custom_cool(c):
-#     return c.dilepBDT >= 0.1 and c.univBDT >= 0 and c.tracks_dzVtx[0] <= 0.2 and c.tracks_dxyVtx[0] < 0.2 and c.tracks[0].Pt() < 15 and c.tracks[0].Pt() > 3 and abs(c.tracks[0].Eta()) < 2.4
-# 
-# def dilep_skim(c):
-#     return c.dilepBDT >= -0.3 and c.univBDT >= -0.4 and c.tracks[0].Pt() >= 3 and c.tracks[0].Pt() < 15 and c.tracks_dzVtx[0] < 0.1 and c.tracks_dxyVtx[0] < 0.1 and abs(c.tracks[0].Eta()) <= 2.4
-#     
-# def custom(c):
-#     return c.Met > 200 and c.dilepBDT >= 0.1 and c.univBDT >= 0 and c.tracks_dzVtx[0] <= 0.03 and c.tracks_dxyVtx[0] <= 0.03 and c.tracks[0].Pt() < 10 and c.tracks[0].Pt() > 3 and abs(c.tracks[0].Eta()) < 2.4 and c.dileptonPt <= 35 and c.pt3 >= 100
-# 
-# def custom_dpg(c):
-#     return c.Met > 200 and c.trackBDT >= 0.1 and c.dilepBDT >= 0.1 and c.univBDT >= 0 and c.tracks_dzVtx[0] <= 0.03 and c.tracks_dxyVtx[0] <= 0.03 and c.tracks[0].Pt() < 10 and c.tracks[0].Pt() > 5 and abs(c.tracks[0].Eta()) < 2.4 and c.dileptonPt <= 35  and c.pt3 >= 100
-# 
-# def step2(c):
-#     return c.Met > 200 and c.tracks[0].Pt() < 10 and c.tracks_dzVtx[0] <= 0.01 and c.tracks_dxyVtx[0] <= 0.01 and c.univBDT >= 0.1 and c.pt3 >= 225 and c.dilepBDT >= 0.15 and c.trackBDT >= 0.1 and abs(c.tracks[0].Eta()) < 1.8 and c.tracks[0].Pt() > 5
-# 
-# def step(c):
-#     return c.Met > 200 and c.trackBDT >= 0.1 and c.dilepBDT >= 0.15 and c.univBDT >= 0.1 and c.tracks_dzVtx[0] <= 0.03 and c.tracks_dxyVtx[0] <= 0.03 and c.tracks[0].Pt() < 10 and c.tracks[0].Pt() > 5 and abs(c.tracks[0].Eta()) < 2.4 and c.dileptonPt <= 35 and c.pt3 >= 100
-# 
-# def step3(c):
-#     return c.Met > 200 and c.tracks[0].Pt() < 10 and c.tracks_dzVtx[0] <= 0.01 and c.tracks_dxyVtx[0] <= 0.01 and c.univBDT >= 0.1 and c.pt3 >= 225 and c.dilepBDT >= 0.15 and c.trackBDT >= 0.1 and abs(c.tracks[0].Eta()) < 1.8 and c.tracks[0].Pt() > 5 and c.deltaR <= 1
-# 
-# def step2_200_250(c):
-#     return step2(c) and c.Met < 250
-# 
-# def step2_250(c):
-#     return step2(c) and c.Met > 250
-# 
-# def invMass(c):
-#     return c.invMass < 30
-# 
-# def metMht(c):
-#     return c.Met > 200 and c.Mht > 100
-# 
-# def mw(c):
-#     if abs(c.leptonParentPdgId) == 15:
-#         gens = [i for i in range(c.GenParticles.size())]
-#         min, minCan = analysis_ntuples.minDeltaRGenParticles(c.lepton, gens, c)
-#         tauIdx = c.GenParticles_ParentIdx[minCan]
-#         wIdx = c.GenParticles_ParentIdx[tauIdx]
-#         if abs(c.GenParticles_PdgId[wIdx]) != 24:
-#             #print "Weird!"
-#             return 0
-#         else:
-#             #print "***Found W!"
-#             wChildrenPdgId = []
-#             wChildrenPdgIdx = []
-#             tauChildren = []
-#             #print "---"
-#             for i in range(c.GenParticles.size()):
-#                 if c.GenParticles_ParentIdx[i] == wIdx:
-#                     #print c.GenParticles_Status[i]
-#                     wChildrenPdgId.append(c.GenParticles_PdgId[i])
-#                     wChildrenPdgIdx.append(i)
-#                 if c.GenParticles_ParentIdx[i] == tauIdx:
-#                     tauChildren.append(c.GenParticles_PdgId[i])
-#             #print "wChildrenPdgId=", wChildrenPdgId
-#             #print "tauChildren=", tauChildren
-#             if len(wChildrenPdgIdx) == 2:
-#                 return (c.GenParticles[wChildrenPdgIdx[0]] + c.GenParticles[wChildrenPdgIdx[1]]).M()
-#             return 0
-#     else:
-#         return 0
-# 
-# def mw2(c):
-#     return mw(c) < 60
-
-#and c.dilepHt >= 250 and c.NJets <= 3 and c.mt1 <= 50
 
 histograms_defs = [
     #Z PEAK
@@ -617,96 +479,39 @@ else:
         {"name":"dilepBDT", "title": "dilepBDT", "condition" : "secondTrack.Pt() < 12 && lepton.Pt() < 18 && track.Pt() < 15 && abs(lepton.Eta()) < 2.4 && deltaEta < 2.5 && mt1 < 120 && dilepHt > 130 && deltaR > 0.25 &&  deltaR < 3 && dilepBDT > 0.1 && Met >= 200 && invMass < 30 && dileptonPt < 30"},
     ])
 
+histograms_defs = []
+cuts = [{"name":"none", "title": "No Cuts", "condition" : "vetoElectronsTightID == 0 && vetoMuonsPassIso == 0 && BTagsDeepMedium == 0 && Mht >= 220 &&  Met >= 200"}
+]
 
-
-          #{"name":"MET2", "title": "MET >= 250", "condition" : "Met >= 250 && invMass < 30"},
-          #{"name":"dilepBDT", "title": "dilepBDT", "condition" : "Met >= 125 && dilepBDT >= 0 && invMass < 30"},
-          #{"name":"trackBDT", "title": "trackBDT", "condition" : "Met >= 125 && invMass < 30 && trackBDT >= 0.2"},
-          #{"name":"rectangular_leptons", "title": "rectangular_leptons", "condition" : "Met >= 200 && invMass < 30 && deltaR <= 1.2  && leptons[0].Pt() < 15 && Ht >= 120 && leptons[1].Pt() <= 9 && deltaEta < 1 && mt1 <= 40 && mt2 <= 40 && dilepHt >= 170 && DeltaPhiLeadingJetDilepton >= 1.7"},
-          #{"name":"rectangular_track", "title": "rectangular_track", "condition" : "Met >= 200 && invMass < 30 && lepton.Pt() < 15 && Mht >=140 && mtl <= 60 && deltaR <= 1.7 && MinDeltaPhiMhtJets >= 1 && DeltaEtaLeadingJetDilepton <= 2.2 && DeltaPhiLeadingJetDilepton >= 1.8 && deltaPhi <= 1.3 && deltaEta <= 1.2 && LeadingJetPt >= 100 && mtt <= 50 && mt1 <= 60 && mt2 <= 50 && Ht >= 140 &&  MinDeltaPhiMetJets >= 1.3 "},
-
-#          {"name":"deltaR", "title": "deltaR", "condition" : "Met >= 250 && deltaR < 0.9"},
-#          {"name":"dm7", "title": "dm7", "condition" : "Met >= 250 && invMass < 30 && dilepBDT > -0.2 && abs(track.Eta()) < 1.5 && abs(lepton.Eta()) < 2 && track.Pt() < 10 && dilepBDT > 0 && univBDT > 0 && univBDT < 0.5 && secondTrack.Pt() < 5 && lepton.Pt() > 4 && lepton.Pt() < 20 && trackBDT > -0.2 && trackBDT < 0.3 && LeadingJetPt > 200 && tracks_dxyVtx[0] < 0.01 && tracks_dzVtx[0] < 0.015 && secondTrackBDT == -1 && deltaEta < 1.5 && mtl < 60"},
-#          {"name":"leptons", "title": "leptons", "condition" : "lepton.Pt() > 4 && trackBDT > -0.3 && trackBDT < 0.4 && dilepBDT > -0.1 && lepton.Pt() < 20 && mtl < 60"},
-#         {"name":"step", "title": "step", "condition" : "tracks_trackQualityHighPurity[0] && invMass < 30 && dilepBDT >= -0.3 && univBDT >= -0.4 && tracks[0].Pt() >= 3 && tracks[0].Pt() < 15 && tracks_dzVtx[0] < 0.1 && tracks_dxyVtx[0] < 0.1 && abs(tracks[0].Eta()) <= 2.4 && trackBDT > 0.1 && @tracks.size() == 1"},
-#          {"name":"step2", "title": "step2", "condition" : "Met > 250 && tracks[0].Pt() < 10 && tracks_dzVtx[0] <= 0.01 && tracks_dxyVtx[0] <= 0.01 && univBDT >= 0.1 && pt3 >= 225 && dilepBDT >= 0.15 && trackBDT >= 0.1 && abs(tracks[0].Eta()) < 1.8 && tracks[0].Pt() > 5"},
-#          {"name":"step3", "title": "step3", "condition" : "Met > 200 && tracks[0].Pt() < 10 && tracks_dzVtx[0] <= 0.01 && tracks_dxyVtx[0] <= 0.01 && univBDT >= 0.1 && pt3 >= 225 && dilepBDT >= 0.4 && trackBDT >= 0.1 && abs(tracks[0].Eta()) < 1.8 && tracks[0].Pt() > 5"},
-#          {"name":"custom", "title": "custom", "condition" : "Met > 200 && dilepBDT >= 0.1 && univBDT >= 0 && tracks_dzVtx[0] <= 0.03 && tracks_dxyVtx[0] <= 0.03 && tracks[0].Pt() < 10 && tracks[0].Pt() > 3 && abs(tracks[0].Eta()) < 2.4 && dileptonPt <= 35 && pt3 >= 100"},
-#          {"name":"custom_dpg", "title": "custom_dpg", "condition" : "Met > 200 && trackBDT >= 0.1 && dilepBDT >= 0.1 && univBDT >= 0 && tracks_dzVtx[0] <= 0.03 && tracks_dxyVtx[0] <= 0.03 && tracks[0].Pt() < 10 && tracks[0].Pt() > 5 && abs(tracks[0].Eta()) < 2.4 && dileptonPt <= 35  && pt3 >= 100"}
-
-
-# STUDY PRESELECTION
-         # {"name":"none", "title": "No Cuts", "condition" : "invMass < 30"},
-#          {"name":"dilepBDT", "title": "dilepBDT", "condition" : "dilepBDT > 0 && invMass < 30"},
-#          {"name":"dilepBDT2", "title": "dilepBDT2", "condition" : "dilepBDT > 0.2 && invMass < 30 && trackBDT > 0.2"},
-#          {"name":"dm2", "title": "dm2", "condition" : "dilepBDT > 0.176 && invMass < 30"},
-#          {"name":"dm3", "title": "dm3", "condition" : "dilepBDT > 0.31 && invMass < 30 && trackBDT > 0.22 && track.Pt() < 9 && abs(track.Eta()) < 1.4"},
-         #secondTrackBDT == -1 &&
-         #{"name":"trackBDT", "title": "trackBDT", "condition" : "trackBDT >= 0 && MaxCsv25 < 0.7"},
-
-#DILEPTON
-        #{"name":"none", "title": "No Cuts", "condition" : "invMass < 30"},
-        #{"name":"dilepBDT", "title": "dilepBDT", "condition" : "dilepBDT > 0 && invMass < 30", "funcs" : [dilepBDT, invMass, mw2]},
-        #{"name":"dilepBDT2", "title": "dilepBDT2", "condition" : "dilepBDT > 0.2 && invMass < 30"},
-        #{"name":"dilepBDT3", "title": "dilepBDT3", "condition" : "dilepBDT > 0.3 && invMass < 30"},
-        #{"name":"dilepBDT4", "title": "dilepBDT4", "condition" : "dilepBDT > 0.4 && invMass < 30"},
-
-#         {"name":"dilepBdt2", "title": "dilepBdt2", "condition" : "dilepBDT >= 0"},
-#         {"name":"dilepBdt3", "title": "dilepBdt3", "condition" : "dilepBDT >= 0.2"},
-#         {"name":"dilepBdt3", "title": "dilepBdt4", "condition" : "dilepBDT >= 0.3"},
-#         
-#         
-#         {"name":"univBDT", "title": "univBDT", "condition" : "univBDT >= -0.2"},
-#         {"name":"univBDT2", "title": "univBDT2", "condition" : "univBDT >= 0"},
-#         {"name":"univBDT3", "title": "univBDT3", "condition" : "univBDT >= 0.2"},
-#         {"name":"univBDT4", "title": "univBDT4", "condition" : "univBDT >= 0.3"},
-#         {"name":"univBDT5", "title": "univBDT5", "condition" : "univBDT >= 0.5 && univBDT <= 0.6"},
-#         
-#         
-#         {"name":"trackBDT", "title": "trackBDT", "condition" : "trackBDT >= -0.2"},
-#         {"name":"trackBDT2", "title": "trackBDT2", "condition" : "trackBDT >= 0"},
-#         {"name":"trackBDT3", "title": "trackBDT3", "condition" : "trackBDT >= 0.1"},
-#         {"name":"trackBDT4", "title": "trackBDT4", "condition" : "trackBDT >= 0.1 && trackBDT < 0.3"},
-        
-        #{"name":"dilep_skim_no_pt", "title": "dilep_skim_no_pt", "condition" : "invMass < 30 && dilepBDT >= -0.3 && univBDT >= -0.4 && tracks_dzVtx[0] < 0.1 && tracks_dxyVtx[0] < 0.1 && abs(tracks[0].Eta()) <= 2.4"},     
-        # {"name":"dilep_skim", "title": "dilep_skim", "condition" : "tracks_trackQualityHighPurity[0] && invMass < 30 && dilepBDT >= -0.3 && univBDT >= -0.4 && tracks[0].Pt() >= 3 && tracks[0].Pt() < 15 && tracks_dzVtx[0] < 0.1 && tracks_dxyVtx[0] < 0.1 && abs(tracks[0].Eta()) <= 2.4"},
-#         {"name":"dilep_skim_track_bdt", "title": "dilep_skim_track_bdt", "condition" : "tracks_trackQualityHighPurity[0] && invMass < 30 && dilepBDT >= -0.3 && univBDT >= -0.4 && tracks[0].Pt() >= 3 && tracks[0].Pt() < 15 && tracks_dzVtx[0] < 0.1 && tracks_dxyVtx[0] < 0.1 && abs(tracks[0].Eta()) <= 2.4 && trackBDT > 0.1 && @tracks.size() == 1"},
-
-#        {"name":"metMht", "title": "MET > 200, Mht > 100", "funcs" : [metMht]},
-#         {"name":"trackBDT", "title": "trackBDT >= 0.2", "funcs":[trackBDT]},
-#         {"name":"univBDT", "title": "univBDT >= 0", "funcs":[univBDT]},
-#         {"name":"dilepBDT", "title": "dilepBDT >= 0.1", "funcs":[dilepBDT]}
-#        {"name":"custom", "title": "No Cuts", "funcs" : [custom, dilep_skim]},
-#         {"name":"custom_dpg", "title": "No Cuts", "funcs" : [custom_dpg, dilep_skim]},
-#         {"name":"step", "title": "No Cuts", "funcs" : [step]},
-#         {"name":"step2", "title": "No Cuts", "funcs" : [step2]},
-#         {"name":"step2_200_250", "title": "No Cuts", "funcs" : [step2_200_250]},
-#         {"name":"step2_250", "title": "No Cuts", "funcs" : [step2_250]},
-#         {"name":"step3", "title": "No Cuts", "funcs" : [step3]},
-
-# histograms_defs = [
-#     { "obs" : 'int(twoLeptonsJetIso)', "minX" : 1, "maxX" : 2, "bins" : 1},
-#     { "obs" : 'int(twoLeptonsJetIsoLowPt)', "minX" : 1, "maxX" : 2, "bins" : 1},
-#     { "obs" : 'int(twoLeptonsJetIsoLowPtTight)', "minX" : 1, "maxX" : 2, "bins" : 1},
-#     { "obs" : 'int(twoLeptonsCorrJetIso1)', "minX" : 1, "maxX" : 2, "bins" : 1},
-#     { "obs" : 'int(twoLeptonsCorrJetIso1LowPt)', "minX" : 1, "maxX" : 2, "bins" : 1},
-#     { "obs" : 'int(twoLeptonsCorrJetIso1LowPtTight)', "minX" : 1, "maxX" : 2, "bins" : 1},
-#     { "obs" : 'int(twoLeptonsCorrJetIso5)', "minX" : 1, "maxX" : 2, "bins" : 1},
-#     { "obs" : 'int(twoLeptonsCorrJetIso5LowPt)', "minX" : 1, "maxX" : 2, "bins" : 1},
-#     { "obs" : 'int(twoLeptonsCorrJetIso5LowPtTight)', "minX" : 1, "maxX" : 2, "bins" : 1},
-#     { "obs" : 'int(twoLeptonsCorrJetIso10)', "minX" : 1, "maxX" : 2, "bins" : 1},
-#     { "obs" : 'int(twoLeptonsCorrJetIso10LowPt)', "minX" : 1, "maxX" : 2, "bins" : 1},
-#     { "obs" : 'int(twoLeptonsCorrJetIso10LowPtTight)', "minX" : 1, "maxX" : 2, "bins" : 1},
-#     { "obs" : 'int(twoLeptonsCorrJetIso15)', "minX" : 1, "maxX" : 2, "bins" : 1},
-#     { "obs" : 'int(twoLeptonsCorrJetIso15LowPt)', "minX" : 1, "maxX" : 2, "bins" : 1},
-#     { "obs" : 'int(twoLeptonsCorrJetIso15LowPtTight)', "minX" : 1, "maxX" : 2, "bins" : 1},
-# 
-# ]
-
-# cuts = [ {"name":"none", "title": "No Cuts", "condition" : "1"},
-#          #{"name":"MET", "title": "MET >= 150", "condition" : 'Met >= 150 && invMass < 12 && leptonFlavour == "Muons"'},
-#          #{"name":"dileptonPt", "title": "dileptonPt", "condition" : "Met >= 200 && invMass < 30 && dileptonPt < 30"}        
-# ]
+#for lep in ["Electrons", "Muons"]:
+for iso in utils.leptonIsolationList:
+    for cat in utils.leptonIsolationCategories:
+        ptRanges = [""]
+        if iso == "CorrJetIso":
+            ptRanges = utils.leptonCorrJetIsoPtRange
+        for ptRange in ptRanges:
+            for prefix in ["", "exTrack_"]:
+                for lep in ["Muons", "Electrons"]:
+                    cond = ""
+                    if prefix == "":
+                        cond = "twoLeptons"  + iso + str(ptRange) + cat + "== 1 && @leptons"  + iso + str(ptRange) + cat + ".size() == 2 && leptonFlavour" + iso + str(ptRange) + cat + ' == "' + lep + '"'
+                    else:
+                        cond = "exclusiveTrack"  + iso + str(ptRange) + cat + "== 1  && exclusiveTrackLeptonFlavour" + iso + str(ptRange) + cat + ' == "' + lep + '"'
+                        histograms_defs.append({ "obs" : "trackBDT" + iso + str(ptRange) + cat, "namePostfix" : lep, "units": lep + "trackBDT" + iso + str(ptRange) + cat,  "minX" : -1, "maxX" : 1, "bins" : 30, "cond": cond})
+                    
+                    histograms_defs.append({ "obs" : prefix + "dilepBDT" + iso + str(ptRange) + cat, "namePostfix" : lep, "units": lep + "_" + prefix + "dilepBDT" + iso + str(ptRange) + cat, "minX" : -1, "maxX" : 1, "bins" : 30, "cond" : cond})
+                    histograms_defs.append({ "obs" : prefix + "invMass" + iso + str(ptRange) + cat, "namePostfix" : lep, "units": lep + "_" + prefix + "invMass" + iso + str(ptRange) + cat,"minX" : 0, "maxX" : 12, "bins" : 30, "cond" : cond})
+                    histograms_defs.append({ "obs" : prefix + "invMass" + iso + str(ptRange) + cat + " ", "namePostfix" : lep, "units": lep + "_" + prefix + "invMass" + iso + str(ptRange) + cat + "_cut","minX" : 0, "maxX" : 12, "bins" : 30, "cond" : cond + " && " + prefix + "dilepBDT" + iso + str(ptRange) + cat + " > 0.2"})
+                    if "LowPt" in cat:
+                        if prefix == "exTrack_":
+                            cond += " && " + "lepton" + iso + str(ptRange) + cat + ".Pt() < 2"
+                        else:
+                            cond += " && " + "leptons" + iso + str(ptRange) + cat + "[1].Pt() < 2"
+                        histograms_defs.append({ "obs" : prefix + "dilepBDT" + iso + str(ptRange) + cat, "namePostfix" : lep + "Low", "units": lep + "_low_" + prefix + "dilepBDT" + iso + str(ptRange) + cat, "minX" : -1, "maxX" : 1, "bins" : 30, "cond" : cond})
+                        histograms_defs.append({ "obs" : prefix + "invMass" + iso + str(ptRange) + cat, "namePostfix" : lep + "Low", "units": lep + "_low_" + prefix + "invMass" + iso + str(ptRange) + cat,"minX" : 0, "maxX" : 12, "bins" : 30, "cond" : cond})
+                        histograms_defs.append({ "obs" : prefix + "invMass" + iso + str(ptRange) + cat + " ", "namePostfix" : lep + "Low", "units": lep + "_low_" + prefix + "invMass" + iso + str(ptRange) + cat + "_cut","minX" : 0, "maxX" : 12, "bins" : 30, "cond" : cond + " && " + prefix + "dilepBDT" + iso + str(ptRange) + cat + " > 0.2"})
+                        
+                    
 
 
 def styleHist(hist, onlyY = False):
@@ -759,6 +564,9 @@ def createPlots(rootfiles, type, histograms, weight=1):
                 
                 for hist_def in histograms_defs:
                     histName =  cut["name"] + "_" + hist_def["obs"] + "_" + type
+                    if hist_def.get("namePostfix"):
+                        histName += hist_def["namePostfix"]
+                    
                     hist = histograms[histName]
                     if type != "data":
                         #print "Weight=", c.Weight
@@ -806,13 +614,20 @@ def createPlotsFast(rootfiles, type, histograms, weight=1, prefix=""):
             for hist_def in histograms_defs:
                 if prefix != "":
                     histName =  prefix + "_" + cut["name"] + "_" + hist_def["obs"] + "_" + type
+                    if hist_def.get("namePostfix"):
+                        histName += hist_def["namePostfix"]
                 else:
                     histName =  cut["name"] + "_" + hist_def["obs"] + "_" + type
+                    if hist_def.get("namePostfix"):
+                        histName += hist_def["namePostfix"]
                 #if type != "data" and type != "signal":
                 #    hist = utils.getHistogramFromTree(histName, c, hist_def["obs"], hist_def["bins"], hist_def["minX"], hist_def["maxX"], "puWeight * (" + cut["condition"] + ")")
                 #else:
+                condition = cut["condition"]
+                if hist_def.get("cond") is not None:
+                    condition += " && " + hist_def["cond"]
                 if type != "data":
-                    drawString = weightString[plot_kind] + " * " + str(weight) + "* Weight * (" + cut["condition"] + ")"
+                    drawString = weightString[plot_kind] + " * " + str(weight) + "* Weight * (" + condition + ")"
                     #print "drawString=" + drawString
                     if plot_log_x and hist_def["obs"] == "invMass":
                         hist = utils.getRealLogxHistogramFromTree(histName, c, hist_def.get("obs"), hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), drawString, plot_overflow)
@@ -820,9 +635,9 @@ def createPlotsFast(rootfiles, type, histograms, weight=1, prefix=""):
                         hist = utils.getHistogramFromTree(histName, c, hist_def.get("obs"), hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), drawString, plot_overflow)
                 else:
                     if plot_log_x and hist_def["obs"] == "invMass":
-                        hist = utils.getRealLogxHistogramFromTree(histName, c, hist_def.get("obs"), hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), weightString[plot_kind] + " * (" +cut["condition"] + ")", plot_overflow)
+                        hist = utils.getRealLogxHistogramFromTree(histName, c, hist_def.get("obs"), hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), weightString[plot_kind] + " * (" +condition + ")", plot_overflow)
                     else:
-                        hist = utils.getHistogramFromTree(histName, c, hist_def.get("obs"), hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), weightString[plot_kind] + " * (" +cut["condition"] + ")", plot_overflow)
+                        hist = utils.getHistogramFromTree(histName, c, hist_def.get("obs"), hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), weightString[plot_kind] + " * (" + condition + ")", plot_overflow)
                 if hist is None:
                     continue
                 #if "leptonF" in histName:
@@ -987,6 +802,8 @@ def createAllHistograms(histograms, sumTypes):
             for cut in cuts:
                     for hist_def in histograms_defs:
                         baseName = cut["name"] + "_" + hist_def["obs"]
+                        if hist_def.get("namePostfix"):
+                            baseName += hist_def["namePostfix"]
                         sigName = baseName + "_signal"
                         dataName = baseName + "_data"
                         histograms[sigName] = utils.UOFlowTH1F(sigName, "", hist_def["bins"], hist_def["minX"], hist_def["maxX"])
@@ -1105,8 +922,10 @@ def createAllHistograms(histograms, sumTypes):
             for cut in cuts:
                 for hist_def in histograms_defs:
                     firstSignalName = os.path.basename(signal_dir[0])
-                    
-                    signal_hist = histograms[cut["name"] + "_" + hist_def["obs"] + "_" + firstSignalName]
+                    signal_hist_name = cut["name"] + "_" + hist_def["obs"] + "_" + firstSignalName
+                    if hist_def.get("namePostfix"):
+                        signal_hist_name += hist_def["namePostfix"]
+                    signal_hist = histograms[signal_hist_name]
                     
                     prefixes = [""]
                     #if plot_sc:
@@ -1117,6 +936,8 @@ def createAllHistograms(histograms, sumTypes):
                             histName =  prefix + "_" + cut["name"] + "_" + hist_def["obs"] + "_data"
                         else:
                             histName =  cut["name"] + "_" + hist_def["obs"] + "_data"
+                        if hist_def.get("namePostfix"):
+                            histName += hist_def["namePostfix"]
                         data_hist = histograms[histName]
                         
                         bg_hist = None
@@ -1130,6 +951,8 @@ def createAllHistograms(histograms, sumTypes):
                             types = sorted(types, key=lambda a: utils.bgOrder[a])
                         for type in types:
                             hname = cut["name"] + "_" + hist_def["obs"] + "_" + type
+                            if hist_def.get("namePostfix"):
+                                hname += hist_def["namePostfix"]
                             if histograms.get(hname) is not None:
                                 if bg_hist is None:
                                     bg_hist = histograms[hname].Clone()
@@ -1266,6 +1089,8 @@ def main():
 
             for type in types:
                 hname = cut["name"] + "_" + hist_def["obs"] + "_" + type
+                if hist_def.get("namePostfix"):
+                    hname += hist_def["namePostfix"]
                 if plot_rand:
                     histograms[hname] = createRandomHist(hname)
                 if histograms.get(hname) is not None:
@@ -1275,6 +1100,8 @@ def main():
                 i += 1
             
             dataHistName = cut["name"] + "_" + hist_def["obs"] + "_data"
+            if hist_def.get("namePostfix"):
+                dataHistName += hist_def["namePostfix"]
             if plot_rand:
                 histograms[dataHistName] = createRandomHist(dataHistName)
             
@@ -1289,6 +1116,8 @@ def main():
                     signalBasename = os.path.basename(signalFile)
                     sigHistsBaseNames.append(signalBasename.split(".")[0].split("_")[-1])
                     sigHistName = cut["name"] + "_" + hist_def["obs"] + "_" + signalBasename
+                    if hist_def.get("namePostfix"):
+                        sigHistName += hist_def["namePostfix"]
                     sigHistsNames.append(sigHistName)
                     sigHist = histograms[sigHistName]
                     print sigHistName, sigHist.GetMaximum()
@@ -1397,6 +1226,8 @@ def main():
             if plot_sc:
                 if plot_data:
                     scDataHistName = "sc_" + cut["name"] + "_" + hist_def["obs"] + "_data"
+                    if hist_def.get("namePostfix"):
+                        scDataHistName += hist_def["namePostfix"]
                     scDataHist = histograms[scDataHistName]
                     scDataHist.SetMinimum(0.01)
                     scDataHist.SetMarkerStyle(kFullCircle)
@@ -1406,6 +1237,8 @@ def main():
                     legend.AddEntry(scDataHist, "sc data", 'p')
                 
                 scBgHistName = "sc_" + cut["name"] + "_" + hist_def["obs"] + "_bg"
+                if hist_def.get("namePostfix"):
+                    scBgHistName += hist_def["namePostfix"]
                 scBgHist = histograms[scBgHistName]
                 scBgHist.SetMinimum(0.01)
                 scBgHist.SetLineWidth(2)

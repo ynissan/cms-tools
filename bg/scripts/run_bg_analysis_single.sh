@@ -49,6 +49,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --jpsi_muons)
+        JPSI_MUONS=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         --tl)
         TWO_LEPTONS=true
         POSITIONAL+=("$1")
@@ -95,6 +100,8 @@ if [ -n "$SKIM" ]; then
         fi
     elif [ -n "$DY" ]; then
         OUTPUT_DIR=$DY_SKIM_OUTPUT_DIR
+    elif [ -n "$JPSI_MUONS" ]; then
+        OUTPUT_DIR=$JPSI_MUONS_SKIM_OUTPUT_DIR
     else
         OUTPUT_DIR=$SKIM_OUTPUT_DIR
     fi

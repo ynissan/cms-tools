@@ -154,15 +154,19 @@ tracksVars = (
 leptonsCorrJetVecList = {
     "CorrJetIso" : "bool",
     "NonJetIso" : "bool",
-    "JetIso" : "bool"
+    #"JetIso" : "bool",
+    "NoIso" : "bool",
 }
 
-leptonCorrJetIsoPtRange = [0, 1, 5, 10, 15]
+#leptonCorrJetIsoPtRange = [0, 1, 5, 10, 15]
+
+leptonCorrJetIsoPtRange = [0, 10]
 
 dileptonObservablesVecList = {
     "leptons" : "TLorentzVector",
     "leptonsIdx" : "int",
-    "leptons_charge" : "int"
+    "leptons_charge" : "int",
+    "leptons_ParentPdgId" : "int"
 }
 
 dileptonObservablesStringList = ["leptonFlavour"]
@@ -180,12 +184,39 @@ commonObservablesDTypesList = {
     "deltaEtaLeadingJetDilepton" : "float",
     "deltaPhiLeadingJetDilepton" : "float",
     "dilepHt" : "float",
+    "sameSign" : "bool"
 }
 
 dileptonObservablesDTypesList = {
     "twoLeptons" : "bool",
     "deltaPhiMetLepton1" : "float",
     "deltaPhiMetLepton2" : "float",
+    "tautau" : "bool",
+    "rr" : "bool",
+    "rf" : "bool",
+    "ff" : "bool",
+    "sc" : "bool",
+    "n_body" : "bool",
+    "tc" : "bool",
+    "other" : "bool",
+    "omega" : "bool",
+    "rho_0" : "bool",
+    "eta" : "bool",
+    "phi" : "bool",
+    "eta_prime" : "bool",
+    "j_psi" : "bool",
+    "upsilon_1" : "bool",
+    "upsilon_2" : "bool",
+    "NSelectionLeptons" : "int"
+}
+
+commonPostBdtObservablesDTypesList = {
+    "dilepBDT" : "float"
+}
+
+exclusiveTrackPostBdtObservablesDTypesList = {
+    "leptonParentPdgId" : "int",
+    "trackParentPdgId" : "int",
 }
 
 dileptonObservablesDTypesList.update(commonObservablesDTypesList)
@@ -193,6 +224,7 @@ dileptonObservablesDTypesList.update(commonObservablesDTypesList)
 exclusiveTrackObservablesStringList = ["exclusiveTrackLeptonFlavour"]
 exclusiveTrackObservablesDTypesList = {
     "exclusiveTrack" : "bool",
+    "trackZ" : "bool",
     "ti" : "int",
     "sti" : "int",
     "lepton_charge" : "int",
@@ -216,11 +248,20 @@ exclusiveTrackObservablesClassList = {
     "l2" : "TLorentzVector",
 }
 
-leptonIsolationList = [ "JetIso", "CorrJetIso", "NonJetIso" ]
+defaultJetIsoSetting = "CorrJetIso10"
+
+#leptonIsolationList = [ "JetIso", "CorrJetIso", "NonJetIso" ]
+leptonIsolationList = [ "CorrJetIso", "NonJetIso", "NoIso" ]
+# leptonIsolationCategories = {
+#     "" : { "lowPtTightMuons" : False, "muonPt" : 2},
+#     "LowPt" : { "lowPtTightMuons" : False, "muonPt" : 1.5},
+#     "LowPtTight" : { "lowPtTightMuons" : True, "muonPt" : 1.5}
+# }
+
 leptonIsolationCategories = {
     "" : { "lowPtTightMuons" : False, "muonPt" : 2},
-    "LowPt" : { "lowPtTightMuons" : False, "muonPt" : 1.5},
-    "LowPtTight" : { "lowPtTightMuons" : True, "muonPt" : 1.5}
+    #"LowPt" : { "lowPtTightMuons" : False, "muonPt" : 1.5},
+    #"LowPtTight" : { "lowPtTightMuons" : True, "muonPt" : 1.5}
 }
 
 typeTranslation = {
@@ -439,6 +480,8 @@ def addMemToTreeVarsDef(treeVarsDef):
                 v["var"] = np.zeros(1,dtype=np.dtype(np.float64))
             elif v["type"] == "I":
                 v["var"] = np.zeros(1,dtype=int)
+            elif v["type"] == "I":
+                v["var"] = np.zeros(1,dtype=bool)
 
 def barchTreeFromVarsDef(tree, treeVarsDef):
     for v in treeVarsDef:

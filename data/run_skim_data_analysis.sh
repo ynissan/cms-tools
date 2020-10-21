@@ -29,6 +29,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --jpsi_muons)
+        JPSI_MUONS=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         --dy)
         DY=true
         POSITIONAL+=("$1")
@@ -52,6 +57,8 @@ if [ -n "$TWO_LEPTONS" ]; then
     fi
 elif [ -n "$DY" ]; then
     OUTPUT_DIR=$DY_SKIM_DATA_OUTPUT_DIR
+elif [ -n "$JPSI_MUONS" ]; then
+    OUTPUT_DIR=$SKIM_DATA_JPSI_MUONS_OUTPUT_DIR
 else
     OUTPUT_DIR=$SKIM_DATA_OUTPUT_DIR
 fi
@@ -83,7 +90,6 @@ universe = vanilla
 should_transfer_files = IF_NEEDED
 executable = /bin/bash
 notification = Never
-priority = 0
 EOM
 
 file_limit=0
@@ -97,7 +103,7 @@ files_per_job=20
 FILE_OUTPUT="${OUTPUT_DIR}/single"
 
 DATA_PATTERN="METAOD"
-if [ -n "$DY" ]; then
+if [ -n "$DY" ] || [ -n "$JPSI_MUONS" ]; then
     DATA_PATTERN="SingleMuon"
 fi
 
@@ -105,7 +111,7 @@ fi
 for fullname in ${DATA_NTUPLES_DIR}/Run2016*${DATA_PATTERN}*; do
     name=$(basename $fullname)
     if [ -f "$FILE_OUTPUT/$name" ]; then
-        #echo "$name exist. Skipping..."
+        echo "$name exist. Skipping..."
         continue
     fi
     input_files="$input_files $fullname"

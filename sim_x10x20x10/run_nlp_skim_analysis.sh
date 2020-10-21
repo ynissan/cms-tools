@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./run_sim_analysis.sh --skim --tl -nlp
+./run_sim_analysis.sh --skim -nlp

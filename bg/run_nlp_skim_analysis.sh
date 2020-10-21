@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./run_bg_analysis.sh --skim --tl -nlp
+./run_bg_analysis.sh --skim -nlp

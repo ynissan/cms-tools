@@ -26,6 +26,119 @@ triggerIndeces['MhtMet6pack'] = [124,109,110,111,112,114,115,116]#123
 triggerIndeces['SingleMuon'] = [49,50,65]
 triggerIndeces['SingleElectron'] = [36,37,39,40]
 
+tracksObs = {
+    "tracks"          : "TLorentzVector",
+    "tracks_charge"   : "int",
+    "tracks_chi2perNdof" : "double",
+    "tracks_dxyVtx"   : "double",
+    "tracks_dzVtx"    : "double",
+    "tracks_trackJetIso" : "double",
+    "tracks_trkMiniRelIso" : "double",
+    "tracks_trkRelIso" : "double",
+    "tracks_trackQualityHighPurity" : "double",
+    "tracks_chargedPtSum" : "double",
+    "tracks_matchedCaloEnergy" : "double",
+    "tracks_matchedCaloEnergyJets" : "double",
+    "tracks_minDrLepton" : "double",
+    "tracks_neutralPtSum" : "double",
+    "tracks_neutralWithoutGammaPtSum" : "double",
+    "tracks_nMissingInnerHits" : "int",
+    "tracks_nMissingMiddleHits" : "int",
+    "tracks_nMissingOuterHits" : "int",
+    "tracks_nValidPixelHits" : "int",
+    "tracks_nValidTrackerHits" : "int",
+    "tracks_passPFCandVeto" : "bool",
+    "tracks_pixelLayersWithMeasurement" : "int",
+    "tracks_ptError" : "double",
+    "tracks_trackerLayersWithMeasurement" : "int",
+    "tracks_trackJetIso" : "double",
+    "tracks_trackQualityConfirmed" : "bool",
+    "tracks_trackQualityDiscarded" : "bool",
+    "tracks_trackQualityGoodIterative" : "bool",
+    "tracks_trackQualityHighPurity" : "bool",
+    "tracks_trackQualityHighPuritySetWithPV" : "bool",
+    "tracks_trackQualityLoose" : "bool",
+    "tracks_trackQualityLooseSetWithPV" : "bool",
+    "tracks_trackQualitySize" : "bool",
+    "tracks_trackQualityTight" : "bool",
+    "tracks_trackQualityUndef" : "bool",
+}
+
+pionsObs = {
+    "TAPPionTracks"   : "TLorentzVector",
+    "TAPPionTracks_activity" : "double",
+    "TAPPionTracks_charge" : "int",
+    "TAPPionTracks_mT"  : "double",
+    "TAPPionTracks_trkiso"  : "double",
+}
+
+photonObs = {
+    "Photons" : "TLorentzVector",
+    "Photons_electronFakes" : "bool",
+    "Photons_fullID" : "bool",
+    "Photons_genMatched" : "double",
+    "Photons_hadTowOverEM" : "double",
+    "Photons_hasPixelSeed" : "double",
+    "Photons_isEB" : "double",
+    "Photons_nonPrompt" : "bool",
+    "Photons_passElectronVeto" : "double",
+    "Photons_pfChargedIso" : "double",
+    "Photons_pfChargedIsoRhoCorr" : "double",
+    "Photons_pfGammaIso" : "double",
+    "Photons_pfGammaIsoRhoCorr" : "double",
+    "Photons_pfNeutralIso" : "double",
+    "Photons_pfNeutralIsoRhoCorr" : "double",
+    "Photons_sigmaIetaIeta" : "double",
+}
+
+electronsObs = {
+    "Electrons" : "TLorentzVector",
+    "Electrons_charge" : "int",
+    "Electrons_mediumID" : "bool",
+    "Electrons_passIso" : "bool",
+    "Electrons_tightID" : "bool",
+    "Electrons_EnergyCorr" : "double",
+    "Electrons_MiniIso" : "double",
+    "Electrons_MT2Activity" : "double",
+    "Electrons_MTW" : "double",
+    "Electrons_TrkEnergyCorr" : "double",
+}
+
+electronsCalcObs = {
+    "Electrons_deltaRLJ" : "double",
+    "Electrons_deltaPhiLJ" : "double",
+    "Electrons_deltaEtaLJ" : "double",
+    "Electrons_matchGen" : "bool",
+    "Electrons_minDeltaRJets" : "double",
+    "Electrons_closestJet" : "int",
+    "Electrons_correctedMinDeltaRJets" : "double",
+    "Electrons_correctedClosestJet" : "int",
+    "Electrons_ti" : "int"
+}
+
+muonsObs = {
+    "Muons" : "TLorentzVector",
+    "Muons_charge" : "int",
+    "Muons_mediumID" : "bool",
+    "Muons_passIso" : "bool",
+    "Muons_tightID" : "bool",
+    "Muons_MiniIso" : "double",
+    "Muons_MT2Activity" : "double",
+    "Muons_MTW" : "double",
+}
+
+muonsCalcObs = {
+    "Muons_deltaRLJ" : "double",
+    "Muons_deltaPhiLJ" : "double",
+    "Muons_deltaEtaLJ" : "double",
+    "Muons_matchGen" : "bool",
+    "Muons_minDeltaRJets" : "double",
+    "Muons_closestJet" : "int",
+    "Muons_correctedMinDeltaRJets" : "double",
+    "Muons_correctedClosestJet" : "int",
+    "Muons_ti" : "int"
+}
+
 def passTrig(c,trigname):
     for trigidx in triggerIndeces[trigname]: 
         if c.TriggerPass[trigidx]==1: return True
@@ -330,7 +443,54 @@ def getSingleLeptonAfterSelection(Electrons, Electrons_passJetIso, Electrons_del
     
     return lep, lepIdx, lepCharge, lepFlavour
 
-def getTwoLeptonsAfterSelection(Electrons, Electrons_passJetIso, Electrons_deltaRLJ, Electrons_charge, Muons, Muons_passJetIso, Muons_mediumID, Muons_deltaRLJ, Muons_charge, same_sign = False, muonLowerPt = 2, muonLowerPtTight = False, muons_tightID = None):
+def countLeptonsAfterSelection(Electrons, Electrons_passJetIso, Electrons_deltaRLJ, Electrons_charge, Muons, Muons_passJetIso, Muons_mediumID, Muons_deltaRLJ, Muons_charge, muonLowerPt = 2, muonLowerPtTight = False, muons_tightID = None):
+    nL = 0
+    for i in range(Electrons.size()):
+        e = Electrons[i]
+        #print e, e.Pt(), bool(Electrons_passJetIso[i]), Electrons_deltaRLJ[i]
+        if electronPassesTightSelection(i, Electrons, Electrons_passJetIso, Electrons_deltaRLJ):
+            #print "here..."
+            nL += 1
+    for i in range(Muons.size()):
+        m = Muons[i]
+        if muonPassesTightSelection(i, Muons, Muons_mediumID, Muons_passJetIso, Muons_deltaRLJ, muonLowerPt, muonLowerPtTight, muons_tightID):
+            nL += 1
+    return nL
+
+def getTwoJPsiLeptonsAfterSelection(highPtLeptonPtThreshold, lowPtLeptonPtThreshold, Leptons, Leptons_passJetIso, Leptons_mediumID, Leptons_charge, leptonLowerPt = 2, leptonLowerPtTight = False, leptons_tightID = None):
+    if Leptons.size() < 3:
+        return None, None, None
+    if Leptons[0].Pt() < highPtLeptonPtThreshold:
+        return None, None, None
+    highPtLepton = Leptons[0]
+    jpsiLeptons = []
+    for i in range(Leptons.size()):
+        if Leptons[i].Pt() > lowPtLeptonPtThreshold or Leptons[i].Pt() < leptonLowerPt:
+            continue
+        if Leptons[i].Eta() > 2.4 or not bool(Leptons_passJetIso[i]):
+            continue
+        if Leptons[i].Pt() < 2 and (leptonLowerPtTight and not bool(leptons_tightID[i])):
+            continue
+        elif not bool(Leptons_mediumID[i]):
+            continue
+        if len(jpsiLeptons) == 0:
+            jpsiLeptons.append(i)
+        elif Leptons_charge[jpsiLeptons[0]] * Leptons_charge[i] > 0:
+            continue
+        elif (Leptons[jpsiLeptons[0]] + Leptons[i]).M() < 1 or (Leptons[jpsiLeptons[0]] + Leptons[i]).M() > 5:
+            continue
+        else:
+            jpsiLeptons.append(i)
+            break
+        
+    if len(jpsiLeptons) == 2:
+        l1 = Leptons[jpsiLeptons[0]]
+        l2 = Leptons[jpsiLeptons[1]]
+        return [l1, l2], [jpsiLeptons[0], jpsiLeptons[1]], [Leptons_charge[jpsiLeptons[0]], Leptons_charge[jpsiLeptons[1]]]
+    
+    return None, None, None
+
+def getTwoLeptonsAfterSelection(Electrons, Electrons_passJetIso, Electrons_deltaRLJ, Electrons_charge, Muons, Muons_passJetIso, Muons_mediumID, Muons_deltaRLJ, Muons_charge, muonLowerPt = 2, muonLowerPtTight = False, muons_tightID = None):
     leps = []
     lepCharges = []
     lepIdx = []
@@ -344,41 +504,31 @@ def getTwoLeptonsAfterSelection(Electrons, Electrons_passJetIso, Electrons_delta
             #print "here..."
             nL += 1
             if nL > 2:
-                return None, None, None, None
+                return None, None, None, None, None
             leps.append(e)
             lepIdx.append(i)
             lepCharges.append(Electrons_charge[i])
             lepFlavour = "Electrons"
     if nL == 1:
-        return None, None, None, None
-    if nL == 2:
-        if same_sign:
-            if lepCharges[0] * lepCharges[1] < 0:
-                return None, None, None, None
-        else:
-            if lepCharges[0] * lepCharges[1] > 0:
-                return None, None, None, None
+        return None, None, None, None, None
     
     for i in range(Muons.size()):
         m = Muons[i]
         if muonPassesTightSelection(i, Muons, Muons_mediumID, Muons_passJetIso, Muons_deltaRLJ, muonLowerPt, muonLowerPtTight, muons_tightID):
             nL += 1
             if nL > 2:
-                return None, None, None, None
+                return None, None, None, None, None
             leps.append(m)
             lepIdx.append(i)
             lepCharges.append(Muons_charge[i])
             lepFlavour = "Muons"
     
     if nL != 2:
-        return None, None, None, None
-    
-    if same_sign:
-        if lepCharges[0] * lepCharges[1] < 0:
-            return None, None, None, None
-    else:
-        if lepCharges[0] * lepCharges[1] > 0:
-            return None, None, None, None
+        return None, None, None, None, None
+        
+    same_sign = False
+    if lepCharges[0] * lepCharges[1] > 0:
+        same_sign = True
     
     if leps[0].Pt() < leps[1].Pt():
         leps = [leps[1], leps[0]]
@@ -388,6 +538,6 @@ def getTwoLeptonsAfterSelection(Electrons, Electrons_passJetIso, Electrons_delta
     #if lepFlavour == "Electrons":
     #    print "YEY!!!"
     
-    return leps, lepIdx, lepCharges, lepFlavour
+    return leps, lepIdx, lepCharges, lepFlavour, same_sign
     
     

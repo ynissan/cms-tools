@@ -36,8 +36,6 @@ universe = vanilla
 should_transfer_files = IF_NEEDED
 executable = /bin/bash
 notification = Never
-priority = 0
-+RequestRuntime = 86400
 EOM
 
 for f in /afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/*; do

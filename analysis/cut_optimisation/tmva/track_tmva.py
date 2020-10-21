@@ -43,10 +43,23 @@ dir = os.path.dirname(output_file_name)
 print "Changing directory to", dir
 os.chdir(dir)
 
+output_file_name_object = os.path.splitext(output_file_name)[0] + "Object.root"
+
+
 gROOT.SetBatch(1)
 TMVA.Tools.Instance()
 outputFile = TFile(output_file_name,'RECREATE')
+outputFileObject = TFile(output_file_name_object,'RECREATE')
 factory = TMVA.Factory("TMVAClassification", outputFile,
+                            ":".join([
+                                "!V",
+                                "!Silent",
+                                "Color",
+                                "DrawProgressBar",
+                                "Transformations=I;D;P;G,D",
+                                "AnalysisType=Classification"]
+                                     ))
+factoryObject = TMVA.Factory("TMVAClassification", outputFileObject,
                             ":".join([
                                 "!V",
                                 "!Silent",
@@ -58,8 +71,10 @@ factory = TMVA.Factory("TMVAClassification", outputFile,
 
 
 dataloaders = {}
+objectDataloaders = {}
 
 for lep in ["Electrons", "Muons"]:
+    objectDataloaders[lep + iso + str(ptRange) + cat] = TMVA.DataLoader("datasetObject")
     for iso in utils.leptonIsolationList:
         for cat in utils.leptonIsolationCategories:
             ptRanges = [""]
@@ -67,7 +82,7 @@ for lep in ["Electrons", "Muons"]:
                 ptRanges = utils.leptonCorrJetIsoPtRange
             for ptRange in ptRanges:
                 dataloaders[lep + iso + str(ptRange) + cat] = TMVA.DataLoader("dataset")
-
+                
 bgFiles = []
 bTrees = []
 sFiles = []
@@ -75,7 +90,7 @@ sTrees = []
 
 for input_file in input_files:
     print "Opening File " + input_file
-    fsignal = TFile(input_file, "update")
+    fsignal = TFile(input_file)
     sFiles.append(fsignal)
     for lep in ["Electrons", "Muons"]:
         for iso in utils.leptonIsolationList:
@@ -90,28 +105,38 @@ for input_file in input_files:
                         continue
                     sTrees.append(sTree)
                     dataloaders[lep + iso + str(ptRange) + cat].AddSignalTree(sTree, 1)
+                    objectDataloaders[lep + iso + str(ptRange) + cat].AddSignalTree(sTree, 1)
 for bg_file in bg_files:
-    fbackground = TFile(bg_file, "update")
-    bTree = fbackground.Get("tEvent")
+    if "QCD" in bg_file:
+        print "Skipping QCD", bg_file
+        #exit(0)
+        continue
+    fbackground = TFile(bg_file)
     bgFiles.append(fbackground)
-    for lep in ["Electrons", "Muons"]:
-        for iso in utils.leptonIsolationList:
-            for cat in utils.leptonIsolationCategories:
-                ptRanges = [""]
-                if iso == "CorrJetIso":
-                    ptRanges = utils.leptonCorrJetIsoPtRange
-                for ptRange in ptRanges:
-                    bTree = fsignal.Get(lep + iso + str(ptRange) + cat)
-                    if bTree.GetEntries() == 0:
-                        print "Emtpy. Skipping"
-                        continue
-                    bTrees.append(bTree)
+    for iso in utils.leptonIsolationList:
+        for cat in utils.leptonIsolationCategories:
+            ptRanges = [""]
+            if iso == "CorrJetIso":
+                ptRanges = utils.leptonCorrJetIsoPtRange
+            for ptRange in ptRanges:
+                bTree = fbackground.Get(iso + str(ptRange) + cat)
+                if bTree.GetEntries() == 0:
+                    print "Emtpy. Skipping"
+                    continue
+                bTrees.append(bTree)
+                for lep in ["Electrons", "Muons"]:
                     dataloaders[lep + iso + str(ptRange) + cat].AddBackgroundTree(bTree, 1)
+                    objectDataloaders[lep + iso + str(ptRange) + cat].AddBackgroundTree(bTree, 1)
 
 # cuts defining the signal and background sample
 preselectionCut = TCut("")
+preselectionLeptonCut = TCut("deltaEtaLL > -1")
 
 for lep in ["Electrons", "Muons"]:
+    
+    
+    
+    
     for iso in utils.leptonIsolationList:
         for cat in utils.leptonIsolationCategories:
             ptRanges = [""]
@@ -119,6 +144,7 @@ for lep in ["Electrons", "Muons"]:
                 ptRanges = utils.leptonCorrJetIsoPtRange
             for ptRange in ptRanges:
                 dataloader = dataloaders[lep + iso + str(ptRange) + cat]
+                objectDataloader = objectDataloaders[lep + iso + str(ptRange) + cat]
                 
                 # Variables
                 dataloader.AddVariable('track.Eta()', 'F')
@@ -126,14 +152,25 @@ for lep in ["Electrons", "Muons"]:
                 dataloader.AddVariable('track.Phi()', 'F')
                 dataloader.AddVariable('log(dxyVtx)', 'F')
                 dataloader.AddVariable('log(dzVtx)', 'F')
+                dataloader.AddVariable('log(trkMiniRelIso)', 'F')
+                dataloader.AddVariable('log(trkRelIso)', 'F')
+                
+                
+                objectDataloader.AddVariable('track.Eta()', 'F')
+                objectDataloader.AddVariable('track.Pt()', 'F')
+                objectDataloader.AddVariable('track.Phi()', 'F')
+                objectDataloader.AddVariable('log(dxyVtx)', 'F')
+                objectDataloader.AddVariable('log(dzVtx)', 'F')
+                objectDataloader.AddVariable('log(trkMiniRelIso)', 'F')
+                objectDataloader.AddVariable('log(trkRelIso)', 'F')
+                
+                
                 dataloader.AddVariable('deltaEtaLJ', 'F')
                 dataloader.AddVariable('deltaRLJ', 'F')
 
                 ## FULL
                 dataloader.AddVariable('deltaEtaLL', 'F')
                 dataloader.AddVariable('deltaRLL', 'F')
-                #dataloader.AddVariable('log(trkMiniRelIso)', 'F')
-                #dataloader.AddVariable('log(trkRelIso)', 'F')
                 dataloader.AddVariable('mtt', 'F')
                 #dataloader.AddVariable('deltaRMet', 'F')
                 dataloader.AddVariable('deltaPhiMet', 'F')
@@ -143,10 +180,13 @@ for lep in ["Electrons", "Muons"]:
                 dataloader.AddVariable('invMass', 'F')
 
                 if no_norm:
-                    dataloader.PrepareTrainingAndTestTree(preselectionCut, "SplitMode=random:!V:NormMode=None")
+                    dataloader.PrepareTrainingAndTestTree(preselectionLeptonCut, "SplitMode=random:!V:NormMode=None")
+                    objectDataloader.PrepareTrainingAndTestTree(preselectionCut, "SplitMode=random:!V:NormMode=None")
                 else:
-                    dataloader.PrepareTrainingAndTestTree(preselectionCut, "SplitMode=random:!V")
+                    dataloader.PrepareTrainingAndTestTree(preselectionLeptonCut, "SplitMode=random:!V")
+                    objectDataloader.PrepareTrainingAndTestTree(preselectionCut, "SplitMode=random:!V")
                 factory.BookMethod(dataloader, TMVA.Types.kBDT, lep + iso + str(ptRange) + cat, "NTrees=200:MaxDepth=3")
+                factoryObject.BookMethod(objectDataloader, TMVA.Types.kBDT, lep + iso + str(ptRange) + cat, "NTrees=200:MaxDepth=3")
 #factory.BookMethod(dataloader, TMVA.Types.kBDT, "BDT2","NTrees=2000:nEventsMin=2000:MaxDepth=4:BoostType=AdaBoost:AdaBoostBeta=0.6:UseRandomisedTrees=True:UseNVars=6:nCuts=2000:PruneMethod=CostComplexity:PruneStrength=-1")
 #if all:
 #    factory.BookMethod(dataloader, TMVA.Types.kMLP, "MLP", "H:!V:NeuronType=tanh:VarTransform=N:NCycles=600:HiddenLayers=N+5:TestRate=5:!UseRegulator" )
@@ -155,6 +195,11 @@ factory.TrainAllMethods()
 factory.TestAllMethods()
 factory.EvaluateAllMethods()
 outputFile.Close()
+
+factoryObject.TrainAllMethods()
+factoryObject.TestAllMethods()
+factoryObject.EvaluateAllMethods()
+outputFileObject.Close()
 
 
 

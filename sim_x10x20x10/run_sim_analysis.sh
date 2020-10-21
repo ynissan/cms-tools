@@ -98,7 +98,6 @@ universe = vanilla
 should_transfer_files = IF_NEEDED
 executable = /bin/bash
 notification = Never
-priority = 0
 EOM
 
 #for sim in ${SIG_DUP_OUTPUT_DIR}/single/*; do

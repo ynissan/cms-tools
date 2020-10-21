@@ -37,6 +37,9 @@ BG_TYPES=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_
 #BG_TYPES=(WJetsToLNu ZJetsToNuNu TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT)
 #BG_TYPES=(ST_s-channel_4f_leptonDecays ST_tW_antitop_5f_inclusiveDecays ST_tW_top_5f_inclusiveDecays WGToLNuG ZGTo2LG)
 
+#BG_TYPES=(DYJetsToLL)
+#BG_TYPES=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays WJetsToLNu ZJetsToNuNu WZZ WWZ WW WZ ZZZ ZZ)
+
 RARE=(WZZ WWZ ZZZ)
 DiBoson=(WZ WW ZZ)
 
@@ -44,6 +47,10 @@ DiBoson=(WZ WW ZZ)
 
 #MAD_HT_SPLIT_TYPES=(TTJets)
 MAD_HT_SPLIT_TYPES=()
+
+LEPTON_ISOLATION_LIST=(JetIso CorrJetIso NonJetIso)
+LEPTON_ISOLATION_CATEGORIES=("" LowPt LowPtTight)
+LEPTON_CORR_JET_ISO_RANGE=(0 1 5 10 15)
 
 FILE_EXCLUDE_LIST=(-100to20_ -10to200_ -200to40_ -20to400_ -40to600_ -600to80_ -20To400_ -400To60_ -40To600_ HT100to1500_ HT1500to200_ HT200toInf_ -200toInf_ -80to1200_ -200To40_ -250toInf_ -1200to250_ -800to120_ -120to2500_ 1000to150_ -60ToInf_ 400to60_ 100To20_ HT150to2000_ HT200to30_ HT1000to150_ Run218 Run217 Run216 genMET)
 WORK_DIR="/tmp"
@@ -63,23 +70,24 @@ CLONE_SCRIPT="$SCRIPTS_WD/clone_tree_split.py"
 CLONE_SINGLE="$SIM_DIR/clone_sim_file_single.sh"
 CS_SINGLE="$SIM_DIR/calculate_cross_section_single.sh"
 
-OUTPUT_WD="/afs/desy.de/user/n/nissanuv/nfs/x1x2x1"
-TWO_LEPTONS_OUTPUT_WD="/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1"
-DY_OUTPUT_WD="/afs/desy.de/user/n/nissanuv/nfs/dy_x1x2x1"
+OUTPUT_WD="/nfs/dust/cms/user/nissanuv/x1x2x1"
+TWO_LEPTONS_OUTPUT_WD="/nfs/dust/cms/user/nissanuv/2lx1x2x1"
+DY_OUTPUT_WD="/nfs/dust/cms/user/nissanuv/dy_x1x2x1"
 
 DATA_DIR="$CMS_TOOLS/data"
 BG_DIR="$CMS_TOOLS/bg"
 BG_HIST_DIR="$OUTPUT_WD/bg/hist"
 SKIM_OUTPUT_DIR="$OUTPUT_WD/bg/skim"
 TWO_LEPTONS_SKIM_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/bg/skim"
-NLP_SKIM_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/bg/skim_nlp"
+NLP_SKIM_OUTPUT_DIR="$OUTPUT_WD/bg/skim_nlp"
+JPSI_MUONS_SKIM_OUTPUT_DIR="$OUTPUT_WD/bg/skim_muons_jpsi"
 TWO_LEPTONS_SAME_SIGN_SKIM_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/bg/skim_sc"
 DY_SKIM_OUTPUT_DIR="$DY_OUTPUT_WD/bg/skim"
 LC_OUTPUT_DIR="$OUTPUT_WD/bg/lc"
 LC_DATA_OUTPUT_DIR="$OUTPUT_WD/data/lc"
 SKIM_SIG_OUTPUT_DIR="$OUTPUT_WD/signal/skim"
 SKIM_SIG_SAM_OUTPUT_DIR="$OUTPUT_WD/signal/skim_sam"
-SKIM_SIG_NLP_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/signal/skim_nlp"
+SKIM_SIG_NLP_OUTPUT_DIR="$OUTPUT_WD/signal/skim_nlp"
 TWO_LEPTONS_SKIM_SIG_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/signal/skim"
 TWO_LEPTONS_SAM_SKIM_SIG_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/signal/skim_sam"
 SKIM_DATA_OUTPUT_DIR="$OUTPUT_WD/data/skim"
@@ -113,6 +121,7 @@ SKIM_BG_SIG_DILEPTON_BDT_SC_OUTPUT_DIR="$OUTPUT_WD/bg/skim_dilepton_signal_bdt_s
 SKIM_BG_SIG_DILEPTON_BDT_DY_OUTPUT_DIR="$DY_OUTPUT_WD/bg/skim_dilepton_signal_bdt"
 SKIM_DATA_SIG_DILEPTON_BDT_SC_OUTPUT_DIR="$OUTPUT_WD/data/skim_dilepton_signal_bdt_sc"
 SKIM_DATA_SIG_DILEPTON_BDT_DY_OUTPUT_DIR="$DY_OUTPUT_WD/data/skim_dilepton_signal_bdt"
+SKIM_DATA_JPSI_MUONS_OUTPUT_DIR="$OUTPUT_WD/data/skim_muons_jpsi"
 
 SIG_DUP_OUTPUT_DIR="$OUTPUT_WD/signal/dup"
 LEPTON_TRACK_SPLIT_DIR="$OUTPUT_WD/signal/lepton_track"
@@ -127,7 +136,7 @@ if [[ `hostname` == *".desy.de"* ]]; then
     COPY_CMD=cp
     LS_CMD=ls
     COPY_DEST_PREFIX=""
-    OUTPUT_WD="/afs/desy.de/user/n/nissanuv/nfs/x1x2x1"
+    OUTPUT_WD="/nfs/dust/cms/user/nissanuv/x1x2x1"
     SIG_CONFIG_OUTPUT_DIR="$OUTPUT_WD/signal/config"
     SIG_AOD_OUTPUT_DIR="$OUTPUT_WD/signal/aod"
     SIG_MINIAOD_OUTPUT_DIR="$OUTPUT_WD/signal/miniaod"
