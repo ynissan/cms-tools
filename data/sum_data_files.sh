@@ -22,6 +22,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --jpsi_muons)
+        JPSI_MUONS=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         --sc)
         SAME_SIGN=true
         POSITIONAL+=("$1")
@@ -51,6 +56,10 @@ elif [ -n "$DRELL_YAN" ]; then
     pattern="SingleMuonAOD_"
     OUTPUT_DIR=$DY_SKIM_DATA_OUTPUT_DIR/sum
     INPUT_DIR=$DY_SKIM_DATA_OUTPUT_DIR/single
+elif [ -n "$JPSI_MUONS" ]; then
+    pattern="SingleMuonAOD_"
+    INPUT_DIR=$SKIM_DATA_JPSI_MUONS_OUTPUT_DIR/single
+    OUTPUT_DIR=$SKIM_DATA_JPSI_MUONS_OUTPUT_DIR/sum
 fi
 
 

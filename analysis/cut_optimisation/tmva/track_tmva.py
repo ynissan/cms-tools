@@ -59,22 +59,10 @@ factory = TMVA.Factory("TMVAClassification", outputFile,
                                 "Transformations=I;D;P;G,D",
                                 "AnalysisType=Classification"]
                                      ))
-factoryObject = TMVA.Factory("TMVAClassification", outputFileObject,
-                            ":".join([
-                                "!V",
-                                "!Silent",
-                                "Color",
-                                "DrawProgressBar",
-                                "Transformations=I;D;P;G,D",
-                                "AnalysisType=Classification"]
-                                     ))
-
 
 dataloaders = {}
-objectDataloaders = {}
 
 for lep in ["Electrons", "Muons"]:
-    objectDataloaders[lep + iso + str(ptRange) + cat] = TMVA.DataLoader("datasetObject")
     for iso in utils.leptonIsolationList:
         for cat in utils.leptonIsolationCategories:
             ptRanges = [""]
@@ -105,7 +93,7 @@ for input_file in input_files:
                         continue
                     sTrees.append(sTree)
                     dataloaders[lep + iso + str(ptRange) + cat].AddSignalTree(sTree, 1)
-                    objectDataloaders[lep + iso + str(ptRange) + cat].AddSignalTree(sTree, 1)
+                    
 for bg_file in bg_files:
     if "QCD" in bg_file:
         print "Skipping QCD", bg_file
@@ -126,17 +114,12 @@ for bg_file in bg_files:
                 bTrees.append(bTree)
                 for lep in ["Electrons", "Muons"]:
                     dataloaders[lep + iso + str(ptRange) + cat].AddBackgroundTree(bTree, 1)
-                    objectDataloaders[lep + iso + str(ptRange) + cat].AddBackgroundTree(bTree, 1)
 
 # cuts defining the signal and background sample
 preselectionCut = TCut("")
 preselectionLeptonCut = TCut("deltaEtaLL > -1")
 
 for lep in ["Electrons", "Muons"]:
-    
-    
-    
-    
     for iso in utils.leptonIsolationList:
         for cat in utils.leptonIsolationCategories:
             ptRanges = [""]
@@ -144,7 +127,6 @@ for lep in ["Electrons", "Muons"]:
                 ptRanges = utils.leptonCorrJetIsoPtRange
             for ptRange in ptRanges:
                 dataloader = dataloaders[lep + iso + str(ptRange) + cat]
-                objectDataloader = objectDataloaders[lep + iso + str(ptRange) + cat]
                 
                 # Variables
                 dataloader.AddVariable('track.Eta()', 'F')
@@ -154,16 +136,6 @@ for lep in ["Electrons", "Muons"]:
                 dataloader.AddVariable('log(dzVtx)', 'F')
                 dataloader.AddVariable('log(trkMiniRelIso)', 'F')
                 dataloader.AddVariable('log(trkRelIso)', 'F')
-                
-                
-                objectDataloader.AddVariable('track.Eta()', 'F')
-                objectDataloader.AddVariable('track.Pt()', 'F')
-                objectDataloader.AddVariable('track.Phi()', 'F')
-                objectDataloader.AddVariable('log(dxyVtx)', 'F')
-                objectDataloader.AddVariable('log(dzVtx)', 'F')
-                objectDataloader.AddVariable('log(trkMiniRelIso)', 'F')
-                objectDataloader.AddVariable('log(trkRelIso)', 'F')
-                
                 
                 dataloader.AddVariable('deltaEtaLJ', 'F')
                 dataloader.AddVariable('deltaRLJ', 'F')
@@ -181,12 +153,9 @@ for lep in ["Electrons", "Muons"]:
 
                 if no_norm:
                     dataloader.PrepareTrainingAndTestTree(preselectionLeptonCut, "SplitMode=random:!V:NormMode=None")
-                    objectDataloader.PrepareTrainingAndTestTree(preselectionCut, "SplitMode=random:!V:NormMode=None")
                 else:
                     dataloader.PrepareTrainingAndTestTree(preselectionLeptonCut, "SplitMode=random:!V")
-                    objectDataloader.PrepareTrainingAndTestTree(preselectionCut, "SplitMode=random:!V")
                 factory.BookMethod(dataloader, TMVA.Types.kBDT, lep + iso + str(ptRange) + cat, "NTrees=200:MaxDepth=3")
-                factoryObject.BookMethod(objectDataloader, TMVA.Types.kBDT, lep + iso + str(ptRange) + cat, "NTrees=200:MaxDepth=3")
 #factory.BookMethod(dataloader, TMVA.Types.kBDT, "BDT2","NTrees=2000:nEventsMin=2000:MaxDepth=4:BoostType=AdaBoost:AdaBoostBeta=0.6:UseRandomisedTrees=True:UseNVars=6:nCuts=2000:PruneMethod=CostComplexity:PruneStrength=-1")
 #if all:
 #    factory.BookMethod(dataloader, TMVA.Types.kMLP, "MLP", "H:!V:NeuronType=tanh:VarTransform=N:NCycles=600:HiddenLayers=N+5:TestRate=5:!UseRegulator" )
@@ -195,11 +164,6 @@ factory.TrainAllMethods()
 factory.TestAllMethods()
 factory.EvaluateAllMethods()
 outputFile.Close()
-
-factoryObject.TrainAllMethods()
-factoryObject.TestAllMethods()
-factoryObject.EvaluateAllMethods()
-outputFileObject.Close()
 
 
 

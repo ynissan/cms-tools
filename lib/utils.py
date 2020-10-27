@@ -392,7 +392,7 @@ def getSortedCutsFromRootFile(rootFile):
         cut.get("hists").sort()
     return cutsOrder
 
-def formatHist(hist, cP, alpha=0.35,noFillStyle=False):
+def formatHist(hist, cP, alpha=0.35,noFillStyle=False, largeVersion = False):
     fillC = TColor.GetColor(cP["fillColor"])
     lineC = TColor.GetColor(cP["lineColor"])
     if "fillStyle" in cP and not noFillStyle:
@@ -401,7 +401,10 @@ def formatHist(hist, cP, alpha=0.35,noFillStyle=False):
         hist.SetFillStyle(1001)
     hist.SetFillColorAlpha(fillC, alpha)
     hist.SetLineColor(lineC)
-    hist.SetLineWidth(1)
+    if largeVersion:
+        hist.SetLineWidth(1)
+    else:
+        hist.SetLineWidth(1)
     hist.SetOption("HIST")
  
 def pause(str_='push enter key when ready'):
@@ -414,7 +417,7 @@ def pause(str_='push enter key when ready'):
 def fillth1(h,x, weight=1):
     h.Fill(min(max(x,h.GetXaxis().GetBinLowEdge(1)+epsilon),h.GetXaxis().GetBinLowEdge(h.GetXaxis().GetNbins()+1)-epsilon),weight)
 
-def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, noFillStyle=False):
+def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, noFillStyle=False, largeVersion = False):
     newStack = THStack(bgHist.GetName(), title)
     memory.append(newStack)
 
@@ -432,7 +435,7 @@ def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, n
         colorI = i
         if colorInx is not None:
             colorI = colorInx[i]
-        formatHist(newHist, colorPalette[colorI], 0.35, noFillStyle)
+        formatHist(newHist, colorPalette[colorI], 0.35, noFillStyle, largeVersion)
         newStack.Add(newHist)
         if legend is not None:
             #print "Adding to legend " + hist.GetName().split("_")[-1]
@@ -557,9 +560,8 @@ def getCrossSection(filename):
         return cs
     return None
 
-def stamp_plot():
+def stamp_plot(lumi = 135.0):
     showlumi = True
-    lumi = 135.0
     tl = TLatex()
     tl.SetNDC()
     cmsTextFont = 61
@@ -571,16 +573,15 @@ def stamp_plot():
     regularfont = 42
     tl.SetTextFont(cmsTextFont)
     tl.SetTextSize(0.85*tl.GetTextSize()) 
-    tl.DrawLatex(0.165,0.915, 'CMS')
+    tl.DrawLatex(0.19,0.915, 'CMS')
     tl.SetTextFont(extraTextFont)
     tl.SetTextSize(0.9*tl.GetTextSize())
-    xlab = 0.26
-    tl.DrawLatex(xlab,0.915, 'Work in Progress')
+    tl.DrawLatex(0.265,0.915, 'Work in Progress')
     tl.SetTextFont(regularfont)
     tl.SetTextSize(0.81*tl.GetTextSize())
     thingy = ''
     if showlumi: thingy+='#sqrt{s}=13 TeV, L = '+str(lumi)+' fb^{-1}'
-    xthing = 0.6
+    xthing = 0.67
     if not showlumi: xthing+=0.13 
     tl.DrawLatex(xthing,0.915,thingy)
     tl.SetTextSize(1.0/0.81*tl.GetTextSize())
@@ -604,21 +605,29 @@ def mkcanvas(name='canvas'):
     c.SetLeftMargin(0.19)
     return c
 
-def histoStyler(h):
+def histoStyler(h, ratio = False):
     #h.SetLineWidth(2)
     #h.SetLineColor(color)
-    size = 0.065
     font = 132
+    if ratio:
+        size = 0.15
+        labelSize = 0.14
+        h.GetYaxis().SetTitleOffset(0.38)
+    else:
+        size = 0.05
+        labelSize = 0.04
+        h.GetXaxis().SetTitleOffset(1.0)
+        h.GetYaxis().SetTitleOffset(1.0)
+    
     h.GetXaxis().SetLabelFont(font)
     h.GetYaxis().SetLabelFont(font)
     h.GetXaxis().SetTitleFont(font)
     h.GetYaxis().SetTitleFont(font)
     h.GetYaxis().SetTitleSize(size)
     h.GetXaxis().SetTitleSize(size)
-    h.GetXaxis().SetLabelSize(size)   
-    h.GetYaxis().SetLabelSize(size)
-    h.GetXaxis().SetTitleOffset(1.0)
-    h.GetYaxis().SetTitleOffset(0.9)
+    h.GetXaxis().SetLabelSize(labelSize)   
+    h.GetYaxis().SetLabelSize(labelSize)
+    
     #h.Sumw2()
 
 def getJsonLumiSection(lumiSecs):

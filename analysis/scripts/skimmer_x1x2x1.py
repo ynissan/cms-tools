@@ -523,8 +523,8 @@ def main():
     elif bg and "DYJetsToLL_M-5to50_" in input_file:
         fileBasename = os.path.basename(input_file).split(".root")[0].split("RunIISummer16MiniAODv3.")[1].split("_TuneCUETP8M1")[0]
         print "Checking DY CS for", fileBasename
-        cs = utils.dyCrossSections.get(fileBasename)
-        print "Got cs", cs
+        crossSection = utils.dyCrossSections.get(fileBasename)
+        print "Got cs", crossSection
     
     currLeptonCollectionMap = None
     currLeptonCollectionFileMapFile = None
@@ -1200,7 +1200,7 @@ def main():
                     if jpsi_muons:
                         leptonFlavour = "Muons"
                         same_sign = False
-                        leptons, leptonsIdx, leptonsCharge = analysis_ntuples.getTwoJPsiLeptonsAfterSelection(15, 15, muonsObs["Muons"], leptonsCorrJetVars["Muons_pass" + iso + str(ptRange)], muonsObs["Muons_mediumID"], muonsObs["Muons_charge"], utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], muonsObs["Muons_tightID"])
+                        leptons, leptonsIdx, leptonsCharge = analysis_ntuples.getTwoJPsiLeptonsAfterSelection(24, 24, muonsObs["Muons"], leptonsCorrJetVars["Muons_pass" + iso + str(ptRange)], muonsObs["Muons_mediumID"], muonsObs["Muons_charge"], utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], muonsObs["Muons_tightID"], muonsObs["Muons_passIso"])
                         #print ientry
                         #print ientry, leptons, leptonsIdx, leptonsCharge
                     else:

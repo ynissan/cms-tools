@@ -29,6 +29,8 @@ parser.add_argument('-tl', '--tl', dest='two_leptons', help='Two Leptons', actio
 parser.add_argument('-dy', '--dy', dest='drell_yan', help='Two Leptons', action='store_true')
 parser.add_argument('-sc', '--sc', dest='sc', help='Same Charge', action='store_true')
 parser.add_argument('-nlp', '--no_lepton_selection', dest='no_lepton_selection', help='No Lepton Selection Skim', action='store_true')
+parser.add_argument('-jpsi_electrons', '--jpsi_electrons', dest='jpsi_electrons', help='JPSI Electrons Skim', action='store_true')
+parser.add_argument('-jpsi_muons', '--jpsi_muons', dest='jpsi_muons', help='JPSI Muons Skim', action='store_true')
 args = parser.parse_args()
 
 hadd = args.hadd
@@ -45,6 +47,8 @@ two_leptons = args.two_leptons
 drell_yan = args.drell_yan
 sc = args.sc
 no_lepton_selection = args.no_lepton_selection
+jpsi_muons = args.jpsi_muons
+
 
 if (bg and signal) or not (bg or signal):
     signal = True
@@ -64,7 +68,9 @@ if bg:
         elif drell_yan:
             WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/dy_x1x2x1/bg/skim"
         elif no_lepton_selection:
-            WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/bg/skim_nlp"
+            WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_nlp"
+        elif jpsi_muons:
+            WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_muons_jpsi"
     else:
         WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/hist"
 else:

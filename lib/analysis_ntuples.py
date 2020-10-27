@@ -457,10 +457,10 @@ def countLeptonsAfterSelection(Electrons, Electrons_passJetIso, Electrons_deltaR
             nL += 1
     return nL
 
-def getTwoJPsiLeptonsAfterSelection(highPtLeptonPtThreshold, lowPtLeptonPtThreshold, Leptons, Leptons_passJetIso, Leptons_mediumID, Leptons_charge, leptonLowerPt = 2, leptonLowerPtTight = False, leptons_tightID = None):
+def getTwoJPsiLeptonsAfterSelection(highPtLeptonPtThreshold, lowPtLeptonPtThreshold, Leptons, Leptons_passJetIso, Leptons_mediumID, Leptons_charge, leptonLowerPt = 2, leptonLowerPtTight = False, leptons_tightID = None, Leptons_passIso = None):
     if Leptons.size() < 3:
         return None, None, None
-    if Leptons[0].Pt() < highPtLeptonPtThreshold:
+    if Leptons[0].Pt() < highPtLeptonPtThreshold or not bool(Leptons_passIso[0]) or Leptons[0].Eta() > 2.4 or not bool(leptons_tightID[0]):
         return None, None, None
     highPtLepton = Leptons[0]
     jpsiLeptons = []
@@ -477,7 +477,7 @@ def getTwoJPsiLeptonsAfterSelection(highPtLeptonPtThreshold, lowPtLeptonPtThresh
             jpsiLeptons.append(i)
         elif Leptons_charge[jpsiLeptons[0]] * Leptons_charge[i] > 0:
             continue
-        elif (Leptons[jpsiLeptons[0]] + Leptons[i]).M() < 1 or (Leptons[jpsiLeptons[0]] + Leptons[i]).M() > 5:
+        elif (Leptons[jpsiLeptons[0]] + Leptons[i]).M() < 2.5 or (Leptons[jpsiLeptons[0]] + Leptons[i]).M() > 3.5:
             continue
         else:
             jpsiLeptons.append(i)

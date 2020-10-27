@@ -24,7 +24,8 @@ export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$CMSSW_BASE/src/cms-tools/lib/classes"
 #for f in WJetsToLNu_HT-200To400_TuneCUETP8M1.root WJetsToLNu_HT-600To800_TuneCUETP8M1.root TTJets_DiLept_TuneCUETP8M1.root TTJets_SingleLeptFromT_TuneCUETP8M1.root TTJets_SingleLeptFromTbar_TuneCUETP8M1.root ST_t-channel_top.root ZJetsToNuNu_HT-100To200_13TeV-madgraph.root ZJetsToNuNu_HT-200To400_13TeV-madgraph.root ZJetsToNuNu_HT-400To600_13TeV-madgraph.root; do
 i=1
 #for f in ST_t-channel_antitop.root ST_t-channel_top.root TTJets_DiLept_TuneCUETP8M1.root TTJets_SingleLeptFromT_TuneCUETP8M1.root TTJets_SingleLeptFromTbar_TuneCUETP8M1.root WJetsToLNu_HT-1200To2500_TuneCUETP8M1.root WJetsToLNu_HT-200To400_TuneCUETP8M1.root WJetsToLNu_HT-400To600_TuneCUETP8M1.root WJetsToLNu_HT-600To800_TuneCUETP8M1.root WJetsToLNu_HT-800To1200_TuneCUETP8M1.root ZJetsToNuNu_HT-100To200_13TeV-madgraph.root ZJetsToNuNu_HT-200To400_13TeV-madgraph.root ZJetsToNuNu_HT-400To600_13TeV-madgraph.root; do
-for f in ST_t-channel_antitop.root; do
+for f in ST_t-channel_top.root TTJets_DiLept_TuneCUETP8M1.root TTJets_SingleLeptFromT_TuneCUETP8M1.root TTJets_SingleLeptFromTbar_TuneCUETP8M1.root WJetsToLNu_HT-1200To2500_TuneCUETP8M1.root WJetsToLNu_HT-200To400_TuneCUETP8M1.root WJetsToLNu_HT-400To600_TuneCUETP8M1.root WJetsToLNu_HT-600To800_TuneCUETP8M1.root WJetsToLNu_HT-800To1200_TuneCUETP8M1.root ZJetsToNuNu_HT-100To200_13TeV-madgraph.root ZJetsToNuNu_HT-200To400_13TeV-madgraph.root ZJetsToNuNu_HT-400To600_13TeV-madgraph.root; do
+#for f in ST_t-channel_antitop.root; do
     if [ ! -f "$SKIM_OUTPUT_DIR/sum/type_sum/$f" ]; then
         echo "$SKIM_OUTPUT_DIR/sum/type_sum/$f does not exist. Skipping..."
         continue
