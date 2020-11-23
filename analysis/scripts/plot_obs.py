@@ -220,6 +220,7 @@ def createPlotsFast(rootfiles, type, histograms, weight=1, prefix="", condition=
                     histograms[histName] = hist
                 else:
                     histograms[histName].Add(hist)
+                
         
         rootFile.Close()
     
@@ -661,6 +662,19 @@ def main():
             typesInx = []
             i = 0
             foundBg = False
+            
+            # normalise BG histograms:
+            if plot_par.normalise:
+                bgSum = 0
+                for type in types:
+                    hname = cut["name"] + "_" + hist_def["obs"] + "_" + type
+                    if histograms.get(hname) is not None:
+                        bgSum += histograms[hname].Integral()
+                if bgSum > 0:
+                    for type in types:
+                        hname = cut["name"] + "_" + hist_def["obs"] + "_" + type
+                        if histograms.get(hname) is not None:
+                            histograms[hname].Scale(1./bgSum)
 
             for type in types:
                 hname = cut["name"] + "_" + hist_def["obs"] + "_" + type
@@ -710,6 +724,8 @@ def main():
                     sigHistName = cut["name"] + "_" + hist_def["obs"] + "_" + signalBasename
                     sigHistsNames.append(sigHistName)
                     sigHist = histograms[sigHistName]
+                    if plot_par.normalise:
+                        sigHist.Scale(1./sigHist.Integral())
                     print sigHistName, sigHist.GetMaximum()
                     sigHists.append(sigHist)
                     utils.formatHist(sigHist, utils.signalCp[i], 0.8, large_version)
@@ -721,6 +737,8 @@ def main():
                 maximum = max(bgMax, sigMax)
             if plot_par.plot_data:
                 dataHist = histograms[dataHistName]
+                if plot_par.normalise:
+                    dataHist.Scale(1./dataHist.Integral())
                 dataHist.SetMinimum(0.01)
                 dataHist.SetMarkerStyle(kFullCircle)
                 if large_version:
@@ -826,6 +844,8 @@ def main():
                 if plot_par.plot_data:
                     scDataHistName = "sc_" + cut["name"] + "_" + hist_def["obs"] + "_data"
                     scDataHist = histograms[scDataHistName]
+                    if plot_par.normalise:
+                        scDataHist.Scale(1./scDataHist.Integral())
                     scDataHist.SetMinimum(0.01)
                     scDataHist.SetMarkerStyle(kFullCircle)
                     if large_version:
@@ -838,6 +858,8 @@ def main():
                 
                 scBgHistName = "sc_" + cut["name"] + "_" + hist_def["obs"] + "_bg"
                 scBgHist = histograms[scBgHistName]
+                if plot_par.normalise:
+                    scBgHist.Scale(1./scBgHist.Integral())
                 scBgHist.SetMinimum(0.01)
                 scBgHist.SetLineWidth(2)
                 scBgHist.SetLineColor(6)
