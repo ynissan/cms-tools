@@ -145,6 +145,10 @@ def passTrig(c,trigname):
         #print "Passing trigger %s, index:%s"%(c.TriggerNames[trigidx],trigidx)
     return False
 
+def printTrigNames(c, trigname):
+    print ",".join([ c.TriggerNames[trigidx] for trigidx in triggerIndeces[trigname]])
+        
+
 def getTrigEffGraph(file, name):
     ttrig = file.Get(name)
     hpass = ttrig.GetPassedHistogram().Clone('hpass')

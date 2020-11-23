@@ -48,7 +48,7 @@ else:
     #input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_signal_bdt/single/higgsino_mu100_dm2p51Chi20Chipm.root"
     input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_signal_bdt_no_bdt_cut/single/higgsino_mu100_dm2p51Chi20Chipm.root"
     input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_signal_bdt/single/higgsino_mu100_dm1p13Chi20Chipm.root"
-    input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm3p28Chi20Chipm.root"
+    input_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm3p28Chi20Chipm.root"
     
     track_bdt = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track/cut_optimisation/tmva/dm1"
     #input_file = "/afs/desy.de/user/n/nissanuv/nfs/old_leptons_x1x2x1/signal/skim_dilepton_signal_bdt/single/higgsino_mu100_dm2p51Chi20Chipm.root"
@@ -89,15 +89,15 @@ def track_DeltaEta_LJ(c, t, ti):
     return abs(t.Eta() - c.Jets[ljet].Eta())
 
 def track_DeltaR_LL(c, t, ti):
-
-    ll, lepCharge, lepFlavour = analysis_ntuples.getSingleLeptonAfterSelection(c.Electrons, c.Electrons_passCorrJetIso15, c.Electrons_deltaRLJ, c.Electrons_charge, c.Muons, c.Muons_passCorrJetIso15, c.Muons_mediumID, c.Muons_deltaRLJ, c.Muons_charge)
+    #ll, leptonIdx, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(electronsObs["Electrons"], leptonsCorrJetVars["Electrons_pass" + iso + str(ptRange)], electronsCalcObs["Electrons_deltaRLJ"], electronsObs["Electrons_charge"], muonsObs["Muons"], leptonsCorrJetVars["Muons_pass" + iso + str(ptRange)], muonsObs["Muons_mediumID"], muonsCalcObs["Muons_deltaRLJ"], muonsObs["Muons_charge"], utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], muonsObs["Muons_tightID"])
+    ll, leptonIdx, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(c.Electrons, c.Electrons_passCorrJetIso10, c.Electrons_deltaRLJ, c.Electrons_charge, c.Muons, c.Muons_passCorrJetIso10, c.Muons_mediumID, c.Muons_deltaRLJ, c.Muons_charge)
     #ll = analysis_ntuples.leadingLepton(c)
     if ll is None:
         return 0
     return abs(t.DeltaR(ll))
 
 def track_DeltaEta_LL(c, t, ti):
-    ll, lepCharge, lepFlavour = analysis_ntuples.getSingleLeptonAfterSelection(c.Electrons, c.Electrons_passCorrJetIso15, c.Electrons_deltaRLJ, c.Electrons_charge, c.Muons, c.Muons_passCorrJetIso15, c.Muons_mediumID, c.Muons_deltaRLJ, c.Muons_charge)
+    ll, leptonIdx, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(c.Electrons, c.Electrons_passCorrJetIso10, c.Electrons_deltaRLJ, c.Electrons_charge, c.Muons, c.Muons_passCorrJetIso10, c.Muons_mediumID, c.Muons_deltaRLJ, c.Muons_charge)
     if ll is None:
         return 0
     return abs(t.Eta()-ll.Eta())
@@ -164,7 +164,7 @@ def trackBDTLow(c, ti):
 # track_bdt_reader = cut_optimisation.prepareReader(track_bdt_weights, track_bdt_vars, track_bdt_vars_map, track_bdt_specs, track_bdt_specs_map)
 
 def allTrackBDT(c, t, ti):
-    ll, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(c, c.LeadingJet)
+    ll, leptonIdx, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(c.Electrons, c.Electrons_passCorrJetIso10, c.Electrons_deltaRLJ, c.Electrons_charge, c.Muons, c.Muons_passCorrJetIso10, c.Muons_mediumID, c.Muons_deltaRLJ, c.Muons_charge)
     t = c.tracks[ti]
     metvec = TLorentzVector()
     metvec.SetPtEtaPhiE(c.Met, 0, c.METPhi, c.Met)
@@ -246,10 +246,14 @@ def main():
     h2DHistsYBins = [5,5]
     h2DHistsYMin = [0,0]
     h2DHistsYMax = [5,5]
+    
+    maxX = [15, 3.5, 3.5]
 
     tracksFuncs = ["tracks_trkRelIso", "tracks_chi2perNdof", "tracks_dxyVtx", "tracks_dzVtx", "tracks_trackQualityHighPurity"]
-    maxX = [15, 3.5, 3.5]
-    tracksMaxX = [0.01, 10, 0.1, 0.1, 2, 1]
+    
+    tracksMinX = [-15, 0, 0, -15, -15, 0]
+    tracksMaxX = [1, 4, 0.1, 1, 1, 1]
+    tracksLogScale = [True, False, True, True, False]
 
     binNum = 50
     
@@ -342,7 +346,7 @@ def main():
                 if func == "tracks_trackQualityHighPurity":
                     histograms[name] = utils.UOFlowTH1F(name, func, 2, 0, tracksMaxX[i])
                 else:
-                    histograms[name] = utils.UOFlowTH1F(name, func, binNum, 0, tracksMaxX[i])
+                    histograms[name] = utils.UOFlowTH1F(name, func, binNum, tracksMinX[i], tracksMaxX[i])
 
     for k, h in histograms.items():
         h.Sumw2()
@@ -370,14 +374,18 @@ def main():
             notCorrect += 1
             continue
         
-        ll, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(c.Electrons, c.Electrons_passCorrJetIso15, c.Electrons_deltaRLJ, c.Electrons_charge, c.Muons, c.Muons_passCorrJetIso15, c.Muons_mediumID, c.Muons_deltaRLJ, c.Muons_charge, 1.5, True, c.Muons_tightID)
+        ll, leptonIdx, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(c.Electrons, c.Electrons_passCorrJetIso10, c.Electrons_deltaRLJ, c.Electrons_charge, c.Muons, c.Muons_passCorrJetIso10, c.Muons_mediumID, c.Muons_deltaRLJ, c.Muons_charge)
         
         #if ll is None or leptonFlavour != genFlavour:
             #print ll
             #print leptonFlavour, genFlavour
         #    continue
         if ll is None:
-            continue
+            leptons, leptonsIdx, leptonsCharge, leptonFlavour, same_sign = analysis_ntuples.getTwoLeptonsAfterSelection(c.Electrons, c.Electrons_passCorrJetIso10, c.Electrons_deltaRLJ, c.Electrons_charge, c.Muons, c.Muons_passCorrJetIso10, c.Muons_mediumID, c.Muons_deltaRLJ, c.Muons_charge)
+            #if same_sign:
+            #    continue
+            if leptons is not None:
+                ll = leptons[0]
         
         genFlavourBefore += 1
         
@@ -623,7 +631,7 @@ def main():
                     name = trackHist + "_" + result + "_" + cut["name"]
                     if trackHistsFuncs[i] is not None:
                         histograms[name].Fill(trackHistsFuncs[i](c, t, ti))
-                for func in tracksFuncs:
+                for j, func in enumerate(tracksFuncs):
                     name = func + "_" + result + "_" + cut["name"]
                     if func == "tracks_trackQualityHighPurity":
                         val = getattr(c, func)[ti]
@@ -634,7 +642,10 @@ def main():
                         histograms[name].Fill(val)
                     else:
                         #print func
-                        histograms[name].Fill(abs(getattr(c, func)[ti]))
+                        if tracksLogScale[j] and abs(getattr(c, func)[ti]) != 0.0:
+                            histograms[name].Fill(log(abs(getattr(c, func)[ti]), 10))
+                        else:
+                            histograms[name].Fill(abs(getattr(c, func)[ti]))
         for i, cut in enumerate(cuts):
             histograms["Track_NumIso_" + cut["name"]].Fill(numIsoTracks[i])
             histograms["NM_Track_NumIso_" + cut["name"]].Fill(numMMIsoTracks[i])

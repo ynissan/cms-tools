@@ -123,7 +123,7 @@ bgReTaggingOrder = {
     "tc_2_btags" : 1
 }
 
-bgReTagging = {
+bgReTaggingFull = {
     "tc" : "tc * (!tautau)",
     "tautau" : "tautau",
     "other" : "other * (!tautau) * (!omega) * (!rho_0) * (!eta) * (!phi) * (!eta_prime) * (!j_psi) * (!upsilon_1) * (!upsilon_2)",
@@ -135,16 +135,12 @@ bgReTagging = {
     "jpsi" : "j_psi",
     "upsilon1" : "upsilon_1",
     "upsilon2" : "upsilon_2",
-    "nbody" : "n_body",
-    "scother" : "sc * (!tautau) * (!omega) * (!rho_0) * (!eta) * (!phi) * (!eta_prime) * (!j_psi) * (!upsilon_1) * (!upsilon_2)"
-
-    # "tautau" : "tautau",
-#     "n_body" : "n_body",
-#     
-#     "sc" : "sc * (!tautau)"
+    "nbody" : "n_body * (!tautau)",
+    "scother" : "sc * (!tautau) * (!omega) * (!rho_0) * (!eta) * (!phi) * (!eta_prime) * (!j_psi) * (!upsilon_1) * (!upsilon_2)",
+    "fake" : "(rf || ff)",
 }
 
-bgReTaggingOrder = {
+bgReTaggingOrderFull = {
 #    "tcmuons" : -4,
 #    "tctautau" : -3,
     "tautau" : -2,
@@ -159,11 +155,22 @@ bgReTaggingOrder = {
     "upsilon2" : 7,
     "tc" : 8,
     "nbody" : 9,
-    "scother" : 10
+    "scother" : 10,
+    "fake" : 11
 
 
     # "tautau" : 0,
 #     "sc" : 1,
+}
+
+bgReTaggingJPsi = {
+    "tc" : "tc && !tautau",
+    "tautau" : "tautau",
+    "other" : "other && (!tautau) && (!omega) && (!rho_0) && (!eta) && (!phi) && (!eta_prime) && (!j_psi) && (!upsilon_1) && (!upsilon_2)",
+    "jpsi" : "j_psi",
+    "nbody" : "n_body && (!tautau)",
+    "scother" : "sc && (!tautau) && (!omega) && (!rho_0) && (!eta) && (!phi) && (!eta_prime) && (!j_psi) && (!upsilon_1) && (!upsilon_2)",
+    "fake" : "rf || ff",
 }
 
 histograms_defsss = [
@@ -273,9 +280,7 @@ two_leps_histograms = [
     
     { "obs" : "Muons_deltaEtaLJ[leptonsIdx[0]]", "minX" : 0, "maxX" : 1, "bins" : 60 },
     { "obs" : "Muons_deltaEtaLJ[leptonsIdx[1]]", "minX" : 0, "maxX" : 1, "bins" : 60 },
-    
-    
-    
+
 ]
 
 two_leps_cuts = [
@@ -365,6 +370,8 @@ class BaseParams:
     plot_sc = False
     plot_data = False
     plot_ratio = False
+    plot_point = False
+    plot_efficiency = False
     create_canvas = False
     plot_custom_ratio = False
     #customRatios = [  [["DiBoson"],["TTJets"]],  [["WJetsToLNu"],["ZJetsToNuNu"]]  ]
@@ -378,10 +385,13 @@ class BaseParams:
     blind_data = True
     plot_log_x = False
     plot_real_log_x = False
+    nostack = False
     logXplots = ["invMass"]
     histograms_defs = []
     cuts = []
-
+    efficiencies = []
+    normalise = False
+    no_weights = False
 
 
 class jpsi_muons(BaseParams):
@@ -392,45 +402,99 @@ class jpsi_muons(BaseParams):
     plot_data = True
     plot_ratio = True
     blind_data = False
-    plot_overflow = False
+    plot_overflow = True
     calculatedLumi = {
-        'SingleMuon' : 12.660538577
+        'SingleMuon' : 15.473761772
     }
     histograms_defs = [
-        { "obs" : "invMass", "units" : "M_{ll}", "minX" : 3, "maxX" : 3.2, "bins" : 30 },
+        { "obs" : "invMass", "units" : "M_{ll}", "minX" : 2.5, "maxX" : 3.5, "bins" : 60 },
         { "obs" : "Muons[0].Pt()", "minX" : 24, "maxX" : 50, "bins" : 50 },
-        { "obs" : "leptons.Pt()", "minX" : 2, "maxX" : 15, "bins" : 50 },
+        { "obs" : "leptons.Pt()", "minX" : 2, "maxX" : 15, "bins" : 50, "condition" :  "leptons.Pt() > 2.5" },
         { "obs" : "leptons.Eta()", "minX" : 0, "maxX" : 2.4, "bins" : 50 },
         { "obs" : "abs(leptons.Phi())", "minX" : 0, "maxX" : 3.2, "bins" : 50 },
         
     ] + common_histograms
     
-    histograms_defes = [    
-        { "obs" : "tracks[Muons_ti[leptonsIdx]].Pt()", "minX" : 2, "maxX" : 15, "bins" : 50 },
-        { "obs" : "abs(tracks[Muons_ti[leptonsIdx]].Phi())", "minX" : 0, "maxX" : 3.2, "bins" : 50 },
-        { "obs" : "tracks[Muons_ti[leptonsIdx]].Eta()", "minX" : 0, "maxX" : 2.4, "bins" : 50 },
-        
-
-        
-        {"obs" : "log(tracks_dxyVtx[Muons_ti[leptonsIdx]])", "minX" : -13, "maxX" : 1, "bins" : 50 },
-        {"obs" : "log(tracks_dzVtx[Muons_ti[leptonsIdx]])", "minX" : -13, "maxX" : 1, "bins" : 50 },
-        {"obs" : "log(tracks_trkMiniRelIso[Muons_ti[leptonsIdx]])", "minX" : -4, "maxX" : 1, "bins" : 50 },
-        {"obs" : "log(tracks_trkRelIso[Muons_ti[leptonsIdx]])", "minX" : -4, "maxX" : 1, "bins" : 50 },
-        
+    histograms_defs = [
+        { "obs" : "invMass", "units" : "M_{ll}", "minX" : 2.5, "maxX" : 3.5, "bins" : 60 },
+        { "obs" : "leptons.Pt()", "units" : "Muon P_{t}", "minX" : 2, "maxX" : 24, "bins" : 60 },
+        { "obs" : "abs(leptons.Phi())",  "units" : "Muon \phi", "minX" : 0, "maxX" : 3.2, "bins" : 50 },
+        { "obs" : "leptons.Eta()", "units" : "Muon \eta", "minX" : 0, "maxX" : 2.4, "bins" : 50 },
+        { "obs" : "tracks[Muons_ti[leptonsIdx]].Pt()", "units" : "Track P_{t}", "minX" : 2, "maxX" : 24, "bins" : 60, "condition" :  "Muons_ti[leptonsIdx] > -1" },
+        { "obs" : "abs(tracks[Muons_ti[leptonsIdx]].Phi())",  "units" : "Track \phi", "minX" : 0, "maxX" : 3.2, "bins" : 50, "condition" :  "Muons_ti[leptonsIdx] > -1" },
+        { "obs" : "tracks[Muons_ti[leptonsIdx]].Eta()", "units" : "Track \eta", "minX" : 0, "maxX" : 2.4, "bins" : 50, "condition" :  "Muons_ti[leptonsIdx] > -1" },
+        {"obs" : "tracks_dxyVtx[Muons_ti[leptonsIdx]]", "units" : "dxy", "minX" : 0, "maxX" : 0.2, "bins" : 50, "condition" :  "Muons_ti[leptonsIdx] > -1" },
+        {"obs" : "tracks_dzVtx[Muons_ti[leptonsIdx]]", "units" : "dz", "minX" : 0, "maxX" : 0.5, "bins" : 50, "condition" :  "Muons_ti[leptonsIdx] > -1" },
+        {"obs" : "tracks_trkMiniRelIso[Muons_ti[leptonsIdx]]", "units" : "MiniRelIso", "minX" : 0, "maxX" : 0.2, "bins" : 50, "condition" :  "Muons_ti[leptonsIdx] > -1" },
+        {"obs" : "tracks_trkRelIso[Muons_ti[leptonsIdx]]", "units" : "RelIso", "minX" : 0, "maxX" : 0.2, "bins" : 50, "condition" :  "Muons_ti[leptonsIdx] > -1" },
+        { "obs" : "Muons[0].Pt()", "units" : "P_{t}(\mu_{1})", "minX" : 25, "maxX" : 100, "bins" : 60 },
     ]
-        
-        
-        
-
     
     cuts = [
-        {"name":"none", "title": "No Cuts", "condition" : "Muons_tightID[0] == 1 && Muons_passIso[0] == 1 && Muons[0].Pt() > 24 && Muons[0].Eta() < 2.4"},
+        {"name":"none", "title": "No Cuts", "condition" : "1"},
         #{"name":"jpsi_invmass", "title": "jpsi", "condition" : "Muons_tightID[0] == 1 && Muons_passIso[0] == 1 && Muons[0].Pt() > 24 && Muons[0].Eta() < 2.4 && invMass > 3 && invMass < 3.2"},
-        #{"name":"jpsi", "title": "jpsi", "condition" : "Muons_ti[leptonsIdx] > -1 && invMass > 3 && invMass < 3.2 && Muons_tightID[0] == 1 && Muons_passIso[0] == 1 && Muons[0].Pt() > 24 && Muons[0].Eta() < 2.4"},
+        {"name":"jpsi", "title": "jpsi", "condition" : "invMass > 3.04 && invMass < 3.18"},
     ]
+    
+    bgReTagging = bgReTaggingJPsi
+    bgReTaggingOrder = bgReTaggingOrderFull
+    
+    normalise = True
+    no_weights = True
+    
+    
+class jpsi_muons_n_plot(jpsi_muons):
+    cuts = [
+        #{"name":"none", "title": "No Cuts", "condition" : "1"},
+        #{"name":"jpsi_invmass", "title": "jpsi", "condition" : "Muons_tightID[0] == 1 && Muons_passIso[0] == 1 && Muons[0].Pt() > 24 && Muons[0].Eta() < 2.4 && invMass > 3 && invMass < 3.2"},
+        {"name":"jpsi", "title": "jpsi", "condition" : "invMass > 3.04 && invMass < 3.18"},
+    ]
+    
+    #histograms_defs = [
+        #{ "obs" : "invMass", "units" : "M_{ll}", "minX" : 3.04, "maxX" : 3.18, "bins" : 60 },
+    #]
+    histograms_defs = jpsi_muons.histograms_defs
+    histograms_defs[0] = { "obs" : "invMass", "units" : "M_{ll}", "minX" : 3.04, "maxX" : 3.18, "bins" : 60 }
+    bgReTagging = {
+        "all" : "(Muons_ti[leptonsIdx] > -1 && tracks_trkRelIso[Muons_ti[leptonsIdx]] < 0.1 && tracks_dxyVtx[Muons_ti[leptonsIdx]] < 0.02 && tracks_dzVtx[Muons_ti[leptonsIdx]] < 0.05)",
+        #"all" : "1",
+        "trkRelIso" : "(Muons_ti[leptonsIdx] > -1 && tracks_dxyVtx[Muons_ti[leptonsIdx]] < 0.02 && tracks_dzVtx[Muons_ti[leptonsIdx]] < 0.05)",
+        "dxy" : "(Muons_ti[leptonsIdx] > -1 && tracks_trkRelIso[Muons_ti[leptonsIdx]] < 0.1 && tracks_dzVtx[Muons_ti[leptonsIdx]] < 0.05)",
+        "dz" : "(Muons_ti[leptonsIdx] > -1 && tracks_trkRelIso[Muons_ti[leptonsIdx]] < 0.1 && tracks_dxyVtx[Muons_ti[leptonsIdx]] < 0.02)",
+        "none" : "(Muons_ti[leptonsIdx] > -1)"
+    }
+    
+    bgReTaggingOrder = {
+        "all" : 4,
+        "trkRelIso" : 1,
+        "dxy" : 2,
+        "dz" : 3,
+        "none" : 0
+    }
+    
+    plot_data = False
+    plot_ratio = False
+    nostack = True
+    customRatios = [  [["trkRelIso"],["all"]]  ]
+    plot_custom_ratio = False
+    plot_point = True
+    plot_error = True
+    plot_efficiency = True
+    efficiencies = [ 
+        {"name" : "trkRelIso", "numerator" : ["all"], "denominator": ["trkRelIso"] },
+        {"name" : "dxy", "numerator" : ["all"], "denominator": ["dxy"] },
+        {"name" : "dz", "numerator" : ["all"], "denominator": ["dz"] },
+    ]
+    
+    # if c.tracks_trkRelIso[ti] > 0.1:
+#                             continue 
+#                         if c.tracks_dxyVtx[ti] > 0.02:
+#                             continue
+#                         if c.tracks_dzVtx[ti] > 0.05:
+#                             continue 
+    
 
-
-default_params = jpsi_muons
+default_params = jpsi_muons_n_plot
 
 
 

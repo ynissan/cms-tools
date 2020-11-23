@@ -26,23 +26,23 @@ TH1D.SetDefaultSumw2()
 # from ROOT import LeptonCollection
 
 colorPalette = [
-    { "name" : "yellow", "fillColor" : "#fcf802", "lineColor" : "#e0dc00", "fillStyle" : 3444 },
-    { "name" : "green", "fillColor" : "#0bb200", "lineColor" : "#099300", "fillStyle" : 3444 },
-    { "name" : "blue", "fillColor" : "#0033cc", "lineColor" : "#00279e", "fillStyle" : 3444 },
-    { "name" : "purple", "fillColor" : "#f442f1", "lineColor" : "#a82ba6", "fillStyle" : 3444 },
-    { "name" : "tourq", "fillColor" : "#00ffe9", "lineColor" : "#2a8c83", "fillStyle" : 3444 },
-    { "name" : "orange", "fillColor" : "#ffbb00", "lineColor" : "#b78b12", "fillStyle" : 3444 },
-    { "name" : "lightgreen", "fillColor" : "#42f498", "lineColor" : "#28a363", "fillStyle" : 3444 },
-    { "name" : "red", "fillColor" : "#e60000", "lineColor" : "#c60000", "fillStyle" : 3444 },
-    { "name" : "velvet", "fillColor" : "#ff00c9", "lineColor" : "#ff8ee7", "fillStyle" : 3444 },
-    { "name" : "darkblue", "fillColor" : "#1B00DC", "lineColor" : "#8373FA", "fillStyle" : 3444 },
+    { "name" : "yellow", "fillColor" : "#fcf802", "lineColor" : "#e0dc00", "fillStyle" : 3444, "markerColor" : 5,  "markerStyle" : kOpenCircle},
+    { "name" : "green", "fillColor" : "#0bb200", "lineColor" : "#099300", "fillStyle" : 3444, "markerColor" : 3,  "markerStyle" : kOpenSquare },
+    { "name" : "blue", "fillColor" : "#0033cc", "lineColor" : "#00279e", "fillStyle" : 3444, "markerColor" : 4,  "markerStyle" : kOpenTriangleUp },
+    { "name" : "purple", "fillColor" : "#f442f1", "lineColor" : "#a82ba6", "fillStyle" : 3444, "markerColor" : 6,  "markerStyle" : kOpenDiamond },
+    { "name" : "tourq", "fillColor" : "#00ffe9", "lineColor" : "#2a8c83", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "orange", "fillColor" : "#ffbb00", "lineColor" : "#b78b12", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "lightgreen", "fillColor" : "#42f498", "lineColor" : "#28a363", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "red", "fillColor" : "#e60000", "lineColor" : "#c60000", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "velvet", "fillColor" : "#ff00c9", "lineColor" : "#ff8ee7", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "darkblue", "fillColor" : "#1B00DC", "lineColor" : "#8373FA", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
     
-    { "name" : "maroon", "fillColor" : "#800000", "lineColor" : "#A52A2A", "fillStyle" : 3444 },
-    { "name" : "darkslategray", "fillColor" : "#2F4F4F", "lineColor" : "#708090", "fillStyle" : 3444 },
-    { "name" : "wheat", "fillColor" : "#F5DEB3", "lineColor" : "#FFDEAD", "fillStyle" : 3444 },
-    { "name" : "lightgray", "fillColor" : "#D3D3D3", "lineColor" : "#DCDCDC", "fillStyle" : 3444 },
+    { "name" : "maroon", "fillColor" : "#800000", "lineColor" : "#A52A2A", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "darkslategray", "fillColor" : "#2F4F4F", "lineColor" : "#708090", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "wheat", "fillColor" : "#F5DEB3", "lineColor" : "#FFDEAD", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "lightgray", "fillColor" : "#D3D3D3", "lineColor" : "#DCDCDC", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
     
-    { "name" : "black", "fillColor" : kBlack, "lineColor" : kBlack, "fillStyle" : 3444 },
+    { "name" : "black", "fillColor" : kBlack, "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
 ]
 
 crossSections = {
@@ -89,7 +89,7 @@ CS_DIR="/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/cs/stdout"
 LEPTON_COLLECTION_DIR="/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection"
 LEPTON_COLLECTION_FILES_MAP_DIR="/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollectionFilesMaps"
 
-epsilon = 0.00001
+epsilon = 0.0000000001
 
 #For solid fill use fillStyle=1001
 signalCp = [
@@ -417,7 +417,7 @@ def pause(str_='push enter key when ready'):
 def fillth1(h,x, weight=1):
     h.Fill(min(max(x,h.GetXaxis().GetBinLowEdge(1)+epsilon),h.GetXaxis().GetBinLowEdge(h.GetXaxis().GetNbins()+1)-epsilon),weight)
 
-def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, noFillStyle=False, largeVersion = False):
+def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, noFillStyle=False, largeVersion = False, plotPoint = False):
     newStack = THStack(bgHist.GetName(), title)
     memory.append(newStack)
 
@@ -436,10 +436,21 @@ def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, n
         if colorInx is not None:
             colorI = colorInx[i]
         formatHist(newHist, colorPalette[colorI], 0.35, noFillStyle, largeVersion)
+        lineC = TColor.GetColor(colorPalette[colorI]["fillColor"])
+        newHist.SetMarkerStyle(colorPalette[colorI]["markerStyle"])
+            
+        #newHist.SetMarkerColorAlpha(colorPalette[colorI]["markerColor"], 0.9)
+        newHist.SetMarkerColorAlpha(lineC, 0.9)
+        if plotPoint:
+            newHist.SetLineColor(lineC)
+        
         newStack.Add(newHist)
         if legend is not None:
             #print "Adding to legend " + hist.GetName().split("_")[-1]
-            legend.AddEntry(newHist, hist.GetName().split("_")[-1], 'F')
+            if plotPoint:
+                legend.AddEntry(newHist, hist.GetName().split("_")[-1], 'p')
+            else:
+                legend.AddEntry(newHist, hist.GetName().split("_")[-1], 'F')
 
     return newStack
  
@@ -717,6 +728,9 @@ def getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=
     if tree.GetEntries() == 0:
         return None
     binsStr = None
+    
+    #print "Getting", name, "cond:", condition
+    
     # if tmpName == "hsqrt":
 #         letters = string.ascii_lowercase
 #         result_str = ''.join(random.choice(letters) for i in range(6))

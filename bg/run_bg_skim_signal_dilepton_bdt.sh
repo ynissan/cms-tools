@@ -70,7 +70,11 @@ EOM
 
 for bg_file in $INPUT_DIR/sum/type_sum/*; do
     cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_dilepton_bdt.py -i $bg_file -bdt $BDT_DIR -bg $@"
+    bg_file_name=$(basename $bg_file .root)
     echo $cmd
+    # echo INPUT_DIR = $INPUT_DIR
+#     echo err = ${INPUT_DIR}/stderr/${bg_file_name}_dilepton.err
+#     echo output = ${INPUT_DIR}/stdoutput/${bg_file_name}_dilepton.output
 cat << EOM >> $output_file
 arguments = $cmd
 error = ${INPUT_DIR}/stderr/${bg_file_name}_dilepton.err

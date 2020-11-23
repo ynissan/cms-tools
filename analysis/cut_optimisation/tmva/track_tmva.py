@@ -43,13 +43,13 @@ dir = os.path.dirname(output_file_name)
 print "Changing directory to", dir
 os.chdir(dir)
 
-output_file_name_object = os.path.splitext(output_file_name)[0] + "Object.root"
+#output_file_name_object = os.path.splitext(output_file_name)[0] + "Object.root"
 
 
 gROOT.SetBatch(1)
 TMVA.Tools.Instance()
 outputFile = TFile(output_file_name,'RECREATE')
-outputFileObject = TFile(output_file_name_object,'RECREATE')
+#outputFileObject = TFile(output_file_name_object,'RECREATE')
 factory = TMVA.Factory("TMVAClassification", outputFile,
                             ":".join([
                                 "!V",

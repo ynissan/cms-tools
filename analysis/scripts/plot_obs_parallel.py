@@ -497,7 +497,7 @@ for iso in utils.leptonIsolationList:
                         cond = "twoLeptons"  + iso + str(ptRange) + cat + "== 1 && @leptons"  + iso + str(ptRange) + cat + ".size() == 2 && leptonFlavour" + iso + str(ptRange) + cat + ' == "' + lep + '"'
                     else:
                         cond = "exclusiveTrack"  + iso + str(ptRange) + cat + "== 1  && exclusiveTrackLeptonFlavour" + iso + str(ptRange) + cat + ' == "' + lep + '"'
-                        histograms_defs.append({ "obs" : "trackBDT" + iso + str(ptRange) + cat, "namePostfix" : lep, "units": lep + "trackBDT" + iso + str(ptRange) + cat,  "minX" : -1, "maxX" : 1, "bins" : 30, "cond": cond})
+                        histograms_defs.append({ "obs" : "trackBDT" + iso + str(ptRange) + cat, "namePostfix" : lep, "units": lep + "_trackBDT" + iso + str(ptRange) + cat,  "minX" : -1, "maxX" : 1, "bins" : 30, "cond": cond})
                     
                     histograms_defs.append({ "obs" : prefix + "dilepBDT" + iso + str(ptRange) + cat, "namePostfix" : lep, "units": lep + "_" + prefix + "dilepBDT" + iso + str(ptRange) + cat, "minX" : -1, "maxX" : 1, "bins" : 30, "cond" : cond})
                     histograms_defs.append({ "obs" : prefix + "invMass" + iso + str(ptRange) + cat, "namePostfix" : lep, "units": lep + "_" + prefix + "invMass" + iso + str(ptRange) + cat,"minX" : 0, "maxX" : 12, "bins" : 30, "cond" : cond})

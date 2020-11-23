@@ -286,18 +286,16 @@ def main():
             if iso == "CorrJetIso":
                 ptRanges = utils.leptonCorrJetIsoPtRange
             for ptRange in ptRanges:
-                for vecObs in utils.dileptonObservablesVecList:
-                    dileptonVars[vecObs + iso + str(ptRange) + cat] = ROOT.std.vector(eval(utils.dileptonObservablesVecList[vecObs]))()
-                    if iso + str(ptRange) + cat == utils.defaultJetIsoSetting:
-                        dileptonVars[vecObs] = ROOT.std.vector(eval(utils.dileptonObservablesVecList[vecObs]))()
-                for stringObs in utils.dileptonObservablesStringList:
-                    dileptonVars[stringObs + iso + str(ptRange) + cat] = ROOT.std.string("")
-                    if iso + str(ptRange) + cat == utils.defaultJetIsoSetting:
-                        dileptonVars[stringObs] = ROOT.std.string("")
-                for DTypeObs in utils.dileptonObservablesDTypesList:
-                    dileptonVars[DTypeObs + iso + str(ptRange) + cat] = np.zeros(1,dtype=utils.dileptonObservablesDTypesList[DTypeObs])
-                    if iso + str(ptRange) + cat == utils.defaultJetIsoSetting:
-                        dileptonVars[DTypeObs] = np.zeros(1,dtype=utils.dileptonObservablesDTypesList[DTypeObs])
+                postfixi = [iso + str(ptRange) + cat]
+                if iso + str(ptRange) + cat == utils.defaultJetIsoSetting:
+                    postfixi = [iso + str(ptRange) + cat, ""]
+                for postfix in postfixi:
+                    for vecObs in utils.dileptonObservablesVecList:
+                        dileptonVars[vecObs + postfix] = ROOT.std.vector(eval(utils.dileptonObservablesVecList[vecObs]))()
+                    for stringObs in utils.dileptonObservablesStringList:
+                        dileptonVars[stringObs + postfix] = ROOT.std.string("")
+                    for DTypeObs in utils.dileptonObservablesDTypesList:
+                        dileptonVars[DTypeObs + postfix] = np.zeros(1,dtype=utils.dileptonObservablesDTypesList[DTypeObs])
 
     print dileptonVars
        
@@ -446,25 +444,20 @@ def main():
             if iso == "CorrJetIso":
                 ptRanges = utils.leptonCorrJetIsoPtRange
             for ptRange in ptRanges:
-                for vecObs in utils.dileptonObservablesVecList:
-                    print "tEvent.Branch(" + vecObs + iso + str(ptRange) + cat, 'std::vector<' + utils.dileptonObservablesVecList[vecObs] + '>', dileptonVars[vecObs + iso + str(ptRange) + cat], ")"
-                    tEvent.Branch(vecObs + iso + str(ptRange) + cat, 'std::vector<' + utils.dileptonObservablesVecList[vecObs] + '>', dileptonVars[vecObs + iso + str(ptRange) + cat])
-                    if iso + str(ptRange) + cat == utils.defaultJetIsoSetting:
-                        print "tEvent.Branch(" + vecObs, 'std::vector<' + utils.dileptonObservablesVecList[vecObs] + '>', dileptonVars[vecObs], ")"
-                        tEvent.Branch(vecObs, 'std::vector<' + utils.dileptonObservablesVecList[vecObs] + '>', dileptonVars[vecObs])
-                for stringObs in utils.dileptonObservablesStringList:
-                    print "tEvent.Branch(" + stringObs + iso + str(ptRange) + cat, 'std::string', dileptonVars[stringObs + iso + str(ptRange) + cat],")"
-                    tEvent.Branch(stringObs + iso + str(ptRange) + cat, 'std::string', dileptonVars[stringObs + iso + str(ptRange) + cat])
-                    if iso + str(ptRange) + cat == utils.defaultJetIsoSetting:
-                        print "tEvent.Branch(" + stringObs, 'std::string', dileptonVars[stringObs],")"
-                        tEvent.Branch(stringObs, 'std::string', dileptonVars[stringObs])
-                for DTypeObs in utils.dileptonObservablesDTypesList:
-                    print "tEvent.Branch(" + DTypeObs + iso + str(ptRange) + cat, dileptonVars[DTypeObs + iso + str(ptRange) + cat],DTypeObs + iso + str(ptRange) + cat + "/" + utils.typeTranslation[utils.dileptonObservablesDTypesList[DTypeObs]], ")"
-                    tEvent.Branch(DTypeObs + iso + str(ptRange) + cat, dileptonVars[DTypeObs + iso + str(ptRange) + cat],DTypeObs + iso + str(ptRange) + cat + "/" + utils.typeTranslation[utils.dileptonObservablesDTypesList[DTypeObs]])
-                    if iso + str(ptRange) + cat == utils.defaultJetIsoSetting:
-                        print "tEvent.Branch(" + DTypeObs, dileptonVars[DTypeObs],DTypeObs + "/" + utils.typeTranslation[utils.dileptonObservablesDTypesList[DTypeObs]], ")"
-                        tEvent.Branch(DTypeObs, dileptonVars[DTypeObs],DTypeObs +  "/" + utils.typeTranslation[utils.dileptonObservablesDTypesList[DTypeObs]])
-                    
+                postfixi = [iso + str(ptRange) + cat]
+                if iso + str(ptRange) + cat == utils.defaultJetIsoSetting:
+                    postfixi = [iso + str(ptRange) + cat, ""]
+                for postfix in postfixi:
+                    for vecObs in utils.dileptonObservablesVecList:
+                        print "tEvent.Branch(" + vecObs + postfix, 'std::vector<' + utils.dileptonObservablesVecList[vecObs] + '>', dileptonVars[vecObs + postfix], ")"
+                        tEvent.Branch(vecObs + postfix, 'std::vector<' + utils.dileptonObservablesVecList[vecObs] + '>', dileptonVars[vecObs + postfix])
+                    for stringObs in utils.dileptonObservablesStringList:
+                        print "tEvent.Branch(" + stringObs + postfix, 'std::string', dileptonVars[stringObs + postfix],")"
+                        tEvent.Branch(stringObs + postfix, 'std::string', dileptonVars[stringObs + postfix])
+                    for DTypeObs in utils.dileptonObservablesDTypesList:
+                        print "tEvent.Branch(" + DTypeObs + postfix, dileptonVars[DTypeObs + postfix],DTypeObs + postfix + "/" + utils.typeTranslation[utils.dileptonObservablesDTypesList[DTypeObs]], ")"
+                        tEvent.Branch(DTypeObs + postfix, dileptonVars[DTypeObs + postfix],DTypeObs + postfix + "/" + utils.typeTranslation[utils.dileptonObservablesDTypesList[DTypeObs]])
+                        
     if not signal:
         tEvent.Branch('TriggerNames', 'std::vector<string>', var_triggerNames)
         tEvent.Branch('TriggerPass', 'std::vector<int>', var_triggerPass)
@@ -1160,9 +1153,13 @@ def main():
                     if iso == "CorrJetIso":
                         ptRanges = utils.leptonCorrJetIsoPtRange
                     for ptRange in ptRanges:
-                        dileptonVars[vecObs + iso + str(ptRange) + cat] = ROOT.std.vector(eval(utils.dileptonObservablesVecList[vecObs]))()
+                        postfixi = [iso + str(ptRange) + cat]
                         if iso + str(ptRange) + cat == utils.defaultJetIsoSetting:
-                            dileptonVars[vecObs] = ROOT.std.vector(eval(utils.dileptonObservablesVecList[vecObs]))()
+                            postfixi = [iso + str(ptRange) + cat, ""]
+                        for postfix in postfixi:
+                            dileptonVars[vecObs + postfix] = ROOT.std.vector(eval(utils.dileptonObservablesVecList[vecObs]))()
+                            if postfix == utils.defaultJetIsoSetting:
+                                dileptonVars[vecObs] = ROOT.std.vector(eval(utils.dileptonObservablesVecList[vecObs]))()
                             
         foundTwoLeptons = False
         foundSingleLepton = False
@@ -1214,6 +1211,9 @@ def main():
                                 var_category[0] = 1
                                 foundSingleLepton = True
                     if leptons is not None and (jpsi_muons or var_BTagsLoose[0] < 3 or var_BTagsMedium[0] < 3 or var_BTagsDeepLoose[0] < 3 or var_BTagsDeepMedium[0] < 3):
+                    
+                        #print var_BTagsLoose[0], var_BTagsMedium[0], var_BTagsDeepLoose[0], var_BTagsDeepMedium[0]
+                    
                         foundTwoLeptons = True
                         #print "foundTwoLeptons!!!", ientry
                         #print ientry, leptons, leptonsIdx, leptonsCharge, leptonFlavour, same_sign
@@ -1248,6 +1248,13 @@ def main():
                             dileptonVars["pt3" + postfix][0] = analysis_tools.pt3(leptons[0].Pt(),leptons[0].Phi(),leptons[1].Pt(),leptons[1].Phi(),MET,METPhi)
                             dileptonVars["mt1" + postfix][0] = analysis_tools.MT2(MET, METPhi, leptons[0])
                             dileptonVars["mt2" + postfix][0] = analysis_tools.MT2(MET, METPhi, leptons[1])
+                            
+                            #if leptons[0].Pt() < 1 or leptons[1].Pt() < 1:
+                            #    print "FUCK!"
+                            #    exit(0)
+                            
+                            #print postfix
+                            #print ientry
                             dileptonVars["mtautau" + postfix][0] = analysis_tools.Mtautau(pt, leptons[0], leptons[1])
                             dileptonVars["deltaEtaLeadingJetDilepton" + postfix][0] = abs((leptons[0] + leptons[1]).Eta() - jets[ljet].Eta())
                             dileptonVars["deltaPhiLeadingJetDilepton" + postfix][0] = abs((leptons[0] + leptons[1]).DeltaPhi(jets[ljet]))

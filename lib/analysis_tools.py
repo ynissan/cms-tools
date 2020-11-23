@@ -2,6 +2,10 @@
 
 from ROOT import *
 from math import *
+import sys
+
+sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
+from lib import utils
 
 def minDeltaR(v, vs):
     min = None
@@ -36,27 +40,35 @@ def mt_2(pt1, phi1, pt2, phi2):
 
 
 def Mtautau(pt, l1, l2):
-	xi1 = (pt.Px() * l2.Py() - pt.Py() * l2.Px()) / (l1.Px() * l2.Py() - l2.Px() * l1.Py())
-	xi2 = (pt.Py() * l1.Px() - pt.Px() * l1.Py()) / (l1.Px() * l2.Py() - l2.Px() * l1.Py())
-	
-	nu1v = xi1 * l1.Vect()
-	nu2v = xi2 * l2.Vect()
-	
-	#print "Ptx=" + str(pt.X()) + " nuX=" + str(nu1v.X() + nu2v.X()) + " Pty=" + str(pt.Y()) + " nuY=" + str(nu1v.Y() + nu2v.Y())
-	
-	nu1E = nu1v.Mag()
-	nu2E = nu2v.Mag()
-	
-	#print "xi1=" + str(xi1) + " xi2=" + str(xi2) + " nu1E=" + str(nu1E) + " nu2E=" + str(nu2E) + " sum=" + str(nu1E + nu2E) + " orig=" + str(pt.E())
-	
-	nu1 = TLorentzVector(nu1v, nu1E)
-	nu2 = TLorentzVector(nu2v, nu2E)
-	
-	m = (l1 + l2 + nu1 + nu2).M()
-	
-	if m < 0:
-		m = -1
-	return m
+    #print l1.Pt(), l2.Pt(), (pt.Px() * l2.Py() - pt.Py() * l2.Px()), (l1.Px() * l2.Py() - l2.Px() * l1.Py())
+    #print pt.Px(), pt.Py(), l1.Px(), l1.Py(), l2.Px(), l2.Py()
+    xi1div = (l1.Px() * l2.Py() - l2.Px() * l1.Py())
+    if xi1div == 0.:
+        xi1div = utils.epsilon
+    xi2div = (l1.Px() * l2.Py() - l2.Px() * l1.Py())
+    if xi2div == 0.:
+        xi2div = utils.epsilon
+    xi1 = (pt.Px() * l2.Py() - pt.Py() * l2.Px()) / xi1div
+    xi2 = (pt.Py() * l1.Px() - pt.Px() * l1.Py()) / xi2div
+
+    nu1v = xi1 * l1.Vect()
+    nu2v = xi2 * l2.Vect()
+
+    #print "Ptx=" + str(pt.X()) + " nuX=" + str(nu1v.X() + nu2v.X()) + " Pty=" + str(pt.Y()) + " nuY=" + str(nu1v.Y() + nu2v.Y())
+
+    nu1E = nu1v.Mag()
+    nu2E = nu2v.Mag()
+
+    #print "xi1=" + str(xi1) + " xi2=" + str(xi2) + " nu1E=" + str(nu1E) + " nu2E=" + str(nu2E) + " sum=" + str(nu1E + nu2E) + " orig=" + str(pt.E())
+
+    nu1 = TLorentzVector(nu1v, nu1E)
+    nu2 = TLorentzVector(nu2v, nu2E)
+
+    m = (l1 + l2 + nu1 + nu2).M()
+
+    if m < 0:
+        m = -1
+    return m
 
 # Sam Bein (samuel.bein@gmail.com)
 # gROOT.ProcessLine(open('src/UsefulJet.cc').read())

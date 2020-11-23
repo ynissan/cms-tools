@@ -106,7 +106,7 @@ for sim in $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
             continue
         fi
         #cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_univ_bdt_track_bdt.py -i $bg_file -o $out_file -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@"
-        cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -i $bg_file -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename $@"
+        cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -bg -i $bg_file -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename $@"
         echo $cmd
 cat << EOM >> $output_file
 arguments = $cmd
