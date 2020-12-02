@@ -50,6 +50,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --mini)
+        MINI=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -69,6 +74,9 @@ elif [ -n "$DY" ]; then
     OUTPUT_DIR=$DY_SKIM_DATA_OUTPUT_DIR
 elif [ -n "$JPSI_MUONS" ]; then
     OUTPUT_DIR=$SKIM_DATA_JPSI_MUONS_OUTPUT_DIR
+elif [ -n "$MINI" ]; then
+    OUTPUT_DIR=$SKIM_DATA_MINI_OUTPUT_DIR
+    SCRIPT_PATH=$MINI_SKIMMER_PATH
 else
     OUTPUT_DIR=$SKIM_DATA_OUTPUT_DIR
 fi

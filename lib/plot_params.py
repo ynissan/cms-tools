@@ -404,22 +404,23 @@ class jpsi_muons(BaseParams):
     blind_data = False
     plot_overflow = True
     calculatedLumi = {
-        'SingleMuon' : 15.473761772
+        'SingleMuonReco' : 15.473761772,
+        'SingleMuon' : 32.124582352
     }
-    histograms_defs = [
-        { "obs" : "invMass", "units" : "M_{ll}", "minX" : 2.5, "maxX" : 3.5, "bins" : 60 },
-        { "obs" : "Muons[0].Pt()", "minX" : 24, "maxX" : 50, "bins" : 50 },
-        { "obs" : "leptons.Pt()", "minX" : 2, "maxX" : 15, "bins" : 50, "condition" :  "leptons.Pt() > 2.5" },
-        { "obs" : "leptons.Eta()", "minX" : 0, "maxX" : 2.4, "bins" : 50 },
-        { "obs" : "abs(leptons.Phi())", "minX" : 0, "maxX" : 3.2, "bins" : 50 },
-        
-    ] + common_histograms
+    # histograms_defs = [
+#         { "obs" : "invMass", "units" : "M_{ll}", "minX" : 2.5, "maxX" : 3.5, "bins" : 60 },
+#         { "obs" : "Muons[0].Pt()", "minX" : 24, "maxX" : 50, "bins" : 50 },
+#         { "obs" : "leptons.Pt()", "minX" : 2, "maxX" : 15, "bins" : 50, "condition" :  "leptons.Pt() > 2.5" },
+#         { "obs" : "leptons.Eta()", "minX" : 0, "maxX" : 2.4, "bins" : 50 },
+#         { "obs" : "abs(leptons.Phi())", "minX" : 0, "maxX" : 3.2, "bins" : 50 },
+#         
+#     ] + common_histograms
     
     histograms_defs = [
         { "obs" : "invMass", "units" : "M_{ll}", "minX" : 2.5, "maxX" : 3.5, "bins" : 60 },
         { "obs" : "leptons.Pt()", "units" : "Muon P_{t}", "minX" : 2, "maxX" : 24, "bins" : 60 },
         { "obs" : "abs(leptons.Phi())",  "units" : "Muon \phi", "minX" : 0, "maxX" : 3.2, "bins" : 50 },
-        { "obs" : "leptons.Eta()", "units" : "Muon \eta", "minX" : 0, "maxX" : 2.4, "bins" : 50 },
+        { "obs" : "abs(leptons.Eta())", "units" : "Muon \eta", "minX" : 0, "maxX" : 2.4, "bins" : 50 },
         { "obs" : "tracks[Muons_ti[leptonsIdx]].Pt()", "units" : "Track P_{t}", "minX" : 2, "maxX" : 24, "bins" : 60, "condition" :  "Muons_ti[leptonsIdx] > -1" },
         { "obs" : "abs(tracks[Muons_ti[leptonsIdx]].Phi())",  "units" : "Track \phi", "minX" : 0, "maxX" : 3.2, "bins" : 50, "condition" :  "Muons_ti[leptonsIdx] > -1" },
         { "obs" : "tracks[Muons_ti[leptonsIdx]].Eta()", "units" : "Track \eta", "minX" : 0, "maxX" : 2.4, "bins" : 50, "condition" :  "Muons_ti[leptonsIdx] > -1" },
@@ -428,19 +429,35 @@ class jpsi_muons(BaseParams):
         {"obs" : "tracks_trkMiniRelIso[Muons_ti[leptonsIdx]]", "units" : "MiniRelIso", "minX" : 0, "maxX" : 0.2, "bins" : 50, "condition" :  "Muons_ti[leptonsIdx] > -1" },
         {"obs" : "tracks_trkRelIso[Muons_ti[leptonsIdx]]", "units" : "RelIso", "minX" : 0, "maxX" : 0.2, "bins" : 50, "condition" :  "Muons_ti[leptonsIdx] > -1" },
         { "obs" : "Muons[0].Pt()", "units" : "P_{t}(\mu_{1})", "minX" : 25, "maxX" : 100, "bins" : 60 },
+        { "obs" : "Met", "units" : "Met", "minX" : 0, "maxX" : 250, "bins" : 50 },
+        { "obs" : "Ht", "units" : "Ht", "minX" : 0, "maxX" : 1000, "bins" : 100 },
+        { "obs" : "BTagsMedium", "units" : "BTagsMedium", "minX" : 0, "maxX" : 5, "bins" : 5 },
+        { "obs" : "NJets", "units" : "NJets", "minX" : 0, "maxX" : 5, "bins" : 5 },
+        
+        
+    ]
+    
+    histograms_defs = [
+         { "obs" : "Ht", "units" : "Ht", "minX" : 0, "maxX" : 1000, "bins" : 100 },
+         { "obs" : "madHT", "units" : "madHT", "minX" : 0, "maxX" : 400, "bins" : 100 },
+         { "obs" : "NJets", "units" : "NJets", "minX" : 0, "maxX" : 5, "bins" : 5 },
     ]
     
     cuts = [
-        {"name":"none", "title": "No Cuts", "condition" : "1"},
-        #{"name":"jpsi_invmass", "title": "jpsi", "condition" : "Muons_tightID[0] == 1 && Muons_passIso[0] == 1 && Muons[0].Pt() > 24 && Muons[0].Eta() < 2.4 && invMass > 3 && invMass < 3.2"},
-        {"name":"jpsi", "title": "jpsi", "condition" : "invMass > 3.04 && invMass < 3.18"},
+        {"name":"none", "title": "No Cuts", "condition" : "twoLeptons == 1"},
+        #{"name":"jpsi", "title": "jpsi", "condition" : "twoLeptons == 1 && invMass > 3.04 && invMass < 3.18"},
     ]
     
     bgReTagging = bgReTaggingJPsi
     bgReTaggingOrder = bgReTaggingOrderFull
-    
+
+class jpsi_muons_normalised(jpsi_muons):
     normalise = True
     no_weights = True
+    
+class jpsi_muons_reco(jpsi_muons):
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_muons_jpsi/sum/type_sum"
+    data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_muons_jpsi_reco/sum"
     
     
 class jpsi_muons_n_plot(jpsi_muons):
@@ -453,7 +470,9 @@ class jpsi_muons_n_plot(jpsi_muons):
     #histograms_defs = [
         #{ "obs" : "invMass", "units" : "M_{ll}", "minX" : 3.04, "maxX" : 3.18, "bins" : 60 },
     #]
-    histograms_defs = jpsi_muons.histograms_defs
+    histograms_defs = []
+    for histdef in jpsi_muons.histograms_defs:
+        histograms_defs.append(histdef)
     histograms_defs[0] = { "obs" : "invMass", "units" : "M_{ll}", "minX" : 3.04, "maxX" : 3.18, "bins" : 60 }
     bgReTagging = {
         "all" : "(Muons_ti[leptonsIdx] > -1 && tracks_trkRelIso[Muons_ti[leptonsIdx]] < 0.1 && tracks_dxyVtx[Muons_ti[leptonsIdx]] < 0.02 && tracks_dzVtx[Muons_ti[leptonsIdx]] < 0.05)",
@@ -494,7 +513,12 @@ class jpsi_muons_n_plot(jpsi_muons):
 #                             continue 
     
 
-default_params = jpsi_muons_n_plot
+class jpsi_muons_n_plot_normalised(jpsi_muons_n_plot):
+    normalise = True
+    no_weights = True
+    
+
+default_params = jpsi_muons
 
 
 

@@ -36,9 +36,11 @@ BG_TYPES=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_
 
 #BG_TYPES=(WJetsToLNu ZJetsToNuNu TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT)
 #BG_TYPES=(ST_s-channel_4f_leptonDecays ST_tW_antitop_5f_inclusiveDecays ST_tW_top_5f_inclusiveDecays WGToLNuG ZGTo2LG)
+#BG_TYPES=(ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays DYJetsToLL  WZZ WWZ WW WZ ZZZ ZZ)
 
 #BG_TYPES=(QCD)
 #BG_TYPES=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays WJetsToLNu ZJetsToNuNu WZZ WWZ WW WZ ZZZ ZZ)
+
 
 RARE=(WZZ WWZ ZZZ)
 DiBoson=(WZ WW ZZ)
@@ -69,6 +71,7 @@ BG_SCRIPTS="$CMS_TOOLS/bg/scripts"
 ANALYZER_PATH="$SCRIPTS_WD/analyzer_x1x2x1.py"
 #SKIMMER_PATH="$SCRIPTS_WD/skimmer_x1x2x1.py"
 SKIMMER_PATH="$SCRIPTS_WD/skimmer_x1x2x1.py"
+MINI_SKIMMER_PATH="$SCRIPTS_WD/mini_skimmer_x1x2x1.py"
 LC_SCRIPT_PATH="$SCRIPTS_WD/merge_lepton_collection.py"
 CLONE_SCRIPT="$SCRIPTS_WD/clone_tree_split.py"
 CLONE_SINGLE="$SIM_DIR/clone_sim_file_single.sh"
@@ -126,6 +129,7 @@ SKIM_BG_SIG_DILEPTON_BDT_DY_OUTPUT_DIR="$DY_OUTPUT_WD/bg/skim_dilepton_signal_bd
 SKIM_DATA_SIG_DILEPTON_BDT_SC_OUTPUT_DIR="$OUTPUT_WD/data/skim_dilepton_signal_bdt_sc"
 SKIM_DATA_SIG_DILEPTON_BDT_DY_OUTPUT_DIR="$DY_OUTPUT_WD/data/skim_dilepton_signal_bdt"
 SKIM_DATA_JPSI_MUONS_OUTPUT_DIR="$OUTPUT_WD/data/skim_muons_jpsi"
+SKIM_DATA_MINI_OUTPUT_DIR="$OUTPUT_WD/data/skim_mini"
 
 SIG_DUP_OUTPUT_DIR="$OUTPUT_WD/signal/dup"
 LEPTON_TRACK_SPLIT_DIR="$OUTPUT_WD/signal/lepton_track"

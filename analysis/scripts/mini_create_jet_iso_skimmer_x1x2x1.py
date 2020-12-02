@@ -59,21 +59,21 @@ if args.track_bdt:
 
 def main():
     
-    file = TFile(input_file, "update")
+    file = TFile(input_file, "read")
     
     c = file.Get("tEvent")
-    nentries = c.GetEntriesFast()
+    nentries = c.GetEntries()
     
     for ientry in range(nentries):
         if ientry % 100 == 0:
             print "Processing " + str(ientry) + " out of " + str(nentries)
         c.GetEntry(ientry)
         
-        var_MinDeltaPhiMetJets = analysis_ntuples.eventMinDeltaPhiMetJets25Pt2_4Eta(c.Jets, c.MET, c.METPhi)
-        var_MinDeltaPhiMhtJets = analysis_ntuples.eventMinDeltaPhiMhtJets25Pt2_4Eta(c.Jets, c.MHT, c.MHTPhi)
-        if var_MinDeltaPhiMetJets[0] < 0.4: continue
-        if c.MHT < 100: continue
-        if c.MET < 120: continue
+        # var_MinDeltaPhiMetJets = analysis_ntuples.eventMinDeltaPhiMetJets25Pt2_4Eta(c.Jets, c.MET, c.METPhi)
+#         var_MinDeltaPhiMhtJets = analysis_ntuples.eventMinDeltaPhiMhtJets25Pt2_4Eta(c.Jets, c.MHT, c.MHTPhi)
+#         if var_MinDeltaPhiMetJets[0] < 0.4: continue
+#         if c.MHT < 100: continue
+#         if c.MET < 120: continue
         
         nj, btagsDeepMedium, ljet = analysis_ntuples.eventNumberOfJets25Pt2_4Eta_DeepMedium(c.Jets, c.Jets_bJetTagDeepCSVBvsAll)
         
@@ -128,9 +128,9 @@ def main():
                             leptonsCorrJetVars[isoJets[lep]["obs"] + "_passCorrJetIso" + str(ptRange)].push_back(True)
                         else:
                             leptonsCorrJetVars[isoJets[lep]["obs"] + "_passCorrJetIso" + str(ptRange)].push_back(False)
-         
         
-        leptons, leptonsIdx, leptonsCharge, leptonFlavour, same_sign = analysis_ntuples.getTwoLeptonsAfterSelection(c.Electrons, leptonsCorrJetVars["Electrons_pass" + iso + str(ptRange)], electronsCalcObs["Electrons_deltaRLJ"], electronsObs["Electrons_charge"], muonsObs["Muons"], leptonsCorrJetVars["Muons_pass" + iso + str(ptRange)], muonsObs["Muons_mediumID"], muonsCalcObs["Muons_deltaRLJ"], muonsObs["Muons_charge"], utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], muonsObs["Muons_tightID"])
+        ll, leptonIdx, leptonCharge = analysis_ntuples.getSingleJPsiLeptonAfterSelection(24, 24, muonsObs["Muons"], leptonsCorrJetVars["Muons_pass" + iso + str(ptRange)], muonsObs["Muons_mediumID"], muonsObs["Muons_charge"], utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], muonsObs["Muons_tightID"], muonsObs["Muons_passIso"])
+        
 
 main()
 exit(0)

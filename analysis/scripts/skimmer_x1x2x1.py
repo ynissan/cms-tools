@@ -122,6 +122,9 @@ commonBranches = {
         "tEffhMetMhtRealXMht2018" :  "float",
     
         "passedMhtMet6pack" :  "bool",
+        "passedSingleMuPack" :  "bool",
+        
+        "passed2016BFilter" : "bool",
 }
 
 def main():
@@ -233,6 +236,10 @@ def main():
     
     for tracksOb in analysis_ntuples.tracksObs:
         trackObs[tracksOb] = ROOT.std.vector(eval(analysis_ntuples.tracksObs[tracksOb]))()
+        
+    tracksCalcObs = {}
+    for tracksCalcOb in analysis_ntuples.tracksCalcObs:
+        tracksCalcObs[tracksCalcOb] = ROOT.std.vector(eval(analysis_ntuples.tracksCalcObs[tracksCalcOb]))()
     
     pionsObs = {}
     for pionsOb in analysis_ntuples.pionsObs:
@@ -312,6 +319,7 @@ def main():
     tEvent.Branch('RunNum', var_RunNum,'RunNum/I')
     tEvent.Branch('LumiBlockNum', var_LumiBlockNum,'LumiBlockNum/I')
     tEvent.Branch('EvtNum', var_EvtNum,'EvtNum/L')
+    
     
     tEvent.Branch('Met', var_Met,'Met/D')
     tEvent.Branch('METPhi', var_METPhi,'METPhi/D')
@@ -405,6 +413,9 @@ def main():
     
     for tracksOb in analysis_ntuples.tracksObs:
         tEvent.Branch(tracksOb, 'std::vector<' + analysis_ntuples.tracksObs[tracksOb] + '>', trackObs[tracksOb])
+    
+    for tracksCalcOb in analysis_ntuples.tracksCalcObs:
+        tEvent.Branch(tracksCalcOb, 'std::vector<' + analysis_ntuples.tracksCalcObs[tracksCalcOb] + '>', tracksCalcObs[tracksCalcOb])
     
     for pionsOb in analysis_ntuples.pionsObs:
         tEvent.Branch(pionsOb, 'std::vector<' + analysis_ntuples.pionsObs[pionsOb] + '>', pionsObs[pionsOb])
@@ -652,7 +663,9 @@ def main():
     
         #### PRECUTS ###
         if not signal:
-            if not analysis_ntuples.passed2016BTrigger(c, data): continue
+            vars["passed2016BFilter"][0] = analysis_ntuples.passed2016BFilter(c, data)
+        else:
+            vars["passed2016BFilter"][0] = True
         
         MET = c.MET
         METPhi = c.METPhi
@@ -766,7 +779,7 @@ def main():
         nj, btagsDeepLoose, ljet = analysis_ntuples.eventNumberOfJets25Pt2_4Eta_DeepLoose(jets, jets_bJetTagDeepCSVBvsAll)
         nj, btagsDeepMedium, ljet = analysis_ntuples.eventNumberOfJets25Pt2_4Eta_DeepMedium(jets, jets_bJetTagDeepCSVBvsAll)
         
-        if ljet is None:
+        if ljet is None and not jpsi:
             #print "No ljet:",ljet 
             continue
             
@@ -814,8 +827,12 @@ def main():
         var_BTagsDeepLoose[0] = btagsDeepLoose
         var_BTagsDeepMedium[0] = btagsDeepMedium
         
-        var_LeadingJetPt[0] = jets[ljet].Pt()
-        var_LeadingJet = jets[ljet]
+        if not ljet:
+            var_LeadingJetPt[0] = -1
+            var_LeadingJet = TLorentzVector()
+        else:
+            var_LeadingJetPt[0] = jets[ljet].Pt()
+            var_LeadingJet = jets[ljet]
 
         var_MinCsv30[0], var_MaxCsv30[0] = analysis_ntuples.minMaxCsv(jets, jets_bDiscriminatorCSV, 30)
         var_MinCsv25[0], var_MaxCsv25[0] = analysis_ntuples.minMaxCsv(jets, jets_bDiscriminatorCSV, 25)
@@ -1134,13 +1151,13 @@ def main():
         tight_electrons = [ electronsObs["Electrons"][i] for i in range(len(electronsObs["Electrons"])) if analysis_ntuples.electronPassesTightSelection(i, electronsObs["Electrons"], leptonsCorrJetVars["Electrons_passCorrJetIso10"], electronsCalcObs["Electrons_deltaRLJ"]) ]
         tight_muons = [ muonsObs["Muons"][i] for i in range(len(muonsObs["Muons"])) if analysis_ntuples.muonPassesTightSelection(i, muonsObs["Muons"], muonsObs["Muons_mediumID"], leptonsCorrJetVars["Muons_passCorrJetIso10"], muonsCalcObs["Muons_deltaRLJ"]) ]
         
-        min, minCan = analysis_ntuples.minDeltaLepLeps(var_Jets[ljet], tight_electrons)
+        min, minCan = analysis_ntuples.minDeltaLepLeps(var_LeadingJet, tight_electrons)
         if minCan is None:
             var_LeadingJetMinDeltaRElectrons[0] = -1
         else:
             var_LeadingJetMinDeltaRElectrons[0] = min
             
-        min, minCan = analysis_ntuples.minDeltaLepLeps(var_Jets[ljet], tight_muons)
+        min, minCan = analysis_ntuples.minDeltaLepLeps(var_LeadingJet, tight_muons)
         if minCan is None:
             var_LeadingJetMinDeltaRMuons[0] = -1
         else:
@@ -1203,11 +1220,14 @@ def main():
                     else:
                         leptons, leptonsIdx, leptonsCharge, leptonFlavour, same_sign = analysis_ntuples.getTwoLeptonsAfterSelection(electronsObs["Electrons"], leptonsCorrJetVars["Electrons_pass" + iso + str(ptRange)], electronsCalcObs["Electrons_deltaRLJ"], electronsObs["Electrons_charge"], muonsObs["Muons"], leptonsCorrJetVars["Muons_pass" + iso + str(ptRange)], muonsObs["Muons_mediumID"], muonsCalcObs["Muons_deltaRLJ"], muonsObs["Muons_charge"], utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], muonsObs["Muons_tightID"])
                     
-                    if not jpsi_muons and leptons is None:
-                        ll, leptonIdx, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(electronsObs["Electrons"], leptonsCorrJetVars["Electrons_pass" + iso + str(ptRange)], electronsCalcObs["Electrons_deltaRLJ"], electronsObs["Electrons_charge"], muonsObs["Muons"], leptonsCorrJetVars["Muons_pass" + iso + str(ptRange)], muonsObs["Muons_mediumID"], muonsCalcObs["Muons_deltaRLJ"], muonsObs["Muons_charge"], utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], muonsObs["Muons_tightID"])
+                    if leptons is None:
+                        if jpsi_muons:
+                            ll, leptonIdx, t, ti = analysis_ntuples.getSingleJPsiLeptonAfterSelection(24, 24, muonsObs["Muons"], leptonsCorrJetVars["Muons_pass" + iso + str(ptRange)], muonsObs["Muons_mediumID"], muonsObs["Muons_charge"], trackObs["tracks"], trackObs["tracks_charge"], utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], muonsObs["Muons_tightID"], muonsObs["Muons_passIso"])
+                        else:
+                            ll, leptonIdx, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(electronsObs["Electrons"], leptonsCorrJetVars["Electrons_pass" + iso + str(ptRange)], electronsCalcObs["Electrons_deltaRLJ"], electronsObs["Electrons_charge"], muonsObs["Muons"], leptonsCorrJetVars["Muons_pass" + iso + str(ptRange)], muonsObs["Muons_mediumID"], muonsCalcObs["Muons_deltaRLJ"], muonsObs["Muons_charge"], utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], muonsObs["Muons_tightID"])
                 
                         if ll is not None:
-                            if nT > 0 and var_BTagsLoose[0] == 0 or var_BTagsMedium[0] == 0 or var_BTagsDeepLoose[0] == 0 or var_BTagsDeepMedium[0] == 0:
+                            if nT > 0 and (jpsi_muons or var_BTagsLoose[0] == 0 or var_BTagsMedium[0] == 0 or var_BTagsDeepLoose[0] == 0 or var_BTagsDeepMedium[0] == 0):
                                 var_category[0] = 1
                                 foundSingleLepton = True
                     if leptons is not None and (jpsi_muons or var_BTagsLoose[0] < 3 or var_BTagsMedium[0] < 3 or var_BTagsDeepLoose[0] < 3 or var_BTagsDeepMedium[0] < 3):
@@ -1256,8 +1276,8 @@ def main():
                             #print postfix
                             #print ientry
                             dileptonVars["mtautau" + postfix][0] = analysis_tools.Mtautau(pt, leptons[0], leptons[1])
-                            dileptonVars["deltaEtaLeadingJetDilepton" + postfix][0] = abs((leptons[0] + leptons[1]).Eta() - jets[ljet].Eta())
-                            dileptonVars["deltaPhiLeadingJetDilepton" + postfix][0] = abs((leptons[0] + leptons[1]).DeltaPhi(jets[ljet]))
+                            dileptonVars["deltaEtaLeadingJetDilepton" + postfix][0] = abs((leptons[0] + leptons[1]).Eta() - var_LeadingJet.Eta())
+                            dileptonVars["deltaPhiLeadingJetDilepton" + postfix][0] = abs((leptons[0] + leptons[1]).DeltaPhi(var_LeadingJet))
                             dileptonVars["dilepHt" + postfix][0] = analysis_ntuples.htJet25Leps(jets, leptons)
                             dileptonVars["deltaPhiMetLepton1" + postfix][0] = abs(leptons[0].DeltaPhi(pt))
                             dileptonVars["deltaPhiMetLepton2" + postfix][0] = abs(leptons[1].DeltaPhi(pt))
@@ -1358,6 +1378,26 @@ def main():
 
         afterLeptons += 1
         
+        for tracksCalcOb in analysis_ntuples.tracksCalcObs:
+            tracksCalcObs[tracksCalcOb] = ROOT.std.vector(eval(analysis_ntuples.tracksCalcObs[tracksCalcOb]))()
+        
+        trackObs["tracks"], trackObs["tracks_charge"]
+        
+        for i in range(len(trackObs["tracks"])):
+            t = trackObs["tracks"][i]
+            
+            min, minCan = analysis_ntuples.minDeltaLepLeps(trackObs["tracks"][i], electronsObs["Electrons"])
+            if min is None or min > 0.01 or electronsObs["Electrons_charge"][minCan] * trackObs["tracks_charge"][i] < 0:
+                tracksCalcObs["tracks_ei"].push_back(-1)
+            else:
+                tracksCalcObs["tracks_ei"].push_back(minCan)
+            
+            min, minCan = analysis_ntuples.minDeltaLepLeps(trackObs["tracks"][i], muonsObs["Muons"])
+            if min is None or min > 0.01 or muonsObs["Muons_charge"][minCan] * trackObs["tracks_charge"][i] < 0:
+                tracksCalcObs["tracks_mi"].push_back(-1)
+            else:
+                tracksCalcObs["tracks_mi"].push_back(minCan)
+            
         var_vetoElectronsPassIso[0] = 0 if len([ i for i in range(electronsObs["Electrons"].size()) if electronsObs["Electrons"][i].Pt() > 25 and  bool(electronsObs["Electrons_passIso"][i]) ]) == 0 else 1
         #var_vetoElectronsPassJetIso[0] = 0 if len([ i for i in range(len(var_Electrons)) if var_Electrons[i].Pt() > 25 and  bool(var_Electrons_passJetIso[i]) ]) == 0 else 1
         var_vetoElectronsMediumID[0] = 0 if len([ i for i in range(electronsObs["Electrons"].size()) if electronsObs["Electrons"][i].Pt() > 25 and  bool(electronsObs["Electrons_mediumID"][i]) ]) == 0 else 1
@@ -1403,6 +1443,9 @@ def main():
         
         for tracksOb in analysis_ntuples.tracksObs:
             tEvent.SetBranchAddress(tracksOb, trackObs[tracksOb])
+        
+        for tracksCalcOb in analysis_ntuples.tracksCalcObs:
+            tEvent.SetBranchAddress(tracksCalcOb, tracksCalcObs[tracksCalcOb])
         
         for pionsOb in analysis_ntuples.pionsObs:
             tEvent.SetBranchAddress(pionsOb, pionsObs[pionsOb])
@@ -1466,8 +1509,13 @@ def main():
             metDHt = MET / HT
 
         var_MetDHt[0] = metDHt
-        var_LeadingJetPartonFlavor[0] = jets_partonFlavor[ljet]
-        var_LeadingJetQgLikelihood[0] = jets_qgLikelihood[ljet]
+        
+        if not ljet:
+            var_LeadingJetPartonFlavor[0] = -1
+            var_LeadingJetQgLikelihood[0] = -1
+        else:
+            var_LeadingJetPartonFlavor[0] = jets_partonFlavor[ljet]
+            var_LeadingJetQgLikelihood[0] = jets_qgLikelihood[ljet]
         
         
         if not data:    
@@ -1480,6 +1528,9 @@ def main():
             vars["tEffhMetMhtRealXMht2018"][0] = tEffhMetMhtRealXMht2018.Eval(var_Mht)
             
             vars["passedMhtMet6pack"][0] = True
+            vars["passedSingleMuPack"][0] = True
+            
+            
             
             #if tree.Met < 200:
             #    print "HERE:", var_tEffhMetMhtRealXMet2016[0]
@@ -1493,6 +1544,7 @@ def main():
             vars["tEffhMetMhtRealXMht2018"][0] = 1
             
             vars["passedMhtMet6pack"][0] = analysis_ntuples.passTrig(c, "MhtMet6pack")
+            vars["passedSingleMuPack"][0] = analysis_ntuples.passTrig(c, "SingleMuon")
     
         tEvent.Fill()
 

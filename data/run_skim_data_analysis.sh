@@ -39,6 +39,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --mini)
+        MINI=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -59,6 +64,8 @@ elif [ -n "$DY" ]; then
     OUTPUT_DIR=$DY_SKIM_DATA_OUTPUT_DIR
 elif [ -n "$JPSI_MUONS" ]; then
     OUTPUT_DIR=$SKIM_DATA_JPSI_MUONS_OUTPUT_DIR
+elif [ -n "$MINI" ]; then
+    OUTPUT_DIR=$SKIM_DATA_MINI_OUTPUT_DIR
 else
     OUTPUT_DIR=$SKIM_DATA_OUTPUT_DIR
 fi
@@ -96,14 +103,14 @@ file_limit=0
 i=0
 count=0
 input_files=""
-files_per_job=20
+files_per_job=8
 
 #files_per_job=1
 
 FILE_OUTPUT="${OUTPUT_DIR}/single"
 
 DATA_PATTERN="METAOD"
-if [ -n "$DY" ] || [ -n "$JPSI_MUONS" ]; then
+if [ -n "$DY" ] || [ -n "$JPSI_MUONS" ] || [ -n "$MINI" ]; then
     DATA_PATTERN="SingleMuon"
 fi
 

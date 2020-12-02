@@ -64,6 +64,11 @@ tracksObs = {
     "tracks_trackQualityUndef" : "bool",
 }
 
+tracksCalcObs = {
+    "tracks_ei" : "int",
+    "tracks_mi" : "int"
+}
+
 pionsObs = {
     "TAPPionTracks"   : "TLorentzVector",
     "TAPPionTracks_activity" : "double",
@@ -206,34 +211,38 @@ def eventNumberOfJets25Pt2_4Eta_DeepMedium(jets, jets_bDiscriminatorCSV):
     return numberOfJets(jets, jets_bDiscriminatorCSV, 25, 2.4, BTAG_DEEP_CSV_MEDIUM)
 
 def numberOfLooseBTags(event):
-	loose = 0
-	for ijet in range(event.Jets_bDiscriminatorCSV.size()):
-		if event.Jets_bDiscriminatorCSV[ijet] > BTAG_CSV_LOOSE:
-			loose+=1
-	return loose
-	
+    loose = 0
+    for ijet in range(event.Jets_bDiscriminatorCSV.size()):
+        if event.Jets_bDiscriminatorCSV[ijet] > BTAG_CSV_LOOSE:
+            loose+=1
+    return loose
+
 def htJet25(event):
-	leps = [l for l in event.Electrons] + [m for m in event.Muons]
-	cleanJets = [ j for j in event.Jets if min(j.DeltaR(l) for l in leps) > 0.4 ]
-	objects25 = [ j for j in cleanJets if j.Pt() > 25 ] + leps
-	return sum([x.Pt() for x in objects25])
+    leps = [l for l in event.Electrons] + [m for m in event.Muons]
+    cleanJets = [ j for j in event.Jets if min(j.DeltaR(l) for l in leps) > 0.4 ]
+    objects25 = [ j for j in cleanJets if j.Pt() > 25 ] + leps
+    return sum([x.Pt() for x in objects25])
 
 def htJet25Leps(jets, leps):
-	cleanJets = [ j for j in jets if min(j.DeltaR(l) for l in leps) > 0.4 ]
-	objects25 = [ j for j in cleanJets if j.Pt() > 25 ] + leps
-	return sum([x.Pt() for x in objects25])
+    cleanJets = [ j for j in jets if min(j.DeltaR(l) for l in leps) > 0.4 ]
+    objects25 = [ j for j in cleanJets if j.Pt() > 25 ] + leps
+    return sum([x.Pt() for x in objects25])
 
 def minDeltaPhiMetJets(jets, MET, METPhi, pt, eta):
-	jets = [ j for j in jets if j.Pt() > pt and abs(j.Eta()) <= eta ]
-	metvec = TLorentzVector()
-	metvec.SetPtEtaPhiE(MET, 0, METPhi, MET)
-	return min([abs(j.DeltaPhi(metvec)) for j in jets])
-	
+    jets = [ j for j in jets if j.Pt() > pt and abs(j.Eta()) <= eta ]
+    if len(jets) == 0:
+        return -1
+    metvec = TLorentzVector()
+    metvec.SetPtEtaPhiE(MET, 0, METPhi, MET)
+    return min([abs(j.DeltaPhi(metvec)) for j in jets])
+
 def minDeltaPhiMhtJets(jets, MHT, MHTPhi, pt, eta):
-	jets = [ j for j in jets if j.Pt() > pt and abs(j.Eta()) <= eta ]
-	mhtvec = TLorentzVector()
-	mhtvec.SetPtEtaPhiE(MHT, 0, MHTPhi, MHT)
-	return min([abs(j.DeltaPhi(mhtvec)) for j in jets])
+    jets = [ j for j in jets if j.Pt() > pt and abs(j.Eta()) <= eta ]
+    if len(jets) == 0:
+        return -1
+    mhtvec = TLorentzVector()
+    mhtvec.SetPtEtaPhiE(MHT, 0, MHTPhi, MHT)
+    return min([abs(j.DeltaPhi(mhtvec)) for j in jets])
 
 def minDeltaPhiMetJets25Pt2_4Eta(event):
     return minDeltaPhiMetJets(event.Jets, event.MET, event.METPhi, 25, 2.4)
@@ -376,7 +385,7 @@ def leadingLepton(c):
             ll = v
     return ll
 
-def passed2016BTrigger(t, data=False):
+def passed2016BFilter(t, data=False):
     if not t.globalSuperTightHalo2016Filter: return False
     if not t.HBHENoiseFilter: return False    
     if not t.HBHEIsoNoiseFilter: return False
@@ -461,21 +470,61 @@ def countLeptonsAfterSelection(Electrons, Electrons_passJetIso, Electrons_deltaR
             nL += 1
     return nL
 
+def hasHighPtJpsiMuon(highPtLeptonPtThreshold, Leptons, Leptons_passIso, leptons_tightID):
+    if Leptons[0].Pt() < highPtLeptonPtThreshold or not bool(Leptons_passIso[0]) or Leptons[0].Eta() > 2.4 or not bool(leptons_tightID[0]):
+        return False
+    return True
+    
+def isleptonPassesJpsiSelection(i, lowPtLeptonPtThreshold, Leptons, Leptons_passJetIso, Leptons_mediumID, leptonLowerPt = 2, leptonLowerPtTight = False, leptons_tightID = None):
+    if Leptons[i].Pt() > lowPtLeptonPtThreshold or Leptons[i].Pt() < leptonLowerPt:
+        return False
+    if Leptons[i].Eta() > 2.4 or not bool(Leptons_passJetIso[i]):
+        return False
+    if Leptons[i].Pt() < leptonLowerPt and (leptonLowerPtTight and not bool(leptons_tightID[i])):
+        return False
+    elif not bool(Leptons_mediumID[i]):
+        return False
+    return True
+
+def getSingleJPsiLeptonAfterSelection(highPtLeptonPtThreshold, lowPtLeptonPtThreshold, Leptons, Leptons_passJetIso, Leptons_mediumID, Leptons_charge, tracks, tracks_charge, leptonLowerPt = 2, leptonLowerPtTight = False, leptons_tightID = None, Leptons_passIso = None):
+    if Leptons.size() < 2:
+        return None, None, None, None
+    if not hasHighPtJpsiMuon(highPtLeptonPtThreshold, Leptons, Leptons_passIso, leptons_tightID):
+        return None, None, None, None
+    highPtLepton = Leptons[0]
+    ll, leptonIdx, t, ti = None, None, None, None
+    found = False
+    for i in range(Leptons.size()):
+        if i == 0:
+            continue
+        if not isleptonPassesJpsiSelection(i, lowPtLeptonPtThreshold, Leptons, Leptons_passJetIso, Leptons_mediumID, leptonLowerPt, leptonLowerPtTight, leptons_tightID):
+            continue
+        
+        for j in range(len(tracks)):
+            if Leptons_charge[i] * tracks_charge[j] > 0:
+                continue
+            if (Leptons[i] + tracks[j]).M() < 2.5 or (Leptons[i] + tracks[j]).M() > 3.5:
+                continue
+            
+            ll, leptonIdx, t, ti = Leptons[i], i, tracks[j], j
+        
+            found = True
+            break
+        
+        if found:
+            break
+    
+    return ll, leptonIdx, t, ti
+
 def getTwoJPsiLeptonsAfterSelection(highPtLeptonPtThreshold, lowPtLeptonPtThreshold, Leptons, Leptons_passJetIso, Leptons_mediumID, Leptons_charge, leptonLowerPt = 2, leptonLowerPtTight = False, leptons_tightID = None, Leptons_passIso = None):
     if Leptons.size() < 3:
         return None, None, None
-    if Leptons[0].Pt() < highPtLeptonPtThreshold or not bool(Leptons_passIso[0]) or Leptons[0].Eta() > 2.4 or not bool(leptons_tightID[0]):
+    if not hasHighPtJpsiMuon(highPtLeptonPtThreshold, Leptons, Leptons_passIso, leptons_tightID):
         return None, None, None
     highPtLepton = Leptons[0]
     jpsiLeptons = []
     for i in range(Leptons.size()):
-        if Leptons[i].Pt() > lowPtLeptonPtThreshold or Leptons[i].Pt() < leptonLowerPt:
-            continue
-        if Leptons[i].Eta() > 2.4 or not bool(Leptons_passJetIso[i]):
-            continue
-        if Leptons[i].Pt() < 2 and (leptonLowerPtTight and not bool(leptons_tightID[i])):
-            continue
-        elif not bool(Leptons_mediumID[i]):
+        if not isleptonPassesJpsiSelection(i, lowPtLeptonPtThreshold, Leptons, Leptons_passJetIso, Leptons_mediumID, leptonLowerPt, leptonLowerPtTight, leptons_tightID):
             continue
         if len(jpsiLeptons) == 0:
             jpsiLeptons.append(i)

@@ -765,7 +765,7 @@ def getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=
 def madHtCheck(current_file_name, madHT):
     if (madHT>0) and \
        ("DYJetsToLL_M-50_Tune" in current_file_name and madHT>100) or \
-       ("WJetsToLNu_TuneCUETP8M1_13TeV" in current_file_name and madHT>100) or \
+       ("WJetsToLNu_TuneCUETP8M1_13TeV" in current_file_name and madHT>200) or \
        ("HT-100to200_" in current_file_name and (madHT<100 or madHT>200)) or \
        ("HT-200to300_" in current_file_name and (madHT<200 or madHT>300)) or \
        ("HT-200to400_" in current_file_name and (madHT<200 or madHT>400)) or \
