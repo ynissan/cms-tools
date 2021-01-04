@@ -99,11 +99,11 @@ executable = /bin/bash
 notification = Never
 EOM
 
-file_limit=0
+file_limit=1000
 i=0
 count=0
 input_files=""
-files_per_job=8
+files_per_job=1
 
 #files_per_job=1
 

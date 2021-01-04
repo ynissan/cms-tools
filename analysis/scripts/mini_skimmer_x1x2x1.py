@@ -118,6 +118,8 @@ def main():
                 continue
             
             for j in range(len(c.tracks)):
+                if c.tracks[j].Pt() > 24:
+                    continue
                 if c.Muons_charge[i] * c.tracks_charge[j] > 0:
                     continue
                 if (c.Muons[i] + c.tracks[j]).M() < 2.5 or (c.Muons[i] + c.tracks[j]).M() > 3.5:

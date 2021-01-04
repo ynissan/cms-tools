@@ -34,6 +34,8 @@ parser.add_argument('-bg', '--background', dest='bg', help='Background', action=
 parser.add_argument('-sc', '--same_charge', dest='sc', help='Same Charge', action='store_true')
 parser.add_argument('-dy', '--dy', dest='dy', help='Drell-Yan', action='store_true')
 parser.add_argument('-sam', '--sam', dest='sam', help='Sam Samples', action='store_true')
+parser.add_argument('-jpsi_muons', '--jpsi_muons', dest='jpsi_muons', help='JPSI Muons Skim', action='store_true')
+parser.add_argument('-jpsi_electrons', '--jpsi_electrons', dest='jpsi_electrons', help='JPSI Electrons Skim', action='store_true')
 args = parser.parse_args()
 
 
@@ -41,10 +43,20 @@ signal = args.signal
 bg = args.bg
 sc = args.sc
 
+jpsi_muons = args.jpsi_muons
+
 if args.sam:
     signal = True
 
 print "SAME CHARGE=", sc
+
+if jpsi_muons or jpsi_electrons:
+    jpsi = True
+    print "Got JPSI"
+    if jpsi_muons:
+        print "MUONS"
+    else:
+        print "ELECTRONS"
 
 input_file = None
 if args.input_file:
@@ -104,6 +116,9 @@ def fillInNonTrackInfo(c, postfix):
         #print "**********"
 
 def main():
+    
+    if jpsi:
+        utils.defaultJetIsoSetting = "NoIso"
     
     file = TFile(input_file, "update")
     
@@ -171,17 +186,18 @@ def main():
                             print "Branching", CTypeObs + postfix
                             branches[CTypeObs + postfix] = c.Branch(CTypeObs + postfix, utils.exclusiveTrackObservablesClassList[CTypeObs], exTrackVars[CTypeObs + postfix])
                             c.SetBranchAddress(CTypeObs + postfix, exTrackVars[CTypeObs + postfix])
-                for lep in ["Muons", "Electrons"]:
-                    track_bdt_weights = track_bdt + "/dataset/weights/TMVAClassification_" + lep + iso + str(ptRange) + cat + ".weights.xml"
-                    track_bdt_vars = cut_optimisation.getVariablesFromXMLWeightsFile(track_bdt_weights)
-                    track_bdt_vars_map = cut_optimisation.getVariablesMemMap(track_bdt_vars)
-                    track_bdt_specs = cut_optimisation.getSpecSpectatorFromXMLWeightsFile(track_bdt_weights)
-                    track_bdt_specs_map = cut_optimisation.getSpectatorsMemMap(track_bdt_specs)
-                    track_bdt_reader = cut_optimisation.prepareReader(track_bdt_weights, track_bdt_vars, track_bdt_vars_map, track_bdt_specs, track_bdt_specs_map)
+                if not jpsi:
+                    for lep in ["Muons", "Electrons"]:
+                        track_bdt_weights = track_bdt + "/dataset/weights/TMVAClassification_" + lep + iso + str(ptRange) + cat + ".weights.xml"
+                        track_bdt_vars = cut_optimisation.getVariablesFromXMLWeightsFile(track_bdt_weights)
+                        track_bdt_vars_map = cut_optimisation.getVariablesMemMap(track_bdt_vars)
+                        track_bdt_specs = cut_optimisation.getSpecSpectatorFromXMLWeightsFile(track_bdt_weights)
+                        track_bdt_specs_map = cut_optimisation.getSpectatorsMemMap(track_bdt_specs)
+                        track_bdt_reader = cut_optimisation.prepareReader(track_bdt_weights, track_bdt_vars, track_bdt_vars_map, track_bdt_specs, track_bdt_specs_map)
 
-                    track_bdt_vars_maps[lep + iso + str(ptRange) + cat] = track_bdt_vars_map
-                    track_bdt_specs_maps[lep + iso + str(ptRange) + cat] = track_bdt_specs_map
-                    track_bdt_readers[lep + iso + str(ptRange) + cat] = track_bdt_reader
+                        track_bdt_vars_maps[lep + iso + str(ptRange) + cat] = track_bdt_vars_map
+                        track_bdt_specs_maps[lep + iso + str(ptRange) + cat] = track_bdt_specs_map
+                        track_bdt_readers[lep + iso + str(ptRange) + cat] = track_bdt_reader
 
     print 'Analysing', nentries, "entries"
 
@@ -223,8 +239,13 @@ def main():
                 
                         exTrackVars["exclusiveTrack" + postfix][0] = 0
                         exTrackVars["trackZ" + postfix][0] = 0
-                    
-                        ll, lepIdx, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(c.Electrons, getattr(c, "Electrons_pass" + iso + str(ptRange)), c.Electrons_deltaRLJ, c.Electrons_charge, c.Muons, getattr(c, "Muons_pass" + iso + str(ptRange)), c.Muons_mediumID, c.Muons_deltaRLJ, c.Muons_charge, utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], c.Muons_tightID)
+                        
+                        ll, lepIdx, leptonCharge, leptonFlavour, t, ti = None, None, None, None, None, None
+                        
+                        if jpsi:
+                            ll, lepIdx, t, ti = analysis_ntuples.getSingleJPsiLeptonAfterSelection(24, 24, c.Muons, getattr(c, "Muons_pass" + iso + str(ptRange)), c.Muons_mediumID, c.Muons_charge, c.tracks, c.tracks_charge, utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], c.Muons_tightID, c.Muons_passIso)
+                        else:
+                            ll, lepIdx, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(c.Electrons, getattr(c, "Electrons_pass" + iso + str(ptRange)), c.Electrons_deltaRLJ, c.Electrons_charge, c.Muons, getattr(c, "Muons_pass" + iso + str(ptRange)), c.Muons_mediumID, c.Muons_deltaRLJ, c.Muons_charge, utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], c.Muons_tightID)
         
                         if ll is None:
                             # NOT TWO TRACKS
@@ -232,10 +253,14 @@ def main():
                             fillInNonTrackInfo(c, postfix)
                             #print "**** AFTER FILL ***"
                             continue
-                    
+                        
+                        if jpsi:
+                            leptonFlavour = "Muons"
+                            leptonCharge = c.Muons_charge[lepIdx]
+                        
                         if leptonCharge == 0:
                             print "WHAT?! leptonCharge=0"
-                    
+                        
                         exTrackVars["lepton_charge" + postfix][0] = leptonCharge
                         exTrackVars["exclusiveTrackLeptonFlavour" + postfix] = ROOT.std.string(leptonFlavour)
     
@@ -245,77 +270,86 @@ def main():
         
                         metvec = TLorentzVector()
                         metvec.SetPtEtaPhiE(c.Met, 0, c.METPhi, c.Met)
-        
+                        
                         highestOppositeTrackScore = None
                         secondTrackScore = None
                         secondTrack = None
                         oppositeChargeTrack = None
                         ntracks = 0
-                        for ti in range(c.tracks.size()):
-                            t = c.tracks[ti]
-                            if t.Pt() > 10:
-                                continue
-                            if t.Eta() > 2.4:
-                                continue
-                            tcharge = c.tracks_charge[ti]
-                            #Try lowering to 0!!
-            
-                            if c.tracks_trkRelIso[ti] > 0.1:
-                                continue 
-                            if c.tracks_dxyVtx[ti] > 0.02:
-                                continue
-                            if c.tracks_dzVtx[ti] > 0.05:
-                                continue
-                            if sc:
-                                if tcharge * leptonCharge < 0:
-                                    continue
-                            else:
-                                if tcharge * leptonCharge > 0:
-                                    continue
-            
-                            totalTracks +=1
-        
-                            deltaRLL = abs(t.DeltaR(ll))
-                            if deltaRLL < 0.01:
-                                continue
-                            ntracks += 1
                         
-                            track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["deltaEtaLJ"][0] = abs(t.Eta() - c.LeadingJet.Eta())
-                            track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["deltaRLJ"][0] = abs(t.DeltaR(c.LeadingJet))
-                            track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["track.Phi()"][0] = t.Phi()
-                            track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["track.Pt()"][0] = t.Pt()
-                            track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["track.Eta()"][0] = t.Eta()
+                        if not jpsi:
+                            for ti in range(c.tracks.size()):
+                                t = c.tracks[ti]
+                                if t.Pt() > 10:
+                                    continue
+                                if t.Eta() > 2.4:
+                                    continue
+                                tcharge = c.tracks_charge[ti]
+                                #Try lowering to 0!!
             
+                                if c.tracks_trkRelIso[ti] > 0.1:
+                                    continue 
+                                if c.tracks_dxyVtx[ti] > 0.02:
+                                    continue
+                                if c.tracks_dzVtx[ti] > 0.05:
+                                    continue
+                                if sc:
+                                    if tcharge * leptonCharge < 0:
+                                        continue
+                                else:
+                                    if tcharge * leptonCharge > 0:
+                                        continue
             
-                            track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["deltaEtaLL"][0] = abs(t.Eta()-ll.Eta()) 
-                            track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["deltaRLL"][0] = abs(t.DeltaR(ll))
-                            track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["mtt"][0] = analysis_tools.MT2(c.Met, c.METPhi, t)
-                            #track_bdt_vars_map["deltaRMet"][0] = abs(t.DeltaR(metvec))
-                            track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["deltaPhiMet"][0] = abs(t.DeltaPhi(metvec))
-            
-                            track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["lepton.Eta()"][0] = ll.Eta()
-                            track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["lepton.Phi()"][0] = ll.Phi()
-                            track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["lepton.Pt()"][0] = ll.Pt()
-                            track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["invMass"][0] = (t + ll).M()
-            
-            
-                            for trackVar in ['dxyVtx', 'dzVtx','trkMiniRelIso', 'trkRelIso']:
-                                val = eval("c.tracks_" + trackVar + "[" + str(ti) + "]")
-                                if val == 0:
-                                    val = 0.000000000000001
-                                track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["log(" + trackVar + ")"][0] = log(val)
-            
-                            track_tmva_value = track_bdt_readers[leptonFlavour + iso + str(ptRange) + cat].EvaluateMVA("BDT")
-            
-                            if  highestOppositeTrackScore is None or highestOppositeTrackScore < track_tmva_value:
-                                if highestOppositeTrackScore is not None:
-                                    secondTrackScore = highestOppositeTrackScore
-                                    exTrackVars["secondTrackBDT" + postfix][0] = exTrackVars["trackBDT" + postfix][0]
-                                    secondTrack = oppositeChargeTrack
-                                highestOppositeTrackScore = track_tmva_value
-                                exTrackVars["trackBDT" + postfix][0] = track_tmva_value
-                                oppositeChargeTrack = ti
+                                totalTracks +=1
         
+                                deltaRLL = abs(t.DeltaR(ll))
+                                if deltaRLL < 0.01:
+                                    continue
+                                ntracks += 1
+                        
+                                track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["deltaEtaLJ"][0] = abs(t.Eta() - c.LeadingJet.Eta())
+                                track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["deltaRLJ"][0] = abs(t.DeltaR(c.LeadingJet))
+                                track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["track.Phi()"][0] = t.Phi()
+                                track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["track.Pt()"][0] = t.Pt()
+                                track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["track.Eta()"][0] = t.Eta()
+            
+            
+                                track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["deltaEtaLL"][0] = abs(t.Eta()-ll.Eta()) 
+                                track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["deltaRLL"][0] = abs(t.DeltaR(ll))
+                                track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["mtt"][0] = analysis_tools.MT2(c.Met, c.METPhi, t)
+                                #track_bdt_vars_map["deltaRMet"][0] = abs(t.DeltaR(metvec))
+                                track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["deltaPhiMet"][0] = abs(t.DeltaPhi(metvec))
+            
+                                track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["lepton.Eta()"][0] = ll.Eta()
+                                track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["lepton.Phi()"][0] = ll.Phi()
+                                track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["lepton.Pt()"][0] = ll.Pt()
+                                track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["invMass"][0] = (t + ll).M()
+            
+            
+                                for trackVar in ['dxyVtx', 'dzVtx','trkMiniRelIso', 'trkRelIso']:
+                                    val = eval("c.tracks_" + trackVar + "[" + str(ti) + "]")
+                                    if val == 0:
+                                        val = 0.000000000000001
+                                    track_bdt_vars_maps[leptonFlavour + iso + str(ptRange) + cat]["log(" + trackVar + ")"][0] = log(val)
+            
+                                track_tmva_value = track_bdt_readers[leptonFlavour + iso + str(ptRange) + cat].EvaluateMVA("BDT")
+            
+                                if  highestOppositeTrackScore is None or highestOppositeTrackScore < track_tmva_value:
+                                    if highestOppositeTrackScore is not None:
+                                        secondTrackScore = highestOppositeTrackScore
+                                        exTrackVars["secondTrackBDT" + postfix][0] = exTrackVars["trackBDT" + postfix][0]
+                                        secondTrack = oppositeChargeTrack
+                                    highestOppositeTrackScore = track_tmva_value
+                                    exTrackVars["trackBDT" + postfix][0] = track_tmva_value
+                                    oppositeChargeTrack = ti
+                        else:
+                            highestOppositeTrackScore = 1
+                            secondTrackScore = 1
+                            secondTrack = None
+                            oppositeChargeTrack = ti
+                            ntracks = 0
+                            
+                            
                         if highestOppositeTrackScore is None:
                             fillInNonTrackInfo(c, postfix)
                             #print "2"
@@ -367,7 +401,9 @@ def main():
                             exTrackVars["secondTrack" + postfix] = c.tracks[secondTrack]
                         else:
                             exTrackVars["secondTrack" + postfix] = TLorentzVector()
-                    
+                        
+                        
+                        
                         exTrackVars["exTrack_invMass" + postfix][0] = (l1 + l2).M()
                         exTrackVars["exTrack_dileptonPt" + postfix][0] = abs((l1 + l2).Pt())
                         exTrackVars["exTrack_deltaPhi" + postfix][0] =  abs(l1.DeltaPhi(l2))

@@ -34,6 +34,7 @@ parser.add_argument('-data', '--data', dest='data', help='Data', action='store_t
 parser.add_argument('-dy', '--dy', dest='dy', help='Drell-Yan', action='store_true')
 parser.add_argument('-sc', '--same_charge', dest='sc', help='Same Charge', action='store_true')
 parser.add_argument('-sam', '--sam', dest='sam', help='Sam Samples', action='store_true')
+parser.add_argument('-jpsi_muons', '--jpsi_muons', dest='jpsi_muons', help='JPSI Muons Skim', action='store_true')
 args = parser.parse_args()
 
 print args
@@ -55,6 +56,16 @@ if args.bdt:
     
 data = args.data
 
+jpsi_muons = args.jpsi_muons
+
+if jpsi_muons or jpsi_electrons:
+    jpsi = True
+    print "Got JPSI"
+    if jpsi_muons:
+        print "MUONS"
+    else:
+        print "ELECTRONS"
+
 ######## END OF CMDLINE ARGUMENTS ########
 
 vars = {}
@@ -64,6 +75,9 @@ bdt_readers = {}
 branches = {}
 
 def main():
+    
+    if jpsi:
+        utils.defaultJetIsoSetting = "NoIso"
     
     iFile = TFile(input_file, "update")
     #hHt = iFile.Get('hHt')
@@ -110,21 +124,22 @@ def main():
                             print "Branching", DTypeObs + postfix
                             branches[DTypeObs + postfix] = tree.Branch(DTypeObs + postfix, vars[DTypeObs + postfix], DTypeObs + postfix + "/" + utils.typeTranslation[utils.exclusiveTrackPostBdtObservablesDTypesList[DTypeObs]])
                             tree.SetBranchAddress(DTypeObs + postfix, vars[DTypeObs + postfix])
-                        
-                for prefix in ["reco", "exTrack"]:
-                    for lep in ["Muons", "Electrons"]:
-                        dirname = prefix + lep + iso + cat + str(ptRange)
-                        name = prefix + lep + iso + str(ptRange) + cat
-                        bdt_weights = bdt + "/" + dirname + "/dataset/weights/TMVAClassification_" + name + ".weights.xml"
-                        bdt_vars = cut_optimisation.getVariablesFromXMLWeightsFile(bdt_weights)
-                        bdt_vars_map = cut_optimisation.getVariablesMemMap(bdt_vars)
-                        bdt_specs = cut_optimisation.getSpecSpectatorFromXMLWeightsFile(bdt_weights)
-                        bdt_specs_map = cut_optimisation.getSpectatorsMemMap(bdt_specs)
-                        bdt_reader = cut_optimisation.prepareReader(bdt_weights, bdt_vars, bdt_vars_map, bdt_specs, bdt_specs_map)
+                
+                if not jpsi:    
+                    for prefix in ["reco", "exTrack"]:
+                        for lep in ["Muons", "Electrons"]:
+                            dirname = prefix + lep + iso + cat + str(ptRange)
+                            name = prefix + lep + iso + str(ptRange) + cat
+                            bdt_weights = bdt + "/" + dirname + "/dataset/weights/TMVAClassification_" + name + ".weights.xml"
+                            bdt_vars = cut_optimisation.getVariablesFromXMLWeightsFile(bdt_weights)
+                            bdt_vars_map = cut_optimisation.getVariablesMemMap(bdt_vars)
+                            bdt_specs = cut_optimisation.getSpecSpectatorFromXMLWeightsFile(bdt_weights)
+                            bdt_specs_map = cut_optimisation.getSpectatorsMemMap(bdt_specs)
+                            bdt_reader = cut_optimisation.prepareReader(bdt_weights, bdt_vars, bdt_vars_map, bdt_specs, bdt_specs_map)
 
-                        bdt_vars_maps[prefix + lep + iso + str(ptRange) + cat] = bdt_vars_map
-                        bdt_specs_maps[prefix + lep + iso + str(ptRange) + cat] = bdt_specs_map
-                        bdt_readers[prefix + lep + iso + str(ptRange) + cat] = bdt_reader
+                            bdt_vars_maps[prefix + lep + iso + str(ptRange) + cat] = bdt_vars_map
+                            bdt_specs_maps[prefix + lep + iso + str(ptRange) + cat] = bdt_specs_map
+                            bdt_readers[prefix + lep + iso + str(ptRange) + cat] = bdt_reader
 
     print 'Analysing', nentries, "entries"
     
@@ -161,7 +176,7 @@ def main():
                             elif eval("tree.exclusiveTrack"  + postfix) == 1 and tree.BTagsDeepMedium == 0:
                                 eventPassed = True
                                 leptonFlavour = eval("tree.exclusiveTrackLeptonFlavour"  + postfix)
-                            if eventPassed:
+                            if not jpsi and eventPassed:
                                 leptonFlavour = str(leptonFlavour)
                                 name = prefix + leptonFlavour + postfix
                                 #print bdt_vars_maps[prefix + postfix]
@@ -188,10 +203,10 @@ def main():
         #    continue
                     
                     
-                            if eval("tree.exclusiveTrack"  + postfix) == 1:
+                            if not data and eval("tree.exclusiveTrack"  + postfix) == 1:
                                 gens = [i for i in range(tree.GenParticles.size())]
                                 min, minCan = analysis_ntuples.minDeltaRGenParticles(eval("tree.lepton" + postfix), gens, tree.GenParticles)
-                                #print min, m inCan
+                                #print min, minCan
                                 pdgId = tree.GenParticles_ParentId[minCan]
                                 if min > 0.05:
                                  #   print "BAD GEN LEPTON!!!"

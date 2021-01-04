@@ -471,9 +471,11 @@ def countLeptonsAfterSelection(Electrons, Electrons_passJetIso, Electrons_deltaR
     return nL
 
 def hasHighPtJpsiMuon(highPtLeptonPtThreshold, Leptons, Leptons_passIso, leptons_tightID):
-    if Leptons[0].Pt() < highPtLeptonPtThreshold or not bool(Leptons_passIso[0]) or Leptons[0].Eta() > 2.4 or not bool(leptons_tightID[0]):
-        return False
-    return True
+    for i in range(Leptons.size()):
+        if Leptons[i].Pt() < highPtLeptonPtThreshold or not bool(Leptons_passIso[i]) or Leptons[i].Eta() > 2.4 or not bool(leptons_tightID[i]):
+            continue
+        return i
+    return None
     
 def isleptonPassesJpsiSelection(i, lowPtLeptonPtThreshold, Leptons, Leptons_passJetIso, Leptons_mediumID, leptonLowerPt = 2, leptonLowerPtTight = False, leptons_tightID = None):
     if Leptons[i].Pt() > lowPtLeptonPtThreshold or Leptons[i].Pt() < leptonLowerPt:
@@ -489,9 +491,10 @@ def isleptonPassesJpsiSelection(i, lowPtLeptonPtThreshold, Leptons, Leptons_pass
 def getSingleJPsiLeptonAfterSelection(highPtLeptonPtThreshold, lowPtLeptonPtThreshold, Leptons, Leptons_passJetIso, Leptons_mediumID, Leptons_charge, tracks, tracks_charge, leptonLowerPt = 2, leptonLowerPtTight = False, leptons_tightID = None, Leptons_passIso = None):
     if Leptons.size() < 2:
         return None, None, None, None
-    if not hasHighPtJpsiMuon(highPtLeptonPtThreshold, Leptons, Leptons_passIso, leptons_tightID):
+    highPtLeptonIdx = hasHighPtJpsiMuon(highPtLeptonPtThreshold, Leptons, Leptons_passIso, leptons_tightID)
+    if highPtLeptonIdx is None:
         return None, None, None, None
-    highPtLepton = Leptons[0]
+    highPtLepton = Leptons[highPtLeptonIdx]
     ll, leptonIdx, t, ti = None, None, None, None
     found = False
     for i in range(Leptons.size()):
@@ -519,9 +522,10 @@ def getSingleJPsiLeptonAfterSelection(highPtLeptonPtThreshold, lowPtLeptonPtThre
 def getTwoJPsiLeptonsAfterSelection(highPtLeptonPtThreshold, lowPtLeptonPtThreshold, Leptons, Leptons_passJetIso, Leptons_mediumID, Leptons_charge, leptonLowerPt = 2, leptonLowerPtTight = False, leptons_tightID = None, Leptons_passIso = None):
     if Leptons.size() < 3:
         return None, None, None
-    if not hasHighPtJpsiMuon(highPtLeptonPtThreshold, Leptons, Leptons_passIso, leptons_tightID):
+    highPtLeptonIdx = hasHighPtJpsiMuon(highPtLeptonPtThreshold, Leptons, Leptons_passIso, leptons_tightID)
+    if highPtLeptonIdx is None:
         return None, None, None
-    highPtLepton = Leptons[0]
+    highPtLepton = Leptons[highPtLeptonIdx]
     jpsiLeptons = []
     for i in range(Leptons.size()):
         if not isleptonPassesJpsiSelection(i, lowPtLeptonPtThreshold, Leptons, Leptons_passJetIso, Leptons_mediumID, leptonLowerPt, leptonLowerPtTight, leptons_tightID):

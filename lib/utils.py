@@ -437,12 +437,15 @@ def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, n
             colorI = colorInx[i]
         formatHist(newHist, colorPalette[colorI], 0.35, noFillStyle, largeVersion)
         lineC = TColor.GetColor(colorPalette[colorI]["fillColor"])
-        newHist.SetMarkerStyle(colorPalette[colorI]["markerStyle"])
-            
+        
         #newHist.SetMarkerColorAlpha(colorPalette[colorI]["markerColor"], 0.9)
-        newHist.SetMarkerColorAlpha(lineC, 0.9)
+        
         if plotPoint:
+            newHist.SetMarkerColorAlpha(lineC, 1)
+            newHist.SetMarkerStyle(colorPalette[colorI]["markerStyle"])
             newHist.SetLineColor(lineC)
+        else:
+            newHist.SetMarkerColorAlpha(lineC, 0.9)
         
         newStack.Add(newHist)
         if legend is not None:

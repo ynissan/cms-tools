@@ -22,6 +22,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --jpsi_muons)
+        JPSI_MUONS=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -42,6 +47,8 @@ if [ -n "$DRELL_YAN" ]; then
     echo "GOT DY"
     echo "HERE: $@"
     INPUT_DIR=$SKIM_DY_BG_SIG_BDT_OUTPUT_DIR
+elif [ -n "$JPSI_MUONS" ]; then
+    INPUT_DIR=$JPSI_MUONS_SKIM_OUTPUT_DIR
 else
     if [ -n "$SC" ]; then
         echo "GOT SC"

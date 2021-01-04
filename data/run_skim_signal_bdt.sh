@@ -22,6 +22,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --jpsi_muons)
+        JPSI_MUONS=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -55,7 +60,13 @@ elif [ -n "$DRELL_YAN" ]; then
     echo "HERE: $@"
     OUTPUT_DIR=$SKIM_DATA_BDT_DY_OUTPUT_DIR
     INPUT_DIR=$DY_SKIM_DATA_OUTPUT_DIR
+elif [ -n "$JPSI_MUONS" ]; then
+    echo "GOT DY"
+    echo "HERE: $@"
+    INPUT_DIR=$SKIM_DATA_JPSI_MUONS_OUTPUT_DIR
 fi
+
+
 
 echo $OUTPUT_DIR
 #check output directory
@@ -75,37 +86,37 @@ for sim in $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
     echo $sim
     filename=$(basename $sim)
     echo $filename
-    if [ ! -d "$OUTPUT_DIR/$filename" ]; then
-      mkdir $OUTPUT_DIR/$filename
-    fi
-
-    #check output directory
-    if [ ! -d "$OUTPUT_DIR/$filename/single" ]; then
-      mkdir "$OUTPUT_DIR/$filename/single"
-    fi
-
-    if [ ! -d "$OUTPUT_DIR/$filename/stdout" ]; then
-      mkdir "$OUTPUT_DIR/$filename/stdout" 
-    fi
-
-    if [ ! -d "$OUTPUT_DIR/$filename/stderr" ]; then
-      mkdir "$OUTPUT_DIR/$filename/stderr"
-    fi
+    # if [ ! -d "$OUTPUT_DIR/$filename" ]; then
+#       mkdir $OUTPUT_DIR/$filename
+#     fi
+# 
+#     #check output directory
+#     if [ ! -d "$OUTPUT_DIR/$filename/single" ]; then
+#       mkdir "$OUTPUT_DIR/$filename/single"
+#     fi
+# 
+#     if [ ! -d "$OUTPUT_DIR/$filename/stdout" ]; then
+#       mkdir "$OUTPUT_DIR/$filename/stdout" 
+#     fi
+# 
+#     if [ ! -d "$OUTPUT_DIR/$filename/stderr" ]; then
+#       mkdir "$OUTPUT_DIR/$filename/stderr"
+#     fi
 
     #for bg_file in $SKIM_OUTPUT_DIR/sum/type_sum/*ZJetsToNuNu_HT-100To200*; do
     for data_file in $INPUT_DIR/sum/*; do
         data_file_name=$(basename $data_file .root)
-        out_file=${OUTPUT_DIR}/$filename/single/${data_file_name}.root
-        if [ -f "$out_file" ]; then
-            echo "$out_file exist. Skipping..."
-            continue
-        fi
+        # out_file=${OUTPUT_DIR}/$filename/single/${data_file_name}.root
+#         if [ -f "$out_file" ]; then
+#             echo "$out_file exist. Skipping..."
+#             continue
+#         fi
         echo "Will run:"
-        echo $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_univ_bdt_track_bdt.py -i $data_file -o $out_file -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@
+        echo $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -i $data_file -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename $@
 cat << EOM >> $output_file
-arguments = $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_univ_bdt_track_bdt.py -i $data_file -o $out_file -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@
-error = ${OUTPUT_DIR}/$filename/stderr/${data_file_name}.err
-output = ${OUTPUT_DIR}/$filename/stdout/${data_file_name}.output
+arguments = $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -i $data_file -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename $@
+error = ${INPUT_DIR}/stderr/${data_file_name}_track_bdt.err
+output = ${INPUT_DIR}/stdout/${data_file_name}_track_bdt.output
 Queue
 EOM
     done
