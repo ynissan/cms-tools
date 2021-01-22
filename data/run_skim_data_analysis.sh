@@ -44,6 +44,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --master)
+        MASTER=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -66,6 +71,8 @@ elif [ -n "$JPSI_MUONS" ]; then
     OUTPUT_DIR=$SKIM_DATA_JPSI_MUONS_OUTPUT_DIR
 elif [ -n "$MINI" ]; then
     OUTPUT_DIR=$SKIM_DATA_MINI_OUTPUT_DIR
+elif [ -n "$MASTER" ]; then
+    OUTPUT_DIR=$SKIM_DATA_MASTER_OUTPUT_DIR
 else
     OUTPUT_DIR=$SKIM_DATA_OUTPUT_DIR
 fi
@@ -99,18 +106,18 @@ executable = /bin/bash
 notification = Never
 EOM
 
-file_limit=1000
+file_limit=0
 i=0
 count=0
 input_files=""
-files_per_job=1
+files_per_job=5
 
 #files_per_job=1
 
 FILE_OUTPUT="${OUTPUT_DIR}/single"
 
 DATA_PATTERN="METAOD"
-if [ -n "$DY" ] || [ -n "$JPSI_MUONS" ] || [ -n "$MINI" ]; then
+if [ -n "$DY" ] || [ -n "$JPSI_MUONS" ] || [ -n "$MINI" ] || [ -n "$MASTER" ]; then
     DATA_PATTERN="SingleMuon"
 fi
 

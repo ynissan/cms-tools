@@ -2,10 +2,36 @@
 
 . "$CMSSW_BASE/src/cms-tools/lib/def.sh"
 
-shopt -s nullglob 
-shopt -s expand_aliases
+#---------- GET OPTIONS ------------
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
 
+    case $key in
+        --jpsi)
+        JPSI=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
+        *)    # unknown option
+        POSITIONAL+=("$1") # save it in an array for later
+        shift # past argument
+        ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+#---------- END OPTIONS ------------
+
+INPUT_DIR=$SKIM_SIG_OUTPUT_DIR/sum
 OUTPUT_DIR=$LEPTON_TRACK_SPLIT_DIR
+COMMAND=$LEPTON_TRACK_DIR/split_sig_bg_tracks.py
+
+if [ -n "$JPSI" ]; then
+    INPUT_DIR=$SKIM_MASTER_OUTPUT_DIR/sum/type_sum
+    OUTPUT_DIR=$SPLIT_JPSI_MASTER_OUTPUT_DIR
+    COMMAND=$LEPTON_TRACK_DIR/split_jpsi_events.py
+fi
 
 echo "output dir:" $OUTPUT_DIR
 
@@ -38,15 +64,15 @@ executable = /bin/bash
 notification = Never
 EOM
 
-for f in /afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/*; do
-	filename=$(basename $f .root)
-	if [ -f $OUTPUT_DIR/single/${filename}_sig.root ] && [ -f $OUTPUT_DIR/single/${filename}_bg.root ]; then
+for f in $INPUT_DIR/*; do
+    filename=$(basename $f .root)
+    if [ -f $OUTPUT_DIR/single/${filename}_sig.root ] && [ -f $OUTPUT_DIR/single/${filename}_bg.root ]; then
         echo "$name exist. Skipping..."
         continue
     fi
-	echo "Will run:"
-	cmd="$CONDOR_WRAPPER $LEPTON_TRACK_DIR/split_sig_bg_tracks.py -i $f -o  $OUTPUT_DIR/single/${filename}"
-	echo $cmd
+    echo "Will run:"
+    cmd="$CONDOR_WRAPPER $COMMAND -i $f -o  $OUTPUT_DIR/single/${filename}"
+    echo $cmd
 cat << EOM >> $output_file
 arguments = $cmd
 error = ${OUTPUT_DIR}/stderr/${filename}.err

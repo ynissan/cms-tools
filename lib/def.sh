@@ -41,6 +41,7 @@ BG_TYPES=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_
 #BG_TYPES=(QCD)
 #BG_TYPES=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays WJetsToLNu ZJetsToNuNu WZZ WWZ WW WZ ZZZ ZZ)
 
+#BG_TYPES=(WZZ)
 
 RARE=(WZZ WWZ ZZZ)
 DiBoson=(WZ WW ZZ)
@@ -71,6 +72,7 @@ BG_SCRIPTS="$CMS_TOOLS/bg/scripts"
 ANALYZER_PATH="$SCRIPTS_WD/analyzer_x1x2x1.py"
 #SKIMMER_PATH="$SCRIPTS_WD/skimmer_x1x2x1.py"
 SKIMMER_PATH="$SCRIPTS_WD/skimmer_x1x2x1.py"
+MASTER_SKIMMER_PATH="$SCRIPTS_WD/skimmer_x1x2x1_master.py"
 MINI_SKIMMER_PATH="$SCRIPTS_WD/mini_skimmer_x1x2x1.py"
 LC_SCRIPT_PATH="$SCRIPTS_WD/merge_lepton_collection.py"
 CLONE_SCRIPT="$SCRIPTS_WD/clone_tree_split.py"
@@ -85,6 +87,8 @@ DATA_DIR="$CMS_TOOLS/data"
 BG_DIR="$CMS_TOOLS/bg"
 BG_HIST_DIR="$OUTPUT_WD/bg/hist"
 SKIM_OUTPUT_DIR="$OUTPUT_WD/bg/skim"
+SKIM_MASTER_OUTPUT_DIR="$OUTPUT_WD/bg/skim_master"
+SKIM_Z_PEAK_OUTPUT_DIR="$OUTPUT_WD/bg/skim_z"
 TWO_LEPTONS_SKIM_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/bg/skim"
 NLP_SKIM_OUTPUT_DIR="$OUTPUT_WD/bg/skim_nlp"
 JPSI_MUONS_SKIM_OUTPUT_DIR="$OUTPUT_WD/bg/skim_muons_jpsi"
@@ -130,9 +134,14 @@ SKIM_DATA_SIG_DILEPTON_BDT_SC_OUTPUT_DIR="$OUTPUT_WD/data/skim_dilepton_signal_b
 SKIM_DATA_SIG_DILEPTON_BDT_DY_OUTPUT_DIR="$DY_OUTPUT_WD/data/skim_dilepton_signal_bdt"
 SKIM_DATA_JPSI_MUONS_OUTPUT_DIR="$OUTPUT_WD/data/skim_muons_jpsi"
 SKIM_DATA_MINI_OUTPUT_DIR="$OUTPUT_WD/data/skim_mini"
+SKIM_DATA_MASTER_OUTPUT_DIR="$OUTPUT_WD/data/skim_master"
+SKIM_DATA_Z_PEAK_OUTPUT_DIR="$OUTPUT_WD/data/skim_z"
 
 SIG_DUP_OUTPUT_DIR="$OUTPUT_WD/signal/dup"
 LEPTON_TRACK_SPLIT_DIR="$OUTPUT_WD/signal/lepton_track"
+
+SPLIT_JPSI_MASTER_OUTPUT_DIR="$SKIM_MASTER_OUTPUT_DIR/split"
+
 RGS_DIR="/afs/desy.de/user/n/nissanuv/cms-tools/analysis/cut_optimisation/rgs"
 RESUMMINO_BIN="/afs/desy.de/user/n/nissanuv/local/bin/resummino"
 DILEPTON_BDT_DIR="$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt"

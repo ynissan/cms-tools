@@ -43,12 +43,17 @@ module use -a /afs/desy.de/group/cms/modulefiles/
 module load cmssw
 cmsenv
 
+BDT_DIR=$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt
+COMMAND=$SCRIPTS_WD/skimmer_x1x2x1_dilepton_bdt.py
+
 if [ -n "$DRELL_YAN" ]; then
     echo "GOT DY"
     echo "HERE: $@"
     INPUT_DIR=$SKIM_DY_BG_SIG_BDT_OUTPUT_DIR
 elif [ -n "$JPSI_MUONS" ]; then
-    INPUT_DIR=$JPSI_MUONS_SKIM_OUTPUT_DIR
+    INPUT_DIR=$SKIM_MASTER_OUTPUT_DIR
+    BDT_DIR=$SKIM_MASTER_OUTPUT_DIR/split/tmva
+    COMMAND=$SCRIPTS_WD/skimmer_jpsi_bdt.py
 else
     if [ -n "$SC" ]; then
         echo "GOT SC"
@@ -58,8 +63,6 @@ else
         INPUT_DIR=$SKIM_OUTPUT_DIR
     fi
 fi
-
-BDT_DIR=$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt
 
 echo INPUT_DIR=$INPUT_DIR
 echo BDT_DIR=$BDT_DIR
@@ -76,7 +79,7 @@ notification = Never
 EOM
 
 for bg_file in $INPUT_DIR/sum/type_sum/*; do
-    cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_dilepton_bdt.py -i $bg_file -bdt $BDT_DIR -bg $@"
+    cmd="$CONDOR_WRAPPER $COMMAND -i $bg_file -bdt $BDT_DIR -bg $@"
     bg_file_name=$(basename $bg_file .root)
     echo $cmd
     # echo INPUT_DIR = $INPUT_DIR

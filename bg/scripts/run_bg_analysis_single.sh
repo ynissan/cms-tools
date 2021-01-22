@@ -73,6 +73,16 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --master)
+        MASTER=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
+        --z_peak)
+        Z_PEAK=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -92,7 +102,13 @@ fi
 SCRIPT_PATH=$ANALYZER_PATH
 if [ -n "$SKIM" ]; then
     SCRIPT_PATH=$SKIMMER_PATH
-    if [ -n "$TWO_LEPTONS" ]; then
+    if [ -n "$MASTER" ]; then
+        SCRIPT_PATH=$MASTER_SKIMMER_PATH
+        OUTPUT_DIR=$SKIM_MASTER_OUTPUT_DIR
+    elif [ -n "$Z_PEAK" ]; then
+        SCRIPT_PATH=$MASTER_SKIMMER_PATH
+        OUTPUT_DIR=$SKIM_Z_PEAK_OUTPUT_DIR
+    elif [ -n "$TWO_LEPTONS" ]; then
         if [ -n "$SAME_SIGN" ]; then
             OUTPUT_DIR=$TWO_LEPTONS_SAME_SIGN_SKIM_OUTPUT_DIR
         else

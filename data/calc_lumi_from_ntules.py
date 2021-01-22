@@ -30,6 +30,7 @@ for f in data_files:
     print i, "/", len(data_files)
     print "***"
     c = TChain('TreeMaker2/PreSelection')
+    c = TChain('tEvent')
     c.Add(f)
     
     nentries = c.GetEntries()

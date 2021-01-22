@@ -267,7 +267,8 @@ leptonIsolationCategories = {
 typeTranslation = {
     "float" : "D",
     "bool" : "O",
-    "int" : "I"
+    "int" : "I",
+    "double" : "D"
 }
 
 tl = TLatex()
@@ -732,7 +733,7 @@ def getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=
         return None
     binsStr = None
     
-    #print "Getting", name, "cond:", condition
+    #print "Getting", name, "cond:", condition, "minX", minX, "maxX", maxX, "overflow", overflow
     
     # if tmpName == "hsqrt":
 #         letters = string.ascii_lowercase

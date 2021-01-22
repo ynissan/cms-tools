@@ -32,6 +32,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --master)
+        MASTER=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -60,6 +65,10 @@ elif [ -n "$JPSI_MUONS" ]; then
     pattern="SingleMuonAOD_"
     INPUT_DIR=$SKIM_DATA_JPSI_MUONS_OUTPUT_DIR/single
     OUTPUT_DIR=$SKIM_DATA_JPSI_MUONS_OUTPUT_DIR/sum
+elif [ -n "$MASTER" ]; then
+    pattern="SingleMuonAOD_"
+    INPUT_DIR=$SKIM_DATA_MASTER_OUTPUT_DIR/single
+    OUTPUT_DIR=$SKIM_DATA_MASTER_OUTPUT_DIR/sum
 fi
 
 

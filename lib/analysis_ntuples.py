@@ -26,6 +26,81 @@ triggerIndeces['MhtMet6pack'] = [124,109,110,111,112,114,115,116]#123
 triggerIndeces['SingleMuon'] = [49,50,65]
 triggerIndeces['SingleElectron'] = [36,37,39,40]
 
+commonFlatObs = {
+    "RunNum" : "int",
+    "LumiBlockNum" : "int",
+    "EvtNum" : "float",
+    "MET" : "float",
+    "METPhi" : "float",
+    "MT2" : "float",
+    "HT" : "float",
+    "MHT" : "float",
+    "MHTPhi" : "float",
+}
+
+bgFlatObs = {
+    "madHT" : "float",
+    "puWeight" : "float",
+    "CrossSection" : "float",
+}
+
+filtersObs = {
+    "globalSuperTightHalo2016Filter" : "int",
+    "globalTightHalo2016Filter" : "int",
+    "HBHENoiseFilter" : "int",    
+    "HBHEIsoNoiseFilter" : "int",
+    "eeBadScFilter" : "int",      
+    "BadChargedCandidateFilter" : "int",
+    "BadPFMuonFilter" : "int",
+    "CSCTightHaloFilter" : "int", 
+    "EcalDeadCellTriggerPrimitiveFilter" : "int",
+    #"ecalBadCalibReducedExtraFilter" : "int",
+    #"ecalBadCalibReducedFilter" : "int",
+    "ecalBadCalibFilter" : "int",
+    "PrimaryVertexFilter" : "int"
+}
+
+commonCalcFlatObs = {
+    "BranchingRatio" : "float",
+    "NJets" : "int",
+    "BTagsLoose" : "int",
+    "BTagsMedium" : "int",
+    "BTagsDeepLoose" : "int",
+    "BTagsDeepMedium" : "int",
+    "MetDHt" : "float",
+    "Mt2" : "float",
+    "NL" : "int",
+}
+
+genParticlesObs = {
+    "GenParticles" : "TLorentzVector",
+    "GenParticles_ParentId" : "int",
+    "GenParticles_ParentIdx" : "int",
+    "GenParticles_PdgId" : "int",
+    "GenParticles_Status" : "int",
+}
+
+
+jetsObs = {
+    "Jets" : "TLorentzVector",
+    "Jets_bDiscriminatorCSV" : "double",
+    "Jets_bJetTagDeepCSVBvsAll" : "double",
+    "Jets_electronEnergyFraction" : "double",
+    "Jets_muonEnergyFraction" : "double",
+    "Jets_muonMultiplicity" : "int",
+    "Jets_multiplicity" : "int",
+    "Jets_electronMultiplicity" : "int",
+    "Jets_partonFlavor" : "int",
+    "Jets_qgLikelihood" : "double"
+}
+
+triggerObs = {
+    "TriggerNames" : "string",
+    "TriggerPass" : "int",
+    "TriggerPrescales" : "int",
+    "TriggerVersion" : "int",
+}
+
 tracksObs = {
     "tracks"          : "TLorentzVector",
     "tracks_charge"   : "int",
@@ -130,6 +205,10 @@ muonsObs = {
     "Muons_MiniIso" : "double",
     "Muons_MT2Activity" : "double",
     "Muons_MTW" : "double",
+}
+
+origMuonsObs = {
+    "Muons_orig" : "TLorentzVector",
 }
 
 muonsCalcObs = {
@@ -470,6 +549,8 @@ def countLeptonsAfterSelection(Electrons, Electrons_passJetIso, Electrons_deltaR
             nL += 1
     return nL
 
+#{"name":"none", "title": "No Cuts", "condition" : "exclusiveTrack == 1 && Ht > 200 && passedSingleMuPack == 1 && Muons_tightID[leptonIdx] == 1 && lepton.Pt() > 10 && track.Pt() < 25 && Muons[0].Pt() < 100"},
+
 def hasHighPtJpsiMuon(highPtLeptonPtThreshold, Leptons, Leptons_passIso, leptons_tightID):
     for i in range(Leptons.size()):
         if Leptons[i].Pt() < highPtLeptonPtThreshold or not bool(Leptons_passIso[i]) or Leptons[i].Eta() > 2.4 or not bool(leptons_tightID[i]):
@@ -487,6 +568,27 @@ def isleptonPassesJpsiSelection(i, lowPtLeptonPtThreshold, Leptons, Leptons_pass
     elif not bool(Leptons_mediumID[i]):
         return False
     return True
+
+def isleptonPassesJpsiTagSelection(i, leptonLowerPt, Leptons, Leptons_passIso, Leptons_mediumID):
+    if Leptons[i].Pt() < leptonLowerPt or Leptons[i].Eta() > 2.4 or not bool(Leptons_mediumID[i]):
+        return False
+    return True
+
+def isTrackPassesProbeJpsiSelection(tagI, probeI, probeLowerPt, probeHigherPt, Leptons, Leptons_charge, tracks, tracks_charge, lowEdge = 2.0, highEdge = 4.0):
+    if tracks[probeI].Pt() < probeLowerPt or tracks[probeI].Pt() > probeHigherPt:
+        return False
+    if Leptons_charge[tagI] * tracks_charge[probeI] > 0:
+        return False    
+    
+    mTrack = TLorentzVector()
+    track = tracks[probeI]
+    mTrack.SetXYZM(track.X(), track.Y(), track.Z(), 0.1057)
+    invMass = (Leptons[tagI] + mTrack).M()
+    if invMass < lowEdge or invMass > highEdge:
+        return False
+    #print "invMass", invMass, "lowEdge", lowEdge, "highEdge", highEdge
+    return True
+    
 
 def getSingleJPsiLeptonAfterSelection(highPtLeptonPtThreshold, lowPtLeptonPtThreshold, Leptons, Leptons_passJetIso, Leptons_mediumID, Leptons_charge, tracks, tracks_charge, leptonLowerPt = 2, leptonLowerPtTight = False, leptons_tightID = None, Leptons_passIso = None):
     if Leptons.size() < 2:

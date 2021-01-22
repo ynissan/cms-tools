@@ -55,6 +55,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --master)
+        MASTER=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -77,6 +82,9 @@ elif [ -n "$JPSI_MUONS" ]; then
 elif [ -n "$MINI" ]; then
     OUTPUT_DIR=$SKIM_DATA_MINI_OUTPUT_DIR
     SCRIPT_PATH=$MINI_SKIMMER_PATH
+elif [ -n "$MASTER" ]; then
+    OUTPUT_DIR=$SKIM_DATA_MASTER_OUTPUT_DIR
+    SCRIPT_PATH=$MASTER_SKIMMER_PATH
 else
     OUTPUT_DIR=$SKIM_DATA_OUTPUT_DIR
 fi

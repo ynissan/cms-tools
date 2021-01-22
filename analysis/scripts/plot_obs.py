@@ -99,6 +99,21 @@ def funcFullModel(x,par):
     #print x[0], (x[0]-par[1])*(x[0]-par[1]), (2*par[2]*par[2])
     return par[0]*TMath.Exp(-(x[0]-par[1])*(x[0]-par[1])/(2*par[2]*par[2]))+par[3]+par[4]*x[0]
 
+def funcDoubleGaussian(x,par):
+    return par[0]*TMath.Exp(-(x[0]-par[1])*(x[0]-par[1])/(2*par[2]*par[2])) + par[3]*TMath.Exp(-(x[0]-par[1])*(x[0]-par[1])/(2*par[4]*par[4]))
+
+# 7 params
+def funcFullModelDoubleGaussian(x,par):
+    #print "HERE", x[0], par[0], par[1], par[2], par[3], par[4]
+    #print x[0], (x[0]-par[1])*(x[0]-par[1]), (2*par[2]*par[2])
+    return par[0]*TMath.Exp(-(x[0]-par[1])*(x[0]-par[1])/(2*par[2]*par[2]))+ par[3]*TMath.Exp(-(x[0]-par[1])*(x[0]-par[1])/(2*par[4]*par[4])) + par[5]+par[6]*x[0]
+
+def funcFullModelDoubleGaussianQuadratic(x,par):
+    #print "HERE", x[0], par[0], par[1], par[2], par[3], par[4]
+    #print x[0], (x[0]-par[1])*(x[0]-par[1]), (2*par[2]*par[2])
+    return par[0]*TMath.Exp(-(x[0]-par[1])*(x[0]-par[1])/(2*par[2]*par[2]))+ par[3]*TMath.Exp(-(x[0]-par[1])*(x[0]-par[1])/(2*par[4]*par[4])) + par[5]+par[6]*x[0] + par[7]*x[0]*x[0] + par[8]*x[0]*x[0]*x[0] + par[9]*x[0]*x[0]*x[0]*x[0]
+
+
 def funcFullModelQuadratic(x,par):
     return par[0]*TMath.Exp(-(x[0]-par[1])*(x[0]-par[1])/(2*par[2]*par[2]))+par[3]+par[4]*x[0] + par[5]*x[0]*x[0]
 
@@ -109,12 +124,12 @@ def funcFullModelLorentzian(x,par):
     return (0.5*par[0]*par[1]/TMath.Pi()) / TMath.Max( 1.e-10,(x[0]-par[2])*(x[0]-par[2]) + .25*par[1]*par[1]) +par[3]+par[4]*x[0]
 
 def funcBackgroundQuadratic(x,par):
-    return par[0]+par[1]*x[0]+par[2]*x[0]*x[0]
+    return par[0]+par[1]*x[0]+par[2]*x[0]*x[0] + par[3]*x[0]*x[0]*x[0] + par[4]*x[0]*x[0]*x[0]*x[0]
 
 def funcFullModelLorentzianQuadratic(x,par):
     return (0.5*par[0]*par[1]/TMath.Pi()) / TMath.Max( 1.e-10,(x[0]-par[2])*(x[0]-par[2]) + .25*par[1]*par[1]) +par[3]+par[4]*x[0] + par[5]*x[0]*x[0]
 
-  
+
 
 def styleHist(hist, onlyY = False):
     hist.GetYaxis().SetTitleSize(10);
@@ -133,7 +148,6 @@ def styleHist(hist, onlyY = False):
 def createPlots(rootfiles, type, histograms, weight=1):
     print "Processing "
     print rootfiles
-    lumiSecs = LumiSectMap()
     
     for f in rootfiles:
         print f
@@ -142,11 +156,7 @@ def createPlots(rootfiles, type, histograms, weight=1):
             continue
         rootFile = TFile(f)
         c = rootFile.Get('tEvent')
-        if type == "data":
-            lumis = rootFile.Get('lumiSecs')
-            col = TList()
-            col.Add(lumis)
-            lumiSecs.Merge(col)
+
         nentries = c.GetEntries()
         print 'Analysing', nentries, "entries"
         for ientry in range(nentries):
@@ -177,24 +187,12 @@ def createPlots(rootfiles, type, histograms, weight=1):
                     else:
                         hist.Fill(eval('c.' + hist_def["obs"]), 1)
         rootFile.Close()
-    
-    if type == "data":
-        if plot_par.calculatedLumi.get('MET') is not None:
-            print "Found lumi=" + str(plot_par.calculatedLumi['MET'])
-            return plot_par.calculatedLumi['MET']
-        else:
-            return utils.calculateLumiFromLumiSecs(lumiSecs)
-        #return 3.939170474
-        #return 35.574589421
-        #return 35.493718415
-        #return 27.360953311
-        return 27.677964176
 
 
 def createPlotsFast(rootfiles, type, histograms, weight=1, prefix="", condition="", no_weights = False):
     print "Processing "
     print rootfiles
-    #lumiSecs = LumiSectMap()
+
     i = 0
     for f in rootfiles:
         if os.path.basename(f) in plot_par.ignore_bg_files:
@@ -206,12 +204,7 @@ def createPlotsFast(rootfiles, type, histograms, weight=1, prefix="", condition=
         i += 1
         print f
         c = rootFile.Get('tEvent')
-        # if type == "data":
-#             lumis = rootFile.Get('lumiSecs')
-#             col = TList()
-#             col.Add(lumis)
-#             lumiSecs.Merge(col)
-        
+
         for cut in plot_par.cuts:
             for hist_def in plot_par.histograms_defs:
                 if prefix != "":
@@ -230,7 +223,10 @@ def createPlotsFast(rootfiles, type, histograms, weight=1, prefix="", condition=
                 if no_weights:
                     drawString = " ( " + conditionStr + " )"
                 else:
-                    drawString = plot_par.weightString[plot_par.plot_kind] + " * " + ((str(weight) + "* Weight *") if type != "data" else "") + " ( " + conditionStr + " )"
+                    drawString = plot_par.weightString[plot_par.plot_kind] + " * " + ((str(weight) + " * ") if type != "data" else "") + " ( " + conditionStr + " )"
+                
+                #print "drawString", drawString
+                #print "conditionStr", conditionStr
                 
                 formula = hist_def.get("formula") if hist_def.get("formula") is not None else hist_def.get("obs")
                 
@@ -246,9 +242,7 @@ def createPlotsFast(rootfiles, type, histograms, weight=1, prefix="", condition=
                 hist.GetXaxis().SetTitle("")
                 hist.SetTitle("")
                 hist.Sumw2()
-                #if type != "data":
-                #    c.GetEntry(0)
-                #    hist.Scale(c.Weight * weight)
+
                 if histograms.get(histName) is None:
                     histograms[histName] = hist
                 else:
@@ -257,21 +251,6 @@ def createPlotsFast(rootfiles, type, histograms, weight=1, prefix="", condition=
         
         rootFile.Close()
     
-    if type == "data":
-        return plot_par.calculatedLumi.get(plot_par.plot_kind)
-        #return plot_par.calculatedLumi.get('SingleMuon')
-        
-        if plot_par.calculatedLumi.get('MET') is not None:
-            print "Found lumi=" + str(plot_par.calculatedLumi['MET'])
-            return plot_par.calculatedLumi['MET']
-        else:
-            return utils.calculateLumiFromLumiSecs(lumiSecs)
-        #Z PEAK
-        #return 27.677786572
-        #Norman
-        return 35.579533154
-        #return utils.calculateLumiFromLumiSecs(lumiSecs)
-
 def createRandomHist(name):
     h = utils.UOFlowTH1F(name, "", 100, -5, 5)
     h.Sumw2()
@@ -350,6 +329,34 @@ def plotRatio(c1, pad, memory, dataHist, newBgHist, hist_def, title = "Data / BG
     memory.append(line)
     c1.Modified()
 
+def createSumTypes(sumTypes):
+    if plot_par.plot_bg:
+        if bg_retag:
+            for type in plot_par.bgReTagging:
+                sumTypes[type] = {}
+        else:
+            bg_files = glob(plot_par.bg_dir + "/*")
+    
+            for f in bg_files: 
+                filename = os.path.basename(f).split(".")[0]
+                types = filename.split("_")
+                type = None
+        
+                #if types[0] == "WJetsToLNu" or types[0] == "ZJetsToNuNu":
+                #    continue
+        
+                if types[0] == "TTJets":
+                    type = "_".join(types[0:2])
+                elif types[0] == "ST":
+                    type = "_".join(types[0:3])
+                else:
+                    type = types[0]
+                if type not in sumTypes:
+                    sumTypes[type] = {}
+                #sumTypes[types[0]][types[1]] = True
+
+        print sumTypes
+
 def createAllHistograms(histograms, sumTypes):
     
     foundReqObs = False
@@ -377,32 +384,6 @@ def createAllHistograms(histograms, sumTypes):
     if not plot_par.plot_rand:
         c2 = TCanvas("c2")
         c2.cd()
-        if plot_par.plot_bg:
-            if bg_retag:
-                for type in plot_par.bgReTagging:
-                    sumTypes[type] = {}
-            else:
-                bg_files = glob(plot_par.bg_dir + "/*")
-        
-                for f in bg_files: 
-                    filename = os.path.basename(f).split(".")[0]
-                    types = filename.split("_")
-                    type = None
-            
-                    #if types[0] == "WJetsToLNu" or types[0] == "ZJetsToNuNu":
-                    #    continue
-            
-                    if types[0] == "TTJets":
-                        type = "_".join(types[0:2])
-                    elif types[0] == "ST":
-                        type = "_".join(types[0:3])
-                    else:
-                        type = types[0]
-                    if type not in sumTypes:
-                        sumTypes[type] = {}
-                    #sumTypes[types[0]][types[1]] = True
-
-            print sumTypes
         
         if not plot_par.plot_fast:
             print "NOT PLOTTING FAST"
@@ -422,22 +403,24 @@ def createAllHistograms(histograms, sumTypes):
                         for type in utils.compoundTypes:
                             bgName = baseName + "_" + type
                             histograms[bgName] = utils.UOFlowTH1F(bgName, "", hist_def["bins"], hist_def["minX"], hist_def["maxX"])
-    
-        weight=0
-        global calculated_lumi
+        
         if plot_par.plot_data:
             dataFiles = glob(plot_par.data_dir + "/*")
             if plot_par.plot_fast:
-                calculated_lumi = createPlotsFast(dataFiles, "data", histograms, 1, "", "", plot_par.no_weights)
+                createPlotsFast(dataFiles, "data", histograms, 1, "", "", plot_par.no_weights)
             else:
-                calculated_lumi = createPlots(dataFiles, "data", histograms, 1, "", "", plot_par.no_weights)
-            print "Calculated Luminosity: ", calculated_lumi
-            weight = calculated_lumi * 1000
+                createPlots(dataFiles, "data", histograms, 1, "", "", plot_par.no_weights)
+        
+        global calculated_lumi
+        weight=0
+        
+        if plot_par.calculatedLumi.get(plot_par.plot_kind) is not None:
+            calculated_lumi = plot_par.calculatedLumi.get(plot_par.plot_kind) #should be in fb-1
+            weight = calculated_lumi * 1000 #convert to pb-1
         else:
-            print "HERE"
             calculated_lumi = utils.LUMINOSITY / 1000
             weight = utils.LUMINOSITY
-        
+            
         if plot_par.plot_data and plot_par.plot_sc:
             print "CREATING SC CATEGORY!"
             dataFiles = glob(plot_par.sc_data_dir + "/*")
@@ -575,6 +558,23 @@ def createAllHistograms(histograms, sumTypes):
                                 print "Blinding bin", i, "for", histName
                                 data_hist.SetBinContent(i, 0)
 
+def saveHistogramsToFile(histograms):
+    nFile = TFile(plot_par.histrograms_file, "recreate")
+    for k in histograms:
+        histograms[k].Write(k)
+    nFile.Close()
+
+def loadAllHistograms(histograms):
+    nFile = TFile(plot_par.histrograms_file, "read")
+    keys = nFile.GetListOfKeys()
+    for key in keys:
+        name = key.GetName()#histogram name
+        h = nFile.Get(name)
+        h.SetDirectory(0)
+        histograms[name] = h
+    nFile.Close()
+
+
 def main():
     print "Start: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S')
     
@@ -588,6 +588,7 @@ def main():
     fit_full_integral = {}
     fit_signal_integral = {}
     fit_bg_integral = {}
+    hist_signal_integral = {}
     
     errorStr = ""
     if plot_par.plot_error:
@@ -599,8 +600,24 @@ def main():
     if plot_par.nostack:
         plotStr += " nostack"
     
-    createAllHistograms(histograms, sumTypes)
-
+    createSumTypes(sumTypes)
+    
+    if plot_par.load_histrograms_from_file and os.path.isfile(plot_par.histrograms_file):
+        print "Loading histogram from file", plot_par.load_histrograms_from_file
+        loadAllHistograms(histograms)
+    else:
+        print "Creating histogram from scratch"
+        createAllHistograms(histograms, sumTypes)
+    
+    if plot_par.save_histrograms_to_file and not os.path.isfile(plot_par.histrograms_file):
+        saveHistogramsToFile(histograms)
+    
+    global calculated_lumi  
+    calculated_lumi= plot_par.calculatedLumi.get(plot_par.plot_kind)
+    print "plot_par.plot_kind", plot_par.plot_kind
+    print "plot_par.calculatedLumi", plot_par.calculatedLumi
+    print "calculated_lumi", calculated_lumi
+        
     print "Plotting observable"
 
     c1 = TCanvas("c1", "c1", 800, 800)
@@ -982,13 +999,16 @@ def main():
             if plot_par.fit_inv_mass_jpsi and plot_par.fit_inv_mass_cut_jpsi == cut["name"] and plot_par.fit_inv_mass_obs_jpsi in hist_def["obs"]:
                 print "FITTING INVARIANT MASS PLOT!", hist_def["obs"]
                 fitHist = None
+                jpsiHist = None
                 
                 if plot_par.fit_inv_mass_jpsi_func_bg:
                     if plot_par.solid_bg:
                         fitHist = newBgHist
                     else:
+                        jpsiHist = ((newBgHist.GetHists())[0]).Clone("invMassJpsi"+ hist_def["obs"])
                         fitHist = newBgHist.GetStack().Last().Clone("invMassFitHist"+ hist_def["obs"])
                         memory.append(fitHist)
+                        memory.append(jpsiHist)
                 else:
                     fitHist = dataHist
                 
@@ -1000,13 +1020,15 @@ def main():
                 fFullModel = None
                 gauss = plot_par.fit_inv_mass_jpsi_func == "gauss"
                 linear_fit = plot_par.fit_inv_mass_jpsi_bg_func == "linear"
-                if gauss:
+                
+                
+                if plot_par.fit_inv_mass_jpsi_func == "gauss":
                     if linear_fit:
                         fFullModel = TF1('fFullModel' + hist_def["obs"], funcFullModel, lowedge, highedge, 5)
                     else:
                         fFullModel = TF1('fFullModel' + hist_def["obs"], funcFullModelQuadratic, lowedge, highedge, 6)
                     fFullModel.SetNpx(500);
-                    fitHist
+                    
                     jpsiBin = fitHist.FindBin(3.096916)
                     maxJpsiPeak = fitHist.GetBinContent(jpsiBin)
                     print "jpsiBin", jpsiBin, "maxJpsiPeak", maxJpsiPeak
@@ -1021,7 +1043,7 @@ def main():
                     fFullModel.SetParLimits(1,3.08,3.12)
                     fFullModel.SetParameter(2,0.1)
                     fFullModel.SetParLimits(2,0.05,0.2)
-                else:
+                elif plot_par.fit_inv_mass_jpsi_func == "lorentzian":
                     if linear_fit:
                         fFullModel = TF1('fFullModel' + hist_def["obs"], funcFullModelLorentzian, lowedge, highedge, 5)
                     else:
@@ -1030,6 +1052,23 @@ def main():
                     fFullModel.SetParameter(2, 3.096916)
                     fFullModel.SetParLimits(2,3.05, 3.15)
                     fFullModel.SetParameter(1, 0.1)
+                elif plot_par.fit_inv_mass_jpsi_func == "doubleGaussian":
+                    if linear_fit:
+                        fFullModel = TF1('fFullModel' + hist_def["obs"], funcFullModelDoubleGaussian, lowedge, highedge, 7)
+                    else:
+                        fFullModel = TF1('fFullModel' + hist_def["obs"], funcFullModelDoubleGaussianQuadratic, lowedge, highedge, 10)
+                    fFullModel.SetNpx(500);
+                    fFullModel.SetParameter(0,10)
+                    fFullModel.SetParLimits(0,0.01,10000)
+                    fFullModel.SetParameter(3,0.01)
+                    fFullModel.SetParLimits(3,0.01,10000)
+                    fFullModel.SetParameter(1,3.096916)
+                    fFullModel.SetParLimits(1,3.08,3.11)
+                    fFullModel.SetParameter(2,0.05)
+                    fFullModel.SetParameter(4,0.05)
+                    fFullModel.SetParLimits(2,0.005,0.1)
+                    fFullModel.SetParLimits(4,0.005,0.1)
+                    
                     
                 fit_funcs["fFullModel" + hist_def["obs"]] = fFullModel
                 # s option creates the result
@@ -1041,15 +1080,20 @@ def main():
                 
                 fSignal = None
                 
-                if gauss:
+                if plot_par.fit_inv_mass_jpsi_func == "gauss":
                     fSignal = TF1('fSignal' + hist_def["obs"], funcGaussian, lowedge, highedge, 3)
-                else:
+                elif plot_par.fit_inv_mass_jpsi_func == "lorentzian":
                     fSignal = TF1('fSignal' + hist_def["obs"], funcLorentzian, lowedge, highedge, 3)
+                elif plot_par.fit_inv_mass_jpsi_func == "doubleGaussian":
+                    fSignal = TF1('fSignal' + hist_def["obs"], funcDoubleGaussian, lowedge, highedge, 5)
                 fSignal.SetNpx(500);
                 fit_funcs["fSignal" + hist_def["obs"]] = fSignal
                 fSignal.SetParameter(0, fFullModel.GetParameter(0))
                 fSignal.SetParameter(1, fFullModel.GetParameter(1))
                 fSignal.SetParameter(2, fFullModel.GetParameter(2))
+                if plot_par.fit_inv_mass_jpsi_func == "doubleGaussian":
+                    fSignal.SetParameter(3, fFullModel.GetParameter(3))
+                    fSignal.SetParameter(4, fFullModel.GetParameter(4))
                 
                 fSignal.SetLineWidth(2)
                 fSignal.SetLineColor(kBlue)
@@ -1059,25 +1103,38 @@ def main():
                 if linear_fit:
                     fBg = TF1('fBg' + hist_def["obs"], funcBackground, lowedge, highedge, 2)
                 else:
-                    fBg = TF1('fBg' + hist_def["obs"], funcBackgroundQuadratic, lowedge, highedge, 3)
+                    fBg = TF1('fBg' + hist_def["obs"], funcBackgroundQuadratic, lowedge, highedge, 5)
                 fit_funcs["fBg" + hist_def["obs"]] = fBg
-                fBg.SetParameter(0, fFullModel.GetParameter(3))
-                fBg.SetParameter(1, fFullModel.GetParameter(4))
+                bgIndex = 3
+                if plot_par.fit_inv_mass_jpsi_func == "doubleGaussian":
+                    bgIndex = 5
+                fBg.SetParameter(0, fFullModel.GetParameter(bgIndex))
+                fBg.SetParameter(1, fFullModel.GetParameter(bgIndex+1))
                 if not linear:
-                    fBg.SetParameter(2, fFullModel.GetParameter(5))
+                    fBg.SetParameter(2, fFullModel.GetParameter(bgIndex+2))
+                    fBg.SetParameter(3, fFullModel.GetParameter(bgIndex+3))
+                    fBg.SetParameter(4, fFullModel.GetParameter(bgIndex+4))
                 fBg.SetLineWidth(2)
                 fBg.SetLineColor(kBlack)
                 fBg.Draw("SAME")
                 legend.AddEntry(fBg, "Continuum", 'l')
                 
                 print "printing values for", hist_def["obs"]
-                print "Full JPsi Integral:", fitHist.Integral(fitHist.FindBin(3.0), fitHist.FindBin(3.2))
+                print "Bin Width:", jpsiHist.GetBinWidth(jpsiHist.FindBin(3.0))
+                print "Full Hist Integral:", fitHist.Integral(fitHist.FindBin(3.0), fitHist.FindBin(3.2))
+                print "Full JPsi Integral:", jpsiHist.Integral(jpsiHist.FindBin(3.0), jpsiHist.FindBin(3.2))
+                print "Full JPsi Integral Width:", jpsiHist.Integral(jpsiHist.FindBin(3.0), jpsiHist.FindBin(3.2), "width")
+                print "Full Fit Integral:", fFullModel.Integral(3.0, 3.2)
+                print "Full Fit Integral Width:", fFullModel.Integral(3.0, 3.2) / jpsiHist.GetBinWidth(jpsiHist.FindBin(3.0))
                 print "BG Integral:", fBg.Integral(3.0, 3.2)
+                print "Signal Integral:", fSignal.Integral(3.0, 3.2)
+                print "Signal Integral Width:", fSignal.Integral(3.0, 3.2) / jpsiHist.GetBinWidth(jpsiHist.FindBin(3.0))
                 
-                fit_hist_integral[hist_def["obs"]] = fitHist.Integral(fitHist.FindBin(3.0), fitHist.FindBin(3.2), "width")
-                fit_full_integral[hist_def["obs"]] = fFullModel.Integral(3.0, 3.2)
-                fit_signal_integral[hist_def["obs"]] = fSignal.Integral(3.0, 3.2)
-                fit_bg_integral[hist_def["obs"]] = fBg.Integral(3.0, 3.2)
+                fit_hist_integral[hist_def["obs"]] = fitHist.Integral(fitHist.FindBin(3.0), fitHist.FindBin(3.2))
+                fit_full_integral[hist_def["obs"]] = fFullModel.Integral(3.0, 3.2) / jpsiHist.GetBinWidth(jpsiHist.FindBin(3.0))
+                fit_signal_integral[hist_def["obs"]] = fSignal.Integral(3.0, 3.2) / jpsiHist.GetBinWidth(jpsiHist.FindBin(3.0))
+                fit_bg_integral[hist_def["obs"]] = fBg.Integral(3.0, 3.2) / jpsiHist.GetBinWidth(jpsiHist.FindBin(3.0))
+                hist_signal_integral[hist_def["obs"]] = jpsiHist.Integral(jpsiHist.FindBin(3.0), jpsiHist.FindBin(3.2))
                 
             
             legend.Draw("SAME")
@@ -1167,6 +1224,7 @@ def main():
             #print "***", ratioPads
             print calculated_lumi
             lumiStr = "{:.1f}".format(calculated_lumi)
+            
             if large_version:
                 if plot_par.plot_ratio:
                     #c1.cd()
@@ -1404,14 +1462,12 @@ def main():
     
     print "============== FIT SUMMARY =============="
     
-    print ",fit_hist_integral,fit_full_integral,fit_signal_integral,fit_bg_integral,fit_hist_integral_reco,fit_full_integral_reco,fit_signal_integral_reco,fit_bg_integral_reco,,fit_hist_integral_id,fit_full_integral_id,fit_signal_integral_id,fit_bg_integral_id"
+    print ",fit_hist_integral,hist_signal_integral,fit_full_integral,fit_signal_integral,fit_bg_integral,fit_hist_integral_reco,hist_signal_integral_reco,fit_full_integral_reco,fit_signal_integral_reco,fit_bg_integral_reco,fit_hist_integral_id,hist_signal_integral_id,fit_full_integral_id,fit_signal_integral_id,fit_bg_integral_id,reco_eff,reco_eff_hist,id_eff,id_eff_hist"
     
     for hist_def in plot_par.histograms_defs:
         if "reco_" in hist_def["obs"] or "id_" in hist_def["obs"]:
             continue
-        print hist_def["obs"] + "," + str(fit_hist_integral[hist_def["obs"]]) + "," + str(fit_full_integral[hist_def["obs"]]) + "," + str(fit_signal_integral[hist_def["obs"]]) + "," + str(fit_bg_integral[hist_def["obs"]])  + "," + str(fit_hist_integral["reco_" + hist_def["obs"]]) + "," + str(fit_full_integral["reco_" + hist_def["obs"]]) + "," + str(fit_signal_integral["reco_" + hist_def["obs"]]) + "," + str(fit_bg_integral["reco_" + hist_def["obs"]])    + "," + str(fit_hist_integral["id_" + hist_def["obs"]]) + "," + str(fit_full_integral["id_" + hist_def["obs"]]) + "," + str(fit_signal_integral["id_" + hist_def["obs"]]) + "," + str(fit_bg_integral["id_" + hist_def["obs"]]) 
-    
-    
+        print hist_def["obs"] + "," + str(fit_hist_integral[hist_def["obs"]]) + "," + str(hist_signal_integral[hist_def["obs"]]) + "," +  str(fit_full_integral[hist_def["obs"]]) + "," + str(fit_signal_integral[hist_def["obs"]]) + "," + str(fit_bg_integral[hist_def["obs"]])  + "," + str(fit_hist_integral["reco_" + hist_def["obs"]]) + "," + str(fit_full_integral["reco_" + hist_def["obs"]])  + "," + str(hist_signal_integral["reco_" + hist_def["obs"]])+ "," + str(fit_signal_integral["reco_" + hist_def["obs"]]) + "," + str(fit_bg_integral["reco_" + hist_def["obs"]])    + "," + str(fit_hist_integral["id_" + hist_def["obs"]])+ "," + str(hist_signal_integral["id_" + hist_def["obs"]]) + "," + str(fit_full_integral["id_" + hist_def["obs"]]) + "," + str(fit_signal_integral["id_" + hist_def["obs"]]) + "," + str(fit_bg_integral["id_" + hist_def["obs"]]) + "," + str(fit_signal_integral["reco_" + hist_def["obs"]]/fit_signal_integral[hist_def["obs"]])  + "," + str(hist_signal_integral["reco_" + hist_def["obs"]]/hist_signal_integral[hist_def["obs"]]) + "," + str(fit_signal_integral["id_" + hist_def["obs"]]/fit_signal_integral[hist_def["obs"]])  + "," + str(hist_signal_integral["id_" + hist_def["obs"]]/hist_signal_integral[hist_def["obs"]]) 
     
     print "End: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S')
     exit(0)

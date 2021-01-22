@@ -50,6 +50,7 @@ cmsenv
 
 
 BDT_DIR=$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt
+COMMAND=$SCRIPTS_WD/skimmer_x1x2x1_dilepton_bdt.py
 EXTRA_FLAGS=""
 
 
@@ -73,7 +74,10 @@ elif [ -n "$JPSI_MUONS" ]; then
     echo "GOT JPSI_MUONS"
     echo "HERE: $@"
     #OUTPUT_DIR=$SKIM_DATA_SIG_DILEPTON_BDT_DY_OUTPUT_DIR
-    INPUT_DIR=$SKIM_DATA_JPSI_MUONS_OUTPUT_DIR
+    #INPUT_DIR=$SKIM_DATA_JPSI_MUONS_OUTPUT_DIR
+    INPUT_DIR=$SKIM_DATA_MASTER_OUTPUT_DIR
+    BDT_DIR=$SKIM_MASTER_OUTPUT_DIR/split/tmva
+    COMMAND=$SCRIPTS_WD/skimmer_jpsi_bdt.py
 else
     if [ -n "$SC" ]; then
         echo "GOT SC"
@@ -145,16 +149,16 @@ for data_file in $INPUT_DIR/sum/*; do
         #    echo "$out_file exist. Skipping..."
         #    continue
         #fi
-    cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_dilepton_bdt.py --data -i $data_file -bdt $BDT_DIR $@"
+    cmd="$CONDOR_WRAPPER $COMMAND --data -i $data_file -bdt $BDT_DIR $@"
     echo $cmd
 cat << EOM >> $output_file
 arguments = $cmd
 error = ${INPUT_DIR}/stderr/${data_file_name}_dilepton.err
-output = ${OUTPUT_DIR}/stdout/${data_file_name}_dilepton.output
+output = ${INPUT_DIR}/stdout/${data_file_name}_dilepton.output
 Queue
 EOM
 done
 #done
 
-#condor_submit $output_file
+condor_submit $output_file
 rm $output_file

@@ -401,6 +401,10 @@ class BaseParams:
     fit_inv_mass_jpsi_func_bg = False
     fit_inv_mass_jpsi_bg_func = "linear"
     
+    save_histrograms_to_file = False
+    load_histrograms_from_file = False
+    histrograms_file = ""
+    
     
 
 
@@ -540,6 +544,238 @@ class jpsi_muons_ex_track(jpsi_muons):
         "other" : 1
     }
 
+class jpsi_muons_ex_track_new(jpsi_muons):
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_master/sum/type_sum"
+    data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_master/sum"
+    
+    weightString = {
+        'MET' : "passedMhtMet6pack * tEffhMetMhtRealXMht2016",
+        'SingleMuon' : "puWeight"
+    }
+    
+    histograms_defs = [
+        { "obs" : "invMass", "units" : "M_{ll}", "minX" : 2.5, "maxX" : 3.5, "bins" : 60 },
+        { "obs" : "BDT", "units" : "BDT", "minX" : -1, "maxX" : 1, "bins" : 60 },
+        { "obs" : "BtagsDeepMedium", "units" : "BtagsDeepMedium", "minX" : 0, "maxX" : 5, "bins" : 5 },
+        
+        
+        
+        
+        # { "obs" : "Muons[tagMuon].Pt()", "units" : "Muon P_{t}", "minX" : 2, "maxX" : 24, "bins" : 60 },
+#         { "obs" : "abs(Muons[tagMuon].Phi())",  "units" : "Muon \phi", "minX" : 0, "maxX" : 3.2, "bins" : 50 },
+#         { "obs" : "abs(Muons[tagMuon].Eta())", "units" : "Muon \eta", "minX" : 0, "maxX" : 2.4, "bins" : 50 },
+#         { "obs" : "tracks[probeTrack].Pt()", "units" : "Track P_{t}", "minX" : 2, "maxX" : 24, "bins" : 60 },
+# 
+#         { "obs" : "abs( tracks[probeTrack].Eta() )", "units" : "Track \eta", "minX" : 0, "maxX" : 2.4, "bins" : 50 },
+#         { "obs" : "abs(tracks[probeTrack].Eta())", "units" : "Matched Track \eta", "minX" : 0, "maxX" : 2.4, "bins" : 50, "condition" :  "tracks_mi[probeTrack] > -1" },
+        #{ "obs" : "tracks_dxyVtx[ti]", "units" : "dxy", "minX" : 0, "maxX" : 0.2, "bins" : 50 },
+        #{ "obs" : "tracks_dzVtx[ti]", "units" : "dz", "minX" : 0, "maxX" : 0.5, "bins" : 50 },
+        #{ "obs" : "tracks_trkMiniRelIso[ti]", "units" : "MiniRelIso", "minX" : 0, "maxX" : 0.2, "bins" : 50 },
+        #{ "obs" : "tracks_trkRelIso[ti]", "units" : "RelIso", "minX" : 0, "maxX" : 0.2, "bins" : 50},
+        #{ "obs" : "Muons[0].Pt()", "units" : "P_{t}(\mu_{1})", "minX" : 24, "maxX" : 300, "bins" : 100 },
+        #{ "obs" : "Met", "units" : "Met", "minX" : 0, "maxX" : 250, "bins" : 50 },
+        #{ "obs" : "Ht", "units" : "Ht", "minX" : 0, "maxX" : 1000, "bins" : 100 },
+        #{ "obs" : "madHT", "units" : "madHT", "minX" : 0, "maxX" : 400, "bins" : 100 },
+        #{ "obs" : "BTagsMedium", "units" : "BTagsMedium", "minX" : 0, "maxX" : 5, "bins" : 5 },
+        #{ "obs" : "NJets", "units" : "NJets", "minX" : 0, "maxX" : 5, "bins" : 5 },
+        # { "obs" : "Muons_tightID[tagMuon]", "units" : "tightId", "minX" : 0, "maxX" : 2, "bins" : 2 },
+#         { "obs" : "deltaEta", "units" : "\Delta\eta", "minX" : 0, "maxX" : 3, "bins" : 30 },
+#         { "obs" : "deltaR", "units" : "\Delta{R}", "minX" : 0, "maxX" : 3, "bins" : 30 },
+#         { "obs" : "dileptonPt", "units" : "\Delta{R}", "minX" : 0, "maxX" : 50, "bins" : 50 },
+        
+        
+        #{ "obs" : "tracks_dxyVtx[Muons_ti[leptonIdx]]", "units" : "\mu dxy", "minX" : 0, "maxX" : 0.2, "bins" : 30, "condition" :  "Muons_ti[leptonIdx] > -1" },
+        #{ "obs" : "tracks_dzVtx[Muons_ti[leptonIdx]]", "units" : "\mudz", "minX" : 0, "maxX" : 0.2, "bins" : 30, "condition" :  "Muons_ti[leptonIdx] > -1" },
+        
+    ]
+    
+    cuts = [
+        #{"name":"none", "title": "No Cuts", "condition" : "exclusiveTrack == 1 && Muons_tightID[leptonIdx] == 1 && track.Pt() < 10 && lepton.Pt() > 10 && track.Pt() < 24 && Ht > 200 && passedSingleMuPack == 1"},
+        #{"name":"none", "title": "No Cuts", "condition" : "tracks[probeTrack].Pt() >= 2 && tracks[probeTrack].Pt() < 3 && abs(tracks[probeTrack].Eta()) >= 1.2 && abs(tracks[probeTrack].Eta()) < 2.4"},
+        {"name":"none", "title": "None", "condition" : "(BtagsDeepMedium >= 1 && tracks[probeTrack].Pt() >= 2 && tracks[probeTrack].Pt() < 3 && abs(tracks[probeTrack].Eta()) >= 1.2 && abs(tracks[probeTrack].Eta()) < 2.4)"},
+        {"name":"BtagsDeepMedium", "title": "BtagsDeepMedium", "condition" : "(BtagsDeepMedium >= 1 && BDT > -0.1 && tracks[probeTrack].Pt() >= 2 && tracks[probeTrack].Pt() < 3 && abs(tracks[probeTrack].Eta()) >= 1.2 && abs(tracks[probeTrack].Eta()) < 2.4)"},
+        #{"name":"bdt0", "title": "BDT > 0", "condition" : "tracks[probeTrack].Pt() >= 2 && BDT > 0 && tracks[probeTrack].Pt() < 3 && abs(tracks[probeTrack].Eta()) >= 1.2 && abs(tracks[probeTrack].Eta()) < 2.4"},
+        #{"name":"bdt1", "title": "BDT > 0.1", "condition" : "tracks[probeTrack].Pt() >= 2 &&  BDT > 0.1 && tracks[probeTrack].Pt() < 3 && abs(tracks[probeTrack].Eta()) >= 1.2 && abs(tracks[probeTrack].Eta()) < 2.4"},
+        #{"name":"bdt2", "title": "BDT > 0.2", "condition" : "tracks[probeTrack].Pt() >= 2 &&  BDT > 0.2 && tracks[probeTrack].Pt() < 3 && abs(tracks[probeTrack].Eta()) >= 1.2 && abs(tracks[probeTrack].Eta()) < 2.4"},
+        #{"name":"bdt3", "title": "BDT > 0.3", "condition" : "tracks[probeTrack].Pt() >= 2 &&  BDT > 0.3 && tracks[probeTrack].Pt() < 3 && abs(tracks[probeTrack].Eta()) >= 1.2 && abs(tracks[probeTrack].Eta()) < 2.4"},
+        
+        
+        #{"name":"bdt2", "title": "BDT > 0.2", "condition" : "BDT > 0.2 && tracks[probeTrack].Pt() < 3.5 && abs(tracks[probeTrack].Eta()) >= 1.2 && abs(tracks[probeTrack].Eta()) < 2.4"},
+        #{"name":"jpsi", "title": "jpsi", "condition" : "exclusiveTrack == 1 && Muons_tightID[leptonIdx] == 1 && lepton.Pt() > 10 && track.Pt() < 24 && Ht > 200 && exclusiveTrack == 1 && exTrack_invMass > 3.04 && exTrack_invMass < 3.18 && passedSingleMuPack == 1"},
+        
+        #{"name":"none", "title": "No Cuts", "condition" : "exclusiveTrack == 1 && passedSingleMuPack == 1 && Muons_tightID[leptonIdx] == 1 && lepton.Pt() > 8 && track.Pt() < 25 && exTrack_deltaR < 0.7 && tracks_mi[ti] > -1"},
+        
+        #{"name":"jpsi", "title": "jpsi", "condition" : "exclusiveTrack == 1 &&  passedSingleMuPack == 1  && Muons_tightID[leptonIdx] == 1 && lepton.Pt() > 8 && track.Pt() < 25 && exTrack_invMass > 3.00 && exTrack_invMass < 3.2 && exTrack_deltaR < 0.7"},
+        
+        # {"name":"jpsi_2_3_barrel", "title": "jpsi pt 2-3 Barrel", "condition" : "exclusiveTrack == 1 &&  passedSingleMuPack == 1 && lepton.Pt() > 4 && track.Pt() < 25 && abs(track.Eta()) < 1.2 && abs(track.Eta()) < 2.4 && track.Pt() >= 2 && track.Pt() <= 3"},
+#         {"name":"jpsi_2_3_endcups", "title": "jpsi pt 2-3 Endcaps", "condition" : "exclusiveTrack == 1 &&  passedSingleMuPack == 1 && lepton.Pt() > 4 && track.Pt() < 25 && abs(track.Eta()) >= 1.2 && abs(track.Eta()) < 2.4 && track.Pt() >= 2 && track.Pt() <= 3"},
+#         
+#         {"name":"jpsi_2_3_ht", "title": "jpsi pt 2-3 Ht > 100", "condition" : "Ht > 100 && exclusiveTrack == 1 &&  passedSingleMuPack == 1 && lepton.Pt() > 4 && track.Pt() < 25 && abs(track.Eta()) >= 1.2 && abs(track.Eta()) < 2.4 && track.Pt() >= 2 && track.Pt() <= 3"},
+#         {"name":"jpsi_2_3_m0", "title": "jpsi pt 2-3 M0 > 100", "condition" : "Ht < 600 && Ht > 100 && exclusiveTrack == 1 &&  passedSingleMuPack == 1 && lepton.Pt() > 6 && track.Pt() < 25 && abs(track.Eta()) >= 1.2 && abs(track.Eta()) < 2.4 && track.Pt() >= 2 && track.Pt() <= 3 && Muons[0].Pt() < 100"},
+#         
+#         {"name":"jpsi_2_3_ht_barrel", "title": "jpsi pt 2-3 Ht > 100 barrel", "condition" : "Ht > 100 && exclusiveTrack == 1 &&  passedSingleMuPack == 1 && lepton.Pt() > 4 && track.Pt() < 25 && abs(track.Eta()) < 1.2 && abs(track.Eta()) < 2.4 && track.Pt() >= 2 && track.Pt() <= 3"},
+#         {"name":"jpsi_2_3_m0_barrel", "title": "jpsi pt 2-3 M0 > 100 barrel", "condition" : "Ht < 600 && Ht > 100 && exclusiveTrack == 1 &&  passedSingleMuPack == 1 && lepton.Pt() > 6 && track.Pt() < 25 && abs(track.Eta()) < 1.2 && abs(track.Eta()) < 2.4 && track.Pt() >= 2 && track.Pt() <= 3 && Muons[0].Pt() < 100"},
+#         
+        #{"name":"jpsi_2_3_ht_m0", "title": "jpsi pt 2-3 Ht > 100 M0 > 100", "condition" : "Ht > 100 && exclusiveTrack == 1 &&  passedSingleMuPack == 1 && Muons_tightID[leptonIdx] == 1 && lepton.Pt() > 4 && track.Pt() < 25 && abs(track.Eta()) >= 1.2 && abs(track.Eta()) < 2.4 && track.Pt() >= 2 && track.Pt() <= 3.5 && Muons[0].Pt() < 100 && exTrack_deltaR <= 1 && abs(lepton.Eta()) > 0.6"},
+        
+        
+        #{"name":"jpsi_2_3", "title": "jpsi pt 2-3", "condition" : "exclusiveTrack == 1 &&  passedSingleMuPack == 1  && Muons_tightID[leptonIdx] == 1 && lepton.Pt() > 8 && track.Pt() < 25 && exTrack_invMass > 3.00 && exTrack_invMass < 3.2 && exTrack_deltaR < 0.7 && abs(track.Eta()) < 2.4 && tracks_mi[ti] > -1 && Muons_mediumID[tracks_mi[ti]] == 1 && track.Pt() >= 2 && track.Pt() <= 3"},
+        #{"name":"jpsi_3_5_0_12", "title": "jpsi pt 3-5 eta 0-1.2", "condition" : "exclusiveTrack == 1 &&  passedSingleMuPack == 1  && Muons_tightID[leptonIdx] == 1 && lepton.Pt() > 8 && track.Pt() < 25 && exTrack_invMass > 3.00 && exTrack_invMass < 3.2 && exTrack_deltaR < 0.7 && abs(track.Eta()) < 2.4 && tracks_mi[ti] > -1 && Muons_mediumID[tracks_mi[ti]] == 1 && track.Pt() >= 3 && track.Pt() <= 5 && abs(track.Eta()) <= 1.2"},
+        #{"name":"jpsi_3_5_12_24", "title": "jpsi pt 3-5 eta 1.2-2.4", "condition" : "exclusiveTrack == 1 &&  passedSingleMuPack == 1  && Muons_tightID[leptonIdx] == 1 && lepton.Pt() > 8 && track.Pt() < 25 && exTrack_invMass > 3.00 && exTrack_invMass < 3.2 && exTrack_deltaR < 0.7 && abs(track.Eta()) < 2.4 && tracks_mi[ti] > -1 && Muons_mediumID[tracks_mi[ti]] == 1 && track.Pt() >= 3 && track.Pt() <= 5 && abs(track.Eta()) >= 1.2 && abs(track.Eta()) <= 2.4"},
+    ]
+    
+    
+    bgReTagging = {
+        "jpsi" : "tagJpsi == 1 && probeJpsi == 1",
+        "other" : "!(tagJpsi == 1 && probeJpsi == 1)",
+    }
+
+    bgReTaggingOrder = {
+        "jpsi" : 0,
+        "other" : 1
+    }
+    
+    plot_data = False
+    plot_ratio = False
+    normalise = False
+    no_weights = False
+    plot_overflow = False
+
+class jpsi_muons_ex_track_new_data(jpsi_muons_ex_track_new):
+    plot_data = True
+    plot_bg = False
+
+
+class jpsi_muons_new_normalised_fit_bg(jpsi_muons_ex_track_new):
+    fit_inv_mass_jpsi = True
+    fit_inv_mass_obs_jpsi = "invMass"
+    fit_inv_mass_cut_jpsi = "none"
+    #fit_inv_mass_jpsi_func = "lorentzian"
+    fit_inv_mass_jpsi_func = "doubleGaussian"
+    fit_inv_mass_jpsi_bg_func = "quad"
+    fit_inv_mass_jpsi_func_bg = True
+    plot_error = True
+    nostack = False
+    #solid_bg = True
+    #plot_bg = False
+    plot_ratio = False
+    pt_ranges = [2,3,5,10,25]
+    eta_ranges = [0,1.2,2.4]
+    plot_bg = True
+    plot_data = False
+    
+    weightString = {
+        'MET' : "passedMhtMet6pack * tEffhMetMhtRealXMht2016",
+        'SingleMuon' : "puWeight"
+    }
+    #NEED TO DO SOMETHING ABOUT THE NORMALISATION OF THE LUMI!!!
+    calculatedLumi = {
+        'SingleMuonReco' : 0.001,
+        'SingleMuon' : 22.944,
+    }
+    
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True
+    
+    
+    
+    
+    create_canvas = False
+    
+    histrograms_file = "/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools/analysis/scripts/invMassBgHists.root"
+    
+    #solid_bg = True
+    
+    histograms_defs = [
+        { "obs" : "invMass", "units" : "M_{ll}", "minX" : 2.5, "maxX" : 3.5, "bins" : 60},
+    ]
+    
+    cuts = [
+        {"name":"none", "title": "No Cuts", "condition" : "1"},
+        
+        #{"name":"none", "title": "Loose", "condition" : "exclusiveTrack == 1 && passedSingleMuPack == 1 && Muons_tightID[leptonIdx] == 1 && lepton.Pt() > 8 && track.Pt() < 25"},
+        #
+        #{"name":"none", "title": "Looser", "condition" : "exclusiveTrack == 1 && passedSingleMuPack == 1 && lepton.Pt() > 4 && track.Pt() < 25"},
+        #{"name":"none", "title": "Ht", "condition" : "Ht > 100 && exclusiveTrack == 1 && passedSingleMuPack == 1 && lepton.Pt() > 4 && track.Pt() < 25"},
+        
+        #{"name":"none", "title": "Low", "condition" : "Ht < 600 && Ht > 100 && exclusiveTrack == 1 &&  passedSingleMuPack == 1 && lepton.Pt() > 6 && track.Pt() < 25 && abs(track.Eta()) < 2.4 && track.Pt() >= 2 && track.Pt() <= 3 && Muons[0].Pt() < 100"},
+        
+        
+        
+        
+        
+        #{"name":"none", "title": "No Cuts", "condition" : "Ht > 200 && exclusiveTrack == 1 && passedSingleMuPack == 1"},
+        #{"name":"jpsi", "title": "jpsi", "condition" : "Ht > 200 && exclusiveTrack == 1 && exTrack_invMass > 3.04 && exTrack_invMass < 3.18 && passedSingleMuPack == 1"},
+    ]
+    
+    for pti in range(len(pt_ranges)):
+        if pti == len(pt_ranges) - 1:
+            continue
+        pt1 = pt_ranges[pti]
+        pt2 = pt_ranges[pti+1]
+        
+        for etai in range(len(eta_ranges)):
+            if etai == len(eta_ranges) - 1:
+                continue
+            eta1 = eta_ranges[etai]
+            eta2 = eta_ranges[etai+1]
+            if pt1 == 2:
+                histograms_defs.append({ "obs" : "invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2), "formula" : "invMass", "units" : "M_{ll} Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })
+                histograms_defs.append({ "obs" : "invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_0", "formula" : "invMass", "units" : "M_{ll} Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.0", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.0 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })
+                histograms_defs.append({ "obs" : "invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_1", "formula" : "invMass", "units" : "M_{ll} Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.1", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })
+                histograms_defs.append({ "obs" : "invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_2", "formula" : "invMass", "units" : "M_{ll} Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.14", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.14 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })
+            else:
+                histograms_defs.append({ "obs" : "invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2), "formula" : "invMass", "units" : "M_{ll} Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })
+    
+    #histograms_defs.append({ "obs" : "cut_exTrack_invMass", "formula" : "exTrack_invMass", "units" : "M_{ll} Cut", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "abs(track.Eta()) < 2.4 && tracks_dxyVtx[ti] < 0.02 && tracks_dzVtx[ti] < 0.02"})# && tracks_trkRelIso[ti] < 0.1
+    
+    histograms_defs.append({ "obs" : "reco_invMass", "formula" : "invMass", "units" : "M_{ll} Reco", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "tracks_mi[probeTrack] > -1"})# && tracks_trkRelIso[ti] < 0.1
+    histograms_defs.append({ "obs" : "id_invMass", "formula" : "invMass", "units" : "M_{ll} Id", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "abs(tracks[probeTrack].Eta()) < 2.4 && tracks_mi[probeTrack] > -1 && Muons_mediumID[tracks_mi[probeTrack]] == 1"})# && tracks_trkRelIso[ti] < 0.1
+    
+    for pti in range(len(pt_ranges)):
+        if pti == len(pt_ranges) - 1:
+            continue
+        pt1 = pt_ranges[pti]
+        pt2 = pt_ranges[pti+1]
+       
+        for etai in range(len(eta_ranges)):
+            if etai == len(eta_ranges) - 1:
+                continue
+            eta1 = eta_ranges[etai]
+            eta2 = eta_ranges[etai+1]
+            if pt1 == 2:
+            
+                
+                histograms_defs.append({ "obs" : "reco_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2), "formula" : "invMass", "units" : "M_{ll} Reco Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "tracks_mi[probeTrack] > -1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
+                histograms_defs.append({ "obs" : "id_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2), "formula" : "invMass", "units" : "M_{ll} Id Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "tracks_mi[probeTrack] > -1 && Muons_mediumID[tracks_mi[probeTrack]] == 1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
+            
+                
+                histograms_defs.append({ "obs" : "reco_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_0", "formula" : "invMass", "units" : "M_{ll} Reco Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.0", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.0 && tracks_mi[probeTrack] > -1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
+                histograms_defs.append({ "obs" : "id_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_0", "formula" : "invMass", "units" : "M_{ll} Id Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.0", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.0 && tracks_mi[probeTrack] > -1 && Muons_mediumID[tracks_mi[probeTrack]] == 1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
+                
+                histograms_defs.append({ "obs" : "reco_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_1", "formula" : "invMass", "units" : "M_{ll} Reco Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.1", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.1 && tracks_mi[probeTrack] > -1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
+                histograms_defs.append({ "obs" : "id_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_1", "formula" : "invMass", "units" : "M_{ll} Id Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.1", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.1 && tracks_mi[probeTrack] > -1 && Muons_mediumID[tracks_mi[probeTrack]] == 1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
+                
+                histograms_defs.append({ "obs" : "reco_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_2", "formula" : "invMass", "units" : "M_{ll} Reco Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.14", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.14 && tracks_mi[probeTrack] > -1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
+                histograms_defs.append({ "obs" : "id_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_2", "formula" : "invMass", "units" : "M_{ll} Id Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.14", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.14 && tracks_mi[probeTrack] > -1 && Muons_mediumID[tracks_mi[probeTrack]] == 1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
+                
+            else:
+            #histograms_defs.append({ "obs" : "cut_exTrack_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2), "formula" : "exTrack_invMass", "units" : "M_{ll} Cut Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "abs(track.Eta()) < 2.4 && tracks_dxyVtx[ti] < 0.02 && tracks_dzVtx[ti] < 0.02 && track.Pt() >= " + str(pt1) + " && track.Pt() <= " + str(pt2) + " && abs(track.Eta()) >= " + str(eta1) + " && abs(track.Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
+                histograms_defs.append({ "obs" : "reco_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2), "formula" : "invMass", "units" : "M_{ll} Reco Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "tracks_mi[probeTrack] > -1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
+                histograms_defs.append({ "obs" : "id_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2), "formula" : "invMass", "units" : "M_{ll} Id Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "tracks_mi[probeTrack] > -1 && Muons_mediumID[tracks_mi[probeTrack]] == 1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
+                
+                
+
+class jpsi_muons_new_normalised_fit_data(jpsi_muons_new_normalised_fit_bg):
+    plot_bg = False
+    plot_data = True
+    histrograms_file = "/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools/analysis/scripts/invMassDataHists.root"
+    fit_inv_mass_jpsi_func_bg = False
+    weightString = {
+        'MET' : "passedMhtMet6pack * tEffhMetMhtRealXMht2016",
+        'SingleMuon' : "1"
+    }
+
 
 class jpsi_muons_ex_track_normalised(jpsi_muons_ex_track):
     normalise = False
@@ -564,7 +800,7 @@ class jpsi_muons_ex_track_normalised_fit(jpsi_muons_ex_track_normalised):
     plot_data = True
     
     normalise = False
-    #no_weights = False
+    no_weights = False
     
     histograms_defs = [
         { "obs" : "exTrack_invMass", "units" : "M_{ll}", "minX" : 2.5, "maxX" : 3.5, "bins" : 60},
@@ -587,7 +823,6 @@ class jpsi_muons_ex_track_normalised_fit(jpsi_muons_ex_track_normalised):
         #{"name":"none", "title": "No Cuts", "condition" : "Ht > 200 && exclusiveTrack == 1 && passedSingleMuPack == 1"},
         #{"name":"jpsi", "title": "jpsi", "condition" : "Ht > 200 && exclusiveTrack == 1 && exTrack_invMass > 3.04 && exTrack_invMass < 3.18 && passedSingleMuPack == 1"},
     ]
-    
     for pti in range(len(pt_ranges)):
         if pti == len(pt_ranges) - 1:
             continue
