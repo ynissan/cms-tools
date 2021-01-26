@@ -593,7 +593,7 @@ class jpsi_muons_ex_track_new(jpsi_muons):
         #{"name":"none", "title": "No Cuts", "condition" : "exclusiveTrack == 1 && Muons_tightID[leptonIdx] == 1 && track.Pt() < 10 && lepton.Pt() > 10 && track.Pt() < 24 && Ht > 200 && passedSingleMuPack == 1"},
         #{"name":"none", "title": "No Cuts", "condition" : "tracks[probeTrack].Pt() >= 2 && tracks[probeTrack].Pt() < 3 && abs(tracks[probeTrack].Eta()) >= 1.2 && abs(tracks[probeTrack].Eta()) < 2.4"},
         {"name":"none", "title": "None", "condition" : "(BtagsDeepMedium >= 1 && tracks[probeTrack].Pt() >= 2 && tracks[probeTrack].Pt() < 3 && abs(tracks[probeTrack].Eta()) >= 1.2 && abs(tracks[probeTrack].Eta()) < 2.4)"},
-        {"name":"BtagsDeepMedium", "title": "BtagsDeepMedium", "condition" : "(BtagsDeepMedium >= 1 && BDT > -0.1 && tracks[probeTrack].Pt() >= 2 && tracks[probeTrack].Pt() < 3 && abs(tracks[probeTrack].Eta()) >= 1.2 && abs(tracks[probeTrack].Eta()) < 2.4)"},
+        #{"name":"BtagsDeepMedium", "title": "BtagsDeepMedium", "condition" : "(BtagsDeepMedium >= 1 && BDT > -0.1 && tracks[probeTrack].Pt() >= 2 && tracks[probeTrack].Pt() < 3 && abs(tracks[probeTrack].Eta()) >= 1.2 && abs(tracks[probeTrack].Eta()) < 2.4)"},
         #{"name":"bdt0", "title": "BDT > 0", "condition" : "tracks[probeTrack].Pt() >= 2 && BDT > 0 && tracks[probeTrack].Pt() < 3 && abs(tracks[probeTrack].Eta()) >= 1.2 && abs(tracks[probeTrack].Eta()) < 2.4"},
         #{"name":"bdt1", "title": "BDT > 0.1", "condition" : "tracks[probeTrack].Pt() >= 2 &&  BDT > 0.1 && tracks[probeTrack].Pt() < 3 && abs(tracks[probeTrack].Eta()) >= 1.2 && abs(tracks[probeTrack].Eta()) < 2.4"},
         #{"name":"bdt2", "title": "BDT > 0.2", "condition" : "tracks[probeTrack].Pt() >= 2 &&  BDT > 0.2 && tracks[probeTrack].Pt() < 3 && abs(tracks[probeTrack].Eta()) >= 1.2 && abs(tracks[probeTrack].Eta()) < 2.4"},
@@ -640,6 +640,7 @@ class jpsi_muons_ex_track_new(jpsi_muons):
     normalise = False
     no_weights = False
     plot_overflow = False
+    bg_retag = True
 
 class jpsi_muons_ex_track_new_data(jpsi_muons_ex_track_new):
     plot_data = True
@@ -674,11 +675,13 @@ class jpsi_muons_new_normalised_fit_bg(jpsi_muons_ex_track_new):
         'SingleMuon' : 22.944,
     }
     
+    calculatedLumi = {
+        'SingleMuonReco' : 0.001,
+        'SingleMuon' : 0.001,
+    }
+    
     save_histrograms_to_file = True
-    load_histrograms_from_file = True
-    
-    
-    
+    load_histrograms_from_file = True    
     
     create_canvas = False
     
@@ -687,7 +690,7 @@ class jpsi_muons_new_normalised_fit_bg(jpsi_muons_ex_track_new):
     #solid_bg = True
     
     histograms_defs = [
-        { "obs" : "invMass", "units" : "M_{ll}", "minX" : 2.5, "maxX" : 3.5, "bins" : 60},
+        #{ "obs" : "invMass", "units" : "M_{ll}", "minX" : 2.5, "maxX" : 3.5, "bins" : 60},
     ]
     
     cuts = [
@@ -719,18 +722,18 @@ class jpsi_muons_new_normalised_fit_bg(jpsi_muons_ex_track_new):
                 continue
             eta1 = eta_ranges[etai]
             eta2 = eta_ranges[etai+1]
-            if pt1 == 2:
-                histograms_defs.append({ "obs" : "invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2), "formula" : "invMass", "units" : "M_{ll} Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })
-                histograms_defs.append({ "obs" : "invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_0", "formula" : "invMass", "units" : "M_{ll} Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.0", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.0 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })
-                histograms_defs.append({ "obs" : "invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_1", "formula" : "invMass", "units" : "M_{ll} Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.1", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })
-                histograms_defs.append({ "obs" : "invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_2", "formula" : "invMass", "units" : "M_{ll} Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.14", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.14 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })
-            else:
-                histograms_defs.append({ "obs" : "invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2), "formula" : "invMass", "units" : "M_{ll} Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })
+            # if pt1 == 2:
+#                 histograms_defs.append({ "obs" : "invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2), "formula" : "invMass", "units" : "M_{ll} Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })
+#                 histograms_defs.append({ "obs" : "invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_0", "formula" : "invMass", "units" : "M_{ll} Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.0", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.0 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })
+#                 histograms_defs.append({ "obs" : "invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_1", "formula" : "invMass", "units" : "M_{ll} Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.1", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })
+#                 histograms_defs.append({ "obs" : "invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_2", "formula" : "invMass", "units" : "M_{ll} Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.14", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.14 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })
+#             else:
+            histograms_defs.append({ "obs" : "invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2), "formula" : "invMass", "units" : "M_{ll} Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })
     
     #histograms_defs.append({ "obs" : "cut_exTrack_invMass", "formula" : "exTrack_invMass", "units" : "M_{ll} Cut", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "abs(track.Eta()) < 2.4 && tracks_dxyVtx[ti] < 0.02 && tracks_dzVtx[ti] < 0.02"})# && tracks_trkRelIso[ti] < 0.1
     
-    histograms_defs.append({ "obs" : "reco_invMass", "formula" : "invMass", "units" : "M_{ll} Reco", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "tracks_mi[probeTrack] > -1"})# && tracks_trkRelIso[ti] < 0.1
-    histograms_defs.append({ "obs" : "id_invMass", "formula" : "invMass", "units" : "M_{ll} Id", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "abs(tracks[probeTrack].Eta()) < 2.4 && tracks_mi[probeTrack] > -1 && Muons_mediumID[tracks_mi[probeTrack]] == 1"})# && tracks_trkRelIso[ti] < 0.1
+    #histograms_defs.append({ "obs" : "reco_invMass", "formula" : "invMass", "units" : "M_{ll} Reco", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "tracks_mi[probeTrack] > -1"})# && tracks_trkRelIso[ti] < 0.1
+    #histograms_defs.append({ "obs" : "id_invMass", "formula" : "invMass", "units" : "M_{ll} Id", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "abs(tracks[probeTrack].Eta()) < 2.4 && tracks_mi[probeTrack] > -1 && Muons_mediumID[tracks_mi[probeTrack]] == 1"})# && tracks_trkRelIso[ti] < 0.1
     
     for pti in range(len(pt_ranges)):
         if pti == len(pt_ranges) - 1:
@@ -743,28 +746,70 @@ class jpsi_muons_new_normalised_fit_bg(jpsi_muons_ex_track_new):
                 continue
             eta1 = eta_ranges[etai]
             eta2 = eta_ranges[etai+1]
-            if pt1 == 2:
-            
-                
-                histograms_defs.append({ "obs" : "reco_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2), "formula" : "invMass", "units" : "M_{ll} Reco Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "tracks_mi[probeTrack] > -1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
-                histograms_defs.append({ "obs" : "id_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2), "formula" : "invMass", "units" : "M_{ll} Id Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "tracks_mi[probeTrack] > -1 && Muons_mediumID[tracks_mi[probeTrack]] == 1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
-            
-                
-                histograms_defs.append({ "obs" : "reco_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_0", "formula" : "invMass", "units" : "M_{ll} Reco Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.0", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.0 && tracks_mi[probeTrack] > -1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
-                histograms_defs.append({ "obs" : "id_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_0", "formula" : "invMass", "units" : "M_{ll} Id Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.0", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.0 && tracks_mi[probeTrack] > -1 && Muons_mediumID[tracks_mi[probeTrack]] == 1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
-                
-                histograms_defs.append({ "obs" : "reco_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_1", "formula" : "invMass", "units" : "M_{ll} Reco Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.1", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.1 && tracks_mi[probeTrack] > -1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
-                histograms_defs.append({ "obs" : "id_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_1", "formula" : "invMass", "units" : "M_{ll} Id Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.1", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.1 && tracks_mi[probeTrack] > -1 && Muons_mediumID[tracks_mi[probeTrack]] == 1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
-                
-                histograms_defs.append({ "obs" : "reco_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_2", "formula" : "invMass", "units" : "M_{ll} Reco Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.14", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.14 && tracks_mi[probeTrack] > -1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
-                histograms_defs.append({ "obs" : "id_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_2", "formula" : "invMass", "units" : "M_{ll} Id Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.14", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.14 && tracks_mi[probeTrack] > -1 && Muons_mediumID[tracks_mi[probeTrack]] == 1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
-                
-            else:
+            # if pt1 == 2:
+#             
+#                 
+#                 histograms_defs.append({ "obs" : "reco_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2), "formula" : "invMass", "units" : "M_{ll} Reco Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "tracks_mi[probeTrack] > -1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
+#                 histograms_defs.append({ "obs" : "id_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2), "formula" : "invMass", "units" : "M_{ll} Id Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "tracks_mi[probeTrack] > -1 && Muons_mediumID[tracks_mi[probeTrack]] == 1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
+#             
+#                 
+#                 histograms_defs.append({ "obs" : "reco_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_0", "formula" : "invMass", "units" : "M_{ll} Reco Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.0", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.0 && tracks_mi[probeTrack] > -1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
+#                 histograms_defs.append({ "obs" : "id_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_0", "formula" : "invMass", "units" : "M_{ll} Id Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.0", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.0 && tracks_mi[probeTrack] > -1 && Muons_mediumID[tracks_mi[probeTrack]] == 1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
+#                 
+#                 histograms_defs.append({ "obs" : "reco_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_1", "formula" : "invMass", "units" : "M_{ll} Reco Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.1", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.1 && tracks_mi[probeTrack] > -1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
+#                 histograms_defs.append({ "obs" : "id_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_1", "formula" : "invMass", "units" : "M_{ll} Id Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.1", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.1 && tracks_mi[probeTrack] > -1 && Muons_mediumID[tracks_mi[probeTrack]] == 1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
+#                 
+#                 histograms_defs.append({ "obs" : "reco_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_2", "formula" : "invMass", "units" : "M_{ll} Reco Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.14", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.14 && tracks_mi[probeTrack] > -1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
+#                 histograms_defs.append({ "obs" : "id_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2) + "_bdt_2", "formula" : "invMass", "units" : "M_{ll} Id Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "], BDT > 0.14", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "BDT > 0.14 && tracks_mi[probeTrack] > -1 && Muons_mediumID[tracks_mi[probeTrack]] == 1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
+#                 
+#             else:
             #histograms_defs.append({ "obs" : "cut_exTrack_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2), "formula" : "exTrack_invMass", "units" : "M_{ll} Cut Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "abs(track.Eta()) < 2.4 && tracks_dxyVtx[ti] < 0.02 && tracks_dzVtx[ti] < 0.02 && track.Pt() >= " + str(pt1) + " && track.Pt() <= " + str(pt2) + " && abs(track.Eta()) >= " + str(eta1) + " && abs(track.Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
-                histograms_defs.append({ "obs" : "reco_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2), "formula" : "invMass", "units" : "M_{ll} Reco Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "tracks_mi[probeTrack] > -1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
-                histograms_defs.append({ "obs" : "id_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2), "formula" : "invMass", "units" : "M_{ll} Id Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "tracks_mi[probeTrack] > -1 && Muons_mediumID[tracks_mi[probeTrack]] == 1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
+            histograms_defs.append({ "obs" : "reco_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2), "formula" : "invMass", "units" : "M_{ll} Reco Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "tracks_mi[probeTrack] > -1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
+            histograms_defs.append({ "obs" : "id_invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2), "formula" : "invMass", "units" : "M_{ll} Id Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "tracks_mi[probeTrack] > -1 && Muons_mediumID[tracks_mi[probeTrack]] == 1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
                 
-                
+
+class jpsi_muons_jpsi_shape_comp(jpsi_muons_new_normalised_fit_bg):
+    save_histrograms_to_file = False
+    load_histrograms_from_file = False
+    histograms_defs = [
+    ]
+    
+    cuts = [
+        {"name":"none", "title": "No Cuts", "condition" : "1"},
+    ]
+    
+    pt_ranges = [2,3,5,10,25]
+    eta_ranges = [0,1.2,2.4]
+    
+    for pti in range(len(pt_ranges)):
+        if pti == len(pt_ranges) - 1:
+            continue
+        pt1 = pt_ranges[pti]
+        pt2 = pt_ranges[pti+1]
+        
+        for etai in range(len(eta_ranges)):
+            if etai == len(eta_ranges) - 1:
+                continue
+            eta1 = eta_ranges[etai]
+            eta2 = eta_ranges[etai+1]
+            histograms_defs.append({ "obs" : "invMass_"+str(pt1)+"_"+str(pt2)+"_"+str(eta1)+"_"+str(eta2), "formula" : "invMass", "units" : "M_{ll} Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })
+    bgReTagging = {
+        "jpsi" : "tagJpsi == 1 && probeJpsi == 1",
+        "id" : "(tagJpsi == 1 && probeJpsi == 1) && tracks_mi[probeTrack] > -1 && Muons_mediumID[tracks_mi[probeTrack]] == 1",
+    }
+
+    bgReTaggingOrder = {
+        "jpsi" : 0,
+        "id" : 1
+    }
+    
+    nostack = True
+    fit_inv_mass_jpsi = False
+    fit_inv_mass_jpsi_func_bg = False
+    customRatios = [  [["id"],["jpsi"]]  ]
+    plot_custom_ratio = True
+    
+    
 
 class jpsi_muons_new_normalised_fit_data(jpsi_muons_new_normalised_fit_bg):
     plot_bg = False

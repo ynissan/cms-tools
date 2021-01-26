@@ -733,7 +733,7 @@ def getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=
         return None
     binsStr = None
     
-    #print "Getting", name, "cond:", condition, "minX", minX, "maxX", maxX, "overflow", overflow
+    print "Getting", name, "cond:", condition, "minX", minX, "maxX", maxX, "overflow", overflow
     
     # if tmpName == "hsqrt":
 #         letters = string.ascii_lowercase

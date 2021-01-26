@@ -34,7 +34,7 @@ parser.add_argument('-s', '--single', dest='single', help='Single', action='stor
 parser.add_argument('-c', '--cut', nargs=1, help='Cut', required=False)
 parser.add_argument('-obs', '--obs', nargs=1, help='Obs', required=False)
 parser.add_argument('-lep', '--lep', dest='lep', help='Single', action='store_true')
-parser.add_argument('-bt', '--bg_retag', dest='bg_retag', help='Background Retagging', action='store_true')
+#parser.add_argument('-bt', '--bg_retag', dest='bg_retag', help='Background Retagging', action='store_true')
 parser.add_argument('-png', '--png', nargs=1, help='Png', required=False)
 parser.add_argument('-type', '--type', nargs=1, help='Type', required=False)
 parser.add_argument('-l', '--linear', dest='linear', help='Linear', action='store_true')
@@ -43,12 +43,14 @@ args = parser.parse_args()
 output_file = None
 
 plot_2l = args.lep
-bg_retag = args.bg_retag
+#bg_retag = args.bg_retag
 
 plot_par = plot_params.default_params
 
 if args.type is not None:
     plot_par = eval("plot_params." + args.type[0])
+
+bg_retag = plot_par.bg_retag
 
 if args.output_file:
     output_file = args.output_file[0]
@@ -189,10 +191,10 @@ def createPlots(rootfiles, type, histograms, weight=1):
         rootFile.Close()
 
 
-def createPlotsFast(rootfiles, type, histograms, weight=1, prefix="", condition="", no_weights = False):
+def createPlotsFast(rootfiles, types, histograms, weight=1, prefix="", conditions=[""], no_weights = False):
     print "Processing "
     print rootfiles
-
+    
     i = 0
     for f in rootfiles:
         if os.path.basename(f) in plot_par.ignore_bg_files:
@@ -204,49 +206,53 @@ def createPlotsFast(rootfiles, type, histograms, weight=1, prefix="", condition=
         i += 1
         print f
         c = rootFile.Get('tEvent')
+        
+        for typeIdx in range(len(types)):
+            type = types[typeIdx]
+            condition = conditions[typeIdx]
 
-        for cut in plot_par.cuts:
-            for hist_def in plot_par.histograms_defs:
-                if prefix != "":
-                    histName =  prefix + "_" + cut["name"] + "_" + hist_def["obs"] + "_" + type
-                else:
-                    histName =  cut["name"] + "_" + hist_def["obs"] + "_" + type
+            for cut in plot_par.cuts:
+                for hist_def in plot_par.histograms_defs:
+                    if prefix != "":
+                        histName =  prefix + "_" + cut["name"] + "_" + hist_def["obs"] + "_" + type
+                    else:
+                        histName =  cut["name"] + "_" + hist_def["obs"] + "_" + type
                     
-                conditionStr = "( " + cut["condition"] + " )"
-                if hist_def.get("condition") is not None:
-                    conditionStr += " && ( " + hist_def["condition"] + " )"
-                if len(condition) > 0:
-                    conditionStr += " && ( " + condition + " )"
+                    conditionStr = "( " + cut["condition"] + " )"
+                    if hist_def.get("condition") is not None:
+                        conditionStr += " && ( " + hist_def["condition"] + " )"
+                    if len(condition) > 0:
+                        conditionStr += " && ( " + condition + " )"
                 
-                drawString = ""
+                    drawString = ""
                 
-                if no_weights:
-                    drawString = " ( " + conditionStr + " )"
-                else:
-                    drawString = plot_par.weightString[plot_par.plot_kind] + " * " + ((str(weight) + " * ") if type != "data" else "") + " ( " + conditionStr + " )"
+                    if no_weights:
+                        drawString = " ( " + conditionStr + " )"
+                    else:
+                        drawString = plot_par.weightString[plot_par.plot_kind] + " * " + ((str(weight) + " * ") if type != "data" else "") + " ( " + conditionStr + " )"
                 
-                #print "drawString", drawString
-                #print "conditionStr", conditionStr
+                    #print "drawString", drawString
+                    #print "conditionStr", conditionStr
                 
-                formula = hist_def.get("formula") if hist_def.get("formula") is not None else hist_def.get("obs")
+                    formula = hist_def.get("formula") if hist_def.get("formula") is not None else hist_def.get("obs")
                 
-                if plot_par.plot_log_x and hist_def["obs"] == "invMass":
-                    hist = utils.getRealLogxHistogramFromTree(histName, c, formula, hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), drawString, plot_par.plot_overflow)
-                else:
-                    hist = utils.getHistogramFromTree(histName, c, formula, hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), drawString, plot_par.plot_overflow)
+                    if plot_par.plot_log_x and hist_def["obs"] == "invMass":
+                        hist = utils.getRealLogxHistogramFromTree(histName, c, formula, hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), drawString, plot_par.plot_overflow)
+                    else:
+                        hist = utils.getHistogramFromTree(histName, c, formula, hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), drawString, plot_par.plot_overflow)
                 
-                if hist is None:
-                    continue
-                #if "leptonF" in histName:
-                #    print "Made leptonFlavour for", histName, hist.GetXaxis().GetNbins()
-                hist.GetXaxis().SetTitle("")
-                hist.SetTitle("")
-                hist.Sumw2()
+                    if hist is None:
+                        continue
+                    #if "leptonF" in histName:
+                    #    print "Made leptonFlavour for", histName, hist.GetXaxis().GetNbins()
+                    hist.GetXaxis().SetTitle("")
+                    hist.SetTitle("")
+                    hist.Sumw2()
 
-                if histograms.get(histName) is None:
-                    histograms[histName] = hist
-                else:
-                    histograms[histName].Add(hist)
+                    if histograms.get(histName) is None:
+                        histograms[histName] = hist
+                    else:
+                        histograms[histName].Add(hist)
                 
         
         rootFile.Close()
@@ -407,9 +413,9 @@ def createAllHistograms(histograms, sumTypes):
         if plot_par.plot_data:
             dataFiles = glob(plot_par.data_dir + "/*")
             if plot_par.plot_fast:
-                createPlotsFast(dataFiles, "data", histograms, 1, "", "", plot_par.no_weights)
+                createPlotsFast(dataFiles, ["data"], histograms, 1, "", [""], plot_par.no_weights)
             else:
-                createPlots(dataFiles, "data", histograms, 1, "", "", plot_par.no_weights)
+                createPlots(dataFiles, ["data"], histograms, 1, "", [""], plot_par.no_weights)
         
         global calculated_lumi
         weight=0
@@ -424,45 +430,50 @@ def createAllHistograms(histograms, sumTypes):
         if plot_par.plot_data and plot_par.plot_sc:
             print "CREATING SC CATEGORY!"
             dataFiles = glob(plot_par.sc_data_dir + "/*")
-            createPlotsFast(dataFiles, "data", histograms, 1, "sc", "", plot_par.no_weights)
+            createPlotsFast(dataFiles, ["data"], histograms, 1, "sc", [""], plot_par.no_weights)
     
         if plot_par.plot_signal:
             if plot_par.plot_fast:
                 print "Plotting Signal Fast"
                 for signalFile in plot_par.signal_dir:
                     signalBasename = os.path.basename(signalFile)
-                    createPlotsFast([signalFile], signalBasename, histograms, weight, "", "", plot_par.no_weights)
+                    createPlotsFast([signalFile], [signalBasename], histograms, weight, "", [""], plot_par.no_weights)
             else:
                 for signalFile in plot_par.signal_dir:
                     signalBasename = os.path.basename(signalFile)
-                    createPlots([signalFile], signalBasename, histograms, weight, "", "", plot_par.no_weights)
+                    createPlots([signalFile], [signalBasename], histograms, weight, "", [""], plot_par.no_weights)
         if plot_par.plot_bg:
         
             allBgFiles = glob(plot_par.bg_dir + "/*.root")
-        
-            for type in sumTypes:
-                if bg_retag:
-                    bgFilesToPlot = []
-                    if plot_par.choose_bg_files:
-                        print "In plot_par.choose_bg_files"
-                        for bgChooseType in plot_par.choose_bg_files_list:
-                            if utils.isCoumpoundType(bgChooseType):
-                                print "Compound", bgChooseType
-                                bgFilesToPlot.extend(utils.getFilesForCompoundType(bgChooseType, plot_par.bg_dir))
-                                print bgFilesToPlot
-                            else:
-                                print "Not in compound", bgChooseType
-                                bgFilesToPlot.extend(glob(plot_par.bg_dir + "/*" + bgChooseType + "_*.root"))
-                    else:
-                        bgFilesToPlot = allBgFiles
-                
-                    print "Summing type", type
-
-                    if plot_par.plot_fast:
-                        createPlotsFast(bgFilesToPlot, type, histograms, str(weight), "", plot_par.bgReTagging[type], plot_par.no_weights)
-                    else:
-                        createPlots(bgFilesToPlot, type, histograms, str(weight), "", plot_par.bgReTagging[type], plot_par.no_weights)
+            
+            print sumTypes
+            
+            if bg_retag:
+                print "GOT BG RETAG"
+                bgFilesToPlot = []
+                if plot_par.choose_bg_files:
+                    print "In plot_par.choose_bg_files"
+                    for bgChooseType in plot_par.choose_bg_files_list:
+                        if utils.isCoumpoundType(bgChooseType):
+                            print "Compound", bgChooseType
+                            bgFilesToPlot.extend(utils.getFilesForCompoundType(bgChooseType, plot_par.bg_dir))
+                            print bgFilesToPlot
+                        else:
+                            print "Not in compound", bgChooseType
+                            bgFilesToPlot.extend(glob(plot_par.bg_dir + "/*" + bgChooseType + "_*.root"))
                 else:
+                    bgFilesToPlot = allBgFiles
+        
+                typesArr = [type for type in sumTypes]
+                condArr = [plot_par.bgReTagging[type] for type in typesArr]
+
+                if plot_par.plot_fast:
+                    createPlotsFast(bgFilesToPlot, typesArr, histograms, str(weight), "", condArr, plot_par.no_weights)
+                else:
+                    createPlots(bgFilesToPlot, typesArr, histograms, str(weight), "", condArr, plot_par.no_weights)
+                    
+            else:
+                for type in sumTypes:
                     if utils.existsInCoumpoundType(type):
                         continue
                     #if type == "ZJetsToNuNu" or type == "WJetsToLNu":
@@ -473,24 +484,24 @@ def createAllHistograms(histograms, sumTypes):
                     print "Summing type", type
                     rootfiles = glob(plot_par.bg_dir + "/*" + type + "_*.root")
                     if plot_par.plot_fast:
-                        createPlotsFast(rootfiles, type, histograms, weight, "", "", plot_par.no_weights)
+                        createPlotsFast(rootfiles, [type], histograms, weight, "", [""], plot_par.no_weights)
                     else:
-                        createPlots(rootfiles, type, histograms, weight, "", "", plot_par.no_weights)
-            if not bg_retag:
+                        createPlots(rootfiles, [type], histograms, weight, "", [""], plot_par.no_weights)
+
                 for cType in utils.compoundTypes:
-                
+            
                     if plot_par.choose_bg_files and cType not in plot_par.choose_bg_files_list:
                         print "Skipping cType", cType, "because not in chosen list"
                         continue
-                
+            
                     print "Creating compound type", cType
-                
+            
                     rootFiles = utils.getFilesForCompoundType(cType, plot_par.bg_dir)
                     if len(rootFiles):
                         if plot_par.plot_fast:
-                            createPlotsFast(rootFiles, cType, histograms, weight, "", "", plot_par.no_weights)
+                            createPlotsFast(rootFiles, [cType], histograms, weight, "", [""], plot_par.no_weights)
                         else:
-                            createPlots(rootFiles, cType, histograms, weight, "", "", plot_par.no_weights)
+                            createPlots(rootFiles, [cType], histograms, weight, "", [""], plot_par.no_weights)
                     else:
                         print "**Couldn't find file for " + cType
         
@@ -508,7 +519,7 @@ def createAllHistograms(histograms, sumTypes):
                 else:
                     bgFilesToPlot = glob(plot_par.sc_bg_dir + "/*")
 
-                createPlotsFast(bgFilesToPlot, "bg", histograms, weight, "sc", "", plot_par.no_weights)
+                createPlotsFast(bgFilesToPlot, ["bg"], histograms, weight, "sc", [""], plot_par.no_weights)
         
         if plot_par.plot_data and plot_par.blind_data and plot_par.plot_signal:
             for cut in plot_par.cuts:
