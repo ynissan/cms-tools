@@ -117,7 +117,7 @@ def funcFullModelDoubleGaussianQuadratic(x,par):
 
 
 def funcFullModelQuadratic(x,par):
-    return par[0]*TMath.Exp(-(x[0]-par[1])*(x[0]-par[1])/(2*par[2]*par[2]))+par[3]+par[4]*x[0] + par[5]*x[0]*x[0]
+    return par[0]*TMath.Exp(-(x[0]-par[1])*(x[0]-par[1])/(2*par[2]*par[2]))+par[3]+par[4]*x[0] + par[5]*x[0]*x[0] + par[6]*x[0]*x[0]*x[0] + par[7]*x[0]*x[0]*x[0]*x[0]
 
 def funcLorentzian(x,par):
     return (0.5*par[0]*par[1]/TMath.Pi()) / TMath.Max( 1.e-10,(x[0]-par[2])*(x[0]-par[2]) + .25*par[1]*par[1])
@@ -127,9 +127,28 @@ def funcFullModelLorentzian(x,par):
 
 def funcBackgroundQuadratic(x,par):
     return par[0]+par[1]*x[0]+par[2]*x[0]*x[0] + par[3]*x[0]*x[0]*x[0] + par[4]*x[0]*x[0]*x[0]*x[0]
+    
+def funcBackgroundQuadratic2(x,par):
+    return par[0]+par[1]*x[0]+par[2]*x[0]*x[0] + par[3]*x[0]*x[0]*x[0] + par[4]*x[0]*x[0]*x[0]*x[0] + par[5]*x[0]*x[0]*x[0]*x[0]*x[0]+ par[6]*x[0]*x[0]*x[0]*x[0]*x[0]*x[0]
 
 def funcFullModelLorentzianQuadratic(x,par):
-    return (0.5*par[0]*par[1]/TMath.Pi()) / TMath.Max( 1.e-10,(x[0]-par[2])*(x[0]-par[2]) + .25*par[1]*par[1]) +par[3]+par[4]*x[0] + par[5]*x[0]*x[0]
+    return (0.5*par[0]*par[1]/TMath.Pi()) / TMath.Max( 1.e-10,(x[0]-par[2])*(x[0]-par[2]) + .25*par[1]*par[1]) + par[3]+par[4]*x[0] + par[5]*x[0]*x[0] + par[6]*x[0]*x[0]*x[0] + par[7]*x[0]*x[0]*x[0]*x[0]
+
+def funcCrystalBall(x, par):
+    #print x, par[0], par[1], par[2], par[3]
+    return par[4]*ROOT.Math.crystalball_function(x[0], par[0], par[1], par[2], par[3])
+
+def funcFullModelCrystalBallQuadratic(x, par):
+    #print x, par[0], par[1], par[3], par[4]
+    return par[4]*ROOT.Math.crystalball_function(x[0], par[0], par[1], par[2], par[3]) + par[5]+par[6]*x[0]+par[7]*x[0]*x[0] + par[8]*x[0]*x[0]*x[0] + par[9]*x[0]*x[0]*x[0]*x[0]
+
+def funcFullModelCrystalBallQuadratic2(x, par):
+    #print x, par[0], par[1], par[3], par[4]
+    return par[4]*ROOT.Math.crystalball_function(x[0], par[0], par[1], par[2], par[3]) + par[5]+par[6]*x[0]+par[7]*x[0]*x[0] + par[8]*x[0]*x[0]*x[0] + par[9]*x[0]*x[0]*x[0]*x[0] + par[10]*x[0]*x[0]*x[0]*x[0]*x[0] + par[11]*x[0]*x[0]*x[0]*x[0]*x[0]*x[0]
+
+
+def funcFullModelCrystalBall(x, par):
+    return par[4]*ROOT.Math.crystalball_function(x[0], par[0], par[1], par[2], par[3]) + par[5]+par[6]*x[0]
 
 
 
@@ -426,6 +445,7 @@ def createAllHistograms(histograms, sumTypes):
         else:
             calculated_lumi = utils.LUMINOSITY / 1000
             weight = utils.LUMINOSITY
+        
             
         if plot_par.plot_data and plot_par.plot_sc:
             print "CREATING SC CATEGORY!"
@@ -586,6 +606,14 @@ def loadAllHistograms(histograms):
     nFile.Close()
 
 
+def SubMatrices(mata, matb):
+    newmatrix = mata.Clone()
+    for i in range(newmatrix.GetNrows()):
+        for j in range(newmatrix.GetNrows()):
+            newmatrix[i][j] = newmatrix[i][j]-matb[i][j]
+    return newmatrix
+
+
 def main():
     print "Start: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S')
     
@@ -597,7 +625,12 @@ def main():
     fit_funcs = {}
     fit_hist_integral = {}
     fit_full_integral = {}
+    fit_full_integral_chi_s = {}
     fit_signal_integral = {}
+    fit_signal_integral_error = {}
+    fit_only_signal_integral = {}
+    fit_only_signal_integral_chi_s = {}
+    fit_only_signal_integral_error = {}
     fit_bg_integral = {}
     hist_signal_integral = {}
     
@@ -624,7 +657,16 @@ def main():
         saveHistogramsToFile(histograms)
     
     global calculated_lumi  
-    calculated_lumi= plot_par.calculatedLumi.get(plot_par.plot_kind)
+    global weight
+    
+    if plot_par.calculatedLumi.get(plot_par.plot_kind) is not None:
+        calculated_lumi = plot_par.calculatedLumi.get(plot_par.plot_kind) #should be in fb-1
+        weight = calculated_lumi * 1000 #convert to pb-1
+    else:
+        calculated_lumi = utils.LUMINOSITY / 1000
+        weight = utils.LUMINOSITY
+    
+    #calculated_lumi= plot_par.calculatedLumi.get(plot_par.plot_kind)
     print "plot_par.plot_kind", plot_par.plot_kind
     print "plot_par.calculatedLumi", plot_par.calculatedLumi
     print "calculated_lumi", calculated_lumi
@@ -788,9 +830,13 @@ def main():
             sigMax = 0
             if plot_par.plot_signal: 
                 for i in range(len(plot_par.signal_dir)):
+                    
                     signalFile = plot_par.signal_dir[i]
                     signalBasename = os.path.basename(signalFile)
-                    sigHistsBaseNames.append(signalBasename.split(".")[0].split("_")[-1])
+                    if plot_par.signal_names is not None and len(plot_par.signal_names) >= i+1:
+                        sigHistsBaseNames.append(plot_par.signal_names[i])
+                    else:
+                        sigHistsBaseNames.append(signalBasename.split(".")[0].split("_")[-1])
                     sigHistName = cut["name"] + "_" + hist_def["obs"] + "_" + signalBasename
                     sigHistsNames.append(sigHistName)
                     sigHist = histograms[sigHistName]
@@ -798,7 +844,7 @@ def main():
                         sigHist.Scale(1./sigHist.Integral())
                     print sigHistName, sigHist.GetMaximum()
                     sigHists.append(sigHist)
-                    utils.formatHist(sigHist, utils.signalCp[i], 0.8, large_version)
+                    utils.formatHist(sigHist, utils.signalCp[i], 0.8)
                     sigMax = max(sigHist.GetMaximum(), sigMax)
             maximum = sigMax
             if foundBg:
@@ -824,12 +870,21 @@ def main():
             if maximum == 0:
                 maximum == 10
             
-            legend = TLegend(.20,.60,.89,.89)
-            legend.SetNColumns(2)
+            #"legendCoor" : [], "legendCol" : 1
+            legend = None
+            if hist_def.get("legendCoor") is not None:
+                legend = TLegend(hist_def["legendCoor"]["x1"],hist_def["legendCoor"]["y1"],hist_def["legendCoor"]["x2"],hist_def["legendCoor"]["y2"])
+            else:
+                legend = TLegend(.20,.60,.89,.89)
+            legendCol = 2
+            if hist_def.get("legendCol") is not None:
+                legendCol = hist_def["legendCol"]
+            legend.SetNColumns(legendCol)
             legend.SetBorderSize(0)
             legend.SetFillStyle(0)
             newBgHist = None
             memory.append(legend)
+            print "foundBg=", foundBg
             
             if foundBg:
                 newBgHist = None
@@ -887,25 +942,32 @@ def main():
                 #newBgHist.GetXaxis().SetLabelSize(0.055)
                 c1.Modified()
             else:
-                utils.histoStyler(dataHist)
+                histToStyle = None
+                if plot_par.plot_data:
+                    histToStyle = dataHist
+                elif plot_par.plot_signal:
+                    histToStyle = sigHists[0]
+                
+                utils.histoStyler(histToStyle)
                 if not plot_par.plot_ratio:
-                    dataHist.GetXaxis().SetTitle(hist_def["units"] if hist_def.get("units") is not None else hist_def["obs"])
-                dataHist.GetYaxis().SetTitle("Events")
-                dataHist.GetYaxis().SetTitleOffset(1.15)
+                    histToStyle.GetXaxis().SetTitle(hist_def["units"] if hist_def.get("units") is not None else hist_def["obs"])
+
+                histToStyle.GetYaxis().SetTitle("Events")
+                histToStyle.GetYaxis().SetTitleOffset(1.15)
                 if not (linear and plot_single):
                     print "Setting max", maximum*1000
-                    dataHist.SetMaximum(maximum*1000)
+                    histToStyle.SetMaximum(maximum*1000)
                 else:
-                    dataHist.SetMaximum(maximum*1.1)
+                    histToStyle.SetMaximum(maximum*1.1)
                 if not (linear and plot_single):
                     print "NOT LINER!"
                     print "dataHist.SetMinimum(0.0001)"
-                    dataHist.SetMinimum(0.0001)
+                    histToStyle.SetMinimum(0.0001)
                 else:
                     print " LINER!"
                     print "dataHist.SetMinimum(0)"
-                    dataHist.SetMinimum(0)
-            
+                    histToStyle.SetMinimum(0)
+
             if plot_par.plot_signal:
                 for i in range(len(sigHists)):
                     legend.AddEntry(sigHists[i], sigHistsBaseNames[i], 'l')
@@ -924,7 +986,10 @@ def main():
                     sigHists[i].Draw("HIST SAME " + errorStr)
             elif plot_par.plot_signal:
                 for i in range(len(sigHists)):
-                    sigHists[i].Draw("HIST" + errorStr)
+                    if i == 0:
+                        sigHists[i].Draw("HIST " + errorStr)
+                    else:
+                        sigHists[i].Draw("HIST SAME " + errorStr)
             
             if plot_par.plot_significance and hist_def["obs"] == "invMass":
                 accBgHist = None
@@ -1012,6 +1077,8 @@ def main():
                 fitHist = None
                 jpsiHist = None
                 
+                dataFit = False
+                
                 if plot_par.fit_inv_mass_jpsi_func_bg:
                     if plot_par.solid_bg:
                         fitHist = newBgHist
@@ -1022,130 +1089,423 @@ def main():
                         memory.append(jpsiHist)
                 else:
                     fitHist = dataHist
+                    dataFit = True
                 
                 print "Sum", fitHist.Integral()
                 xax = fitHist.GetXaxis()
                 lowedge, highedge = xax.GetBinLowEdge(1), xax.GetBinUpEdge(xax.GetNbins())
                 print "lowedge, highedge", lowedge, highedge
                 
+                
+                lowJpsiEdge, highJpdiEdge = xax.GetBinLowEdge(fitHist.FindBin(3.0)), xax.GetBinUpEdge(fitHist.FindBin(3.2))
+                
                 fFullModel = None
+                
                 gauss = plot_par.fit_inv_mass_jpsi_func == "gauss"
                 linear_fit = plot_par.fit_inv_mass_jpsi_bg_func == "linear"
                 
+                parNum = 0
+                sigParNum = 0
                 
                 if plot_par.fit_inv_mass_jpsi_func == "gauss":
+                    sigParNum = 3
                     if linear_fit:
                         fFullModel = TF1('fFullModel' + hist_def["obs"], funcFullModel, lowedge, highedge, 5)
+                        parNum = 5
                     else:
-                        fFullModel = TF1('fFullModel' + hist_def["obs"], funcFullModelQuadratic, lowedge, highedge, 6)
+                        fFullModel = TF1('fFullModel' + hist_def["obs"], funcFullModelQuadratic, lowedge, highedge, 8)
+                        parNum = 8
                     fFullModel.SetNpx(500);
                     
-                    jpsiBin = fitHist.FindBin(3.096916)
-                    maxJpsiPeak = fitHist.GetBinContent(jpsiBin)
-                    print "jpsiBin", jpsiBin, "maxJpsiPeak", maxJpsiPeak
-                    for i in range(jpsiBin-2, jpsiBin+2):
-                        if i < 1 or  i > fitHist.GetNbinsX():
-                            continue
-                        print "Getting jpsi bin at", i, fitHist.GetBinContent(i)
-                        maxJpsiPeak = max(maxJpsiPeak, fitHist.GetBinContent(i))
-                    print "maxJpsiPeak", maxJpsiPeak
+                    # jpsiBin = fitHist.FindBin(3.096916)
+#                     maxJpsiPeak = fitHist.GetBinContent(jpsiBin)
+#                     print "jpsiBin", jpsiBin, "maxJpsiPeak", maxJpsiPeak
+#                     for i in range(jpsiBin-2, jpsiBin+2):
+#                         if i < 1 or  i > fitHist.GetNbinsX():
+#                             continue
+#                         print "Getting jpsi bin at", i, fitHist.GetBinContent(i)
+#                         maxJpsiPeak = max(maxJpsiPeak, fitHist.GetBinContent(i))
+#                     print "maxJpsiPeak", maxJpsiPeak
                     #fFullModel.FixParameter(0,maxJpsiPeak)
                     fFullModel.SetParameter(1,3.096916)
-                    fFullModel.SetParLimits(1,3.08,3.12)
+                    fFullModel.SetParLimits(1,3.09,3.105)
                     fFullModel.SetParameter(2,0.1)
-                    fFullModel.SetParLimits(2,0.05,0.2)
+                    fFullModel.SetParLimits(2,0.01,0.2)
                 elif plot_par.fit_inv_mass_jpsi_func == "lorentzian":
+                    sigParNum = 3
                     if linear_fit:
                         fFullModel = TF1('fFullModel' + hist_def["obs"], funcFullModelLorentzian, lowedge, highedge, 5)
+                        parNum = 5
                     else:
-                        fFullModel = TF1('fFullModel' + hist_def["obs"], funcFullModelLorentzianQuadratic, lowedge, highedge, 6)
+                        fFullModel = TF1('fFullModel' + hist_def["obs"], funcFullModelLorentzianQuadratic, lowedge, highedge, 8)
+                        parNum = 8
                     fFullModel.SetNpx(500);
                     fFullModel.SetParameter(2, 3.096916)
                     fFullModel.SetParLimits(2,3.05, 3.15)
                     fFullModel.SetParameter(1, 0.1)
                 elif plot_par.fit_inv_mass_jpsi_func == "doubleGaussian":
+                    sigParNum = 5
                     if linear_fit:
                         fFullModel = TF1('fFullModel' + hist_def["obs"], funcFullModelDoubleGaussian, lowedge, highedge, 7)
+                        parNum = 7
                     else:
                         fFullModel = TF1('fFullModel' + hist_def["obs"], funcFullModelDoubleGaussianQuadratic, lowedge, highedge, 10)
+                        parNum = 10
                     fFullModel.SetNpx(500);
-                    fFullModel.SetParameter(0,10)
-                    fFullModel.SetParLimits(0,0.01,10000)
-                    fFullModel.SetParameter(3,0.01)
-                    fFullModel.SetParLimits(3,0.01,10000)
-                    fFullModel.SetParameter(1,3.096916)
-                    fFullModel.SetParLimits(1,3.08,3.11)
-                    fFullModel.SetParameter(2,0.05)
-                    fFullModel.SetParameter(4,0.05)
-                    fFullModel.SetParLimits(2,0.005,0.1)
-                    fFullModel.SetParLimits(4,0.005,0.1)
+                    
+                    if False:#hist_def["obs"].startswith("invMass"):
+                        print "Getting the fit from ID", hist_def["obs"]
+                        print fit_funcs
+                        fFullModelId = fit_funcs["fFullModelid_" + hist_def["obs"]]
+                        
+                        for paramIdx in range(5):
+                            paramValue = fFullModelId.GetParameter(paramIdx)
+                            print "fFullModel.SetParameter(",paramIdx,", ",paramValue,")"
+                            fFullModel.SetParameter(paramIdx, paramValue)
+                            if paramIdx == 0 or paramIdx == 3:
+                                fFullModel.SetParLimits(paramIdx,0.01,10000)
+                                continue
+                            #else:
+                            print "fFullModel.SetParLimits(",paramIdx, paramValue - paramValue*0.01, paramValue + paramValue*0.01
+                            #fFullModel.FixParameter(paramIdx, paramValue)
+                            if paramIdx == 1:
+                                fFullModel.SetParLimits(paramIdx, paramValue - paramValue*0.005, paramValue + paramValue*0.005)
+                            else:
+                                fFullModel.SetParLimits(paramIdx, paramValue - paramValue*0.05, paramValue + paramValue*0.05)
+                        
+                        #exit(0)
+                    else:
+                        fFullModel.SetParameter(0,10)
+                        fFullModel.SetParLimits(0,0.01,1000)
+                        fFullModel.SetParameter(3,0.01)
+                        fFullModel.SetParLimits(3,0.01,1000)
+                        fFullModel.SetParameter(1,3.096916)
+                        fFullModel.SetParLimits(1,3.08,3.11)
+                        #fFullModel.SetParLimits(1,3.085,3.1)
+                        
+                        fFullModel.SetParameter(2,0.05)
+                        fFullModel.SetParameter(4,0.05)
+                        fFullModel.SetParLimits(2,0.005,0.1)
+                        fFullModel.SetParLimits(4,0.005,0.1)
+                        
+                elif plot_par.fit_inv_mass_jpsi_func == "crystalBall":
+                    sigParNum = 4
+                    if linear_fit:
+                        fFullModel = TF1('fFullModel' + hist_def["obs"], funcFullModelLorentzian, lowedge, highedge, 5)
+                        parNum = 5
+                    else:
+                        sigParNum = 5
+                        # (alpha, n sigma, mu)
+                        fFullModel = TF1('fFullModel' + hist_def["obs"], funcFullModelCrystalBallQuadratic, lowedge, highedge, 10)
+                        parNum = 10
+                        
+                        
+                        # (alpha, n sigma, mu)
+                        fFullModel = TF1('fFullModel' + hist_def["obs"], funcFullModelCrystalBallQuadratic2, lowedge, highedge, 12)
+                        parNum = 12
+                        
+                    fFullModel.SetNpx(500);
                     
                     
+                    crystalBallInitialConditionsName = hist_def["obs"]
+                    if "reco" in hist_def["obs"]:
+                        crystalBallInitialConditionsName = crystalBallInitialConditionsName.replace("reco", "id")
+                    
+                    conditions = plot_par.crystalBallInitialConditions
+                    
+                    condition = None
+                    
+                    if conditions.get(crystalBallInitialConditionsName):
+                        print "TAKING CRYSTAL", crystalBallInitialConditionsName
+                        condition = conditions[crystalBallInitialConditionsName]
+                    else:
+                        print "TAKING DEFAULT CRYSTAL"
+                        condition = conditions["default"]
+                    
+                    cbPars = condition["pars"]
+                    cbParsLimits = condition["limits"]
+                    
+                    ignoreParams = condition["ignore"] if condition.get("ignore") is not None else False
+                    
+                    #print "ignoreParams", ignoreParams
+                    #exit(0)
+                    
+                    for i in range(len(cbPars)):
+                        # if i == 3:
+#                             continue
+                        if i != 3 and ignoreParams:
+                            continue
+                        
+                        print "cbPars[i]", cbPars[i]
+                        print "cbParsLimits[i][0], cbParsLimits[i][1]", cbParsLimits[i][0], cbParsLimits[i][1]
+                        
+                        fFullModel.SetParameter(i, cbPars[i])
+                        fFullModel.SetParLimits(i, cbParsLimits[i][0], cbParsLimits[i][1])
+
+        
+        
                 fit_funcs["fFullModel" + hist_def["obs"]] = fFullModel
                 # s option creates the result
                 fFullModel.SetLineWidth(2)
                 fFullModel.SetLineColor(kRed)
                 fitresult = fitHist.Fit(fFullModel,'s0','same', lowedge, highedge)
+                
+                
+                
                 fFullModel.Draw("SAME")
                 legend.AddEntry(fFullModel, "Global fit", 'l')
                 
                 fSignal = None
+                fSignalOnlyModel = None
                 
                 if plot_par.fit_inv_mass_jpsi_func == "gauss":
                     fSignal = TF1('fSignal' + hist_def["obs"], funcGaussian, lowedge, highedge, 3)
+                    fSignalOnlyModel = TF1('fSignal' + hist_def["obs"], funcGaussian, lowedge, highedge, 3)
+                    fSignalOnlyModel.SetParameter(1,3.096916)
+                    fSignalOnlyModel.SetParLimits(1,3.09,3.105)
+                    fSignalOnlyModel.SetParameter(2,0.1)
+                    fSignalOnlyModel.SetParLimits(2,0.05,0.2)
                 elif plot_par.fit_inv_mass_jpsi_func == "lorentzian":
                     fSignal = TF1('fSignal' + hist_def["obs"], funcLorentzian, lowedge, highedge, 3)
+                    fSignalOnlyModel = TF1('fSignal' + hist_def["obs"], funcLorentzian, lowedge, highedge, 3)
+                    fSignalOnlyModel.SetParameter(2, 3.096916)
+                    fSignalOnlyModel.SetParLimits(2,3.05, 3.15)
+                    fSignalOnlyModel.SetParameter(1, 0.1)
                 elif plot_par.fit_inv_mass_jpsi_func == "doubleGaussian":
                     fSignal = TF1('fSignal' + hist_def["obs"], funcDoubleGaussian, lowedge, highedge, 5)
+                    fSignalOnlyModel = TF1('fSignal' + hist_def["obs"], funcDoubleGaussian, lowedge, highedge, 5)
+                    
+                    fSignalOnlyModel.SetParameter(0,10)
+                    fSignalOnlyModel.SetParLimits(0,0.01,10000)
+                    fSignalOnlyModel.SetParameter(3,0.01)
+                    fSignalOnlyModel.SetParLimits(3,0.01,10000)
+                    fSignalOnlyModel.SetParameter(1,3.096916)
+                    fSignalOnlyModel.SetParLimits(1,3.08,3.11)
+                    fSignalOnlyModel.SetParameter(2,0.05)
+                    fSignalOnlyModel.SetParameter(4,0.05)
+                    fSignalOnlyModel.SetParLimits(2,0.005,0.1)
+                    fSignalOnlyModel.SetParLimits(4,0.005,0.1)
+                elif plot_par.fit_inv_mass_jpsi_func == "crystalBall":
+                    fSignal = TF1('fSignal' + hist_def["obs"], funcCrystalBall, lowedge, highedge, 5)
+                    fSignalOnlyModel = TF1('fSignal' + hist_def["obs"], funcCrystalBall, lowedge, highedge, 5)
+                    
+                    crystalBallInitialConditionsName = hist_def["obs"]
+                    if "reco" in hist_def["obs"]:
+                        crystalBallInitialConditionsName = crystalBallInitialConditionsName.replace("reco", "id")
+                    
+                    conditions = plot_par.crystalBallInitialConditions
+                    
+                    condition = None
+                    
+                    if conditions.get(crystalBallInitialConditionsName):
+                        condition = conditions[crystalBallInitialConditionsName]
+                    else:
+                        condition = conditions["default"]
+                    
+                    cbPars = condition["pars"]
+                    cbParsLimits = condition["limits"]
+                    
+                    for i in range(len(cbPars)):
+                        # if i == 3:
+#                             continue
+                        
+                        print "cbPars[i]", cbPars[i]
+                        print "cbParsLimits[i][0], cbParsLimits[i][1]", cbParsLimits[i][0], cbParsLimits[i][1]
+                        fSignalOnlyModel.SetParameter(i, cbPars[i])
+                        fSignalOnlyModel.SetParLimits(i, cbParsLimits[i][0], cbParsLimits[i][1])
+                    
+                    
+                    
+                    
                 fSignal.SetNpx(500);
+                fSignalOnlyModel.SetNpx(500);
+                
                 fit_funcs["fSignal" + hist_def["obs"]] = fSignal
+                
                 fSignal.SetParameter(0, fFullModel.GetParameter(0))
                 fSignal.SetParameter(1, fFullModel.GetParameter(1))
                 fSignal.SetParameter(2, fFullModel.GetParameter(2))
-                if plot_par.fit_inv_mass_jpsi_func == "doubleGaussian":
+                
+                fSignal.SetParError(0, fFullModel.GetParError(0))
+                fSignal.SetParError(1, fFullModel.GetParError(1))
+                fSignal.SetParError(2, fFullModel.GetParError(2))
+                
+                if plot_par.fit_inv_mass_jpsi_func == "doubleGaussian" or plot_par.fit_inv_mass_jpsi_func == "crystalBall":
                     fSignal.SetParameter(3, fFullModel.GetParameter(3))
+                    fSignal.SetParError(3, fFullModel.GetParError(3))
+                    #if plot_par.fit_inv_mass_jpsi_func == "doubleGaussian":
                     fSignal.SetParameter(4, fFullModel.GetParameter(4))
+                    fSignal.SetParError(4, fFullModel.GetParError(4))
+                
+                cm = fitresult.GetCovarianceMatrix()
+                
+                print "sigParNum", sigParNum, "parNum", parNum
+                cm.Print()
+                cms = cm.GetSub(0, sigParNum -1, 0, sigParNum -1)
+                print "cms:"
+                cms.Print()
+                
+                
+                #print "cm.GetSub(0,", sigParNum - 1, parNum - sigParNum, parNum-1,") * cm.GetSub(",parNum - sigParNum, parNum-1, parNum - sigParNum, parNum-1,") * cm.GetSub(",parNum - sigParNum, parNum-1, 0, sigParNum - 1
+                
+                #A = cm.GetSub(0, sigParNum - 1, parNum - sigParNum, parNum-1)
+                A = TMatrixD(sigParNum,parNum-sigParNum)
+                cm.GetSub(0, sigParNum - 1, sigParNum, parNum-1,A)
+                #print "A"
+                #A.Print()
+                
+                B = TMatrixD(parNum-sigParNum,parNum-sigParNum)
+                cm.GetSub(sigParNum, parNum-1, sigParNum, parNum-1,B)
+                #print "B"
+                #B.Print()
+                print "B.Invert"
+                B.InvertFast()
+                #B.Print()
+                
+                C = TMatrixD(parNum-sigParNum,sigParNum)
+                cm.GetSub(sigParNum, parNum-1, 0, sigParNum - 1,C)
+                #print "C"
+                #C.Print()
+                
+                #Mul = A * B * C
+                
+                Mul = TMatrixD(sigParNum,parNum - sigParNum)
+                Mul.Mult(A,B)
+                #print "Mul"
+                #Mul.Print()
+                Mul2 = TMatrixD(sigParNum,sigParNum)
+                Mul2.Mult(Mul,C)
+                #print "Mul2"
+                #Mul2.Print()
+                
+                #cms.Print()
+                subCovarianceMatrix = SubMatrices(cms, Mul2)
+                subCovarianceMatrix.Print()
+                
+                
+                sIntegralError = fSignal.IntegralError(3.0, 3.2, fSignal.GetParameters(), subCovarianceMatrix.GetMatrixArray())
+                #sIntegralError = fSignal.IntegralError(3.0, 3.2, fSignal.GetParameters(), TMatrixD(5,5).GetMatrixArray())
+                
+                print ""
+                print "********"
+                print "sIntegralError", sIntegralError
+                print "sIntegralError/width", sIntegralError / fitHist.GetBinWidth(fitHist.FindBin(3.0))
+                print "********"
+                print ""
+                
+                fit_signal_integral_error[hist_def["obs"]] = sIntegralError / fitHist.GetBinWidth(fitHist.FindBin(3.0))
+                
+                if linear_fit:
+                    fBg = TF1('fBg' + hist_def["obs"], funcBackground, lowedge, highedge, 2)
+                else:
+                    fBg = TF1('fBg' + hist_def["obs"], funcBackgroundQuadratic2, lowedge, highedge, 7)
+                fit_funcs["fBg" + hist_def["obs"]] = fBg
+                bgIndex = 3
+                if plot_par.fit_inv_mass_jpsi_func == "doubleGaussian" or plot_par.fit_inv_mass_jpsi_func == "crystalBall":
+                    bgIndex = 5
+                fBg.SetParameter(0, fFullModel.GetParameter(bgIndex))
+                fBg.SetParameter(1, fFullModel.GetParameter(bgIndex+1))
+                
+                
+                
+                
+                fBg.SetParError(0, fFullModel.GetParError(bgIndex))
+                fBg.SetParError(1, fFullModel.GetParError(bgIndex+1))
+                
+                if not linear:
+                    print "------ setting BG params -------"
+                    print bgIndex
+                    print fFullModel.GetParameter(bgIndex)
+                    print fFullModel.GetParameter(bgIndex+1)
+                    print fFullModel.GetParameter(bgIndex+2)
+                    print fFullModel.GetParameter(bgIndex+3)
+                    print fFullModel.GetParameter(bgIndex+4)
+                    print fFullModel.GetParameter(bgIndex+5)
+                    print fFullModel.GetParameter(bgIndex+6)
+
+                    
+                    #exit(0)
+                    fBg.SetParameter(2, fFullModel.GetParameter(bgIndex+2))
+                    fBg.SetParameter(3, fFullModel.GetParameter(bgIndex+3))
+                    fBg.SetParameter(4, fFullModel.GetParameter(bgIndex+4))
+                    
+                    
+                    fBg.SetParameter(5, fFullModel.GetParameter(bgIndex+5))
+                    fBg.SetParameter(6, fFullModel.GetParameter(bgIndex+6))
+                    
+                    fBg.SetParError(2, fFullModel.GetParError(bgIndex+2))
+                    fBg.SetParError(3, fFullModel.GetParError(bgIndex+3))
+                    fBg.SetParError(4, fFullModel.GetParError(bgIndex+4))
+                    fBg.SetParError(5, fFullModel.GetParError(bgIndex+5))
+                    fBg.SetParError(6, fFullModel.GetParError(bgIndex+6))
+                
+                if jpsiHist is not None:
+                    fSignalOnlyModel.SetLineWidth(2)
+                    fSignalOnlyModel.SetLineColor(kGray)
+                    fitresultSignalOnly = jpsiHist.Fit(fSignalOnlyModel,'s0','same', lowedge, highedge)
+                    fSignalOnlyModel.Draw("SAME")
+                    legend.AddEntry(fSignalOnlyModel, " J/#psi Fit", 'l')
+                    fit_funcs["fSignalOnly" + hist_def["obs"]] = fSignalOnlyModel
+                    
+                    fit_only_signal_integral_chi_s[hist_def["obs"]] = fSignalOnlyModel.GetChisquare()/fSignalOnlyModel.GetNDF()
+                    fit_only_signal_integral_error[hist_def["obs"]] = fSignalOnlyModel.IntegralError(3.0, 3.2, fSignalOnlyModel.GetParameters(), fitresultSignalOnly.GetCovarianceMatrix().GetMatrixArray()) / fitHist.GetBinWidth(fitHist.FindBin(3.0))
+                    
+                    hist_signal_integral[hist_def["obs"]] = jpsiHist.Integral(jpsiHist.FindBin(3.0), jpsiHist.FindBin(3.2))
+                    fit_only_signal_integral[hist_def["obs"]] = fSignalOnlyModel.Integral(lowJpsiEdge, highJpdiEdge) / fitHist.GetBinWidth(fitHist.FindBin(3.0))
+                
+                    
+                    print "-----", hist_def["obs"], "-----"
+                    print fSignalOnlyModel.GetNDF()
+                    print fSignalOnlyModel.GetChisquare()
+                    print fSignalOnlyModel.GetProb()
+                    print "Chi2/ndof", fSignalOnlyModel.GetChisquare()/fSignalOnlyModel.GetNDF()
+                    print "Integral:", fit_only_signal_integral[hist_def["obs"]]
+                    print "Error:", fit_only_signal_integral_error[hist_def["obs"]] 
+                    print "----"
+                    
+                else:
+                    fit_only_signal_integral_chi_s[hist_def["obs"]] = 0
+                    fit_only_signal_integral_error[hist_def["obs"]] = 0
+                    #hist_signal_integral[hist_def["obs"]] = 0.1
+                    fit_only_signal_integral[hist_def["obs"]] = 0.1
+                    
+                    hist_signal_integral[hist_def["obs"]] = fitHist.Integral(fitHist.FindBin(3.0), fitHist.FindBin(3.2)) - fBg.Integral(lowJpsiEdge, highJpdiEdge) / fitHist.GetBinWidth(fitHist.FindBin(3.0))
+                    
                 
                 fSignal.SetLineWidth(2)
                 fSignal.SetLineColor(kBlue)
                 fSignal.Draw("SAME")
                 legend.AddEntry(fSignal, "J/#psi", 'l')
-                
-                if linear_fit:
-                    fBg = TF1('fBg' + hist_def["obs"], funcBackground, lowedge, highedge, 2)
-                else:
-                    fBg = TF1('fBg' + hist_def["obs"], funcBackgroundQuadratic, lowedge, highedge, 5)
-                fit_funcs["fBg" + hist_def["obs"]] = fBg
-                bgIndex = 3
-                if plot_par.fit_inv_mass_jpsi_func == "doubleGaussian":
-                    bgIndex = 5
-                fBg.SetParameter(0, fFullModel.GetParameter(bgIndex))
-                fBg.SetParameter(1, fFullModel.GetParameter(bgIndex+1))
-                if not linear:
-                    fBg.SetParameter(2, fFullModel.GetParameter(bgIndex+2))
-                    fBg.SetParameter(3, fFullModel.GetParameter(bgIndex+3))
-                    fBg.SetParameter(4, fFullModel.GetParameter(bgIndex+4))
+                    
                 fBg.SetLineWidth(2)
                 fBg.SetLineColor(kBlack)
                 fBg.Draw("SAME")
                 legend.AddEntry(fBg, "Continuum", 'l')
                 
                 print "printing values for", hist_def["obs"]
-                print "Bin Width:", jpsiHist.GetBinWidth(jpsiHist.FindBin(3.0))
+                print "Bin Width:", fitHist.GetBinWidth(fitHist.FindBin(3.0))
                 print "Full Hist Integral:", fitHist.Integral(fitHist.FindBin(3.0), fitHist.FindBin(3.2))
-                print "Full JPsi Integral:", jpsiHist.Integral(jpsiHist.FindBin(3.0), jpsiHist.FindBin(3.2))
-                print "Full JPsi Integral Width:", jpsiHist.Integral(jpsiHist.FindBin(3.0), jpsiHist.FindBin(3.2), "width")
-                print "Full Fit Integral:", fFullModel.Integral(3.0, 3.2)
-                print "Full Fit Integral Width:", fFullModel.Integral(3.0, 3.2) / jpsiHist.GetBinWidth(jpsiHist.FindBin(3.0))
-                print "BG Integral:", fBg.Integral(3.0, 3.2)
-                print "Signal Integral:", fSignal.Integral(3.0, 3.2)
-                print "Signal Integral Width:", fSignal.Integral(3.0, 3.2) / jpsiHist.GetBinWidth(jpsiHist.FindBin(3.0))
+                if jpsiHist is not None:
+                    print "Full JPsi Integral:", jpsiHist.Integral(jpsiHist.FindBin(3.0), jpsiHist.FindBin(3.2))
+                    print "Full JPsi Integral Width:", jpsiHist.Integral(jpsiHist.FindBin(3.0), jpsiHist.FindBin(3.2), "width")
+                print "Full Fit Integral:", fFullModel.Integral(lowJpsiEdge, highJpdiEdge)
+                print "Full Fit Integral Width:", fFullModel.Integral(lowJpsiEdge, highJpdiEdge) / fitHist.GetBinWidth(fitHist.FindBin(3.0))
+                print "BG Integral:", fBg.Integral(lowJpsiEdge, highJpdiEdge)
+                print "Signal Integral:", fSignal.Integral(lowJpsiEdge, highJpdiEdge)
+                print "Signal Integral Width:", fSignal.Integral(lowJpsiEdge, highJpdiEdge) / fitHist.GetBinWidth(fitHist.FindBin(3.0))
+                
+                print "lowJpsiEdge, highJpdiEdge", lowJpsiEdge, highJpdiEdge
                 
                 fit_hist_integral[hist_def["obs"]] = fitHist.Integral(fitHist.FindBin(3.0), fitHist.FindBin(3.2))
-                fit_full_integral[hist_def["obs"]] = fFullModel.Integral(3.0, 3.2) / jpsiHist.GetBinWidth(jpsiHist.FindBin(3.0))
-                fit_signal_integral[hist_def["obs"]] = fSignal.Integral(3.0, 3.2) / jpsiHist.GetBinWidth(jpsiHist.FindBin(3.0))
-                fit_bg_integral[hist_def["obs"]] = fBg.Integral(3.0, 3.2) / jpsiHist.GetBinWidth(jpsiHist.FindBin(3.0))
-                hist_signal_integral[hist_def["obs"]] = jpsiHist.Integral(jpsiHist.FindBin(3.0), jpsiHist.FindBin(3.2))
+                fit_full_integral[hist_def["obs"]] = fFullModel.Integral(lowJpsiEdge, highJpdiEdge) / fitHist.GetBinWidth(fitHist.FindBin(3.0))
+                fit_full_integral_chi_s[hist_def["obs"]] = fFullModel.GetChisquare()/fFullModel.GetNDF()
+                fit_signal_integral[hist_def["obs"]] = fSignal.Integral(lowJpsiEdge, highJpdiEdge) / fitHist.GetBinWidth(fitHist.FindBin(3.0))
+                fit_bg_integral[hist_def["obs"]] = fBg.Integral(lowJpsiEdge, highJpdiEdge) / fitHist.GetBinWidth(fitHist.FindBin(3.0))
+                print "-----------------------"
+                print "Full fit chis/ndof", fit_full_integral_chi_s[hist_def["obs"]]
+                print "Full fit integral", fit_signal_integral[hist_def["obs"]]
+                print "Full fit error", fit_signal_integral_error[hist_def["obs"]]
+                print "-----------------------"
                 
             
             legend.Draw("SAME")
@@ -1267,14 +1627,23 @@ def main():
                 if plot_par.create_canvas:
                     c1.Write(cutName)
                 needToDraw = False;
+            
+            linearYspace = maximum*1.1
+            if hist_def.get("linearYspace") is not None:
+                linearYspace = maximum * hist_def["linearYspace"]
+            
             if plot_par.plot_bg:
                 linBgHist = newBgHist.Clone()
                 memory.append(linBgHist)
-                linBgHist.SetMaximum(maximum*1.1)
+                linBgHist.SetMaximum(linearYspace)
                 linBgHist.SetMinimum(0)
             else:
-                dataHist.SetMaximum(maximum*1.1)
-                dataHist.SetMinimum(0)
+                if plot_par.plot_data:
+                    dataHist.SetMaximum(linearYspace)
+                    dataHist.SetMinimum(0)
+                else:
+                    sigHists[0].SetMaximum(linearYspace)
+                    sigHists[0].SetMinimum(0)
             
             #print "****", ratioPads
             if large_version:
@@ -1332,7 +1701,10 @@ def main():
                 linBgHist.Draw(plotStr + errorStr)
             if plot_par.plot_signal:
                 for i in range(len(sigHists)):
-                    sigHists[i].Draw("HIST SAME" + errorStr)
+                    if i == 0 and not plot_par.plot_bg:
+                        sigHists[i].Draw("HIST " + errorStr)
+                    else:
+                        sigHists[i].Draw("HIST SAME" + errorStr)
             if plot_par.plot_data:
                 print "LINEAR"
                 if not plot_par.plot_bg:
@@ -1352,8 +1724,11 @@ def main():
             
             if plot_par.fit_inv_mass_jpsi and plot_par.fit_inv_mass_cut_jpsi == cut["name"] and plot_par.fit_inv_mass_obs_jpsi in hist_def["obs"]:
                 fit_funcs["fFullModel" + hist_def["obs"]].Draw("SAME")
-                fit_funcs["fSignal" + hist_def["obs"]].Draw("SAME")
                 fit_funcs["fBg" + hist_def["obs"]].Draw("SAME")
+                if fit_funcs.get("fSignalOnly" + hist_def["obs"]) is not None:
+                    fit_funcs["fSignalOnly" + hist_def["obs"]].Draw("SAME")
+                fit_funcs["fSignal" + hist_def["obs"]].Draw("SAME")
+                
                 
             legend.Draw("SAME")
             
@@ -1465,20 +1840,60 @@ def main():
     if plot_par.create_canvas and not large_version:
         print "Just created", canvasFile.GetName()
         canvasFile.Close()
-        
-    print "fit_hist_integral", fit_hist_integral
-    print "fit_full_integral", fit_full_integral
+    
+    print "================== HIST COUNT TRUTH ==================="
+    print "hist_signal_integral", hist_signal_integral
+    print "================== FIT ALL ==================="
     print "fit_signal_integral", fit_signal_integral
-    print "fit_bg_integral", fit_bg_integral
+    print "fit_signal_integral_error", fit_signal_integral_error
+    print ""
+    print ""
+    print "================== FIT YELLOW ==================="
+    print "fit_only_signal_integral", fit_only_signal_integral
+    print "fit_only_signal_integral_error", fit_only_signal_integral_error
+    
+    #print "fit_bg_integral", fit_bg_integral
     
     print "============== FIT SUMMARY =============="
     
-    print ",fit_hist_integral,hist_signal_integral,fit_full_integral,fit_signal_integral,fit_bg_integral,fit_hist_integral_reco,hist_signal_integral_reco,fit_full_integral_reco,fit_signal_integral_reco,fit_bg_integral_reco,fit_hist_integral_id,hist_signal_integral_id,fit_full_integral_id,fit_signal_integral_id,fit_bg_integral_id,reco_eff,reco_eff_hist,id_eff,id_eff_hist"
+    print ",JPsi Hist Count,Full Fit JPsi Integral,Full Fit Chis,Full Fit JPsi Integral Error,JPsi Fit Integral,JPsi Fit Integral Chis,JPsi Fit Integral Error,JPsi Hist Count ID,Full Fit JPsi Integral ID,Full Fit Chis ID,Full Fit JPsi Integral Error ID,JPsi Fit Integral ID,JPsi Fit Integral ID Chis,JPsi Fit Integral ID Error,ID Efficiency,ID Efficiency Signal Fit,ID Efficiency Hist Count, Low Error, Up Error"
+    #print ",fit_hist_integral,hist_signal_integral,fit_full_integral,fit_full_integral_chi_s,fit_signal_integral,fit_signal_integral_error,fit_only_signal_integral,fit_bg_integral,fit_hist_integral_reco,hist_signal_integral_reco,fit_full_integral_reco,fit_full_integral_chi_s_reco,fit_signal_integral_reco,fit_signal_integral_error_reco,fit_only_signal_integral_reco,fit_bg_integral_reco,fit_hist_integral_id,hist_signal_integral_id,fit_full_integral_id,fit_full_integral_chi_s_id,fit_signal_integral_id,fit_signal_integral_error_id,fit_only_signal_integral_id,fit_bg_integral_id,reco_eff,reco_eff_signal,reco_eff_hist,id_eff,id_eff_signal,id_eff_hist"
     
     for hist_def in plot_par.histograms_defs:
         if "reco_" in hist_def["obs"] or "id_" in hist_def["obs"]:
             continue
-        print hist_def["obs"] + "," + str(fit_hist_integral[hist_def["obs"]]) + "," + str(hist_signal_integral[hist_def["obs"]]) + "," +  str(fit_full_integral[hist_def["obs"]]) + "," + str(fit_signal_integral[hist_def["obs"]]) + "," + str(fit_bg_integral[hist_def["obs"]])  + "," + str(fit_hist_integral["reco_" + hist_def["obs"]]) + "," + str(fit_full_integral["reco_" + hist_def["obs"]])  + "," + str(hist_signal_integral["reco_" + hist_def["obs"]])+ "," + str(fit_signal_integral["reco_" + hist_def["obs"]]) + "," + str(fit_bg_integral["reco_" + hist_def["obs"]])    + "," + str(fit_hist_integral["id_" + hist_def["obs"]])+ "," + str(hist_signal_integral["id_" + hist_def["obs"]]) + "," + str(fit_full_integral["id_" + hist_def["obs"]]) + "," + str(fit_signal_integral["id_" + hist_def["obs"]]) + "," + str(fit_bg_integral["id_" + hist_def["obs"]]) + "," + str(fit_signal_integral["reco_" + hist_def["obs"]]/fit_signal_integral[hist_def["obs"]])  + "," + str(hist_signal_integral["reco_" + hist_def["obs"]]/hist_signal_integral[hist_def["obs"]]) + "," + str(fit_signal_integral["id_" + hist_def["obs"]]/fit_signal_integral[hist_def["obs"]])  + "," + str(hist_signal_integral["id_" + hist_def["obs"]]/hist_signal_integral[hist_def["obs"]]) 
+        
+        eff_error_low = 0
+        eff_error_high = 0
+        
+        #print hist_def["obs"] + "," + str(fit_hist_integral[hist_def["obs"]]) + "," + str(hist_signal_integral[hist_def["obs"]]) + "," +  str(fit_full_integral[hist_def["obs"]]) + "," +  str(fit_full_integral_chi_s[hist_def["obs"]]) + "," + str(fit_signal_integral[hist_def["obs"]]) + "," + str(fit_signal_integral_error[hist_def["obs"]]) + "," + str(fit_only_signal_integral[hist_def["obs"]]) + "," + str(fit_bg_integral[hist_def["obs"]])  + "," + str(fit_hist_integral["reco_" + hist_def["obs"]]) + "," + str(fit_full_integral["reco_" + hist_def["obs"]]) + "," + str(fit_full_integral_chi_s["reco_" + hist_def["obs"]])  + "," + str(hist_signal_integral["reco_" + hist_def["obs"]])+ "," + str(fit_signal_integral["reco_" + hist_def["obs"]])+ "," + str(fit_signal_integral_error["reco_" + hist_def["obs"]])+ "," + str(fit_only_signal_integral["reco_" + hist_def["obs"]]) + "," + str(fit_bg_integral["reco_" + hist_def["obs"]])    + "," + str(fit_hist_integral["id_" + hist_def["obs"]])+ "," + str(hist_signal_integral["id_" + hist_def["obs"]]) + "," + str(fit_full_integral["id_" + hist_def["obs"]]) + "," + str(fit_full_integral_chi_s["id_" + hist_def["obs"]]) + "," + str(fit_signal_integral["id_" + hist_def["obs"]]) + "," + str(fit_signal_integral_error["id_" + hist_def["obs"]])+ "," + str(fit_only_signal_integral["id_" + hist_def["obs"]]) + "," + str(fit_bg_integral["id_" + hist_def["obs"]]) + "," + str(fit_signal_integral["reco_" + hist_def["obs"]]/fit_signal_integral[hist_def["obs"]]) + "," + str(fit_only_signal_integral["reco_" + hist_def["obs"]]/fit_only_signal_integral[hist_def["obs"]])  + "," + str(hist_signal_integral["reco_" + hist_def["obs"]]/hist_signal_integral[hist_def["obs"]]) + "," + str(fit_signal_integral["id_" + hist_def["obs"]]/fit_signal_integral[hist_def["obs"]]) + "," + str(fit_only_signal_integral["id_" + hist_def["obs"]]/fit_only_signal_integral[hist_def["obs"]])  + "," + str(hist_signal_integral["id_" + hist_def["obs"]]/hist_signal_integral[hist_def["obs"]]) 
+        #print ",                      JPsi Hist Count                                      ,          Full Fit JPsi Integral                                        , Full Fit Chis                     Full Fit JPsi Integral Error,                              JPsi Fit Integral,                                       JPsi Fit Integral Chis,                                         JPsi Fit Integral Error,                                    JPsi Hist Count Reco,                                   Full Fit JPsi Integral Reco,                                      Full Fit Chis Reco,                                        Full Fit JPsi Integral Error Reco,                              JPsi Fit Integral Reco,                                            ,JPsi Fit Integral Reco Chis,                                          JPsi Fit Integral Reco Error,                                          JPsi Hist Count ID,                                                 Full Fit JPsi Integral ID                             Full Fit Chis ID,                                          Full Fit JPsi Integral Error ID,                               JPsi Fit Integral ID,                                          JPsi Fit Integral ID Chis,                                          JPsi Fit Integral ID Error,                                       Reco Efficiency,Reco Efficiency Signal Fit,Reco Efficiency Hist Count,ID Efficiency,ID Efficiency Signal Fit,ID Efficiency Hist Count"
+        
+        
+        # eff_error_low = 0
+#         eff_error_high = 0
+#         if fit_signal_integral["id_" + hist_def["obs"]]/fit_signal_integral[hist_def["obs"]] < 1:
+#             totalHist  = TH1F("totalHist" + hist_def["obs"], "", 1, 0, 1)
+#             passedHist = TH1F("passedHist" + hist_def["obs"], "", 1, 0, 1)
+#             totalHist.SetBinContent(1, fit_signal_integral[hist_def["obs"]])
+#             totalHist.SetBinError(1, fit_signal_integral_error[hist_def["obs"]])
+#             
+#             passedHist.SetBinContent(1, fit_signal_integral["id_" + hist_def["obs"]])
+#             passedHist.SetBinError(1, fit_signal_integral_error["id_" + hist_def["obs"]])
+#             
+#             #TEfficiency.kIsBayesian = True
+#             #TEfficiency.bla = False
+#             
+#             pEff = TEfficiency(passedHist, totalHist)
+#             #pEff.SetStatisticOption(kBBayesian)
+#             print "UsesBayesianStat", pEff.UsesBayesianStat()
+#             eff_error_low = pEff.GetEfficiencyErrorLow(1)
+#             eff_error_high = pEff.GetEfficiencyErrorUp(1)
+#             
+#             print "eff_error_low", eff_error_low, "eff_error_high", eff_error_high
+#             
+        
+        print hist_def["obs"] + "," + str(hist_signal_integral[hist_def["obs"]]) + "," + str(fit_signal_integral[hist_def["obs"]])  + "," + str(fit_full_integral_chi_s[hist_def["obs"]]) + "," + str(fit_signal_integral_error[hist_def["obs"]]) + "," + str(fit_only_signal_integral[hist_def["obs"]])  + "," + str(fit_only_signal_integral_chi_s[hist_def["obs"]]) + "," + str(fit_only_signal_integral_error[hist_def["obs"]]) + "," +  str(hist_signal_integral["id_" + hist_def["obs"]]) + ","  + str( fit_signal_integral["id_" + hist_def["obs"]]) + "," + str(fit_full_integral_chi_s["id_" + hist_def["obs"]]) + "," + str(fit_signal_integral_error["id_" + hist_def["obs"]]) + "," + str(fit_only_signal_integral["id_" + hist_def["obs"]]) + "," + str(fit_only_signal_integral_chi_s["id_" + hist_def["obs"]]) + "," + str(fit_only_signal_integral_error["id_" + hist_def["obs"]]) + ","  + str(fit_signal_integral["id_" + hist_def["obs"]]/fit_signal_integral[hist_def["obs"]]) + "," + str(fit_only_signal_integral["id_" + hist_def["obs"]]/fit_only_signal_integral[hist_def["obs"]])  + "," + str(hist_signal_integral["id_" + hist_def["obs"]]/hist_signal_integral[hist_def["obs"]])  + "," + str(eff_error_low) + "," + str(eff_error_high) 
     
     print "End: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S')
     exit(0)

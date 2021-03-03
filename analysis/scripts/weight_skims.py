@@ -27,47 +27,47 @@ sam = args.sam
 
 fileList = glob(input_dir + "/*");
 for filename in fileList:
-    if os.path.isdir(filename): continue
-    print "processing file " + filename
-    f = TFile(filename, "update")
-    numOfEvents = 0
-    if sam:
-        point = "_".join(os.path.basename(filename).split("_")[2:4])
-        point_files = glob(input_dir + "/*" + point + "*")
-        print "point", point, "has", len(point_files), "files"
-        numOfEvents = 20000 * len(point_files)
-    else:
-        h = f.Get("hHt")
-        numOfEvents = h.Integral(-1,99999999)+0.000000000001
-    print "Number of event:", numOfEvents
+	if os.path.isdir(filename): continue
+	print "processing file " + filename
+	f = TFile(filename, "update")
+	numOfEvents = 0
+	if sam:
+		point = "_".join(os.path.basename(filename).split("_")[2:4])
+		point_files = glob(input_dir + "/*" + point + "*")
+		print "point", point, "has", len(point_files), "files"
+		numOfEvents = 20000 * len(point_files)
+	else:
+		h = f.Get("hHt")
+		numOfEvents = h.Integral(-1,99999999)+0.000000000001
+	print "Number of event:", numOfEvents
 
-    t = f.Get("tEvent")
-    t.GetEntry(0)
-    cs = t.CrossSection
-    print "CrossSection:", cs
-    weight = cs/numOfEvents
-    print "weight:", weight
-    var_Weight = np.zeros(1,dtype=float)
-    var_Weight[0] = weight
-    nentries = t.GetEntries();
-    if t.GetBranchStatus("Weight"):
-        if not force:
-            print "This tree is already weighted! Skipping..."
-        else:
-            branch = t.GetBranch("Weight")
-            branch.Reset()
-            branch.SetAddress(var_Weight)
-            for ientry in range(nentries):
-                branch.Fill()
-            t.Write("tEvent",TObject.kOverwrite)
-            print "Done"
-        f.Close()
-        continue
-    
-    newBranch = t.Branch("Weight",var_Weight,"Weight/D");
-    for ientry in range(nentries):
-        newBranch.Fill()
-    print "Writing Tree"
-    t.Write("tEvent",TObject.kOverwrite)
-    print "Done"
-    f.Close()
+	t = f.Get("tEvent")
+	t.GetEntry(0)
+	cs = t.CrossSection
+	print "CrossSection:", cs
+	weight = cs/numOfEvents
+	print "weight:", weight
+	var_Weight = np.zeros(1,dtype=float)
+	var_Weight[0] = weight
+	nentries = t.GetEntries();
+	if t.GetBranchStatus("Weight"):
+		if not force:
+			print "This tree is already weighted! Skipping..."
+		else:
+			branch = t.GetBranch("Weight")
+			branch.Reset()
+			branch.SetAddress(var_Weight)
+			for ientry in range(nentries):
+				branch.Fill()
+			t.Write("tEvent",TObject.kOverwrite)
+			print "Done"
+		f.Close()
+		continue
+
+	newBranch = t.Branch("Weight",var_Weight,"Weight/D");
+	for ientry in range(nentries):
+		newBranch.Fill()
+	print "Writing Tree"
+	t.Write("tEvent",TObject.kOverwrite)
+	print "Done"
+	f.Close()

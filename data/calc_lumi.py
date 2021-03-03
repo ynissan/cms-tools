@@ -34,6 +34,11 @@ input_dir = None
 if args.input_dir:
     input_dir = args.input_dir[0]
 
+lumi = utils.get_lumi_from_bril('~/tmp_json_1613859532.json', 'ynissan')
+    #os.remove(tmpJsonFile)
+print "Luminosity=", lumi
+exit(0)
+
 lumiSecs = LumiSectMap()
 
 data_files = glob(input_dir + "/*")

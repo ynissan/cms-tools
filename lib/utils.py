@@ -588,17 +588,20 @@ def stamp_plot(lumi = 135.0):
     regularfont = 42
     tl.SetTextFont(cmsTextFont)
     tl.SetTextSize(0.85*tl.GetTextSize()) 
-    tl.DrawLatex(0.19,0.915, 'CMS')
+    #tl.DrawLatex(0.19,0.915, 'CMS')
+    tl.DrawLatex(0.25,0.915, 'CMS')
     tl.SetTextFont(extraTextFont)
-    tl.SetTextSize(0.9*tl.GetTextSize())
-    tl.DrawLatex(0.265,0.915, 'Work in Progress')
+    tl.SetTextSize(0.78*tl.GetTextSize())
+    tl.DrawLatex(0.34,0.915, 'Work in Progress')
     tl.SetTextFont(regularfont)
     tl.SetTextSize(0.81*tl.GetTextSize())
     thingy = ''
     if showlumi: thingy+='#sqrt{s}=13 TeV, L = '+str(lumi)+' fb^{-1}'
-    xthing = 0.67
+    #xthing = 0.67
+    xthing = 0.6
     if not showlumi: xthing+=0.13 
     tl.DrawLatex(xthing,0.915,thingy)
+    #tl.DrawLatex(xthing,0.915,thingy)
     tl.SetTextSize(1.0/0.81*tl.GetTextSize())
 
 def stampFab(lumi,datamc='MC'):
@@ -753,6 +756,7 @@ def getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=
         else:
             tree.Draw(obs + ">>" + tmpName, condition, "e")
     hist = tree.GetHistogram().Clone(name)
+    hist.Sumw2()
     hist.SetDirectory(0)
     if overflow:
         useCond = condition
