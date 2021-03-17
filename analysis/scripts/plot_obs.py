@@ -678,7 +678,7 @@ def main():
     #if plot_single:
     #    c1.SetBottomMargin(0.16)
     #    c1.SetLeftMargin(0.18)
-    
+    print utils.bcolors.BOLD + utils.bcolors.OKGREEN + "c1.cd()" + utils.bcolors.ENDC
     c1.cd()
     
     titlePad = None
@@ -687,16 +687,18 @@ def main():
     if plot_par.plot_title and not large_version:
         titlePad = TPad("titlePad", "",0.0,0.93,1.0,1.0)
         histPad = TPad("histPad", "",0.0,0.0,1.0,0.93)
+        print utils.bcolors.BOLD + utils.bcolors.RED + "titlePad.Draw()" + utils.bcolors.ENDC
         titlePad.Draw()
         t = TPaveText(0.0,0.93,1.0,1.0,"NB")
         t.SetFillStyle(0)
         t.SetLineColor(0)
         t.SetTextFont(40);
         t.AddText("No Cuts")
+        print utils.bcolors.BOLD + utils.bcolors.RED + "t.Draw()" + utils.bcolors.ENDC
         t.Draw()
     else:
         histPad = c1
-    
+    print utils.bcolors.BOLD + utils.bcolors.RED + "histPad.Draw()" + utils.bcolors.ENDC
     histPad.Draw()
     if not large_version:
         histPad.Divide(2,2)
@@ -727,6 +729,7 @@ def main():
         if plot_par.plot_title and not large_version:
             t.Clear()
             t.AddText(cut["title"])
+            print utils.bcolors.BOLD + utils.bcolors.RED + "t.Draw()" + utils.bcolors.ENDC
             t.Draw()
             titlePad.Update()
         pId = 1
@@ -735,8 +738,10 @@ def main():
             needToDraw = True
             pad = None
             if large_version:
+                print utils.bcolors.BOLD + utils.bcolors.OKGREEN + "histPad.cd()" + utils.bcolors.ENDC
                 pad = histPad.cd()
             else:
+                print utils.bcolors.BOLD + utils.bcolors.OKGREEN + "histPad.cd(" + str(pId) + ")" + utils.bcolors.ENDC
                 pad = histPad.cd(pId)
             if not plot_par.plot_ratio:
                 pad.SetBottomMargin(0.16)
@@ -756,6 +761,7 @@ def main():
                     if (plot_par.plot_sc and plot_par.plot_data) or plot_par.plot_custom_ratio > 1:
                         histR2Pad = ratioPads[pId][2]
                 pad = histCPad
+                print utils.bcolors.BOLD + utils.bcolors.OKGREEN + "pad.cd()" + utils.bcolors.ENDC
                 pad.cd()
             
             #print "*", ratioPads
@@ -922,7 +928,7 @@ def main():
                     newBgHist.SetMinimum(0.0001)
                 else:
                     newBgHist.SetMinimum(0)
-                
+                print utils.bcolors.BOLD + utils.bcolors.RED + "newBgHist.Draw(" + plotStr + errorStr + ")" + utils.bcolors.ENDC
                 newBgHist.Draw(plotStr + errorStr)
                 # h = newBgHist.GetStack().Last()
 #                 h.SetMarkerColorAlpha(kBlack, 1)
@@ -983,12 +989,15 @@ def main():
                     sigHists[i].SetLineWidth(2)
             if foundBg and plot_par.plot_signal:
                 for i in range(len(sigHists)):
+                    print utils.bcolors.BOLD + utils.bcolors.RED + "sigHists[i].Draw(HIST SAME " + errorStr + ")" + utils.bcolors.ENDC
                     sigHists[i].Draw("HIST SAME " + errorStr)
             elif plot_par.plot_signal:
                 for i in range(len(sigHists)):
                     if i == 0:
+                        print utils.bcolors.BOLD + utils.bcolors.RED + "sigHists[i].Draw(HIST " + errorStr + ")" + utils.bcolors.ENDC
                         sigHists[i].Draw("HIST " + errorStr)
                     else:
+                        print utils.bcolors.BOLD + utils.bcolors.RED + "sigHists[i].Draw(HIST SAME " + errorStr + ")" + utils.bcolors.ENDC
                         sigHists[i].Draw("HIST SAME " + errorStr)
             
             if plot_par.plot_significance and hist_def["obs"] == "invMass":
@@ -1014,6 +1023,7 @@ def main():
                     pt.AddText("sigNum=" + str(sigNum))
                     pt.AddText("bgNum=" + str(bgNum))
                     pt.AddText("sig=" + str(significance))
+                    print utils.bcolors.BOLD + utils.bcolors.RED + "pt.Draw()" + utils.bcolors.ENDC
                     pt.Draw()
             
             if plot_par.plot_efficiency and bg_retag:
@@ -1025,17 +1035,24 @@ def main():
                 for effName, eff in efficiencies.items():
                     pt.AddText(effName + "=" + str(eff))
                     #pt.AddText(effName + "=" + str(eff))
+                print utils.bcolors.BOLD + utils.bcolors.RED + "pt.Draw()" + utils.bcolors.ENDC
                 pt.Draw()
                 
             
             if plot_par.plot_data:
                 if plot_par.plot_bg:
                     print "dataHist.Draw(P e SAME)"
+                    print utils.bcolors.BOLD + utils.bcolors.RED + "dataHist.Draw(P e SAME)" + utils.bcolors.ENDC
                     dataHist.Draw("P e SAME")
                 else:
                     print "dataHist.Draw(P e)"
+                    print utils.bcolors.BOLD + utils.bcolors.RED + "dataHist.Draw(P e)" + utils.bcolors.ENDC
+                    pad = histPad.cd(pId)
+                    pad.cd()
                     dataHist.Draw("P e")
                 legend.AddEntry(dataHist, "Data", 'p')
+            
+            #dataHist.Draw("P e")
             
             scDataHist = None
             scBgHist = None
@@ -1055,6 +1072,7 @@ def main():
                     else:
                         scDataHist.SetMarkerSize(0.5)
                     scDataHist.SetMarkerColor(kRed)
+                    print utils.bcolors.BOLD + utils.bcolors.RED + "scDataHist.Draw(P SAME)" + utils.bcolors.ENDC
                     scDataHist.Draw("P SAME")
                     legend.AddEntry(scDataHist, "Same-Sign Data", 'p')
                 
@@ -1068,7 +1086,8 @@ def main():
                     scBgHist.SetMinimum(0)
                 scBgHist.SetLineWidth(2)
                 scBgHist.SetLineColor(6)
-                scBgHist.Draw("HIST SAME" + errorStr)
+                print utils.bcolors.BOLD + utils.bcolors.RED + "scBgHist.Draw(HIST SAME " + errorStr + ")" + utils.bcolors.ENDC
+                scBgHist.Draw("HIST SAME " + errorStr)
                 
                 legend.AddEntry(scBgHist, "sc bg", 'l')
             
@@ -1199,7 +1218,6 @@ def main():
                         fFullModel = TF1('fFullModel' + hist_def["obs"], funcFullModelCrystalBallQuadratic, lowedge, highedge, 10)
                         parNum = 10
                         
-                        
                         # (alpha, n sigma, mu)
                         fFullModel = TF1('fFullModel' + hist_def["obs"], funcFullModelCrystalBallQuadratic2, lowedge, highedge, 12)
                         parNum = 12
@@ -1241,6 +1259,10 @@ def main():
                         
                         fFullModel.SetParameter(i, cbPars[i])
                         fFullModel.SetParLimits(i, cbParsLimits[i][0], cbParsLimits[i][1])
+                    
+                    if condition.get("fix") is not None:
+                        for fix in condition["fix"]:
+                            fFullModel.FixParameter(fix[0], fix[1])
 
         
         
@@ -1251,9 +1273,12 @@ def main():
                 fitresult = fitHist.Fit(fFullModel,'s0','same', lowedge, highedge)
                 
                 
+                print utils.bcolors.BOLD + utils.bcolors.RED + "fFullModel.Draw(SAME)" + utils.bcolors.ENDC
                 
-                fFullModel.Draw("SAME")
-                legend.AddEntry(fFullModel, "Global fit", 'l')
+                
+                if jpsiHist is None:
+                    fFullModel.Draw("SAME")
+                    legend.AddEntry(fFullModel, "Global fit", 'l')
                 
                 fSignal = None
                 fSignalOnlyModel = None
@@ -1313,10 +1338,7 @@ def main():
                         print "cbParsLimits[i][0], cbParsLimits[i][1]", cbParsLimits[i][0], cbParsLimits[i][1]
                         fSignalOnlyModel.SetParameter(i, cbPars[i])
                         fSignalOnlyModel.SetParLimits(i, cbParsLimits[i][0], cbParsLimits[i][1])
-                    
-                    
-                    
-                    
+
                 fSignal.SetNpx(500);
                 fSignalOnlyModel.SetNpx(500);
                 
@@ -1406,9 +1428,6 @@ def main():
                 fBg.SetParameter(0, fFullModel.GetParameter(bgIndex))
                 fBg.SetParameter(1, fFullModel.GetParameter(bgIndex+1))
                 
-                
-                
-                
                 fBg.SetParError(0, fFullModel.GetParError(bgIndex))
                 fBg.SetParError(1, fFullModel.GetParError(bgIndex+1))
                 
@@ -1441,8 +1460,9 @@ def main():
                 
                 if jpsiHist is not None:
                     fSignalOnlyModel.SetLineWidth(2)
-                    fSignalOnlyModel.SetLineColor(kGray)
+                    fSignalOnlyModel.SetLineColor(kBlue)
                     fitresultSignalOnly = jpsiHist.Fit(fSignalOnlyModel,'s0','same', lowedge, highedge)
+                    print utils.bcolors.BOLD + utils.bcolors.RED + "fSignalOnlyModel.Draw(SAME)" + utils.bcolors.ENDC
                     fSignalOnlyModel.Draw("SAME")
                     legend.AddEntry(fSignalOnlyModel, " J/#psi Fit", 'l')
                     fit_funcs["fSignalOnly" + hist_def["obs"]] = fSignalOnlyModel
@@ -1458,11 +1478,21 @@ def main():
                     print fSignalOnlyModel.GetNDF()
                     print fSignalOnlyModel.GetChisquare()
                     print fSignalOnlyModel.GetProb()
-                    print "Chi2/ndof", fSignalOnlyModel.GetChisquare()/fSignalOnlyModel.GetNDF()
+                    print "Chi2/ndof", fit_only_signal_integral_chi_s[hist_def["obs"]]
                     print "Integral:", fit_only_signal_integral[hist_def["obs"]]
                     print "Error:", fit_only_signal_integral_error[hist_def["obs"]] 
                     print "----"
                     
+                    tl = TLatex()
+                    tl.SetNDC()
+                    print tl.GetTextSize()
+                    tl.SetTextSize(0.05) 
+                    print tl.GetTextSize()
+                    #tl.SetTextSize(1)
+                    tl.SetTextFont(132)
+                    tl.DrawLatex(.1,.05,"#chi^{2} = " + "{:.2f}".format(fit_only_signal_integral_chi_s[hist_def["obs"]]))
+                    tl.DrawLatex(.1,.01,"error = " + "{:.2f}".format(100 * fit_only_signal_integral_error[hist_def["obs"]] / fit_only_signal_integral[hist_def["obs"]]) + "%")
+                
                 else:
                     fit_only_signal_integral_chi_s[hist_def["obs"]] = 0
                     fit_only_signal_integral_error[hist_def["obs"]] = 0
@@ -1474,13 +1504,17 @@ def main():
                 
                 fSignal.SetLineWidth(2)
                 fSignal.SetLineColor(kBlue)
-                fSignal.Draw("SAME")
-                legend.AddEntry(fSignal, "J/#psi", 'l')
+                print utils.bcolors.BOLD + utils.bcolors.RED + "fSignal.Draw(SAME)" + utils.bcolors.ENDC
+                if jpsiHist is None:
+                    fSignal.Draw("SAME")
+                    legend.AddEntry(fSignal, "J/#psi", 'l')
                     
                 fBg.SetLineWidth(2)
                 fBg.SetLineColor(kBlack)
-                fBg.Draw("SAME")
-                legend.AddEntry(fBg, "Continuum", 'l')
+                print utils.bcolors.BOLD + utils.bcolors.RED + "fBg.Draw(SAME)" + utils.bcolors.ENDC
+                if jpsiHist is None:
+                    fBg.Draw("SAME")
+                    legend.AddEntry(fBg, "Continuum", 'l')
                 
                 print "printing values for", hist_def["obs"]
                 print "Bin Width:", fitHist.GetBinWidth(fitHist.FindBin(3.0))
@@ -1507,8 +1541,21 @@ def main():
                 print "Full fit error", fit_signal_integral_error[hist_def["obs"]]
                 print "-----------------------"
                 
-            
+                if jpsiHist is None:
+                
+                    tl = TLatex()
+                    tl.SetNDC()
+                    print tl.GetTextSize()
+                    tl.SetTextSize(0.05) 
+                    print tl.GetTextSize()
+                    #tl.SetTextSize(1)
+                    tl.SetTextFont(132)
+                    tl.DrawLatex(.1,.05,"#chi^{2} = " + "{:.2f}".format(fit_full_integral_chi_s[hist_def["obs"]]))
+                    tl.DrawLatex(.1,.01,"error = " + "{:.2f}".format(100 * fit_signal_integral_error[hist_def["obs"]] / fit_signal_integral[hist_def["obs"]]) + "%")
+                
+            print utils.bcolors.BOLD + utils.bcolors.RED + "legend.Draw(SAME)" + utils.bcolors.ENDC
             legend.Draw("SAME")
+            
             if not (linear and plot_single):
                 pad.SetLogy()
                 
@@ -1599,6 +1646,7 @@ def main():
             if large_version:
                 if plot_par.plot_ratio:
                     #c1.cd()
+                    print utils.bcolors.BOLD + utils.bcolors.OKGREEN + "histCPad.cd()" + utils.bcolors.ENDC
                     histCPad.cd()
                 utils.stamp_plot(lumiStr)
                 if create_png:
@@ -1609,6 +1657,7 @@ def main():
                     print "BREAKING IN LOG SCALE"
                     break
             else:
+                print utils.bcolors.BOLD + utils.bcolors.OKGREEN + "pad.cd()" + utils.bcolors.ENDC
                 pad.cd()
                 utils.stamp_plot(lumiStr)
             
@@ -1619,7 +1668,7 @@ def main():
             
             ###### LINEAR SCALE NOW #######
             
-            print "GLOBAL LINER SCALE!!"
+            print utils.bcolors.BOLD + utils.bcolors.BLUE + "GLOBAL LINER SCALE!!" + utils.bcolors.ENDC
 
             if pId > 4 and not large_version:
                 pId = 1
@@ -1627,6 +1676,15 @@ def main():
                 if plot_par.create_canvas:
                     c1.Write(cutName)
                 needToDraw = False;
+            
+            
+            #print "****", ratioPads
+            if large_version:
+                pad = c1
+            else:
+                print utils.bcolors.BOLD + utils.bcolors.OKGREEN + "histPad.cd(" + str(pId) + ")" + utils.bcolors.ENDC
+                pad = histPad.cd(pId)
+            
             
             linearYspace = maximum*1.1
             if hist_def.get("linearYspace") is not None:
@@ -1639,17 +1697,16 @@ def main():
                 linBgHist.SetMinimum(0)
             else:
                 if plot_par.plot_data:
+                    print "HERE"
+                    dataHist = dataHist.Clone()
+                    memory.append(dataHist)
                     dataHist.SetMaximum(linearYspace)
                     dataHist.SetMinimum(0)
                 else:
+                    sigHists[0] = sigHists[0].Clone()
+                    memory.append(sigHists[0])
                     sigHists[0].SetMaximum(linearYspace)
                     sigHists[0].SetMinimum(0)
-            
-            #print "****", ratioPads
-            if large_version:
-                pad = c1
-            else:
-                pad = histPad.cd(pId)
             
             histCPad = None
             histRPad = None
@@ -1670,11 +1727,13 @@ def main():
                     #print "After in here", histCPad, histRPad, histR2Pad
                 print "Assigning ", histCPad
                 pad = histCPad
+                print utils.bcolors.BOLD + utils.bcolors.OKGREEN + "pad.cd()" + utils.bcolors.ENDC
                 pad.cd()
             else:
                 if large_version:
                     pad = c1
                 else:
+                    print utils.bcolors.BOLD + utils.bcolors.OKGREEN + "histPad.cd(" + str(pId) + ")" + utils.bcolors.ENDC
                     pad = histPad.cd(pId)
             
             pad.SetLogy(0)
@@ -1698,38 +1757,51 @@ def main():
                     if (plot_par.plot_sc and plot_par.plot_data) or plot_par.plot_custom_ratio > 1:
                         histR2Pad.SetLogx(0)
             if plot_par.plot_bg:
+                print utils.bcolors.BOLD + utils.bcolors.BLUE + "linBgHist.Draw(" + plotStr + errorStr + ")" + utils.bcolors.ENDC
                 linBgHist.Draw(plotStr + errorStr)
             if plot_par.plot_signal:
                 for i in range(len(sigHists)):
                     if i == 0 and not plot_par.plot_bg:
+                        print utils.bcolors.BOLD + utils.bcolors.BLUE + "sigHists[i].Draw(HIST " + errorStr + ")" + utils.bcolors.ENDC
                         sigHists[i].Draw("HIST " + errorStr)
                     else:
-                        sigHists[i].Draw("HIST SAME" + errorStr)
+                        print utils.bcolors.BOLD + utils.bcolors.BLUE + "sigHists[i].Draw(HIST SAME " + errorStr + ")" + utils.bcolors.ENDC
+                        sigHists[i].Draw("HIST SAME " + errorStr)
             if plot_par.plot_data:
                 print "LINEAR"
                 if not plot_par.plot_bg:
+                    print utils.bcolors.BOLD + utils.bcolors.BLUE + "dataHist.Draw(P e)" + utils.bcolors.ENDC
                     print "dataHist.Draw(P e)"
                     dataHist.Draw("P e")
                 else:
                     print "dataHist.Draw(P e SAME)"
+                    print utils.bcolors.BOLD + utils.bcolors.BLUE + "dataHist.Draw(P e SAME)" + utils.bcolors.ENDC
                     dataHist.Draw("P e SAME")
             if plot_par.plot_sc:
                 if plot_par.plot_data:
+                    print utils.bcolors.BOLD + utils.bcolors.BLUE + "scDataHist.Draw(P e SAME)" + utils.bcolors.ENDC
                     scDataHist.Draw("P e SAME")
                 linScBgHist = scBgHist.Clone()
                 memory.append(linScBgHist)
                 linScBgHist.SetMaximum(maximum*1.1)
                 linScBgHist.SetMinimum(0)
-                linScBgHist.Draw("HIST SAME" + errorStr)
+                print utils.bcolors.BOLD + utils.bcolors.BLUE + "linScBgHist.Draw(HIST SAME " + errorStr + ")" + utils.bcolors.ENDC
+                linScBgHist.Draw("HIST SAME " + errorStr)
             
             if plot_par.fit_inv_mass_jpsi and plot_par.fit_inv_mass_cut_jpsi == cut["name"] and plot_par.fit_inv_mass_obs_jpsi in hist_def["obs"]:
-                fit_funcs["fFullModel" + hist_def["obs"]].Draw("SAME")
-                fit_funcs["fBg" + hist_def["obs"]].Draw("SAME")
+                if fit_funcs.get("fSignalOnly" + hist_def["obs"]) is None:
+                    print utils.bcolors.BOLD + utils.bcolors.BLUE + "fit_funcs[fFullModel" + hist_def["obs"] + "].Draw(SAME)" + utils.bcolors.ENDC
+                    fit_funcs["fFullModel" + hist_def["obs"]].Draw("SAME")
+                    print utils.bcolors.BOLD + utils.bcolors.BLUE + "fit_funcs[fBg" + hist_def["obs"] + "].Draw(SAME)" + utils.bcolors.ENDC
+                    fit_funcs["fBg" + hist_def["obs"]].Draw("SAME")
+                    print utils.bcolors.BOLD + utils.bcolors.BLUE + "fit_funcs[fSignal" + hist_def["obs"] + "].Draw(SAME)" + utils.bcolors.ENDC
+                    fit_funcs["fSignal" + hist_def["obs"]].Draw("SAME")
                 if fit_funcs.get("fSignalOnly" + hist_def["obs"]) is not None:
+                    print utils.bcolors.BOLD + utils.bcolors.BLUE + "fit_funcs[fSignalOnly" + hist_def["obs"] + "].Draw(SAME)" + utils.bcolors.ENDC
                     fit_funcs["fSignalOnly" + hist_def["obs"]].Draw("SAME")
-                fit_funcs["fSignal" + hist_def["obs"]].Draw("SAME")
                 
                 
+            print utils.bcolors.BOLD + utils.bcolors.BLUE + "legend.Draw(SAME)" + utils.bcolors.ENDC
             legend.Draw("SAME")
             
             if plot_par.plot_ratio or plot_par.plot_custom_ratio > 0:
@@ -1793,6 +1865,7 @@ def main():
             if large_version:
                 if plot_par.plot_ratio:
                     #c1.cd()
+                    print utils.bcolors.BOLD + utils.bcolors.OKGREEN + "histCPad.cd()" + utils.bcolors.ENDC
                     histCPad.cd()
                 utils.stamp_plot(lumiStr)
                 if create_png:
@@ -1805,6 +1878,7 @@ def main():
                 else:
                     break
             else:
+                print utils.bcolors.BOLD + utils.bcolors.OKGREEN + "pad.cd()" + utils.bcolors.ENDC
                 pad.cd()
                 utils.stamp_plot(lumiStr)
             
@@ -1821,6 +1895,7 @@ def main():
         if needToDraw and not plot_single and not large_version:
             for id in range(pId, 5):
                 print "Clearing pad " + str(id)
+                print utils.bcolors.BOLD + utils.bcolors.OKGREEN + "histCPad.cd(" + str(id) + ")" + utils.bcolors.ENDC
                 pad = histPad.cd(id)
                 if plot_par.plot_ratio and ratioPads.get(pId) is not None:
                     ratioPads[pId][0].Clear()
@@ -1860,7 +1935,10 @@ def main():
     #print ",fit_hist_integral,hist_signal_integral,fit_full_integral,fit_full_integral_chi_s,fit_signal_integral,fit_signal_integral_error,fit_only_signal_integral,fit_bg_integral,fit_hist_integral_reco,hist_signal_integral_reco,fit_full_integral_reco,fit_full_integral_chi_s_reco,fit_signal_integral_reco,fit_signal_integral_error_reco,fit_only_signal_integral_reco,fit_bg_integral_reco,fit_hist_integral_id,hist_signal_integral_id,fit_full_integral_id,fit_full_integral_chi_s_id,fit_signal_integral_id,fit_signal_integral_error_id,fit_only_signal_integral_id,fit_bg_integral_id,reco_eff,reco_eff_signal,reco_eff_hist,id_eff,id_eff_signal,id_eff_hist"
     
     for hist_def in plot_par.histograms_defs:
-        if "reco_" in hist_def["obs"] or "id_" in hist_def["obs"]:
+        if "reco_" in hist_def["obs"] or "id_" in hist_def["obs"] or "iso_" in hist_def["obs"]:
+            continue
+        
+        if "invMass_2_3_0_1.2" in hist_def["obs"]:
             continue
         
         eff_error_low = 0

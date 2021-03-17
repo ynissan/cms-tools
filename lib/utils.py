@@ -25,6 +25,18 @@ TH1D.SetDefaultSumw2()
 # from ROOT import LeptonCollectionFilesMap
 # from ROOT import LeptonCollection
 
+class bcolors:
+    HEADER = '\033[95m'
+    BLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    RED = '\033[31m'
+
 colorPalette = [
     { "name" : "yellow", "fillColor" : "#fcf802", "lineColor" : "#e0dc00", "fillStyle" : 3444, "markerColor" : 5,  "markerStyle" : kOpenCircle},
     { "name" : "green", "fillColor" : "#0bb200", "lineColor" : "#099300", "fillStyle" : 3444, "markerColor" : 3,  "markerStyle" : kOpenSquare },
