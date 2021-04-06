@@ -114,6 +114,7 @@ def main():
             print "No"
             notCorrect += 1
             continue
+        
         #print "Size Reco="
         #print str(len(c.Electrons) + len(c.Muons))
         #if c.Electrons.size() + c.Muons.size() < 1:
@@ -150,7 +151,7 @@ def main():
                     #    continue
                     
                     metvec = TLorentzVector()
-                    metvec.SetPtEtaPhiE(c.Met, 0, c.METPhi, c.Met)
+                    metvec.SetPtEtaPhiE(c.MET, 0, c.METPhi, c.MET)
         
                     appEvent = False
         
@@ -213,7 +214,7 @@ def main():
                             vars[varsDict["invMass"]]["var"][0] = -1
                         vars[varsDict["deltaEtaLJ"]]["var"][0] = abs(t.Eta() - c.LeadingJet.Eta())
                         vars[varsDict["deltaRLJ"]]["var"][0] = abs(t.DeltaR(c.LeadingJet))
-                        vars[varsDict["mtt"]]["var"][0] = analysis_tools.MT2(c.Met, c.METPhi, t)
+                        vars[varsDict["mtt"]]["var"][0] = analysis_tools.MT2(c.MET, c.METPhi, t)
                         vars[varsDict["deltaRMet"]]["var"][0] = abs(t.DeltaR(metvec))
                         vars[varsDict["deltaPhiMet"]]["var"][0] = abs(t.DeltaPhi(metvec))
                         vars[varsDict["lepton"]]["var"] = ll

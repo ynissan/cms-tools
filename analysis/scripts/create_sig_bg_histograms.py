@@ -36,11 +36,8 @@ args = parser.parse_args()
 
 output_file = None
 
-signal_1t_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_sam_dilepton_signal_bdt_all/single"
-bg_1t_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_dilepton_signal_bdt/all/single"
-
-signal_2l_dir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_sam_dilepton_signal_bdt_all/single"
-bg_2l_dir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/bg/skim_dilepton_signal_bdt/all/single"
+signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_sam/sum"
+bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum"
 
 if args.output_file:
     output_file = args.output_file[0]
@@ -49,64 +46,23 @@ else:
 
 ######## END OF CMDLINE ARGUMENTS ########
 
-
-def createPlotsFast(rootfiles, type, histograms, weight=1, prefix=""):
-    print "Processing "
-    print rootfiles
-    lumiSecs = LumiSectMap()
-    
-    for f in rootfiles:
-        print f
-        rootFile = TFile(f)
-        c = rootFile.Get('tEvent')
-        if type == "data":
-            lumis = rootFile.Get('lumiSecs')
-            col = TList()
-            col.Add(lumis)
-            lumiSecs.Merge(col)
-        
-        for cut in cuts:
-            for hist_def in histograms_defs:
-                if prefix != "":
-                    histName =  prefix + "_" + cut["name"] + "_" + hist_def["obs"] + "_" + type
-                else:
-                    histName =  cut["name"] + "_" + hist_def["obs"] + "_" + type
-                #if type != "data" and type != "signal":
-                #    hist = utils.getHistogramFromTree(histName, c, hist_def["obs"], hist_def["bins"], hist_def["minX"], hist_def["maxX"], "puWeight * (" + cut["condition"] + ")")
-                #else:
-                if type != "data":
-                    hist = utils.getHistogramFromTree(histName, c, hist_def["obs"], hist_def["bins"], hist_def["minX"], hist_def["maxX"], weightString[plot_kind] + " * " + str(weight) + "* Weight * (" + cut["condition"] + ")", plot_overflow)
-                else:
-                    hist = utils.getHistogramFromTree(histName, c, hist_def["obs"], hist_def["bins"], hist_def["minX"], hist_def["maxX"], weightString[plot_kind] + " * (" +cut["condition"] + ")", plot_overflow)
-                if hist is None:
-                    continue
-                hist.GetXaxis().SetTitle("")
-                hist.SetTitle("")
-                hist.Sumw2()
-                #if type != "data":
-                #    c.GetEntry(0)
-                #    hist.Scale(c.Weight * weight)
-                if histograms.get(histName) is None:
-                    histograms[histName] = hist
-                else:
-                    histograms[histName].Add(hist)
-        
-        rootFile.Close()
-    
-    if type == "data":
-        return calculatedLumi.get(plot_kind)
-        #return calculatedLumi.get('SingleMuon')
-        
-        if calculatedLumi.get('MET') is not None:
-            print "Found lumi=" + str(calculatedLumi['MET'])
-            return calculatedLumi['MET']
-        else:
-            return utils.calculateLumiFromLumiSecs(lumiSecs)
-        #Z PEAK
-        #return 27.677786572
-        #Norman
-        return 35.579533154
-        #return utils.calculateLumiFromLumiSecs(lumiSecs)
+# if lepNum == "reco":
+#     preselection = "twoLeptons" + iso + str(ptRange) + cat + " == 1 && BTagsDeepMedium == 0 && @leptons" + iso + str(ptRange) + cat + ".size() == 2 && leptonFlavour" + iso + str(ptRange) + cat  + " == \"" + lep + "\"" + " && sameSign" + iso + str(ptRange) + cat + " == 0"
+# else:
+#     preselection = "exclusiveTrack" + iso + str(ptRange) + cat + ' == 1 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour' + iso + str(ptRange) + cat  + " == \"" + lep + "\""
+#  
+# prefixVars = ""
+# if prefix == "exTrack":
+#     prefixVars = "exTrack_"
+# eventPassed = False
+# leptonFlavour = ""
+# if prefix == "reco":
+#     if eval("tree.twoLeptons"  + postfix) == 1 and tree.BTagsDeepMedium == 0 and eval("tree.leptons"  + postfix).size() == 2:
+#         eventPassed = True
+#         leptonFlavour = eval("tree.leptonFlavour"  + postfix)
+# elif eval("tree.exclusiveTrack"  + postfix) == 1 and tree.BTagsDeepMedium == 0:
+#     eventPassed = True
+#     leptonFlavour = eval("tree.exclusiveTrackLeptonFlavour"  + postfix)
 
 def main():
     print "Start: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S')
@@ -115,86 +71,115 @@ def main():
     c1 = TCanvas("c1", "c1", 800, 800)
     c1.cd()
     
-    print "Getting 1t signals..."
+    print "Getting signals..."
     
-    for filename in glob(signal_1t_dir + "/*"):
+    for filename in glob(signal_dir + "/*"):
         print "Opening", filename    
         deltaM = utils.getPointFromSamFileName(filename)
         print "deltaM=" + deltaM
         f = TFile(filename)
         c = f.Get('tEvent')
-        c1.cd()
-        hist = utils.getHistogramFromTree(deltaM + "_1t", c, "dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 *  Weight * BranchingRatio * (Mht >= 220 && Met >= 200 && invMass < 30)", True)
-        hist.Sumw2()
-        fnew.cd()
-        hist.Write()
+
+        for lep in ["Muons", "Electrons"]:
+            c1.cd()
+            hist = utils.getHistogramFromTree(deltaM + "_1t_" + lep, c, "exTrack_dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 *  Weight * BranchingRatio * (exclusiveTrack == 1 && MHT >= 220 && MET >= 200 && exTrack_invMass < 30 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour == \"" + lep + "\")", True)
+            hist.Sumw2()
+            fnew.cd()
+            hist.Write()
+            
+            hist = utils.getHistogramFromTree(deltaM + "_2l_" + lep, c, "dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (twoLeptons == 1 && (leptons[1].Pt() <= 3.5 || deltaR <= 0.3) && MHT >= 220 &&  MET >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1 && BTagsDeepMedium == 0 && vetoElectronsTightID == 0 && vetoMuonsPassIso == 0 && @leptons.size() == 2 && leptonFlavour == \"" + lep + "\" && sameSign == 0)", True)
+            #non-orth
+            #hist = utils.getHistogramFromTree(deltaM + "_2l", c, "dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (MHT >= 220 &&  MET >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1)", True)
+            hist.Sumw2()
+            fnew.cd()
+            hist.Write()
+            
         f.Close()
     
-    bg_1t_hist = None
+    bg_1t_hist = {}
+    bg_2l_hist = {}
     
-    print "Getting 1t BG..."
+    print "Getting BG..."
     
-    for filename in glob(bg_1t_dir + "/*"):
+    for filename in glob(bg_dir + "/*"):
         print "Opening", filename
         f = TFile(filename)
         c = f.Get('tEvent')
-        c1.cd()
-        basename = os.path.basename(filename).split(".")[0]
-        hist = utils.getHistogramFromTree(basename, c, "dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * (Mht >= 220 && Met >= 200 && invMass < 30)", True)
-        hist.Sumw2()
-        if bg_1t_hist is None:
-            bg_1t_hist = hist
-        else:
-            bg_1t_hist.Add(hist)
+        
+        for lep in ["Muons", "Electrons"]:
+        
+            c1.cd()
+            basename = os.path.basename(filename).split(".")[0]
+            hist = utils.getHistogramFromTree(basename, c, "exTrack_dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * (exclusiveTrack == 1 && MHT >= 220 && MET >= 200 && exTrack_invMass < 30 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour == \"" + lep + "\")", True)
+            hist.Sumw2()
+            if bg_1t_hist.get(lep) is None:
+                bg_1t_hist[lep] = hist
+            else:
+                bg_1t_hist[lep].Add(hist)
+        
+            hist = utils.getHistogramFromTree(basename, c, "dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * (twoLeptons == 1 && (leptons[1].Pt() <= 3.5 || deltaR <= 0.3) && MHT >= 220 &&  MET >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1 && BTagsDeepMedium == 0 && vetoElectronsTightID == 0 && vetoMuonsPassIso == 0 && @leptons.size() == 2 && leptonFlavour == \"" + lep + "\" && sameSign == 0)", True)
+            #non-orth
+            #hist = utils.getHistogramFromTree(basename, c, "dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * (MHT >= 220 &&  MET >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1)", True)
+            hist.Sumw2()
+            if bg_2l_hist.get(lep) is None:
+                bg_2l_hist[lep] = hist
+            else:
+                bg_2l_hist[lep].Add(hist)
+        
         f.Close()
     
     fnew.cd()
-    bg_1t_hist.Write("bg_1t")
-    
-    print "Getting 2l signals..."
-    
-    for filename in glob(signal_2l_dir + "/*"):
-        print "Opening", filename   
-        deltaM = utils.getPointFromSamFileName(filename)
-        print "deltaM=" + deltaM
-        f = TFile(filename)
-        c = f.Get('tEvent')
-        c1.cd()
-        #orth
-        hist = utils.getHistogramFromTree(deltaM + "_2l", c, "dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * ((leptons[1].Pt() <= 3.5 || deltaR <= 0.3) && Mht >= 220 &&  Met >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1 && BTagsDeepMedium == 0 && vetoElectronsTightID == 0 && vetoMuonsPassJetIso == 0)", True)
-        #non-orth
-        #hist = utils.getHistogramFromTree(deltaM + "_2l", c, "dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (Mht >= 220 &&  Met >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1)", True)
-        hist.Sumw2()
-        fnew.cd()
-        hist.Write()
-        f.Close()
-    
-    bg_2l_hist = None
-    
-    print "Getting 2l BG..."
-    
-    for filename in glob(bg_2l_dir + "/*"):
-        print "Opening", filename
-        f = TFile(filename)
-        c = f.Get('tEvent')
-        c1.cd()
-        basename = os.path.basename(filename).split(".")[0]
-        #orth
-        hist = utils.getHistogramFromTree(basename, c, "dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * ((leptons[1].Pt() <= 3.5 || deltaR <= 0.3) && Mht >= 220 &&  Met >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1 && BTagsDeepMedium == 0 && vetoElectronsTightID == 0 && vetoMuonsPassJetIso == 0)", True)
-        #non-orth
-        #hist = utils.getHistogramFromTree(basename, c, "dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * (Mht >= 220 &&  Met >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1)", True)
-        hist.Sumw2()
-        if bg_2l_hist is None:
-            bg_2l_hist = hist
-        else:
-            bg_2l_hist.Add(hist)
-        f.Close()
-    
-    fnew.cd()
-    bg_2l_hist.Write("bg_2l")
+    for lep in ["Muons", "Electrons"]:
+        bg_1t_hist[lep].Write("bg_1t_" + lep)
+        bg_2l_hist[lep].Write("bg_2l_" + lep)
     fnew.Close()
     
     exit(0)
+    
+    # print "Getting 2l signals..."
+#     
+#     for filename in glob(signal_2l_dir + "/*"):
+#         print "Opening", filename   
+#         deltaM = utils.getPointFromSamFileName(filename)
+#         print "deltaM=" + deltaM
+#         f = TFile(filename)
+#         c = f.Get('tEvent')
+#         c1.cd()
+#         #orth
+#         hist = utils.getHistogramFromTree(deltaM + "_2l", c, "dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * ((leptons[1].Pt() <= 3.5 || deltaR <= 0.3) && MHT >= 220 &&  MET >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1 && BTagsDeepMedium == 0 && vetoElectronsTightID == 0 && vetoMuonsPassJetIso == 0)", True)
+#         #non-orth
+#         #hist = utils.getHistogramFromTree(deltaM + "_2l", c, "dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (MHT >= 220 &&  MET >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1)", True)
+#         hist.Sumw2()
+#         fnew.cd()
+#         hist.Write()
+#         f.Close()
+    
+    
+    
+    # print "Getting 2l BG..."
+#     
+#     for filename in glob(bg_2l_dir + "/*"):
+#         print "Opening", filename
+#         f = TFile(filename)
+#         c = f.Get('tEvent')
+#         c1.cd()
+#         basename = os.path.basename(filename).split(".")[0]
+#         #orth
+#         hist = utils.getHistogramFromTree(basename, c, "dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * ((leptons[1].Pt() <= 3.5 || deltaR <= 0.3) && MHT >= 220 &&  MET >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1 && BTagsDeepMedium == 0 && vetoElectronsTightID == 0 && vetoMuonsPassJetIso == 0)", True)
+#         #non-orth
+#         #hist = utils.getHistogramFromTree(basename, c, "dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * (MHT >= 220 &&  MET >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1)", True)
+#         hist.Sumw2()
+#         if bg_2l_hist is None:
+#             bg_2l_hist = hist
+#         else:
+#             bg_2l_hist.Add(hist)
+#         f.Close()
+#     
+#     fnew.cd()
+#     bg_2l_hist.Write("bg_2l")
+#     fnew.Close()
+#     
+#     exit(0)
 
 main()
 

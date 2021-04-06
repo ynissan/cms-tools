@@ -157,7 +157,7 @@ priority = 0
 EOM
 
 file_limit=0
-files_per_job=20
+files_per_job=8
 
 for type in reg madHtFilesGt600 madHtFilesLt600; do
 

@@ -104,9 +104,11 @@ for group in "${!SIM_GROUP[@]}"; do
                             mkdir $dir
                         fi
                         cmd="$CONDOR_WRAPPER $CUT_OPTIMISATION_SCRIPTS/dilepton_tmva.py -i $input -bg $BG_INPUT -o $dir/${lepNum}${lep}${iso}${category}${ptRange}.root -lepNum $lepNum -lep $lep -iso $iso -ptRange $ptRange -cat $category"
-                        if [ -f "$dir/${lepNum}${lep}${iso}${category}${ptRange}.root" ]; then 
-                            echo "file $dir/${lepNum}${lep}${iso}${category}${ptRange}.root exists. Skipping..."
-                            #continue
+                        #echo "$dir/dataset/weights/TMVAClassification_${lepNum}${lep}${iso}${category}${ptRange}.xml"
+                        #exit 0
+                        if [ -f "$dir/dataset/weights/TMVAClassification_${lepNum}${lep}${iso}${category}${ptRange}.weights.xml" ]; then 
+                            echo "file $dir/dataset/weights/TMVAClassification_${lepNum}${lep}${iso}${category}${ptRange}.weights.xml exists. Skipping..."
+                            continue
                         fi
                         echo $cmd
 cat << EOM >> $output_file

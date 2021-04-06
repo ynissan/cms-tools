@@ -38,6 +38,8 @@ commonFlatObs = {
     "MHTPhi" : "float",
 }
 
+commonObservablesStringList = ["genFlavour"]
+
 bgFlatObs = {
     "madHT" : "float",
     "puWeight" : "float",
@@ -68,8 +70,38 @@ commonCalcFlatObs = {
     "BTagsDeepLoose" : "int",
     "BTagsDeepMedium" : "int",
     "MetDHt" : "float",
-    "Mt2" : "float",
     "NL" : "int",
+    "LeadingJetPt" : "float",
+    "NLGen" : "int",
+    "NLGenZ" : "int",
+    "CrossSection" : "float",
+    "LeadingJetPartonFlavor" : "int",
+    "LeadingJetQgLikelihood" : "float",
+    "LeadingJetMinDeltaRMuons" : "float",
+    "LeadingJetMinDeltaRElectrons" : "float",
+    "MinDeltaPhiMetJets" : "float",
+    "MinDeltaPhiMhtJets" : "float",
+    "MinCsv30" : "float",
+    "MinCsv25" : "float",
+    "MaxCsv30" : "float",
+    "MaxCsv25" : "float",
+    "MinDeepCsv30" : "float",
+    "MinDeepCsv25" : "float",
+    "MaxDeepCsv30" : "float",
+    "MaxDeepCsv25" : "float",
+    "category" : "bool",
+    "madHT" : "float",
+    "puWeight" : "float",
+}
+
+vetosFlatObs = {
+    "vetoElectronsPassIso" : "bool",
+    "vetoElectronsMediumID" : "bool",
+    "vetoElectronsTightID" : "bool",
+    
+    "vetoMuonsPassIso" : "bool",
+    "vetoMuonsMediumID" : "bool",
+    "vetoMuonsTightID" : "bool",
 }
 
 genParticlesObs = {
@@ -93,6 +125,13 @@ jetsObs = {
     "Jets_partonFlavor" : "int",
     "Jets_qgLikelihood" : "double"
 }
+
+jetsCalcObs = {
+    "Jets_muonCorrected" : "TLorentzVector",
+    "Jets_electronCorrected" : "TLorentzVector",
+    "Jets_trackCorrected" : "TLorentzVector",
+}
+
 
 triggerObs = {
     "TriggerNames" : "string",
@@ -141,7 +180,19 @@ tracksObs = {
 
 tracksCalcObs = {
     "tracks_ei" : "int",
-    "tracks_mi" : "int"
+    "tracks_mi" : "int",
+    
+    "tracks_deltaRLJ" : "double",
+    "tracks_deltaPhiLJ" : "double",
+    "tracks_deltaEtaLJ" : "double",
+    
+    "tracks_minDeltaRJets" : "double",
+    "tracks_closestJet" : "int",
+    "tracks_correctedMinDeltaRJets" : "double",
+    "tracks_correctedClosestJet" : "int",
+    
+    "tracks_matchGen" : "bool",
+    "tracks_isZ" : "bool"
 }
 
 pionsObs = {
@@ -193,7 +244,8 @@ electronsCalcObs = {
     "Electrons_closestJet" : "int",
     "Electrons_correctedMinDeltaRJets" : "double",
     "Electrons_correctedClosestJet" : "int",
-    "Electrons_ti" : "int"
+    "Electrons_ti" : "int",
+    "Electrons_isZ" : "bool"
 }
 
 muonsObs = {
@@ -220,7 +272,8 @@ muonsCalcObs = {
     "Muons_closestJet" : "int",
     "Muons_correctedMinDeltaRJets" : "double",
     "Muons_correctedClosestJet" : "int",
-    "Muons_ti" : "int"
+    "Muons_ti" : "int",
+    "Muons_isZ" : "bool"
 }
 
 def passTrig(c,trigname):
@@ -423,10 +476,17 @@ def isLeptonMatchedGen(genParticles, genParticles_PdgId, genL, genNL, lidx, lept
     if min > 0.01:
         return False
     elif minNZ is None or minZ < minNZ:
-        if genParticles_PdgId[minCanZ] == lepSignedPdgId * leptonsCharge[lidx]:
-            return True
+        if lepSignedPdgId != 0:
+            if genParticles_PdgId[minCanZ] == lepSignedPdgId * leptonsCharge[lidx]:
+                return True
+            else:
+                return False
         else:
-            return False
+            # we only care of the sign
+            if leptonsCharge[lidx] * genParticles_PdgId[minCanZ] < 0:
+                return True
+            else:
+                return False
     return False
 
 def minDeltaRGenParticles(l, gens, genParticles):
@@ -501,6 +561,9 @@ def muonPassesLooseSelection(i, muons, muons_mediumID, muons_deltaRLJ, muonLower
         return bool(muons_tightID[i])
     else:
         return bool(muons_mediumID[i])
+
+def muonPassesJetIsoSelection(i, muons, muons_mediumID):
+    return bool(muons_mediumID[i]) and muons[i].Pt() > 2
 
 def muonPassesTightSelection(i, muons, muons_mediumID, muons_passJetIso, muons_deltaRLJ, muonLowerPt = 2, muonLowerPtTight = False, muons_tightID = None):
     return muonPassesLooseSelection(i, muons, muons_mediumID, muons_deltaRLJ, muonLowerPt, muonLowerPtTight, muons_tightID) and bool(muons_passJetIso[i])

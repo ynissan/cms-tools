@@ -165,14 +165,14 @@ tracksVars = (
 
 leptonsCorrJetVecList = {
     "CorrJetIso" : "bool",
-    "NonJetIso" : "bool",
+    #"NonJetIso" : "bool",
     #"JetIso" : "bool",
     "NoIso" : "bool",
 }
 
-#leptonCorrJetIsoPtRange = [0, 1, 5, 10, 15]
+leptonCorrJetIsoPtRange = [0, 1, 5, 10, 15, 20]
 
-leptonCorrJetIsoPtRange = [0, 10]
+#leptonCorrJetIsoPtRange = [0, 10]
 
 dileptonObservablesVecList = {
     "leptons" : "TLorentzVector",
@@ -181,8 +181,13 @@ dileptonObservablesVecList = {
     "leptons_ParentPdgId" : "int"
 }
 
+genObservablesVecList = {
+    "genLeptonsIdx" : "int"
+}
+
 dileptonObservablesStringList = ["leptonFlavour"]
 
+# USED FOR GEN STUFF TOO
 commonObservablesDTypesList = {
     "invMass" : "float",
     "dileptonPt" : "float",
@@ -196,7 +201,12 @@ commonObservablesDTypesList = {
     "deltaEtaLeadingJetDilepton" : "float",
     "deltaPhiLeadingJetDilepton" : "float",
     "dilepHt" : "float",
-    "sameSign" : "bool"
+}
+
+extraObservablesDTypesList = {
+    "sameSign" : "bool",
+    "vetoElectrons" : "bool",
+    "vetoMuons" : "bool",
 }
 
 dileptonObservablesDTypesList = {
@@ -231,6 +241,7 @@ exclusiveTrackPostBdtObservablesDTypesList = {
     "trackParentPdgId" : "int",
 }
 
+dileptonObservablesDTypesList.update(extraObservablesDTypesList)
 dileptonObservablesDTypesList.update(commonObservablesDTypesList)
 
 exclusiveTrackObservablesStringList = ["exclusiveTrackLeptonFlavour"]
@@ -263,7 +274,8 @@ exclusiveTrackObservablesClassList = {
 defaultJetIsoSetting = "CorrJetIso10"
 
 #leptonIsolationList = [ "JetIso", "CorrJetIso", "NonJetIso" ]
-leptonIsolationList = [ "CorrJetIso", "NonJetIso", "NoIso" ]
+#leptonIsolationList = [ "CorrJetIso", "NonJetIso", "NoIso" ]
+leptonIsolationList = [ "CorrJetIso", "NoIso" ]
 # leptonIsolationCategories = {
 #     "" : { "lowPtTightMuons" : False, "muonPt" : 2},
 #     "LowPt" : { "lowPtTightMuons" : False, "muonPt" : 1.5},
@@ -875,7 +887,7 @@ def getDmFromFileName(filename):
 
 def getPointFromSamFileName(filename):
     print "Filename: " + filename
-    return "_".join(os.path.basename(filename).split('_')[0:2])
+    return "_".join(os.path.basename(filename).split('.')[0].split('_')[0:2])
 
 def calcSignificance(sigHist, bgHist, ignoreCrossSection = False):
     sig = 0

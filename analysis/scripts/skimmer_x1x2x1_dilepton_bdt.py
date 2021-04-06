@@ -58,7 +58,9 @@ data = args.data
 
 jpsi_muons = args.jpsi_muons
 
-if jpsi_muons or jpsi_electrons:
+jpsi = False
+
+if jpsi_muons:
     jpsi = True
     print "Got JPSI"
     if jpsi_muons:
@@ -203,12 +205,13 @@ def main():
         #    continue
                     
                     
-                            if not data and eval("tree.exclusiveTrack"  + postfix) == 1:
+                            #if not data and eval("tree.exclusiveTrack"  + postfix) == 1:
+                            if signal and eval("tree.exclusiveTrack"  + postfix) == 1:
                                 gens = [i for i in range(tree.GenParticles.size())]
                                 min, minCan = analysis_ntuples.minDeltaRGenParticles(eval("tree.lepton" + postfix), gens, tree.GenParticles)
                                 #print min, minCan
                                 pdgId = tree.GenParticles_ParentId[minCan]
-                                if min > 0.05:
+                                if minCan is None or min > 0.05:
                                  #   print "BAD GEN LEPTON!!!"
                                     pdgId = 0
                                 #else:

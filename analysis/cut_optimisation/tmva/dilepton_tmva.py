@@ -205,9 +205,9 @@ dataloader.AddVariable(prefix + 'deltaPhiLeadingJetDilepton' + iso + str(ptRange
 dataloader.AddVariable(prefix + 'dilepHt' + iso + str(ptRange) + cat, 'F')
 dataloader.AddVariable(prefix + 'invMass' + iso + str(ptRange) + cat, 'F')
 
-dataloader.AddVariable('Ht', 'F')
+dataloader.AddVariable('HT', 'F')
 dataloader.AddVariable('MinDeltaPhiMhtJets', 'F')
-dataloader.AddVariable('Mht', 'F')
+dataloader.AddVariable('MHT', 'F')
 dataloader.AddVariable('LeadingJetPt', 'F')
 dataloader.AddVariable('LeadingJet.Eta()', 'F')
 dataloader.AddVariable('NJets', 'I')
@@ -250,7 +250,7 @@ else:
     dataloader.AddVariable('track' + iso + str(ptRange) + cat + '.Pt()', 'F')
     dataloader.AddVariable('lepton' + iso + str(ptRange) + cat + '.Phi()', 'F')
     dataloader.AddVariable('track' + iso + str(ptRange) + cat + '.Phi()', 'F')
-    dataloader.AddVariable('Mt2', 'F')
+    #dataloader.AddVariable('Mt2', 'F')
 
 #new removal
 #dataloader.AddVariable('mtautau', 'F')
