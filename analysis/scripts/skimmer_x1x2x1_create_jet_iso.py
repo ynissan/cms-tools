@@ -94,8 +94,6 @@ def main():
         electronsCalcObs = {}
         for electronsCalcOb in analysis_ntuples.electronsCalcObs:
             electronsCalcObs[electronsCalcOb] = ROOT.std.vector(eval(analysis_ntuples.electronsCalcObs[electronsCalcOb]))()
-
-
             
         for i in range(tEvent.Muons.size()):
             muonsCalcObs["Muons_deltaRLJ"].push_back(-1)
@@ -131,7 +129,7 @@ def main():
                     eval(leptonsVecName.lower() + "CalcObs")[leptonsVecName  + "_minDeltaRJets"].push_back(-1)
                     eval(leptonsVecName.lower() + "CalcObs")[leptonsVecName  + "_closestJet"].push_back(-1)
                     #leptonsCorrJetVars[isoJets[lep]["obs"] + "_passJetIso"].push_back(True)
-                    leptonsCorrJetVars[isoJets[lep]["obs"] + "_passNonJetIso"].push_back(True)
+                    #leptonsCorrJetVars[isoJets[lep]["obs"] + "_passNonJetIso"].push_back(True)
                 else:
                     eval(leptonsVecName.lower() + "CalcObs")[leptonsVecName  + "_minDeltaRJets"].push_back(min)
                     eval(leptonsVecName.lower() + "CalcObs")[leptonsVecName  + "_closestJet"].push_back(minCan)
@@ -142,17 +140,21 @@ def main():
 #                     else:
 #                         leptonsCorrJetVars[isoJets[lep]["obs"] + "_passJetIso"].push_back(False)
                     #min, minCan = analysis_ntuples.minDeltaLepLeps(leptonsVec[i], tEvent.Jets)
-                    if min is None or min > 0.4:
-                        leptonsCorrJetVars[isoJets[lep]["obs"] + "_passNonJetIso"].push_back(True)
-                    else:
-                        leptonsCorrJetVars[isoJets[lep]["obs"] + "_passNonJetIso"].push_back(False)
+                    #if min is None or min > 0.4:
+                    #    leptonsCorrJetVars[isoJets[lep]["obs"] + "_passNonJetIso"].push_back(True)
+                    #else:
+                    #    leptonsCorrJetVars[isoJets[lep]["obs"] + "_passNonJetIso"].push_back(False)
         
         var_Jets_muonCorrected = ROOT.std.vector(TLorentzVector)(tEvent.Jets)
         var_Jets_electronCorrected = ROOT.std.vector(TLorentzVector)(tEvent.Jets)
         #print len(tEvent.Muons), tEvent.Muons.size()
         
-        non_iso_jet_electrons = [ i for i in range(len(tEvent.Electrons)) if analysis_ntuples.electronPassesKinematicSelection(i, tEvent.Electrons, electronsCalcObs["Electrons_deltaRLJ"]) and electronsCalcObs["Electrons_minDeltaRJets"][i] >= 0 and electronsCalcObs["Electrons_minDeltaRJets"][i] < 0.4 ]
-        non_iso_jet_muons = [ i for i in range(len(tEvent.Muons)) if analysis_ntuples.muonPassesLooseSelection(i, tEvent.Muons, tEvent.Muons_mediumID, muonsCalcObs["Muons_deltaRLJ"]) and muonsCalcObs["Muons_minDeltaRJets"][i] >= 0 and muonsCalcObs["Muons_minDeltaRJets"][i] < 0.4 ]
+        non_iso_jet_electrons = [ i for i in range(len(tEvent.Electrons)) if electronsCalcObs["Electrons_minDeltaRJets"][i] >= 0 and electronsCalcObs["Electrons_minDeltaRJets"][i] < 0.4 ]
+        non_iso_jet_muons = [ i for i in range(len(tEvent.Muons)) if analysis_ntuples.muonPassesJetIsoSelection(i, tEvent.Muons, tEvent.Muons_mediumID) and muonsCalcObs["Muons_minDeltaRJets"][i] >= 0 and muonsCalcObs["Muons_minDeltaRJets"][i] < 0.4 ]
+        
+        #non_iso_jet_electrons = [ i for i in range(len(electronsObs["Electrons"])) if electronsCalcObs["Electrons_minDeltaRJets"][i] >= 0 and electronsCalcObs["Electrons_minDeltaRJets"][i] < 0.4 ]
+        #non_iso_jet_muons = [ i for i in range(len(muonsObs["Muons"])) if analysis_ntuples.muonPassesJetIsoSelection(i, muonsObs["Muons"], muonsObs["Muons_mediumID"]) and muonsCalcObs["Muons_minDeltaRJets"][i] >= 0 and muonsCalcObs["Muons_minDeltaRJets"][i] < 0.4 ]
+        #non_iso_jet_tracks = [ i for i in range(len(c.tracks)) if abs(c.tracks[i].Eta()) < 2.4 and c.tracks_trkRelIso[i] < 0.1 and c.tracks_dxyVtx[i] < 0.02 and c.tracks_dzVtx[i] < 0.05 and tracksCalcObs["tracks_minDeltaRJets"][i] >= 0 and tracksCalcObs["tracks_minDeltaRJets"][i] < 0.4]
         
         for i in non_iso_jet_electrons:
             for j in range(len(var_Jets_electronCorrected)):

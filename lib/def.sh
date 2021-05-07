@@ -41,7 +41,7 @@ BG_TYPES=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_
 #BG_TYPES=(QCD)
 #BG_TYPES=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays WJetsToLNu ZJetsToNuNu WZZ WWZ WW WZ ZZZ ZZ)
 
-#BG_TYPES=(WZZ)
+BG_TYPES=(TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT)
 
 RARE=(WZZ WWZ ZZZ)
 DiBoson=(WZ WW ZZ)

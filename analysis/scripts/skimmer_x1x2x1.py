@@ -817,7 +817,7 @@ def main():
         commonCalcFlatObs["BTagsDeepLoose"][0] = btagsDeepLoose
         commonCalcFlatObs["BTagsDeepMedium"][0] = btagsDeepMedium
         
-        if not ljet:
+        if ljet is None:
             commonCalcFlatObs["LeadingJetPt"][0] = -1
             var_LeadingJet = TLorentzVector()
         else:
@@ -911,6 +911,9 @@ def main():
         
         for muonsCalcOb in analysis_ntuples.muonsCalcObs:
             muonsCalcObs[muonsCalcOb] = ROOT.std.vector(eval(analysis_ntuples.muonsCalcObs[muonsCalcOb]))()
+        
+        for tracksCalcOb in analysis_ntuples.tracksCalcObs:
+            tracksCalcObs[tracksCalcOb] = ROOT.std.vector(eval(analysis_ntuples.tracksCalcObs[tracksCalcOb]))()
         
         for i in range(electronsObs["Electrons"].size()):
             electronsCalcObs["Electrons_deltaRLJ"].push_back(electronsObs["Electrons"][i].DeltaR(var_LeadingJet))
@@ -1141,8 +1144,8 @@ def main():
                     for postfix in postfixi:
                         dileptonVars["NSelectionLeptons" + postfix][0] = leptonsNum
                         
-                        dileptonVars["vetoElectrons" + postfix][0] = 0 if len([ i for i in range(electronsObs["Electrons"].size()) if electronsObs["Electrons"][i].Pt() > 25 and bool(leptonsCorrJetVars["Electrons_pass" + iso + str(ptRange)][i]) ]) == 0 else 1
-                        dileptonVars["vetoMuons" + postfix][0] = 0 if len([ i for i in range(muonsObs["Muons"].size()) if muonsObs["Muons"][i].Pt() > 25 and  bool(leptonsCorrJetVars["Muons_pass" + iso + str(ptRange)][i]) ]) == 0 else 1
+                        dileptonVars["vetoElectrons" + postfix][0] = 0 if len([ i for i in range(electronsObs["Electrons"].size()) if electronsObs["Electrons"][i].Pt() > 20 and bool(leptonsCorrJetVars["Electrons_pass" + iso + str(ptRange)][i]) ]) == 0 else 1
+                        dileptonVars["vetoMuons" + postfix][0] = 0 if len([ i for i in range(muonsObs["Muons"].size()) if muonsObs["Muons"][i].Pt() > 20 and  bool(leptonsCorrJetVars["Muons_pass" + iso + str(ptRange)][i]) ]) == 0 else 1
                     
                     leptons, leptonsIdx, leptonsCharge, leptonFlavour, same_sign = None, None, None, None, None
                     
@@ -1312,9 +1315,6 @@ def main():
 
         afterLeptons += 1
         
-        for tracksCalcOb in analysis_ntuples.tracksCalcObs:
-            tracksCalcObs[tracksCalcOb] = ROOT.std.vector(eval(analysis_ntuples.tracksCalcObs[tracksCalcOb]))()
-        
         for i in range(len(tracksObs["tracks"])):
             t = tracksObs["tracks"][i]
             
@@ -1331,17 +1331,17 @@ def main():
                 tracksCalcObs["tracks_mi"].push_back(minCan)
         
         
-        vetosFlatObs["vetoElectronsPassIso"][0] = 0 if len([ i for i in range(electronsObs["Electrons"].size()) if electronsObs["Electrons"][i].Pt() > 25 and  bool(electronsObs["Electrons_passIso"][i]) ]) == 0 else 1
+        vetosFlatObs["vetoElectronsPassIso"][0] = 0 if len([ i for i in range(electronsObs["Electrons"].size()) if electronsObs["Electrons"][i].Pt() > 20 and  bool(electronsObs["Electrons_passIso"][i]) ]) == 0 else 1
         #var_vetoElectronsPassJetIso[0] = 0 if len([ i for i in range(len(var_Electrons)) if var_Electrons[i].Pt() > 25 and  bool(var_Electrons_passJetIso[i]) ]) == 0 else 1
-        vetosFlatObs["vetoElectronsMediumID"][0] = 0 if len([ i for i in range(electronsObs["Electrons"].size()) if electronsObs["Electrons"][i].Pt() > 25 and  bool(electronsObs["Electrons_mediumID"][i]) ]) == 0 else 1
-        vetosFlatObs["vetoElectronsTightID"][0] = 0 if len([ i for i in range(electronsObs["Electrons"].size()) if electronsObs["Electrons"][i].Pt() > 25 and  bool(electronsObs["Electrons_tightID"][i]) ]) == 0 else 1
+        vetosFlatObs["vetoElectronsMediumID"][0] = 0 if len([ i for i in range(electronsObs["Electrons"].size()) if electronsObs["Electrons"][i].Pt() > 20 and  bool(electronsObs["Electrons_mediumID"][i]) ]) == 0 else 1
+        vetosFlatObs["vetoElectronsTightID"][0] = 0 if len([ i for i in range(electronsObs["Electrons"].size()) if electronsObs["Electrons"][i].Pt() > 20 and  bool(electronsObs["Electrons_tightID"][i]) ]) == 0 else 1
         
         #vetosFlatObs["vetoElectronsJetIso"][0] = 0 if len([ i for i in range(electronsObs["Electrons"].size()) if electronsObs["Electrons"][i].Pt() > 25 and  bool(electronsObs["Electrons_tightID"][i]) ]) == 0 else 1
         
-        vetosFlatObs["vetoMuonsPassIso"][0] = 0 if len([ i for i in range(muonsObs["Muons"].size()) if muonsObs["Muons"][i].Pt() > 25 and  bool(muonsObs["Muons_passIso"][i]) ]) == 0 else 1
+        vetosFlatObs["vetoMuonsPassIso"][0] = 0 if len([ i for i in range(muonsObs["Muons"].size()) if muonsObs["Muons"][i].Pt() > 20 and  bool(muonsObs["Muons_passIso"][i]) ]) == 0 else 1
         #var_vetoMuonsPassJetIso[0] = 0 if len([ i for i in range(len(var_Muons)) if var_Muons[i].Pt() > 25 and  bool(var_Muons_passJetIso[i]) ]) == 0 else 1
-        vetosFlatObs["vetoMuonsMediumID"][0] = 0 if len([ i for i in range(muonsObs["Muons"].size()) if muonsObs["Muons"][i].Pt() > 25 and  bool(muonsObs["Muons_mediumID"][i]) ]) == 0 else 1
-        vetosFlatObs["vetoMuonsTightID"][0] = 0 if len([ i for i in range(muonsObs["Muons"].size()) if muonsObs["Muons"][i].Pt() > 25 and  bool(muonsObs["Muons_tightID"][i]) ]) == 0 else 1
+        vetosFlatObs["vetoMuonsMediumID"][0] = 0 if len([ i for i in range(muonsObs["Muons"].size()) if muonsObs["Muons"][i].Pt() > 20 and  bool(muonsObs["Muons_mediumID"][i]) ]) == 0 else 1
+        vetosFlatObs["vetoMuonsTightID"][0] = 0 if len([ i for i in range(muonsObs["Muons"].size()) if muonsObs["Muons"][i].Pt() > 20 and  bool(muonsObs["Muons_tightID"][i]) ]) == 0 else 1
         
         # if dy:
 #             

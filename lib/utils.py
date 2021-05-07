@@ -109,6 +109,8 @@ signalCp = [
     { "name" : "grey", "fillColor" : "#898989", "lineColor" : "#636363", "fillStyle" : 0 },
     { "name" : "black", "fillColor" : "#012a6d", "lineColor" : "#01173a", "fillStyle" : 0 },
     { "name" : "red", "fillColor" : "#ff0000", "lineColor" : "#ff0000", "fillStyle" : 0 },
+    { "name" : "purple", "fillColor" : "#a82ba6", "lineColor" : "#a82ba6", "fillStyle" : 0 },
+    { "name" : "orange", "fillColor" : "#b78b12", "lineColor" : "#b78b12", "fillStyle" : 0 },
 ]
 
 compoundTypes = {
@@ -275,7 +277,8 @@ defaultJetIsoSetting = "CorrJetIso10"
 
 #leptonIsolationList = [ "JetIso", "CorrJetIso", "NonJetIso" ]
 #leptonIsolationList = [ "CorrJetIso", "NonJetIso", "NoIso" ]
-leptonIsolationList = [ "CorrJetIso", "NoIso" ]
+#leptonIsolationList = [ "CorrJetIso", "NoIso" ]
+leptonIsolationList = [ "NoIso", "CorrJetIso" ]
 # leptonIsolationCategories = {
 #     "" : { "lowPtTightMuons" : False, "muonPt" : 2},
 #     "LowPt" : { "lowPtTightMuons" : False, "muonPt" : 1.5},
@@ -431,6 +434,36 @@ def formatHist(hist, cP, alpha=0.35,noFillStyle=False, largeVersion = False):
     else:
         hist.SetLineWidth(1)
     hist.SetOption("HIST")
+
+def histoStyler(h, ratio = False):
+    #h.SetLineWidth(2)
+    #h.SetLineColor(color)
+    if h is None or h.GetXaxis() is None:
+        return
+    font = 132
+    if ratio:
+        size = 0.15
+        labelSize = 0.14
+        h.GetYaxis().SetTitleOffset(0.38)
+    else:
+        size = 0.04
+        labelSize = 0.04
+        #print h.GetXaxis()
+        h.GetXaxis().SetTitleOffset(1.0)
+        h.GetYaxis().SetTitleOffset(1.0)
+    
+    h.GetXaxis().SetLabelFont(font)
+    h.GetYaxis().SetLabelFont(font)
+    h.GetXaxis().SetTitleFont(font)
+    h.GetYaxis().SetTitleFont(font)
+    h.GetYaxis().SetTitleSize(size)
+    h.GetXaxis().SetTitleSize(size)
+    h.GetXaxis().SetLabelSize(labelSize)   
+    h.GetYaxis().SetLabelSize(labelSize)
+
+def formatLegend(legend):
+    legend.SetTextFont(132)
+    
  
 def pause(str_='push enter key when ready'):
     import sys
@@ -646,29 +679,6 @@ def mkcanvas(name='canvas'):
     c.SetBottomMargin(0.16)
     c.SetLeftMargin(0.19)
     return c
-
-def histoStyler(h, ratio = False):
-    #h.SetLineWidth(2)
-    #h.SetLineColor(color)
-    font = 132
-    if ratio:
-        size = 0.15
-        labelSize = 0.14
-        h.GetYaxis().SetTitleOffset(0.38)
-    else:
-        size = 0.05
-        labelSize = 0.04
-        h.GetXaxis().SetTitleOffset(1.0)
-        h.GetYaxis().SetTitleOffset(1.0)
-    
-    h.GetXaxis().SetLabelFont(font)
-    h.GetYaxis().SetLabelFont(font)
-    h.GetXaxis().SetTitleFont(font)
-    h.GetYaxis().SetTitleFont(font)
-    h.GetYaxis().SetTitleSize(size)
-    h.GetXaxis().SetTitleSize(size)
-    h.GetXaxis().SetLabelSize(labelSize)   
-    h.GetYaxis().SetLabelSize(labelSize)
     
     #h.Sumw2()
 
@@ -920,6 +930,43 @@ def calcSignificance(sigHist, bgHist, ignoreCrossSection = False):
                 #print "sigNum=", sigNum, "bgNum=", bgNum, "sig=", 0.1 * (sigNum / math.sqrt(bgNum))
                 bgErr = 0.2 * bgNum
                 sig = math.sqrt(sig**2 + (cs * (sigNum / math.sqrt(bgNum + bgErr**2)))**2)
+    return sig
+
+def calcSignificanceNoAcc(sigHist, bgHist, ignoreCrossSection = False):
+    sig = 0
+    sigNum = 0
+    bgNum = 0
+    #accumulate = False
+    binsNumber = sigHist.GetNbinsX()
+    cs = 1
+    if not ignoreCrossSection:
+        cs = 0.1
+    #print "binsNumber=", binsNumber
+    for bin in range(1, binsNumber + 1):
+        #if accumulate:
+        #    sigNum += sigHist.GetBinContent(bin)
+        #    bgNum += bgHist.GetBinContent(bin)
+        #else:
+        sigNum = sigHist.GetBinContent(bin)
+        bgNum = bgHist.GetBinContent(bin)
+        
+        if sigNum == 0:
+            continue
+        
+        #if bgNum == 0:
+        #    accumulate = True
+        #else:
+        #accumulate = False
+        #if bin <= binsNumber and bgHist.Integral(bin+1, binsNumber) == 0:
+        #    sigNum += sigHist.Integral(bin, binsNumber)
+        #    bgErr = 0.2 * bgNum
+        #    sig = math.sqrt(sig**2 + (cs * (sigNum / math.sqrt(bgNum + bgErr**2)))**2)
+            #print "**sigNum=", sigNum, "bgNum=", bgNum, "sig=", sig
+        #    break
+        #else:
+            #print "sigNum=", sigNum, "bgNum=", bgNum, "sig=", 0.1 * (sigNum / math.sqrt(bgNum))
+        bgErr = 0.2 * bgNum
+        sig = math.sqrt(sig**2 + (cs * (sigNum / math.sqrt(sigNum + bgNum + bgErr**2)))**2)
     return sig
 
 def calcZ(lhdH1, lhdH0):

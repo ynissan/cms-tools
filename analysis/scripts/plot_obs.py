@@ -209,7 +209,7 @@ def createPlots(rootfiles, type, histograms, weight=1):
                         hist.Fill(eval('c.' + hist_def["obs"]), 1)
         rootFile.Close()
 
-
+#createPlotsFast([signalFile], [signalBasename], histograms, weight, "", [""], plot_par.no_weights)
 def createPlotsFast(rootfiles, types, histograms, weight=1, prefix="", conditions=[""], no_weights = False):
     print "Processing "
     print rootfiles
@@ -232,46 +232,66 @@ def createPlotsFast(rootfiles, types, histograms, weight=1, prefix="", condition
 
             for cut in plot_par.cuts:
                 for hist_def in plot_par.histograms_defs:
-                    if prefix != "":
-                        histName =  prefix + "_" + cut["name"] + "_" + hist_def["obs"] + "_" + type
-                    else:
-                        histName =  cut["name"] + "_" + hist_def["obs"] + "_" + type
                     
-                    conditionStr = "( " + cut["condition"] + " )"
-                    if hist_def.get("condition") is not None:
-                        conditionStr += " && ( " + hist_def["condition"] + " )"
-                    if len(condition) > 0:
-                        conditionStr += " && ( " + condition + " )"
+                    object_retag_map = [{"":""}]
+                    object_string = ""
+                    if hist_def.get("object") is not None and plot_par.object_retag and plot_par.object_retag_map.get(hist_def["object"]) is not None:
+                        print "Retaging object for", hist_def
+                        object_retag_map = plot_par.object_retag_map[hist_def["object"]]
+                        object_string = hist_def["object"]
+                    
+                    for object_retag in object_retag_map:
+                        
+                        object_retag_name = object_retag.keys()[0]
+                        object_retag_cond = object_retag[object_retag_name]
+                        
+                        #print "object_retag_name", object_retag_name, "object_retag_cond", object_retag_cond
+                        #exit(0)
+                        
+                        if prefix != "":
+                            histName =  prefix + "_" + cut["name"] + "_" + hist_def["obs"] + type + ("" if len(object_retag_name) == 0 else ("_" + object_retag_name))
+                        else:
+                            histName =  cut["name"] + "_" + hist_def["obs"] + "_" + type + ("" if len(object_retag_name) == 0 else ("_" + object_retag_name))
+                    
+                        conditionStr = "( " + cut["condition"] + " )"
+                        if hist_def.get("condition") is not None:
+                            conditionStr += " && ( " + hist_def["condition"] + " )"
+                        if len(object_string) > 0 and cut.get("object") is not None and cut["object"].get(object_string) is not None:
+                            conditionStr += " && ( " + cut["object"][object_string] + " )"
+                        if len(condition) > 0:
+                            conditionStr += " && ( " + condition + " )"
+                        if len(object_retag_cond) > 0:
+                            conditionStr += " && ( " + object_retag_cond + " )"
                 
-                    drawString = ""
+                        drawString = ""
                 
-                    if no_weights:
-                        drawString = " ( " + conditionStr + " )"
-                    else:
-                        drawString = plot_par.weightString[plot_par.plot_kind] + " * " + ((str(weight) + " * ") if type != "data" else "") + " ( " + conditionStr + " )"
+                        if no_weights:
+                            drawString = " ( " + conditionStr + " )"
+                        else:
+                            drawString = plot_par.weightString[plot_par.plot_kind] + " * " + ((str(weight) + " * ") if type != "data" else "") + " ( " + conditionStr + " )"
                 
-                    #print "drawString", drawString
-                    #print "conditionStr", conditionStr
+                        #print "drawString", drawString
+                        #print "conditionStr", conditionStr
                 
-                    formula = hist_def.get("formula") if hist_def.get("formula") is not None else hist_def.get("obs")
+                        formula = hist_def.get("formula") if hist_def.get("formula") is not None else hist_def.get("obs")
                 
-                    if plot_par.plot_log_x and hist_def["obs"] == "invMass":
-                        hist = utils.getRealLogxHistogramFromTree(histName, c, formula, hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), drawString, plot_par.plot_overflow)
-                    else:
-                        hist = utils.getHistogramFromTree(histName, c, formula, hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), drawString, plot_par.plot_overflow)
+                        if plot_par.plot_log_x and hist_def["obs"] == "invMass":
+                            hist = utils.getRealLogxHistogramFromTree(histName, c, formula, hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), drawString, plot_par.plot_overflow)
+                        else:
+                            hist = utils.getHistogramFromTree(histName, c, formula, hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), drawString, plot_par.plot_overflow)
                 
-                    if hist is None:
-                        continue
-                    #if "leptonF" in histName:
-                    #    print "Made leptonFlavour for", histName, hist.GetXaxis().GetNbins()
-                    hist.GetXaxis().SetTitle("")
-                    hist.SetTitle("")
-                    hist.Sumw2()
+                        if hist is None:
+                            continue
+                        #if "leptonF" in histName:
+                        #    print "Made leptonFlavour for", histName, hist.GetXaxis().GetNbins()
+                        hist.GetXaxis().SetTitle("")
+                        hist.SetTitle("")
+                        hist.Sumw2()
 
-                    if histograms.get(histName) is None:
-                        histograms[histName] = hist
-                    else:
-                        histograms[histName].Add(hist)
+                        if histograms.get(histName) is None:
+                            histograms[histName] = hist
+                        else:
+                            histograms[histName].Add(hist)
                 
         
         rootFile.Close()
@@ -832,26 +852,48 @@ def main():
             dataHist = None
             sigHists = []
             sigHistsBaseNames = []
-            sigHistsNames = []
+            #sigHistsNames = []
             sigMax = 0
+            object_retaging = False
             if plot_par.plot_signal: 
                 for i in range(len(plot_par.signal_dir)):
                     
                     signalFile = plot_par.signal_dir[i]
                     signalBasename = os.path.basename(signalFile)
-                    if plot_par.signal_names is not None and len(plot_par.signal_names) >= i+1:
-                        sigHistsBaseNames.append(plot_par.signal_names[i])
-                    else:
-                        sigHistsBaseNames.append(signalBasename.split(".")[0].split("_")[-1])
-                    sigHistName = cut["name"] + "_" + hist_def["obs"] + "_" + signalBasename
-                    sigHistsNames.append(sigHistName)
-                    sigHist = histograms[sigHistName]
-                    if plot_par.normalise:
-                        sigHist.Scale(1./sigHist.Integral())
-                    print sigHistName, sigHist.GetMaximum()
-                    sigHists.append(sigHist)
-                    utils.formatHist(sigHist, utils.signalCp[i], 0.8)
-                    sigMax = max(sigHist.GetMaximum(), sigMax)
+                    
+                    object_retag_map = [{"":""}]
+                    
+                    if hist_def.get("object") is not None and plot_par.object_retag and plot_par.object_retag_map.get(hist_def["object"]) is not None:
+                        object_retag_map = plot_par.object_retag_map[hist_def["object"]]
+                        object_retaging = True
+                    cP = 0
+                    for object_retag in object_retag_map:
+                        
+                        object_retag_name = object_retag.keys()[0]
+                        object_retag_cond = object_retag[object_retag_name]
+                        
+                        if len(object_retag_name) == 0:
+                            if plot_par.signal_names is not None and len(plot_par.signal_names) >= i+1:
+                                sigHistsBaseNames.append(plot_par.signal_names[i])
+                            else:
+                                sigHistsBaseNames.append(signalBasename.split(".")[0].split("_")[-1])
+                        else:
+                            sigHistsBaseNames.append(object_retag_name)
+                        
+                        sigHistName =  cut["name"] + "_" + hist_def["obs"] + "_" + signalBasename  + ("" if len(object_retag_name) == 0 else ("_" + object_retag_name))
+                    
+                        #sigHistsNames.append(sigHistName)
+                        sigHist = histograms[sigHistName]
+                        if plot_par.normalise:
+                            sigHist.Scale(1./sigHist.Integral())
+                        print sigHistName, sigHist.GetMaximum()
+                        sigHists.append(sigHist)
+                        if len(object_retag_name) > 0:
+                            utils.formatHist(sigHist, utils.colorPalette[cP], 0.35, True)
+                            cP += 1
+                        else:
+                            utils.formatHist(sigHist, utils.signalCp[i], 0.8)
+                        sigMax = max(sigHist.GetMaximum(), sigMax)
             maximum = sigMax
             if foundBg:
                 bgMax = hs.GetMaximum()
@@ -878,15 +920,16 @@ def main():
             
             #"legendCoor" : [], "legendCol" : 1
             legend = None
+            legend_coordinates = plot_par.legend_coordinates
+            legend_columns = plot_par.legend_columns
             if hist_def.get("legendCoor") is not None:
-                legend = TLegend(hist_def["legendCoor"]["x1"],hist_def["legendCoor"]["y1"],hist_def["legendCoor"]["x2"],hist_def["legendCoor"]["y2"])
-            else:
-                legend = TLegend(.20,.60,.89,.89)
-            legendCol = 2
+                legend_coordinates = hist_def["legendCoor"]
+
+            legend = TLegend(legend_coordinates["x1"],legend_coordinates["y1"],legend_coordinates["x2"],legend_coordinates["y2"])
             if hist_def.get("legendCol") is not None:
-                legendCol = hist_def["legendCol"]
-            legend.SetNColumns(legendCol)
-            legend.SetBorderSize(0)
+                legend_columns = hist_def["legendCol"]
+            legend.SetNColumns(legend_columns)
+            legend.SetBorderSize(plot_par.legend_border)
             legend.SetFillStyle(0)
             newBgHist = None
             memory.append(legend)
@@ -935,8 +978,10 @@ def main():
 #                 h.SetMarkerStyle(kOpenCross)
 #                 h.SetLineColor(kBlack)
 #                 h.Draw("p e same")
-
-                utils.histoStyler(newBgHist)
+                #print "newBgHist", newBgHist
+                #exit(0)
+                if newBgHist.GetNhists() > 0:
+                    utils.histoStyler(newBgHist)
                 
                 if newBgHist is not None and (plot_par.solid_bg or newBgHist.GetNhists() > 0):
                     if not plot_par.plot_ratio:
@@ -976,7 +1021,10 @@ def main():
 
             if plot_par.plot_signal:
                 for i in range(len(sigHists)):
-                    legend.AddEntry(sigHists[i], sigHistsBaseNames[i], 'l')
+                    if object_retaging:
+                        legend.AddEntry(sigHists[i], sigHistsBaseNames[i], 'F')
+                    else:
+                        legend.AddEntry(sigHists[i], sigHistsBaseNames[i], 'l')
             if foundBg and plot_par.plot_signal:
                 for i in range(len(sigHists)):
                     sigHists[i].SetMaximum(maximum)
@@ -986,8 +1034,8 @@ def main():
                         sigHists[i].SetMinimum(0.0001)
                     else:
                         sigHists[i].SetMinimum(0)
-                    sigHists[i].SetLineWidth(2)
-            if foundBg and plot_par.plot_signal:
+                    sigHists[i].SetLineWidth(plot_par.sig_line_width)
+            if foundBg and plot_par.plot_signal: 
                 for i in range(len(sigHists)):
                     print utils.bcolors.BOLD + utils.bcolors.RED + "sigHists[i].Draw(HIST SAME " + errorStr + ")" + utils.bcolors.ENDC
                     sigHists[i].Draw("HIST SAME " + errorStr)
@@ -1208,22 +1256,6 @@ def main():
                         fFullModel.SetParLimits(4,0.005,0.1)
                         
                 elif plot_par.fit_inv_mass_jpsi_func == "crystalBall":
-                    sigParNum = 4
-                    if linear_fit:
-                        fFullModel = TF1('fFullModel' + hist_def["obs"], funcFullModelLorentzian, lowedge, highedge, 5)
-                        parNum = 5
-                    else:
-                        sigParNum = 5
-                        # (alpha, n sigma, mu)
-                        fFullModel = TF1('fFullModel' + hist_def["obs"], funcFullModelCrystalBallQuadratic, lowedge, highedge, 10)
-                        parNum = 10
-                        
-                        # (alpha, n sigma, mu)
-                        fFullModel = TF1('fFullModel' + hist_def["obs"], funcFullModelCrystalBallQuadratic2, lowedge, highedge, 12)
-                        parNum = 12
-                        
-                    fFullModel.SetNpx(500);
-                    
                     
                     crystalBallInitialConditionsName = hist_def["obs"]
                     if "reco" in hist_def["obs"]:
@@ -1244,7 +1276,34 @@ def main():
                     cbParsLimits = condition["limits"]
                     
                     ignoreParams = condition["ignore"] if condition.get("ignore") is not None else False
+                   
                     
+                    sigParNum = 4
+                    if linear_fit:
+                        fFullModel = TF1('fFullModel' + hist_def["obs"], funcFullModelLorentzian, lowedge, highedge, 5)
+                        parNum = 5
+                    else:
+                        sigParNum = 5
+                        # (alpha, n sigma, mu)
+                        bg_degree = 6
+                        if conditions.get("bg_degree") is not None:
+                            bg_degree = conditions["bg_degree"]
+                        if condition.get("bg_degree") is not None:
+                            bg_degree = condition["bg_degree"]
+                        
+                        parNum = bg_degree + sigParNum + 1
+                        print "parNum", parNum
+                        if parNum == 10:
+                            fFullModel = TF1('fFullModel' + hist_def["obs"], funcFullModelCrystalBallQuadratic, lowedge, highedge, 10)
+                        elif parNum == 12:
+                            # (alpha, n sigma, mu)
+                            fFullModel = TF1('fFullModel' + hist_def["obs"], funcFullModelCrystalBallQuadratic2, lowedge, highedge, 12)
+                        
+                        
+                    fFullModel.SetNpx(500);
+                    
+                    
+                     
                     #print "ignoreParams", ignoreParams
                     #exit(0)
                     
@@ -1262,6 +1321,7 @@ def main():
                     
                     if condition.get("fix") is not None:
                         for fix in condition["fix"]:
+                            print "Fixing param", fix[0], "to", fix[1]
                             fFullModel.FixParameter(fix[0], fix[1])
 
         

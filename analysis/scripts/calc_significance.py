@@ -72,6 +72,11 @@ paths = {
     "2l" : "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1"
 }
 
+lepton_training = True
+compare_isolation = True
+no_rect = True
+
+
 def performScanForFile(file, type, maxSignalRange=None, ignoreCS = True, noScan = False):
     print "Performing Scan for file", file
     print "Called with ignoreCS", ignoreCS, "noScan", noScan
@@ -115,37 +120,6 @@ def performScanForFile(file, type, maxSignalRange=None, ignoreCS = True, noScan 
 
 def main():
     print "Start: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S')
-    
-    # AFTER OOOOOOPPPPS! lhdH1 9.06252290502e-16 lhdH0 7.19943784186e-16 sigNum 32.349407196 bgNum 7768.57617188 bgError 4855.31444616 Z 0.678446169087
-#     u = 100000.
-#     lhdH0 = lhd(double N,double s,double B,double dB)
-#     lhdH0 = lhd(7768.57617188,0,7768.57617188,4855.31444616)
-#     print "Npx", lhdH0.GetNpx()
-#     lhdH0.Draw()
-#     line = TLine()
-#     line.DrawLine(7768.576, 0, 7768.576, 100000)
-#     line2 = TLine()
-#     line2.DrawLine(7768.576 + 32, 0, 7768.576 + 32, 100000)
-#     c1.SetLogy(True)
-#     c1.Update()
-#     
-#     utils.pause()
-#     print lhdH0
-#     lhdH1 = lhd(7768.57617188,0.1 * 32.349407196,7768.57617188,4855.31444616)
-#     c1.Update()
-#     utils.pause()
-#     print "Z", utils.calcZ(lhdH1, lhdH0), lhdH0, lhdH1
-#     
-#     
-#     lhdH0 = lhd(u/10.,u/10.,u/10.,math.sqrt(u/10.))
-#     print str(lhdH0)
-#     lhdH1 = lhd(2*u/10.,u/10.,u/10.,math.sqrt(u/10.))
-#     #print "Z2", calcZ(lhdH1, lhdH0)
-#     print "Z3", calcZ(lhdH1**10, lhdH0**10)
-#     
-#     exit(0)
-# 
-
     
     significance = {}
     for type in ["1t1l","2l"]:

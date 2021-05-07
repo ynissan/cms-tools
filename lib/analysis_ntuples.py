@@ -539,7 +539,7 @@ def passed2016BFilter(t, data=False):
     return True
 
 def electronPassesKinematicSelection(i, electrons, electrons_deltaRLJ):
-    return electrons[i].Pt() <= 25 and (electrons_deltaRLJ[i] >= 0.4 or electrons_deltaRLJ[i] < 0)
+    return electrons[i].Pt() <= 20 and (electrons_deltaRLJ[i] >= 0.4 or electrons_deltaRLJ[i] < 0)
 
 def electronPassesLooseSelection(i, electrons, electrons_passIso):
     return bool(electrons_passIso[i])
@@ -551,7 +551,7 @@ def electronPassesTightSelection(i, electrons, electrons_passIso, electrons_delt
 def muonPassesKinematicSelection(i, muons, muons_deltaRLJ, muonLowerPt = 2):
     #if muonLowerPt<2:
         #print "low pt", muonLowerPt
-    return muons[i].Pt()>= muonLowerPt and muons[i].Pt() <= 25 and (muons_deltaRLJ[i] >= 0.4 or muons_deltaRLJ[i] < 0)
+    return muons[i].Pt()>= muonLowerPt and muons[i].Pt() <= 20 and (muons_deltaRLJ[i] >= 0.4 or muons_deltaRLJ[i] < 0)
 
 def muonPassesLooseSelection(i, muons, muons_mediumID, muons_deltaRLJ, muonLowerPt = 2, muonLowerPtTight = False, muons_tightID = None):
     if not muonPassesKinematicSelection(i, muons, muons_deltaRLJ, muonLowerPt):

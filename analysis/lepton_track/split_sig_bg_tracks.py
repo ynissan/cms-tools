@@ -161,7 +161,7 @@ def main():
                             continue 
                         if c.tracks_dxyVtx[ti] > 0.02:
                             continue
-                        if c.tracks_dzVtx[ti] > 0.05:
+                        if c.tracks_dzVtx[ti] > 0.02:
                             continue            
             
                         #llMin = analysis_tools.minDeltaR(t, [ll])
