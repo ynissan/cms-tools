@@ -1976,62 +1976,64 @@ def main():
         print "Just created", canvasFile.GetName()
         canvasFile.Close()
     
-    print "================== HIST COUNT TRUTH ==================="
-    print "hist_signal_integral", hist_signal_integral
-    print "================== FIT ALL ==================="
-    print "fit_signal_integral", fit_signal_integral
-    print "fit_signal_integral_error", fit_signal_integral_error
-    print ""
-    print ""
-    print "================== FIT YELLOW ==================="
-    print "fit_only_signal_integral", fit_only_signal_integral
-    print "fit_only_signal_integral_error", fit_only_signal_integral_error
+    if plot_par.fit_inv_mass_jpsi:
     
-    #print "fit_bg_integral", fit_bg_integral
+        print "================== HIST COUNT TRUTH ==================="
+        print "hist_signal_integral", hist_signal_integral
+        print "================== FIT ALL ==================="
+        print "fit_signal_integral", fit_signal_integral
+        print "fit_signal_integral_error", fit_signal_integral_error
+        print ""
+        print ""
+        print "================== FIT YELLOW ==================="
+        print "fit_only_signal_integral", fit_only_signal_integral
+        print "fit_only_signal_integral_error", fit_only_signal_integral_error
     
-    print "============== FIT SUMMARY =============="
+        #print "fit_bg_integral", fit_bg_integral
     
-    print ",JPsi Hist Count,Full Fit JPsi Integral,Full Fit Chis,Full Fit JPsi Integral Error,JPsi Fit Integral,JPsi Fit Integral Chis,JPsi Fit Integral Error,JPsi Hist Count ID,Full Fit JPsi Integral ID,Full Fit Chis ID,Full Fit JPsi Integral Error ID,JPsi Fit Integral ID,JPsi Fit Integral ID Chis,JPsi Fit Integral ID Error,ID Efficiency,ID Efficiency Signal Fit,ID Efficiency Hist Count, Low Error, Up Error"
-    #print ",fit_hist_integral,hist_signal_integral,fit_full_integral,fit_full_integral_chi_s,fit_signal_integral,fit_signal_integral_error,fit_only_signal_integral,fit_bg_integral,fit_hist_integral_reco,hist_signal_integral_reco,fit_full_integral_reco,fit_full_integral_chi_s_reco,fit_signal_integral_reco,fit_signal_integral_error_reco,fit_only_signal_integral_reco,fit_bg_integral_reco,fit_hist_integral_id,hist_signal_integral_id,fit_full_integral_id,fit_full_integral_chi_s_id,fit_signal_integral_id,fit_signal_integral_error_id,fit_only_signal_integral_id,fit_bg_integral_id,reco_eff,reco_eff_signal,reco_eff_hist,id_eff,id_eff_signal,id_eff_hist"
+        print "============== FIT SUMMARY =============="
     
-    for hist_def in plot_par.histograms_defs:
-        if "reco_" in hist_def["obs"] or "id_" in hist_def["obs"] or "iso_" in hist_def["obs"]:
-            continue
+        print ",JPsi Hist Count,Full Fit JPsi Integral,Full Fit Chis,Full Fit JPsi Integral Error,JPsi Fit Integral,JPsi Fit Integral Chis,JPsi Fit Integral Error,JPsi Hist Count ID,Full Fit JPsi Integral ID,Full Fit Chis ID,Full Fit JPsi Integral Error ID,JPsi Fit Integral ID,JPsi Fit Integral ID Chis,JPsi Fit Integral ID Error,ID Efficiency,ID Efficiency Signal Fit,ID Efficiency Hist Count, Low Error, Up Error"
+        #print ",fit_hist_integral,hist_signal_integral,fit_full_integral,fit_full_integral_chi_s,fit_signal_integral,fit_signal_integral_error,fit_only_signal_integral,fit_bg_integral,fit_hist_integral_reco,hist_signal_integral_reco,fit_full_integral_reco,fit_full_integral_chi_s_reco,fit_signal_integral_reco,fit_signal_integral_error_reco,fit_only_signal_integral_reco,fit_bg_integral_reco,fit_hist_integral_id,hist_signal_integral_id,fit_full_integral_id,fit_full_integral_chi_s_id,fit_signal_integral_id,fit_signal_integral_error_id,fit_only_signal_integral_id,fit_bg_integral_id,reco_eff,reco_eff_signal,reco_eff_hist,id_eff,id_eff_signal,id_eff_hist"
+    
+        for hist_def in plot_par.histograms_defs:
+            if "reco_" in hist_def["obs"] or "id_" in hist_def["obs"] or "iso_" in hist_def["obs"]:
+                continue
         
-        if "invMass_2_3_0_1.2" in hist_def["obs"]:
-            continue
+            if "invMass_2_3_0_1.2" in hist_def["obs"]:
+                continue
         
-        eff_error_low = 0
-        eff_error_high = 0
+            eff_error_low = 0
+            eff_error_high = 0
         
-        #print hist_def["obs"] + "," + str(fit_hist_integral[hist_def["obs"]]) + "," + str(hist_signal_integral[hist_def["obs"]]) + "," +  str(fit_full_integral[hist_def["obs"]]) + "," +  str(fit_full_integral_chi_s[hist_def["obs"]]) + "," + str(fit_signal_integral[hist_def["obs"]]) + "," + str(fit_signal_integral_error[hist_def["obs"]]) + "," + str(fit_only_signal_integral[hist_def["obs"]]) + "," + str(fit_bg_integral[hist_def["obs"]])  + "," + str(fit_hist_integral["reco_" + hist_def["obs"]]) + "," + str(fit_full_integral["reco_" + hist_def["obs"]]) + "," + str(fit_full_integral_chi_s["reco_" + hist_def["obs"]])  + "," + str(hist_signal_integral["reco_" + hist_def["obs"]])+ "," + str(fit_signal_integral["reco_" + hist_def["obs"]])+ "," + str(fit_signal_integral_error["reco_" + hist_def["obs"]])+ "," + str(fit_only_signal_integral["reco_" + hist_def["obs"]]) + "," + str(fit_bg_integral["reco_" + hist_def["obs"]])    + "," + str(fit_hist_integral["id_" + hist_def["obs"]])+ "," + str(hist_signal_integral["id_" + hist_def["obs"]]) + "," + str(fit_full_integral["id_" + hist_def["obs"]]) + "," + str(fit_full_integral_chi_s["id_" + hist_def["obs"]]) + "," + str(fit_signal_integral["id_" + hist_def["obs"]]) + "," + str(fit_signal_integral_error["id_" + hist_def["obs"]])+ "," + str(fit_only_signal_integral["id_" + hist_def["obs"]]) + "," + str(fit_bg_integral["id_" + hist_def["obs"]]) + "," + str(fit_signal_integral["reco_" + hist_def["obs"]]/fit_signal_integral[hist_def["obs"]]) + "," + str(fit_only_signal_integral["reco_" + hist_def["obs"]]/fit_only_signal_integral[hist_def["obs"]])  + "," + str(hist_signal_integral["reco_" + hist_def["obs"]]/hist_signal_integral[hist_def["obs"]]) + "," + str(fit_signal_integral["id_" + hist_def["obs"]]/fit_signal_integral[hist_def["obs"]]) + "," + str(fit_only_signal_integral["id_" + hist_def["obs"]]/fit_only_signal_integral[hist_def["obs"]])  + "," + str(hist_signal_integral["id_" + hist_def["obs"]]/hist_signal_integral[hist_def["obs"]]) 
-        #print ",                      JPsi Hist Count                                      ,          Full Fit JPsi Integral                                        , Full Fit Chis                     Full Fit JPsi Integral Error,                              JPsi Fit Integral,                                       JPsi Fit Integral Chis,                                         JPsi Fit Integral Error,                                    JPsi Hist Count Reco,                                   Full Fit JPsi Integral Reco,                                      Full Fit Chis Reco,                                        Full Fit JPsi Integral Error Reco,                              JPsi Fit Integral Reco,                                            ,JPsi Fit Integral Reco Chis,                                          JPsi Fit Integral Reco Error,                                          JPsi Hist Count ID,                                                 Full Fit JPsi Integral ID                             Full Fit Chis ID,                                          Full Fit JPsi Integral Error ID,                               JPsi Fit Integral ID,                                          JPsi Fit Integral ID Chis,                                          JPsi Fit Integral ID Error,                                       Reco Efficiency,Reco Efficiency Signal Fit,Reco Efficiency Hist Count,ID Efficiency,ID Efficiency Signal Fit,ID Efficiency Hist Count"
+            #print hist_def["obs"] + "," + str(fit_hist_integral[hist_def["obs"]]) + "," + str(hist_signal_integral[hist_def["obs"]]) + "," +  str(fit_full_integral[hist_def["obs"]]) + "," +  str(fit_full_integral_chi_s[hist_def["obs"]]) + "," + str(fit_signal_integral[hist_def["obs"]]) + "," + str(fit_signal_integral_error[hist_def["obs"]]) + "," + str(fit_only_signal_integral[hist_def["obs"]]) + "," + str(fit_bg_integral[hist_def["obs"]])  + "," + str(fit_hist_integral["reco_" + hist_def["obs"]]) + "," + str(fit_full_integral["reco_" + hist_def["obs"]]) + "," + str(fit_full_integral_chi_s["reco_" + hist_def["obs"]])  + "," + str(hist_signal_integral["reco_" + hist_def["obs"]])+ "," + str(fit_signal_integral["reco_" + hist_def["obs"]])+ "," + str(fit_signal_integral_error["reco_" + hist_def["obs"]])+ "," + str(fit_only_signal_integral["reco_" + hist_def["obs"]]) + "," + str(fit_bg_integral["reco_" + hist_def["obs"]])    + "," + str(fit_hist_integral["id_" + hist_def["obs"]])+ "," + str(hist_signal_integral["id_" + hist_def["obs"]]) + "," + str(fit_full_integral["id_" + hist_def["obs"]]) + "," + str(fit_full_integral_chi_s["id_" + hist_def["obs"]]) + "," + str(fit_signal_integral["id_" + hist_def["obs"]]) + "," + str(fit_signal_integral_error["id_" + hist_def["obs"]])+ "," + str(fit_only_signal_integral["id_" + hist_def["obs"]]) + "," + str(fit_bg_integral["id_" + hist_def["obs"]]) + "," + str(fit_signal_integral["reco_" + hist_def["obs"]]/fit_signal_integral[hist_def["obs"]]) + "," + str(fit_only_signal_integral["reco_" + hist_def["obs"]]/fit_only_signal_integral[hist_def["obs"]])  + "," + str(hist_signal_integral["reco_" + hist_def["obs"]]/hist_signal_integral[hist_def["obs"]]) + "," + str(fit_signal_integral["id_" + hist_def["obs"]]/fit_signal_integral[hist_def["obs"]]) + "," + str(fit_only_signal_integral["id_" + hist_def["obs"]]/fit_only_signal_integral[hist_def["obs"]])  + "," + str(hist_signal_integral["id_" + hist_def["obs"]]/hist_signal_integral[hist_def["obs"]]) 
+            #print ",                      JPsi Hist Count                                      ,          Full Fit JPsi Integral                                        , Full Fit Chis                     Full Fit JPsi Integral Error,                              JPsi Fit Integral,                                       JPsi Fit Integral Chis,                                         JPsi Fit Integral Error,                                    JPsi Hist Count Reco,                                   Full Fit JPsi Integral Reco,                                      Full Fit Chis Reco,                                        Full Fit JPsi Integral Error Reco,                              JPsi Fit Integral Reco,                                            ,JPsi Fit Integral Reco Chis,                                          JPsi Fit Integral Reco Error,                                          JPsi Hist Count ID,                                                 Full Fit JPsi Integral ID                             Full Fit Chis ID,                                          Full Fit JPsi Integral Error ID,                               JPsi Fit Integral ID,                                          JPsi Fit Integral ID Chis,                                          JPsi Fit Integral ID Error,                                       Reco Efficiency,Reco Efficiency Signal Fit,Reco Efficiency Hist Count,ID Efficiency,ID Efficiency Signal Fit,ID Efficiency Hist Count"
         
         
-        # eff_error_low = 0
-#         eff_error_high = 0
-#         if fit_signal_integral["id_" + hist_def["obs"]]/fit_signal_integral[hist_def["obs"]] < 1:
-#             totalHist  = TH1F("totalHist" + hist_def["obs"], "", 1, 0, 1)
-#             passedHist = TH1F("passedHist" + hist_def["obs"], "", 1, 0, 1)
-#             totalHist.SetBinContent(1, fit_signal_integral[hist_def["obs"]])
-#             totalHist.SetBinError(1, fit_signal_integral_error[hist_def["obs"]])
-#             
-#             passedHist.SetBinContent(1, fit_signal_integral["id_" + hist_def["obs"]])
-#             passedHist.SetBinError(1, fit_signal_integral_error["id_" + hist_def["obs"]])
-#             
-#             #TEfficiency.kIsBayesian = True
-#             #TEfficiency.bla = False
-#             
-#             pEff = TEfficiency(passedHist, totalHist)
-#             #pEff.SetStatisticOption(kBBayesian)
-#             print "UsesBayesianStat", pEff.UsesBayesianStat()
-#             eff_error_low = pEff.GetEfficiencyErrorLow(1)
-#             eff_error_high = pEff.GetEfficiencyErrorUp(1)
-#             
-#             print "eff_error_low", eff_error_low, "eff_error_high", eff_error_high
-#             
+            # eff_error_low = 0
+    #         eff_error_high = 0
+    #         if fit_signal_integral["id_" + hist_def["obs"]]/fit_signal_integral[hist_def["obs"]] < 1:
+    #             totalHist  = TH1F("totalHist" + hist_def["obs"], "", 1, 0, 1)
+    #             passedHist = TH1F("passedHist" + hist_def["obs"], "", 1, 0, 1)
+    #             totalHist.SetBinContent(1, fit_signal_integral[hist_def["obs"]])
+    #             totalHist.SetBinError(1, fit_signal_integral_error[hist_def["obs"]])
+    #             
+    #             passedHist.SetBinContent(1, fit_signal_integral["id_" + hist_def["obs"]])
+    #             passedHist.SetBinError(1, fit_signal_integral_error["id_" + hist_def["obs"]])
+    #             
+    #             #TEfficiency.kIsBayesian = True
+    #             #TEfficiency.bla = False
+    #             
+    #             pEff = TEfficiency(passedHist, totalHist)
+    #             #pEff.SetStatisticOption(kBBayesian)
+    #             print "UsesBayesianStat", pEff.UsesBayesianStat()
+    #             eff_error_low = pEff.GetEfficiencyErrorLow(1)
+    #             eff_error_high = pEff.GetEfficiencyErrorUp(1)
+    #             
+    #             print "eff_error_low", eff_error_low, "eff_error_high", eff_error_high
+    #             
         
-        print hist_def["obs"] + "," + str(hist_signal_integral[hist_def["obs"]]) + "," + str(fit_signal_integral[hist_def["obs"]])  + "," + str(fit_full_integral_chi_s[hist_def["obs"]]) + "," + str(fit_signal_integral_error[hist_def["obs"]]) + "," + str(fit_only_signal_integral[hist_def["obs"]])  + "," + str(fit_only_signal_integral_chi_s[hist_def["obs"]]) + "," + str(fit_only_signal_integral_error[hist_def["obs"]]) + "," +  str(hist_signal_integral["id_" + hist_def["obs"]]) + ","  + str( fit_signal_integral["id_" + hist_def["obs"]]) + "," + str(fit_full_integral_chi_s["id_" + hist_def["obs"]]) + "," + str(fit_signal_integral_error["id_" + hist_def["obs"]]) + "," + str(fit_only_signal_integral["id_" + hist_def["obs"]]) + "," + str(fit_only_signal_integral_chi_s["id_" + hist_def["obs"]]) + "," + str(fit_only_signal_integral_error["id_" + hist_def["obs"]]) + ","  + str(fit_signal_integral["id_" + hist_def["obs"]]/fit_signal_integral[hist_def["obs"]]) + "," + str(fit_only_signal_integral["id_" + hist_def["obs"]]/fit_only_signal_integral[hist_def["obs"]])  + "," + str(hist_signal_integral["id_" + hist_def["obs"]]/hist_signal_integral[hist_def["obs"]])  + "," + str(eff_error_low) + "," + str(eff_error_high) 
+            print hist_def["obs"] + "," + str(hist_signal_integral[hist_def["obs"]]) + "," + str(fit_signal_integral[hist_def["obs"]])  + "," + str(fit_full_integral_chi_s[hist_def["obs"]]) + "," + str(fit_signal_integral_error[hist_def["obs"]]) + "," + str(fit_only_signal_integral[hist_def["obs"]])  + "," + str(fit_only_signal_integral_chi_s[hist_def["obs"]]) + "," + str(fit_only_signal_integral_error[hist_def["obs"]]) + "," +  str(hist_signal_integral["id_" + hist_def["obs"]]) + ","  + str( fit_signal_integral["id_" + hist_def["obs"]]) + "," + str(fit_full_integral_chi_s["id_" + hist_def["obs"]]) + "," + str(fit_signal_integral_error["id_" + hist_def["obs"]]) + "," + str(fit_only_signal_integral["id_" + hist_def["obs"]]) + "," + str(fit_only_signal_integral_chi_s["id_" + hist_def["obs"]]) + "," + str(fit_only_signal_integral_error["id_" + hist_def["obs"]]) + ","  + str(fit_signal_integral["id_" + hist_def["obs"]]/fit_signal_integral[hist_def["obs"]]) + "," + str(fit_only_signal_integral["id_" + hist_def["obs"]]/fit_only_signal_integral[hist_def["obs"]])  + "," + str(hist_signal_integral["id_" + hist_def["obs"]]/hist_signal_integral[hist_def["obs"]])  + "," + str(eff_error_low) + "," + str(eff_error_high) 
     
     print "End: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S')
     exit(0)
