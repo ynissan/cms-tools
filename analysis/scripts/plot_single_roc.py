@@ -23,16 +23,25 @@ gStyle.SetOptStat(0)
 
 parser = argparse.ArgumentParser(description='Plot observealbes for tracks.')
 parser.add_argument('-i', '--input', nargs=1, help='Input Range', required=False)
+parser.add_argument('-m', '--method', nargs=1, help='Method', required=False)
 parser.add_argument('-o', '--output_file', nargs=1, help='Output Filename', required=True)
+parser.add_argument('-w', '--weight', dest='weight', help='Plot With Weight', action='store_true')
 args = parser.parse_args()
 
 
 output_file = None
-input = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/cut_optimisation/tmva/dilepton_bdt/low"
+method = ""
+weight = args.weight
+input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/cut_optimisation/tmva/dilepton_bdt/exTrackElectronsCorrJetIso10"
 if args.output_file:
     output_file = args.output_file[0]
 if args.input:
     input = args.input[0]
+if args.method:
+    method = args.method[0]
+
+print "input", input
+print "method", method
 ######## END OF CMDLINE ARGUMENTS ########
 
 print "Running for input: " + input
@@ -47,11 +56,16 @@ def main():
     #c1 = utils.mkcanvas()
     #memory = []
     
+    global method
     
     file = [input]
     c2.cd()
-    (testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names) = cut_optimisation.get_bdt_hists(file, None, None, None, None, None, None, 40)
+    #(testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names) = cut_optimisation.get_bdt_hists(file, None, None, None, None, None, None, 40)
+    (testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names) = cut_optimisation.get_method_hists(file, method, None, None, None, None, None, None, 40, "", weight)
     #cut_optimisation.get_mlp_hists(file, testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names)
+    #def get_bdt_hists(folders, testBGHists=None, trainBGHists=None, testSignalHists=None, trainSignalHists=None, methods=None, names=None, bins=10000,  condition=""):
+    #    return get_method_hists(folders, "BDT", testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names, bins, condition)
+
     c1.cd()
     
     c1.Print(output_file+"[");

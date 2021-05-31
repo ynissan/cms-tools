@@ -26,17 +26,9 @@ TH1D.SetDefaultSumw2()
 
 ####### CMDLINE ARGUMENTS #########
 
-parser = argparse.ArgumentParser(description='Plot skims for x1x2x1 process with BDTs.')
-parser.add_argument('-o', '--output_file', nargs=1, help='Output Filename', required=False)
+parser = argparse.ArgumentParser(description='Calculate Jet Isolation Significance Comparison')
 parser.add_argument('-sam', '--sam', dest='sam', help='Sam', action='store_true')
 args = parser.parse_args()
-
-output_file = None
-
-if args.output_file:
-    output_file = args.output_file[0]
-else:
-    output_file = "obs.pdf"
 
 ######## END OF CMDLINE ARGUMENTS ########
 
@@ -65,7 +57,6 @@ else:
 def main():
     print "Start: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S')
     
-    fnew = TFile(output_file,'recreate')
     c1 = TCanvas("c1", "c1", 800, 800)
     c1.cd()
     

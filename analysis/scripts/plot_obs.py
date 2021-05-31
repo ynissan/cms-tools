@@ -151,21 +151,6 @@ def funcFullModelCrystalBall(x, par):
     return par[4]*ROOT.Math.crystalball_function(x[0], par[0], par[1], par[2], par[3]) + par[5]+par[6]*x[0]
 
 
-
-def styleHist(hist, onlyY = False):
-    hist.GetYaxis().SetTitleSize(10);
-    hist.GetYaxis().SetTitleFont(42);
-    hist.GetYaxis().SetTitleOffset(2.5);
-    hist.GetYaxis().SetLabelFont(42); 
-    hist.GetYaxis().SetLabelSize(10);
-    
-    if not onlyY:
-        hist.GetXaxis().SetTitleSize(10);
-        hist.GetXaxis().SetTitleFont(42);
-        hist.GetXaxis().SetTitleOffset(8);
-        hist.GetXaxis().SetLabelFont(42); 
-        hist.GetXaxis().SetLabelSize(10);
-
 def createPlots(rootfiles, type, histograms, weight=1):
     print "Processing "
     print rootfiles
@@ -931,6 +916,8 @@ def main():
             legend.SetNColumns(legend_columns)
             legend.SetBorderSize(plot_par.legend_border)
             legend.SetFillStyle(0)
+            legend.SetTextFont(132)
+            #legend.SetTextSize(0.04)
             newBgHist = None
             memory.append(legend)
             print "foundBg=", foundBg
@@ -986,9 +973,8 @@ def main():
                 if newBgHist is not None and (plot_par.solid_bg or newBgHist.GetNhists() > 0):
                     if not plot_par.plot_ratio:
                         newBgHist.GetXaxis().SetTitle(hist_def["units"] if hist_def.get("units") is not None else hist_def["obs"])
-                    newBgHist.GetYaxis().SetTitle("Events")
-                    newBgHist.GetYaxis().SetTitleOffset(1.15)
-                
+                    newBgHist.GetYaxis().SetTitle(plot_par.y_title)
+                    newBgHist.GetYaxis().SetTitleOffset(plot_par.y_title_offset)
                 
                 #newBgHist.GetXaxis().SetLabelSize(0.055)
                 c1.Modified()
@@ -1003,8 +989,8 @@ def main():
                 if not plot_par.plot_ratio:
                     histToStyle.GetXaxis().SetTitle(hist_def["units"] if hist_def.get("units") is not None else hist_def["obs"])
 
-                histToStyle.GetYaxis().SetTitle("Events")
-                histToStyle.GetYaxis().SetTitleOffset(1.15)
+                histToStyle.GetYaxis().SetTitle(plot_par.y_title)
+                histToStyle.GetYaxis().SetTitleOffset(plot_par.y_title_offset)
                 if not (linear and plot_single):
                     print "Setting max", maximum*1000
                     histToStyle.SetMaximum(maximum*1000)
@@ -1703,12 +1689,23 @@ def main():
             print calculated_lumi
             lumiStr = "{:.1f}".format(calculated_lumi)
             
+            labelText = plot_par.label_text
+            cmsLocation = plot_par.cms_location
+            showLumi = plot_par.show_lumi
+            
+            if hist_def.get("labelText") is not None:
+                labelText = hist_def["labelText"]
+            if hist_def.get("cmsLocation") is not None:
+                cmsLocation = hist_def["cmsLocation"]
+            if hist_def.get("showLumi") is not None:
+                showLumi = hist_def["showLumi"]
+            
             if large_version:
                 if plot_par.plot_ratio:
                     #c1.cd()
                     print utils.bcolors.BOLD + utils.bcolors.OKGREEN + "histCPad.cd()" + utils.bcolors.ENDC
                     histCPad.cd()
-                utils.stamp_plot(lumiStr)
+                utils.stamp_plot(lumiStr, labelText, cmsLocation, showLumi)
                 if create_png:
                     filename = (cut["name"] + "_" + hist_def["obs"])
                     print "Saving file " + "./" + png_name + "/" + filename + "_log.pdf"
@@ -1719,7 +1716,7 @@ def main():
             else:
                 print utils.bcolors.BOLD + utils.bcolors.OKGREEN + "pad.cd()" + utils.bcolors.ENDC
                 pad.cd()
-                utils.stamp_plot(lumiStr)
+                utils.stamp_plot(lumiStr, labelText, cmsLocation, showLumi)
             
             if create_png:
                 c1.Clear()
@@ -1922,12 +1919,25 @@ def main():
             
             print calculated_lumi
             lumiStr = "{:.1f}".format(calculated_lumi)
+            
+            labelText = plot_par.label_text
+            cmsLocation = plot_par.cms_location
+            showLumi = plot_par.show_lumi
+            
+            if hist_def.get("labelText") is not None:
+                labelText = hist_def["labelText"]
+            if hist_def.get("cmsLocation") is not None:
+                cmsLocation = hist_def["cmsLocation"]
+            if hist_def.get("showLumi") is not None:
+                showLumi = hist_def["showLumi"]
+            
             if large_version:
                 if plot_par.plot_ratio:
                     #c1.cd()
                     print utils.bcolors.BOLD + utils.bcolors.OKGREEN + "histCPad.cd()" + utils.bcolors.ENDC
                     histCPad.cd()
-                utils.stamp_plot(lumiStr)
+                    
+                utils.stamp_plot(lumiStr, labelText, cmsLocation, showLumi)
                 if create_png:
                     filename = (cut["name"] + "_" + hist_def["obs"])
                     print "Saving file " + "./" + png_name + "/" + filename + ".pdf"
@@ -1940,7 +1950,7 @@ def main():
             else:
                 print utils.bcolors.BOLD + utils.bcolors.OKGREEN + "pad.cd()" + utils.bcolors.ENDC
                 pad.cd()
-                utils.stamp_plot(lumiStr)
+                utils.stamp_plot(lumiStr, labelText, cmsLocation, showLumi)
             
             pId += 1
 

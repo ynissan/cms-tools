@@ -23,16 +23,26 @@ gStyle.SetOptStat(0)
 
 parser = argparse.ArgumentParser(description='Plot observealbes for tracks.')
 parser.add_argument('-i', '--input', nargs=1, help='Input Range', required=False)
+parser.add_argument('-m', '--method', nargs=1, help='Method', required=False)
 parser.add_argument('-o', '--output_file', nargs=1, help='Output Filename', required=True)
+parser.add_argument('-w', '--weight', dest='weight', help='Plot With Weight', action='store_true')
+parser.add_argument('-n', '--normalise', dest='normalise', help='Normalise', action='store_true')
 args = parser.parse_args()
 
 
 output_file = None
+method = ""
+weight = args.weight
+normalise = args.normalise
 input = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/cut_optimisation/tmva/dilepton_bdt/low"
 if args.output_file:
     output_file = args.output_file[0]
 if args.input:
     input = args.input[0]
+if args.method:
+    method = args.method[0]
+print "input", input
+print "method", method
 ######## END OF CMDLINE ARGUMENTS ########
 
 print "Running for input: " + input
@@ -47,14 +57,19 @@ def main():
     #c1 = utils.mkcanvas()
     #memory = []
     
+    global method
+    global normalise
     
     file = [input]
     c2.cd()
-    (testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names) = cut_optimisation.get_bdt_hists(file, None, None, None, None, None, None, 40)
+    #(testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names) = cut_optimisation.get_bdt_hists(file, None, None, None, None, None, None, 40)
+    (testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names) = cut_optimisation.get_method_hists(file, method, None, None, None, None, None, None, 40, "", weight)
     #cut_optimisation.get_mlp_hists(file, testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names)
     c1.cd()
     
     c1.Print(output_file+"[");
+    
+    c1.SetLogy()
     
     legend = TLegend(0.65, 0.70, 0.87, 0.875)
     legend.SetBorderSize(0)
@@ -68,10 +83,12 @@ def main():
         ST = trainSignalHist.Integral() + testSignalHist.Integral()
         BT = trainBGHist.Integral() + testBGHist.Integral()
 
-        #trainSignalHist.Scale(1./ST)
-        #testSignalHist.Scale(1./ST)
-        #testBGHist.Scale(1./BT)
-        #trainBGHist.Scale(1./BT)
+        if normalise:
+            trainSignalHist.Scale(1./ST)
+            testSignalHist.Scale(1./ST)
+            testBGHist.Scale(1./BT)
+            trainBGHist.Scale(1./BT)
+            
         maxY = max(trainSignalHist.GetMaximum(), testSignalHist.GetMaximum(), testBGHist.GetMaximum(), trainBGHist.GetMaximum())
         
         cpBlue = utils.colorPalette[2]

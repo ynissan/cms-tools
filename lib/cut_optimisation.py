@@ -6,7 +6,7 @@ import math
 import xml.etree.ElementTree as ET
 from array import array
 
-def get_method_hists(folders, method, gtestBGHists=None, gtrainBGHists=None, gtestSignalHists=None, gtrainSignalHists=None, gmethods=None, gnames=None, bins=10000, condition=""):
+def get_method_hists(folders, method, gtestBGHists=None, gtrainBGHists=None, gtestSignalHists=None, gtrainSignalHists=None, gmethods=None, gnames=None, bins=10000, condition="", weight=False):
     testBGHists = []
     trainBGHists = []
     testSignalHists = []
@@ -32,19 +32,20 @@ def get_method_hists(folders, method, gtestBGHists=None, gtrainBGHists=None, gte
         trainTree = fin.Get("dataset/TrainTree")
         testTree = fin.Get("dataset/TestTree")
         binsStr = ">>hsqrt(" + str(bins) + ")"
-        testTree.Draw(method + binsStr, "Weight * (classID==0"+condition+")")
+        weightStr = "" if not weight else "Weight * "
+        testTree.Draw(method + binsStr, weightStr + "(classID==0"+condition+")")
         testSignalHist = testTree.GetHistogram().Clone()
         #print method + " testSignalHist=" + str(testSignalHist.Integral())
         testSignalHist.SetDirectory(0)
-        testTree.Draw(method + binsStr, "Weight * (classID==1"+condition+")")
+        testTree.Draw(method + binsStr, weightStr + "(classID==1"+condition+")")
         testBgHist = testTree.GetHistogram().Clone()
         #print method + " testBgHist=" + str(testBgHist.Integral())
         testBgHist.SetDirectory(0)
-        trainTree.Draw(method + binsStr, "Weight * (classID==0"+condition+")")
+        trainTree.Draw(method + binsStr, weightStr + "(classID==0"+condition+")")
         trainSignalHist = trainTree.GetHistogram().Clone()
         #print method + " trainSignalHist=" + str(trainSignalHist.Integral())
         trainSignalHist.SetDirectory(0)
-        trainTree.Draw(method + binsStr, "Weight * (classID==1"+condition+")")
+        trainTree.Draw(method + binsStr, weightStr + "(classID==1"+condition+")")
         trainBgHist = trainTree.GetHistogram().Clone()
         #print method + " trainBgHist=" + str(trainBgHist.Integral())
         trainBgHist.SetDirectory(0)
@@ -56,19 +57,19 @@ def get_method_hists(folders, method, gtestBGHists=None, gtrainBGHists=None, gte
         #print "======="
         #print minX, maxX
         binsStr = ">>hsqrt(" + str(bins) + ","
-        testTree.Draw(method + binsStr + str(minX) + "," + str(maxX) + ")", "Weight * (classID==0"+condition+")")
+        testTree.Draw(method + binsStr + str(minX) + "," + str(maxX) + ")", weightStr + "(classID==0"+condition+")")
         testSignalHist = testTree.GetHistogram().Clone()
         testSignalHist.SetDirectory(0)
         #print method + " testSignalHist=" + str(testSignalHist.Integral())
-        testTree.Draw(method + binsStr + str(minX) + "," + str(maxX) + ")", "Weight * (classID==1"+condition+")")
+        testTree.Draw(method + binsStr + str(minX) + "," + str(maxX) + ")", weightStr + "(classID==1"+condition+")")
         testBgHist = testTree.GetHistogram().Clone()
         testBgHist.SetDirectory(0)
         #print method + " testBgHist=" + str(testBgHist.Integral())
-        trainTree.Draw(method + binsStr + str(minX) + "," + str(maxX) + "", "Weight * (classID==0"+condition+")")
+        trainTree.Draw(method + binsStr + str(minX) + "," + str(maxX) + "", weightStr + "(classID==0"+condition+")")
         trainSignalHist = trainTree.GetHistogram().Clone()
         trainSignalHist.SetDirectory(0)
         #print method + " trainSignalHist=" + str(trainSignalHist.Integral())
-        trainTree.Draw(method + binsStr + str(minX) + "," + str(maxX) + "", "Weight * (classID==1"+condition+")")
+        trainTree.Draw(method + binsStr + str(minX) + "," + str(maxX) + "", weightStr + "(classID==1"+condition+")")
         trainBgHist = trainTree.GetHistogram().Clone()
         trainBgHist.SetDirectory(0)
         #print method + " trainBgHist=" + str(trainBgHist.Integral())
@@ -92,11 +93,11 @@ def get_method_hists(folders, method, gtestBGHists=None, gtrainBGHists=None, gte
         return (gtestBGHists, gtrainBGHists, gtestSignalHists, gtrainSignalHists, gmethods, gnames)
 
 
-def get_bdt_hists(folders, testBGHists=None, trainBGHists=None, testSignalHists=None, trainSignalHists=None, methods=None, names=None, bins=10000,  condition=""):
-    return get_method_hists(folders, "BDT", testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names, bins, condition)
+#def get_bdt_hists(folders, testBGHists=None, trainBGHists=None, testSignalHists=None, trainSignalHists=None, methods=None, names=None, bins=10000,  condition=""):
+#    return get_method_hists(folders, "BDT", testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names, bins, condition)
 
-def get_mlp_hists(folders, testBGHists=None, trainBGHists=None, testSignalHists=None, trainSignalHists=None, methods=None, names=None, bins=10000, condition=""):
-    return get_method_hists(folders, "MLP", testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names, bins, condition)
+#def get_mlp_hists(folders, testBGHists=None, trainBGHists=None, testSignalHists=None, trainSignalHists=None, methods=None, names=None, bins=10000, condition=""):
+#    return get_method_hists(folders, "MLP", testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names, bins, condition)
 
 def getHighestZ(trainSignalHist, trainBGHist, testSignalHist, testBGHist, h=None,cs=1):
     highestZ = 0

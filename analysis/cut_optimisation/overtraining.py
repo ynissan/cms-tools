@@ -31,30 +31,37 @@ colorInx = 0
 parser = argparse.ArgumentParser(description='ROC Comparison.')
 parser.add_argument('-i', '--input_file', nargs=1, help='Input File', required=True)
 parser.add_argument('-o', '--output_file', nargs=1, help='Output File', required=True)
+parser.add_argument('-m', '--method', nargs=1, help='Method', required=False)
+parser.add_argument('-w', '--weight', dest='weight', help='Plot With Weight', action='store_true')
 args = parser.parse_args()
 
 outputFile = "roc_comparison.pdf"
+method = ""
+weight = args.weight
 inputFile = None
 if args.output_file:
     outputFile = args.output_file[0]
 if args.input_file:
     inputFile = args.input_file[0]
     
-print "inputFile=", inputFile
-
+if args.method:
+    method = args.method[0]
+print "input", input
+print "method", method
 ######## END OF CMDLINE ARGUMENTS ########
 
 memory = []
 
 def plot_rocs():
     # Create canvas
+    global method
     canvas = TCanvas("roc", "roc", 520, 10, 1000, 1000)
     canvas.SetTopMargin(0.5 * canvas.GetTopMargin())
     canvas.SetBottomMargin(1 * canvas.GetBottomMargin())
     canvas.SetLeftMargin(1 * canvas.GetLeftMargin())
     canvas.SetRightMargin(0.5 * canvas.GetRightMargin())
     inx = 0
-    (testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names) = cut_optimisation.get_bdt_hists([inputFile], None, None, None, None, None, None, 40)
+    (testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names) = cut_optimisation.get_method_hists([inputFile], method, None, None, None, None, None, None, 40, "", weight)
     testBGHist, trainBGHist, testSignalHist, trainSignalHist, method, name = testBGHists[inx], trainBGHists[inx], testSignalHists[inx], trainSignalHists[inx], methods[inx], names[inx]
     legend = TLegend(0.7, 0.7, 0.9, 0.9)
     

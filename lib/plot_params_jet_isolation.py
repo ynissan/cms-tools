@@ -736,68 +736,6 @@ class track_selection_bg(track_selection):
     plot_overflow = True
     object_retag = False
 
-
-class signal_muons(BaseParams):
-    signal_dir = signals
-    signal_names = signalNames
-    cuts = [
-        {"name":"none", "title": "No Cuts", "condition" : "1"},
-    ]
-    histograms_defs = [
-        { "obs" : "Muons_pt", "formula" : "Muons.Pt()", "units" : "P_{t}", "minX" : 2, "maxX" : 25, "bins" : 60, "condition" :  "Muons_isZ == 1", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1 },
-        { "obs" : "Muons_Eta", "formula" : "abs(Muons.Eta())", "units" : "|\eta|", "minX" : 0, "maxX" : 2.4, "bins" : 60, "condition" :  "Muons_isZ == 1", "linearYspace" : 1.8, "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1 },
-        { "obs" : "deltaRCorrJetIso10", "units" : "#Delta_{}R", "minX" : 0, "maxX" : 3.5, "bins" : 60, "condition" :  "twoLeptonsCorrJetIso10 == 1 && leptonFlavour == \"Muons\" && Muons_isZ[leptonsIdxCorrJetIso10[0]] == 1 &&  Muons_isZ[leptonsIdxCorrJetIso10[1]] == 1 ", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1 },
-        
-        { "obs" : "Muons_pt_barrel", "formula" : "Muons.Pt()", "units" : "barrel p_{T}", "minX" : 2, "maxX" : 10, "bins" : 60, "condition" :  "Muons_isZ == 1 && abs(Muons.Eta()) < 1.2", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1 },
-        { "obs" : "Muons_pt_endcape", "formula" : "Muons.Pt()", "units" : "endcaps p_{T}", "minX" : 2, "maxX" : 10, "bins" : 60, "condition" :  "Muons_isZ == 1 && abs(Muons.Eta()) >= 1.2 && abs(Muons.Eta()) <= 2.4", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1 },
-        
-    ]
-    
-    weightString = {
-        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016",
-        'SingleMuon' : "1"
-    }
-    
-    plot_bg = False
-    plot_data = False
-    plot_overflow = False
-    
-signalsGen = [
-              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm0p86Chi20Chipm.root",
-              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm1p92Chi20Chipm.root",
-              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm3p28Chi20Chipm.root",
-              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm9p73Chi20Chipm.root"
-              ]
-
-class signal_muons_gen(BaseParams):
-    signal_dir = signalsGen
-    signal_names = signalNames
-    cuts = [
-        {"name":"none", "title": "No Cuts", "condition" : "1"},
-    ]
-    histograms_defs = [
-        { "obs" : "Muons_pt", "formula" : "GenParticles.Pt()", "units" : "P_{t}", "minX" : 2, "maxX" : 25, "bins" : 60, "condition" :  "GenParticles.Pt() < 20 && abs(GenParticles_PdgId) == 13 && GenParticles.Pt() > 2", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1 },
-        { "obs" : "Muons_Eta", "formula" : "abs(GenParticles.Eta())", "units" : "|\eta|", "minX" : 0, "maxX" : 2.4, "bins" : 60, "condition" :  "GenParticles.Pt() < 20 && abs(GenParticles_PdgId) == 13 && GenParticles.Pt() > 2", "linearYspace" : 1.8, "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1 },
-        #{ "obs" : "deltaRCorrJetIso10", "units" : "#Delta_{}R", "minX" : 0, "maxX" : 3.5, "bins" : 60, "condition" :  "twoLeptonsCorrJetIso10 == 1 && leptonFlavour == \"Muons\" && Muons_isZ[leptonsIdxCorrJetIso10[0]] == 1 &&  Muons_isZ[leptonsIdxCorrJetIso10[1]] == 1 ", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1 },
-        
-        { "obs" : "Muons_pt_barrel", "formula" : "GenParticles.Pt()", "units" : "barrel p_{T}", "minX" : 2, "maxX" : 10, "bins" : 60, "condition" :  "GenParticles.Pt() < 20 && abs(GenParticles_PdgId) == 13 && GenParticles.Pt() > 2 && abs(GenParticles.Eta()) < 1.2", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1 },
-        { "obs" : "Muons_pt_endcape", "formula" : "GenParticles.Pt()", "units" : "endcaps p_{T}", "minX" : 2, "maxX" : 10, "bins" : 60, "condition" :  "GenParticles.Pt() < 20 && abs(GenParticles_PdgId) == 13 && GenParticles.Pt() > 2 && abs(GenParticles.Eta()) >= 1.2 && abs(GenParticles.Eta()) <= 2.4", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1 },
-        
-    ]
-    
-    weightString = {
-        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016",
-        'SingleMuon' : "1"
-    }
-    
-    plot_bg = False
-    plot_data = False
-    plot_overflow = False
-    
-
-
-#{"name":"none", "title": "No Cuts", "condition" : "exclusiveTrack == 1 && Ht > 200 && passedSingleMuPack == 1 && Muons_tightID[leptonIdx] == 1 && lepton.Pt() > 10 && track.Pt() < 25 && Muons[0].Pt() < 100"},
-
 class jpsi_muons(BaseParams):
     bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_muons_jpsi_track/sum/type_sum"
     data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_muons_jpsi_track/sum"

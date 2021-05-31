@@ -32,6 +32,22 @@ signalNames = [
     "\Delta_{}M 9.7Gev",
 ]
 
+# histogram params:
+# 
+# object - for the purpose of retagging
+# condition - adds a specific condition to the histogram
+# obs - either the name of the histogram of the formula
+# formula - in case we want to override the obs with a specific formula (for naming two histograms differently)
+# bins - bins num
+# minX, maxX - for x axis
+# units - x axis title
+# legendCoor - legend coordinates
+# legendCol - legend columns number
+# labelText - work in progress or other text next to CMS
+# cmsLocation - where to put the CMS label
+# showLumi - bool
+# linearYspace - how much space to leave for legend
+
 class BaseParams:
     signal_dir = None
     signal_names = None
@@ -101,3 +117,10 @@ class BaseParams:
     legend_coordinates = {"x1" : .20, "y1" : .60, "x2" : .89, "y2" : .89}
     legend_columns = 2
     legend_border = 0
+    
+    y_title_offset = 1.5
+    y_title = "Events"
+    
+    label_text = utils.StampStr.WIP
+    cms_location = utils.StampCoor.ABOVE_PLOT
+    show_lumi = True

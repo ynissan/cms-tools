@@ -535,34 +535,75 @@ def getCrossSection(filename):
         return cs
     return None
 
-def stamp_plot(lumi = 135.0):
-    showlumi = True
+
+class StampStr:
+    WIP = "Work in Progress"
+    SIM = "Simulation"
+    PRE = "Preliminary"
+
+class StampCoor:
+    ABOVE_PLOT = {"x" : 0.18, "y" : 0.915}
+    ABOVE_PLOT_SPACE_FOR_EXP = {"x" : 0.25, "y" : 0.915}
+    TOP_OF_PLOT = {"x" : 0.205, "y" : 0.85}
+    TOP_OF_PLOT_LABEL_BELLOW_CMS = {"x" : 0.205, "y" : 0.85, "labelX" : 0.205, "labelY" : 0.8}
+
+def stamp_plot(lumi = 135.0, label = StampStr.WIP, cmsLocation = StampCoor.ABOVE_PLOT, showlumi = True):
+    
     tl = TLatex()
     tl.SetNDC()
+    # DEFUALT TEXT ALIGNMENT IS 11 (left adjusted and bottom adjusted)
+    
     cmsTextFont = 61
     extraTextFont = 52
+    regularfont = 42
+    
     lumiTextSize = 0.6
     lumiTextOffset = 0.2
+    
     cmsTextSize = 0.75
     cmsTextOffset = 0.1
-    regularfont = 42
+    
     tl.SetTextFont(cmsTextFont)
-    tl.SetTextSize(0.85*tl.GetTextSize()) 
-    #tl.DrawLatex(0.19,0.915, 'CMS')
-    tl.DrawLatex(0.25,0.915, 'CMS')
+    # DEFUALT TEXT SIZE IS 0.05
+    tl.SetTextSize(0.85*tl.GetTextSize())
+    tl.DrawLatex(cmsLocation["x"],cmsLocation["y"], 'CMS')
+
     tl.SetTextFont(extraTextFont)
     tl.SetTextSize(0.78*tl.GetTextSize())
-    tl.DrawLatex(0.34,0.915, 'Work in Progress')
+    labelX = cmsLocation["labelX"] if cmsLocation.get("labelX") is not None else cmsLocation["x"] + 0.095
+    labelY = cmsLocation["labelY"] if cmsLocation.get("labelY") is not None else cmsLocation["y"]
+    tl.DrawLatex(labelX, labelY, label)
+    
     tl.SetTextFont(regularfont)
     tl.SetTextSize(0.81*tl.GetTextSize())
-    thingy = ''
-    if showlumi: thingy+='#sqrt{s}=13 TeV, L = '+str(lumi)+' fb^{-1}'
-    #xthing = 0.67
-    xthing = 0.6
-    if not showlumi: xthing+=0.13 
-    tl.DrawLatex(xthing,0.915,thingy)
-    #tl.DrawLatex(xthing,0.915,thingy)
-    tl.SetTextSize(1.0/0.81*tl.GetTextSize())
+    lumiText = '#sqrt{s}=13 TeV'
+    if showlumi: lumiText+=', L = '+str(lumi)+' fb^{-1}'
+    # align right
+    tl.SetTextAlign(31)
+    
+    tl.DrawLatex(0.9,StampCoor.ABOVE_PLOT["y"],lumiText)
+    #tl.SetTextSize(1.0/0.81*tl.GetTextSize())
+    
+    # testing = TLatex()
+#     testing.SetNDC()
+#     testing.SetTextFont(cmsTextFont)
+#     testing.SetTextSize(0.85*testing.GetTextSize()) 
+#     print "--------", testing.GetTextSize()
+#     testing.DrawLatex(0.18,0.915, 'CMS')
+#     
+#     testing.SetTextFont(extraTextFont)
+#     testing.SetTextSize(0.78*testing.GetTextSize())
+#     testing.DrawLatex(0.27,0.915, label)
+#     #testing.DrawLatex(0.34,0.915, label)
+#     
+#     #testing.DrawLatex(0.34,0.915, label)
+#     
+#     testing.DrawLatex(0.205,0.85, 'TEST2')
+#     testing.SetTextFont(extraTextFont)
+#     testing.SetTextSize(0.78*testing.GetTextSize())
+#     testing.DrawLatex(0.205,0.80, label)
+    
+    
 
 def stampFab(lumi,datamc='MC'):
     tl.SetTextFont(cmsTextFont)
