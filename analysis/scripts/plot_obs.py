@@ -1276,7 +1276,7 @@ def main():
                             bg_degree = conditions["bg_degree"]
                         if condition.get("bg_degree") is not None:
                             bg_degree = condition["bg_degree"]
-                        
+                        print "BG DEGREE=", bg_degree
                         parNum = bg_degree + sigParNum + 1
                         print "parNum", parNum
                         if parNum == 10:
@@ -1288,8 +1288,7 @@ def main():
                         
                     fFullModel.SetNpx(500);
                     
-                    
-                     
+
                     #print "ignoreParams", ignoreParams
                     #exit(0)
                     
@@ -1526,7 +1525,8 @@ def main():
                     print fSignalOnlyModel.GetProb()
                     print "Chi2/ndof", fit_only_signal_integral_chi_s[hist_def["obs"]]
                     print "Integral:", fit_only_signal_integral[hist_def["obs"]]
-                    print "Error:", fit_only_signal_integral_error[hist_def["obs"]] 
+                    print "Error:", fit_only_signal_integral_error[hist_def["obs"]]
+                    print "Error %:", 100 * fit_only_signal_integral_error[hist_def["obs"]] / fit_only_signal_integral[hist_def["obs"]]
                     print "----"
                     
                     tl = TLatex()
@@ -1585,6 +1585,7 @@ def main():
                 print "Full fit chis/ndof", fit_full_integral_chi_s[hist_def["obs"]]
                 print "Full fit integral", fit_signal_integral[hist_def["obs"]]
                 print "Full fit error", fit_signal_integral_error[hist_def["obs"]]
+                print "Full fit error %", 100 * fit_signal_integral_error[hist_def["obs"]] / fit_signal_integral[hist_def["obs"]]
                 print "-----------------------"
                 
                 if jpsiHist is None:

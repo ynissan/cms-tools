@@ -64,24 +64,35 @@ def main():
         TriggerVersion = c.TriggerVersion
         
         for i in range(TriggerNames.size()):
-            if TriggerPass[i] != 1:
-                continue
+            if TriggerPass[i] != 1 and TriggerPass[i] != 0 and TriggerPass[i] != -1:
+                print "WHAT?", TriggerPass[i]
+            # if TriggerPass[i] == 0:
+#                 print "0!!!"
+#             if TriggerPass[i] == -1:
+#                 print "-1!!!"
+            
+            if TriggerNames[i] in TriggerNamesMap and  TriggerNamesMap[TriggerNames[i]] != i:
+                print "CRAZY!!!?", TriggerNames[i], i, TriggerNamesMap[TriggerNames[i]]
             
             if ientry == 0 or (ientry != 0 and TriggerNames[i] not in TriggerNamesMap):
-                print "Adding unseen TriggerName", TriggerNames[i]
-                TriggerNamesMap[TriggerNames[i]] = True
+                #print "Adding unseen TriggerName", TriggerNames[i]
+                TriggerNamesMap[TriggerNames[i]] = i
+            
+            if TriggerPass[i] != 1:
+                continue
         
             if ientry == 0 or (ientry != 0 and TriggerPass[i] not in TriggerPassMap):
-                print "Adding unseen TriggerPass", TriggerPass[i]
-                TriggerPassMap[TriggerPass[i]] = True
+                #print "Adding unseen TriggerPass", TriggerPass[i]
+                #TriggerPassMap[TriggerNames[i]] = i
+                TriggerPassMap[i] = TriggerNames[i]
         
             if ientry == 0 or (ientry != 0 and TriggerPrescales[i] not in TriggerPrescalesMap):
-                print "Adding unseen TriggerPrescales", TriggerPrescales[i]
-                TriggerPrescalesMap[TriggerPrescales[i]] = True
+                #print "Adding unseen TriggerPrescales", TriggerPrescales[i]
+                TriggerPrescalesMap[TriggerPrescales[i]] = i
         
             if ientry == 0 or (ientry != 0 and TriggerVersion[i] not in TriggerVersionMap):
-                print "Adding unseen TriggerVersion", TriggerVersion[i]
-                TriggerVersionMap[TriggerVersion[i]] = True
+                #print "Adding unseen TriggerVersion", TriggerVersion[i]
+                TriggerVersionMap[TriggerVersion[i]] = i
         
     print "======================"
     print "TriggerNames:"
@@ -92,6 +103,9 @@ def main():
     print TriggerPrescalesMap
     print "TriggerVersion"
     print TriggerVersionMap
+    
+    for k,v in sorted(TriggerPassMap.items()):
+        print(k, v)
         
         #TriggerNames    = (vector<string>*)0x4294930
         #TriggerPass     = (vector<int>*)0x2ac1050

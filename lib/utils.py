@@ -353,7 +353,7 @@ def histoStyler(h, ratio = False):
         labelSize = 0.04
         #print h.GetXaxis()
         h.GetXaxis().SetTitleOffset(1.0)
-        h.GetYaxis().SetTitleOffset(1.0)
+        h.GetYaxis().SetTitleOffset(1.5)
     
     h.GetXaxis().SetLabelFont(font)
     h.GetYaxis().SetLabelFont(font)
@@ -367,7 +367,6 @@ def histoStyler(h, ratio = False):
 def formatLegend(legend):
     legend.SetTextFont(132)
     
- 
 def pause(str_='push enter key when ready'):
     import sys
     print str_
@@ -542,7 +541,8 @@ class StampStr:
     PRE = "Preliminary"
 
 class StampCoor:
-    ABOVE_PLOT = {"x" : 0.18, "y" : 0.915}
+    #ABOVE_PLOT = {"x" : 0.18, "y" : 0.915}
+    ABOVE_PLOT = {"x" : 0.1, "y" : 0.915}
     ABOVE_PLOT_SPACE_FOR_EXP = {"x" : 0.25, "y" : 0.915}
     TOP_OF_PLOT = {"x" : 0.205, "y" : 0.85}
     TOP_OF_PLOT_LABEL_BELLOW_CMS = {"x" : 0.205, "y" : 0.85, "labelX" : 0.205, "labelY" : 0.8}
@@ -567,6 +567,7 @@ def stamp_plot(lumi = 135.0, label = StampStr.WIP, cmsLocation = StampCoor.ABOVE
     # DEFUALT TEXT SIZE IS 0.05
     tl.SetTextSize(0.85*tl.GetTextSize())
     tl.DrawLatex(cmsLocation["x"],cmsLocation["y"], 'CMS')
+    print cmsLocation
 
     tl.SetTextFont(extraTextFont)
     tl.SetTextSize(0.78*tl.GetTextSize())
@@ -728,7 +729,11 @@ def getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=
         if bins is not None:
             binsStr = ">>" + tmpName + "(" + str(bins) + ","
             #print """tree.Draw(""" + obs + binsStr + str(minX) + "," + str(maxX) + ")", condition+""")"""
-            tree.Draw(obs + binsStr + str(minX) + "," + str(maxX) + ")", condition, "e")
+            if twoD:
+                print "tree.Draw(" + obs + binsStr + str(minX) + "," + str(maxX) + "," + str(binsY) + "," + str(minBinsY) + "," + str(maxBinsY) +"))"
+                tree.Draw(obs + binsStr + str(minX) + "," + str(maxX) + "," + str(binsY) + "," + str(minBinsY) + "," + str(maxBinsY) +")", condition, "e")
+            else:
+                tree.Draw(obs + binsStr + str(minX) + "," + str(maxX) + ")", condition, "e")
             #print obs + binsStr + str(minX) + "," + str(maxX) + ")"
             #print condition
         else:
