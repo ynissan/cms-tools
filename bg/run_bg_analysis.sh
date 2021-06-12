@@ -46,6 +46,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --jpsi_single_electron)
+        JPSI_SINGLE_ELECTRON=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         --z_peak)
         Z_PEAK=true
         POSITIONAL+=("$1")
@@ -64,11 +69,14 @@ SCRIPT_PATH=$ANALYZER_PATH
 if [ -n "$SKIM" ]; then
     SCRIPT_PATH=$SKIMMER_PATH
     if [ -n "$MASTER" ]; then
-        SCRIPT_PATH=$MASTER_SKIMMER_PATH
+        SCRIPT_PATH=$JPSI_SKIMMER_PATH
         OUTPUT_DIR=$SKIM_MASTER_OUTPUT_DIR
     elif [ -n "$Z_PEAK" ]; then
-        SCRIPT_PATH=$MASTER_SKIMMER_PATH
+        SCRIPT_PATH=$JPSI_SKIMMER_PATH
         OUTPUT_DIR=$SKIM_Z_PEAK_OUTPUT_DIR
+    elif [ -n "JPSI_SINGLE_ELECTRON" ]; then
+        SCRIPT_PATH=$JPSI_SKIMMER_PATH
+        OUTPUT_DIR=$SKIM_JPSI_SINGLE_ELECTRON_OUTPUT_DIR
     elif [ -n "$TWO_LEPTONS" ]; then
         if [ -n "$SAME_SIGN" ]; then
             OUTPUT_DIR=$TWO_LEPTONS_SAME_SIGN_SKIM_OUTPUT_DIR
@@ -157,7 +165,7 @@ priority = 0
 EOM
 
 file_limit=0
-files_per_job=4
+files_per_job=8
 
 for type in reg madHtFilesGt600 madHtFilesLt600; do
 

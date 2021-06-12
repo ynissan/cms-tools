@@ -371,6 +371,13 @@ def hasHighPtJpsiMuon(highPtLeptonPtThreshold, Leptons, Leptons_passIso, leptons
             continue
         return i
     return None
+
+def hasHighPtJpsiElectron(highPtLeptonPtThreshold, Leptons):
+    for i in range(Leptons.size()):
+        if Leptons[i].Pt() < highPtLeptonPtThreshold:
+            continue
+        return i
+    return None
     
 def isleptonPassesJpsiSelection(i, lowPtLeptonPtThreshold, Leptons, Leptons_passJetIso, Leptons_mediumID, leptonLowerPt = 2, leptonLowerPtTight = False, leptons_tightID = None):
     if Leptons[i].Pt() > lowPtLeptonPtThreshold or Leptons[i].Pt() < leptonLowerPt:
@@ -513,6 +520,8 @@ def getTwoLeptonsAfterSelection(Electrons, Electrons_passJetIso, Electrons_delta
     
     return leps, lepIdx, lepCharges, lepFlavour, same_sign
 
+
+#[36,37,39,40]
 '''
 0 HLT_AK8DiPFJet250_200_TrimMass30_v 0 15
 1 HLT_AK8DiPFJet280_200_TrimMass30_v 0 10

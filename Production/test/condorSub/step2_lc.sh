@@ -82,7 +82,7 @@ fi
 for f in ${ARGS[*]}; do
     echo "Processing " $f
     echo "Running ${CMDSTR} -n 1 $INDIR/$f ."
-    ${CMDSTR} -n 1 $INDIR/$f .
+    (eval `scram unsetenv -sh`; ${CMDSTR} -n 1 $INDIR/$f .)
     mkdir tmp
     echo "Running ./create_lepton_collection.py -i $f -o tmp/$f"
     ./create_lepton_collection.py -i $f -o tmp/$f
@@ -94,7 +94,7 @@ for f in ${ARGS[*]}; do
         continue
     fi
     echo "Running ${CMDSTR} -n 1 tmp/$f ${OUTDIR}/"
-    ${CMDSTR} -f tmp/$f ${OUTDIR}/
+    (eval `scram unsetenv -sh`; ${CMDSTR} -f tmp/$f ${OUTDIR}/)
     if [[ $? -ne 0 ]]; then
         echo "Deleting file because gfal-copy failed"
         echo gfal-rm ${OUTDIR}/$f
