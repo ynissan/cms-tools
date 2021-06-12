@@ -31,6 +31,7 @@ parser.add_argument('-sc', '--sc', dest='sc', help='Same Charge', action='store_
 parser.add_argument('-nlp', '--no_lepton_selection', dest='no_lepton_selection', help='No Lepton Selection Skim', action='store_true')
 parser.add_argument('-jpsi_electrons', '--jpsi_electrons', dest='jpsi_electrons', help='JPSI Electrons Skim', action='store_true')
 parser.add_argument('-jpsi_muons', '--jpsi_muons', dest='jpsi_muons', help='JPSI Muons Skim', action='store_true')
+parser.add_argument('-jpsi_muons_single_electron', '--jpsi_muons_single_electron', dest='jpsi_muons_single_electron', help='JPSI Muons Skim', action='store_true')
 parser.add_argument('-master', '--master', dest='master', help='Master Skim', action='store_true')
 parser.add_argument('-z_peak', '--z_peak', dest='z_peak', help='Z Peak Skim', action='store_true')
 args = parser.parse_args()
@@ -50,6 +51,7 @@ drell_yan = args.drell_yan
 sc = args.sc
 no_lepton_selection = args.no_lepton_selection
 jpsi_muons = args.jpsi_muons
+jpsi_muons_single_electron = args.jpsi_muons_single_electron
 master = args.master
 z_peak = args.z_peak
 
@@ -74,6 +76,8 @@ if bg:
             WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_nlp"
         elif jpsi_muons:
             WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_muons_jpsi"
+        elif jpsi_muons_single_electron:
+            WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_jpsi_single_electron"
         elif master:
             WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_master" 
         elif z_peak:
