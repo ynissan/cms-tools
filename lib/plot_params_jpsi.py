@@ -341,7 +341,7 @@ class jpsi_muons_fit_data_delta_r(jpsi_muons_fit_data_tag_pt):
     histograms_defs = []
     
     eta_ranges = [0,1.2,2.4]
-    delta_r_ranges = [0,0.3,0.5]
+    delta_r_ranges = [0,0.3,0.5,1.5]
     
     crystalBallInitialConditions = crystal_ball_params.crystalBallInitialConditionsDeltaR
     
@@ -429,3 +429,13 @@ class jpsi_muons_fit_bg_delta_r_high_tag_pt(jpsi_muons_fit_data_delta_r_high_tag
         'SingleMuon' : 0.001,
     }
     crystalBallInitialConditions = crystal_ball_params.crystalBallInitialConditionsBgDeltaRHighTagPt
+
+class jpsi_muons_fit_bg_delta_r_single_electron(jpsi_muons_fit_bg_delta_r_high_tag_pt):
+    histrograms_file = "/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools/analysis/scripts/invMassBgDeltaRHistsSingleElectron.root"
+    crystalBallInitialConditions = crystal_ball_params.crystalBallInitialConditionsBgDeltaRSingleElectron
+    cuts = [
+        {"name":"none", "title": "None", "condition" : "1"},
+    ]
+    
+    fit_inv_mass_cut_jpsi = "none"
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_jpsi_single_electron/sum/type_sum"

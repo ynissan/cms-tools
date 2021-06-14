@@ -24,14 +24,16 @@ class jobSubmitterLC(jobSubmitter):
         super(jobSubmitterLC,self).checkExtraOptions(options,parser)
         
         if len(options.output)==0:
-            options.output = "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection/"
+            #options.output = "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection/"
+            options.output = "xroot://dcache-cms-xrootd.desy.de//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection/"
     
     def generateExtra(self,job):
         super(jobSubmitterLC,self).generateExtra(job)
         job.patterns.update([
             ("JOBNAME",job.name+"_$(Process)_$(Cluster)"),
             ("EXTRAINPUTS","input/args_"+job.name+"_$(Process).txt"),
-            ("EXTRAARGS","-j "+job.name+" -p $(Process) -o "+self.output + " -i " + "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/SlimmedProduction/"),
+            #("EXTRAARGS","-j "+job.name+" -p $(Process) -o "+self.output + " -i " + "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/SlimmedProduction/"),
+            ("EXTRAARGS","-j "+job.name+" -p $(Process) -o "+self.output + " -i " + "xroot://dcache-cms-xrootd.desy.de//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/SlimmedProduction/"),
         ])
 #("EXTRAARGS","-j "+job.name+" -p $(Process) -o "+self.output + " -i " + "root://dcache-cms-xrootd.desy.de//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/SlimmedProduction/"),
     

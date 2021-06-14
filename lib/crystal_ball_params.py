@@ -3186,4 +3186,26 @@ crystalBallInitialConditionsBgDeltaRHighTagPt = {
     },
 }
 
+crystalBallInitialConditionsBgDeltaRSingleElectron = {
+    "bg_degree" : 6,
+    "default" : {
+         "pars" :
+            [
+                5,
+                5,
+                0.055,
+                3.096916,
+                500
+            ],
+        "limits" :
+            [
+                [0, 100],
+                [0, 100],
+                [0.02, 0.09],
+                [3.09, 3.1],
+                [0,10000]
+            ],
+    },
+}
+
  
