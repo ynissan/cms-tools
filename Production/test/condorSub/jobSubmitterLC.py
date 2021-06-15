@@ -60,7 +60,7 @@ class jobSubmitterLC(jobSubmitter):
         self.timenow = int(time.time())
         print "Getting files in SlimmedProduction...", self.input
         #status, out = commands.getstatusoutput('gfal-ls ' + self.input)
-        print out
+        #print out
         print "Getting files existing in LeptonCollection...", self.output
         status, existingOut = commands.getstatusoutput('gfal-ls ' + self.output)
         existingFiles = existingOut.split("\n")
