@@ -62,10 +62,10 @@ class jobSubmitterLC(jobSubmitter):
         print "Wanted dicts", self.dicts
         self.timenow = int(time.time())
         print "Getting files in SlimmedProduction...", self.input
-        status, out = commands.getstatusoutput('gfal-ls ' + self.input)
+        status, out = commands.getstatusoutput('eval `scram unsetenv -sh`; gfal-ls ' + self.input)
         print out
         print "Getting files existing in LeptonCollection...", leptonCollectionPath
-        status, existingOut = commands.getstatusoutput('gfal-ls ' + leptonCollectionPath)
+        status, existingOut = commands.getstatusoutput('eval `scram unsetenv -sh`; gfal-ls ' + leptonCollectionPath)
         existingFiles = existingOut.split("\n")
         print existingFiles
         files = []
