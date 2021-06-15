@@ -5,7 +5,8 @@ import time
 import commands
 
 slimmedProductionPath = "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/SlimmedProduction/"
-leptonCollectionPath = "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection/"
+#leptonCollectionPath = "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection/"
+leptonCollectionPath = "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/tmp/"
 
 class jobSubmitterLC(jobSubmitter):
     def __init__(self,argv=None,parser=None):
@@ -25,7 +26,8 @@ class jobSubmitterLC(jobSubmitter):
         super(jobSubmitterLC,self).checkExtraOptions(options,parser)
         
         if len(options.output)==0:
-            options.output = "srm://dcache-se-cms.desy.de:8443//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection/"
+            #options.output = "srm://dcache-se-cms.desy.de:8443//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection/"
+            options.output = "srm://dcache-se-cms.desy.de:8443//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/tmp/"
             #options.output = "xroot://dcache-cms-xrootd.desy.de//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection/"
     
     def generateExtra(self,job):
@@ -75,7 +77,7 @@ class jobSubmitterLC(jobSubmitter):
             if self.dicts is not None and len(self.dicts) > 0:
                 shouldProcess = False
                 for dict in self.dicts:
-                    if dict in file:
+                    if dict in file and "Run2016" in file:
                         shouldProcess = True
                         break
                 if not shouldProcess:
