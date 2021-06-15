@@ -58,12 +58,13 @@ class jobSubmitterLC(jobSubmitter):
         self.generatePerJob(job)
         print "Wanted dicts", self.dicts
         self.timenow = int(time.time())
-        print "Getting files in SlimmedProduction..."
-        status, out = commands.getstatusoutput('gfal-ls ' + self.input)
+        print "Getting files in SlimmedProduction...", self.input
+        #status, out = commands.getstatusoutput('gfal-ls ' + self.input)
         print out
-        print "Getting files existing in LeptonCollection..."
+        print "Getting files existing in LeptonCollection...", self.output
         status, existingOut = commands.getstatusoutput('gfal-ls ' + self.output)
         existingFiles = existingOut.split("\n")
+        exit(0)
         print existingFiles
         files = []
         nFiles = 0
