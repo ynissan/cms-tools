@@ -5,7 +5,7 @@ import time
 import commands
 
 slimmedProductionPath = "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/SlimmedProduction/"
-leptonCollectionPath = "srm://dcache-se-cms.desy.de:8443/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection/"
+leptonCollectionPath = "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection/"
 
 class jobSubmitterLC(jobSubmitter):
     def __init__(self,argv=None,parser=None):
@@ -60,12 +60,11 @@ class jobSubmitterLC(jobSubmitter):
         print "Wanted dicts", self.dicts
         self.timenow = int(time.time())
         print "Getting files in SlimmedProduction...", self.input
-        #status, out = commands.getstatusoutput('gfal-ls ' + self.input)
-        #print out
+        status, out = commands.getstatusoutput('gfal-ls ' + self.input)
+        print out
         print "Getting files existing in LeptonCollection...", leptonCollectionPath
         status, existingOut = commands.getstatusoutput('gfal-ls ' + leptonCollectionPath)
         existingFiles = existingOut.split("\n")
-        exit(0)
         print existingFiles
         files = []
         nFiles = 0
