@@ -5,8 +5,8 @@ import time
 import commands
 
 slimmedProductionPath = "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/SlimmedProduction/"
-#leptonCollectionPath = "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection/"
-leptonCollectionPath = "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/tmp/"
+leptonCollectionPath = "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection/"
+#leptonCollectionPath = "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/tmp/"
 
 class jobSubmitterLC(jobSubmitter):
     def __init__(self,argv=None,parser=None):
@@ -73,6 +73,7 @@ class jobSubmitterLC(jobSubmitter):
         files = []
         nFiles = 0
         for file in out.split("\n"):
+            print "checking", file
             if file in existingFiles:
                 print "File", file, " alreading exists. Skipping."
                 continue
