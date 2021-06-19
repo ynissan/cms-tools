@@ -26,8 +26,8 @@ class jobSubmitterLC(jobSubmitter):
         super(jobSubmitterLC,self).checkExtraOptions(options,parser)
         
         if len(options.output)==0:
-            #options.output = "srm://dcache-se-cms.desy.de:8443//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection/"
-            options.output = "srm://dcache-se-cms.desy.de:8443//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/tmp/"
+            options.output = "srm://dcache-se-cms.desy.de:8443//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection/"
+            #options.output = "srm://dcache-se-cms.desy.de:8443//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/tmp/"
             #options.output = "xroot://dcache-cms-xrootd.desy.de//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection/"
     
     def generateExtra(self,job):
@@ -63,11 +63,12 @@ class jobSubmitterLC(jobSubmitter):
         self.timenow = int(time.time())
         print "Getting files in SlimmedProduction...", self.input
         #status, out = commands.getstatusoutput('eval `scram unsetenv -sh`; gfal-ls ' + self.input)
-        status, out = commands.getstatusoutput('cat ./SlimmedProductionFiles')
+        out = "Run2017F-31Mar2018-v1.SingleElectron_FEF2EDDB-1739-E811-9A0C-0CC47A4D7604.root"
         print out
         print "Getting files existing in LeptonCollection...", leptonCollectionPath
-        status, existingOut = commands.getstatusoutput('eval `scram unsetenv -sh`; gfal-ls ' + leptonCollectionPath)
-        existingFiles = existingOut.split("\n")
+        #status, existingOut = commands.getstatusoutput('eval `scram unsetenv -sh`;'gfal-ls ' + leptonCollectionPath)
+        #existingFiles = existingOut.split("\n")
+        existingFiles = []
         print existingFiles
         files = []
         nFiles = 0
