@@ -28,7 +28,6 @@ class jobSubmitterLC(jobSubmitter):
         if len(options.output)==0:
             options.output = "srm://dcache-se-cms.desy.de:8443//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection/"
             #options.output = "srm://dcache-se-cms.desy.de:8443//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/tmp/"
-            #options.output = "xroot://dcache-cms-xrootd.desy.de//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection/"
     
     def generateExtra(self,job):
         super(jobSubmitterLC,self).generateExtra(job)
@@ -66,16 +65,16 @@ class jobSubmitterLC(jobSubmitter):
         #out = "Run2016H-17Jul2018-v1.SingleElectron_FCB308E4-E88A-E811-93CB-1866DA890A68.root"
         print out
         print "Getting files existing in LeptonCollection...", leptonCollectionPath
-        #status, existingOut = commands.getstatusoutput('eval `scram unsetenv -sh`;'gfal-ls ' + leptonCollectionPath)
-        #existingFiles = existingOut.split("\n")
-        existingFiles = []
+        status, existingOut = commands.getstatusoutput('eval `scram unsetenv -sh`;'gfal-ls ' + leptonCollectionPath)
+        existingFiles = existingOut.split("\n")
+        #existingFiles = []
         print existingFiles
         files = []
         nFiles = 0
         for file in out.split("\n"):
             print "checking", file
             if file in existingFiles:
-                print "File", file, " alreading exists. Skipping."
+                #print "File", file, " alreading exists. Skipping."
                 continue
             if self.dicts is not None and len(self.dicts) > 0:
                 shouldProcess = False
