@@ -65,7 +65,7 @@ class jobSubmitterLC(jobSubmitter):
         #out = "Run2016H-17Jul2018-v1.SingleElectron_FCB308E4-E88A-E811-93CB-1866DA890A68.root"
         print out
         print "Getting files existing in LeptonCollection...", leptonCollectionPath
-        status, existingOut = commands.getstatusoutput('eval `scram unsetenv -sh`;'gfal-ls ' + leptonCollectionPath)
+        status, existingOut = commands.getstatusoutput('eval `scram unsetenv -sh`;gfal-ls ' + leptonCollectionPath)
         existingFiles = existingOut.split("\n")
         #existingFiles = []
         print existingFiles
