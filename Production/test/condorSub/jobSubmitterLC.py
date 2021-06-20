@@ -72,7 +72,7 @@ class jobSubmitterLC(jobSubmitter):
         files = []
         nFiles = 0
         for file in out.split("\n"):
-            print "checking", file
+            #print "checking", file
             if file in existingFiles:
                 #print "File", file, " alreading exists. Skipping."
                 continue
