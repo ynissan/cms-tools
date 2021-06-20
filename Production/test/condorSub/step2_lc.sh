@@ -8,6 +8,11 @@ if [[ $vomsident = *"cmsgli"* ]]; then
     exit 60322
 fi
 
+echo "========================="
+echo printing os information:
+uname -a
+echo "========================="
+
 echo "Args before getopts: $@"
 
 export JOBNAME=""
@@ -68,11 +73,11 @@ export GFLAG=""
 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CMSSW_BASE/src/cms-tools/lib/classes
 
-# cd $CMSSW_BASE/src/cms-tools/lib/classes
-# rm LeptonCollectionMapDict.cxx
-# rootcling -f LeptonCollectionMapDict.cxx -c LeptonCollectionMap.h LinkDef.h
-# rm LeptonCollectionMap_C.so
-# echo .L LeptonCollectionMap.C+ | root.exe -b
+cd $CMSSW_BASE/src/cms-tools/lib/classes
+rm LeptonCollectionMapDict.cxx
+rootcling -f LeptonCollectionMapDict.cxx -c LeptonCollectionMap.h LinkDef.h
+rm LeptonCollectionMap_C.so
+echo .L LeptonCollectionMap.C+ | root.exe -b
 
 cd $CMSSW_BASE/src/cms-tools/analysis/scripts/
 
