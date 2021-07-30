@@ -49,6 +49,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --jpsi_single_electron)
+        JPSI_SINGLE_ELECTRON=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -73,6 +78,8 @@ elif [ -n "$MINI" ]; then
     OUTPUT_DIR=$SKIM_DATA_MINI_OUTPUT_DIR
 elif [ -n "$MASTER" ]; then
     OUTPUT_DIR=$SKIM_DATA_MASTER_OUTPUT_DIR
+elif [ -n "$JPSI_SINGLE_ELECTRON" ]; then
+    OUTPUT_DIR=$SKIM_DATA_JPSI_SINGLE_ELECTRON_OUTPUT_DIR
 else
     OUTPUT_DIR=$SKIM_DATA_OUTPUT_DIR
 fi
@@ -119,6 +126,8 @@ FILE_OUTPUT="${OUTPUT_DIR}/single"
 DATA_PATTERN="METAOD"
 if [ -n "$DY" ] || [ -n "$JPSI_MUONS" ] || [ -n "$MINI" ] || [ -n "$MASTER" ]; then
     DATA_PATTERN="SingleMuon"
+elif [ -n "$JPSI_SINGLE_ELECTRON" ]; then
+    DATA_PATTERN="SingleElectron"
 fi
 
 #for fullname in ${DATA_NTUPLES_DIR}/Run2016*SingleMuon*; do

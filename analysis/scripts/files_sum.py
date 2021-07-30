@@ -181,7 +181,8 @@ if hadd or all:
     if data_lepton_collection:
         files_glob = fileList
         
-        file = "Run2016_SingleMuon.root"
+        #file = "Run2016_SingleMuon.root"
+        file = "Run2016_SingleElectron.root"
         tmp_dir = "/afs/desy.de/user/n/nissanuv/nfs"
         #file = "Run2016_MET.root"
         print "***NUMBER:" + str(len(files_glob))
@@ -194,12 +195,12 @@ if hadd or all:
         command = "./merge_lepton_collection_map.py -o " + tmp_dir + "/" + file + " -i " + SINGLE_OUTPUT + "/*"
         print "Perorming:", command 
         system(command)
-        command = "gfal-copy " + tmp_dir + "/" + file + " " + "srm://dcache-se-cms.desy.de" + WORK_DIR
+        command = "(eval `scram unsetenv -sh`; gfal-copy " + tmp_dir + "/" + file + " " + "srm://dcache-se-cms.desy.de" + WORK_DIR + ")"
         print "Perorming:", command 
         system(command)
         command = "rm " + tmp_dir + "/" + file
         print "Perorming:", command 
-        system(command)
+        #system(command)
     else:
         for f in fileList :
             filename = None

@@ -54,18 +54,20 @@ def main():
     select_jpsi = True
     
     if select_jpsi and samples ==  "sim":
-        basicCond = "tagJpsi == 1 && probeJpsi == 1 && tracks[probeTrack].Pt()>3 && abs(tracks[probeTrack].Eta()) <= 1.2  && Muons[tagMuon].Pt() > 25"
+        #basicCond = "tagJpsi == 1 && probeJpsi == 1 && tracks[probeTrack].Pt()>3 && abs(tracks[probeTrack].Eta()) <= 1.2  && Muons[tagMuon].Pt() > 25"
+        basicCond = "tagJpsi == 1 && probeJpsi == 1 && tracks[probeTrack].Pt()>2 && Muons[tagMuon].Pt() > 5"
     else:
-        basicCond = "tracks[probeTrack].Pt()>3 && abs(tracks[probeTrack].Eta()) <= 1.2  && Muons[tagMuon].Pt() > 25"
+        #basicCond = "tracks[probeTrack].Pt()>3 && abs(tracks[probeTrack].Eta()) <= 1.2  && Muons[tagMuon].Pt() > 5"
+        basicCond = "tracks[probeTrack].Pt()>2 &&  Muons[tagMuon].Pt() > 5 && invMass < 3.2 && invMass > 3.0"
     
     idMuons = True
     if idMuons:
         basicCond += " && tracks_mi[probeTrack] > -1 && Muons_mediumID[tracks_mi[probeTrack]] == 1"
     
     if samples == "sim":
-        fileNames = glob("/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_master/sum/type_sum/*")
+        fileNames = glob("/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_jpsi_single_electron/sum/type_sum/*")
     else:
-        fileNames = glob("/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_master/sum/*")
+        fileNames = glob("/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_jpsi_single_electron/sum/*")
     
     for fileName in fileNames:
         print fileName
@@ -97,12 +99,23 @@ def main():
     #hist = TH1F("ptdrhist", "ptdrhist", 50, 0, 1)
     #hist.SetMinimum(1)
     #hist.SetMaximum(20)
+    hist.SetTitle("simulation" if samples ==  "sim" else "data")
+    hist.GetYaxis().SetTitle("probe p_{T} [GeV]")
+    hist.GetXaxis().SetTitle("#Delta_{}R")
+    
     hist.Draw("colz")
 
     legend = TLegend(.60,.40,.89,.60)
     legend.SetNColumns(1)
     legend.SetBorderSize(1)
     legend.SetFillStyle(0)
+    
+    fFullModel5 = TF1("ptdr5", ptdr, 0, 1, 2)
+    fFullModel5.SetNpx(500);
+    fFullModel5.SetParameter(0,5.0)
+    fFullModel5.SetParameter(1,0)    
+    fFullModel5.SetLineWidth(2)
+    fFullModel5.SetLineColor(kYellow)
     
     fFullModel75 = TF1("ptdr75", ptdr, 0, 1, 2)
     fFullModel75.SetNpx(500);
@@ -153,6 +166,7 @@ def main():
     fFullModel120.SetLineWidth(2)
     fFullModel120.SetLineColor(kCyan)
     
+    fFullModel5.Draw("SAME")
     fFullModel75.Draw("SAME")
     fFullModel15.Draw("SAME")
     fFullModel25.Draw("SAME")
@@ -161,6 +175,8 @@ def main():
     fFullModel85.Draw("SAME")
     fFullModel120.Draw("SAME")
     
+    
+    legend.AddEntry(fFullModel5, "#Delta#eta=0 tag p_{T} 5.0 [GeV]", 'l')
     legend.AddEntry(fFullModel75, "#Delta#eta=0 tag p_{T} 7.5 [GeV]", 'l')
     legend.AddEntry(fFullModel15, "#Delta#eta=0 tag p_{T} 15 [GeV]", 'l')
     legend.AddEntry(fFullModel25, "#Delta#eta=0 tag p_{T} 25 [GeV]", 'l')

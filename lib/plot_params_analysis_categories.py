@@ -40,17 +40,19 @@ common_histograms = [
     { "obs" : 'int(vetoElectronsCorrJetIso10)', "minX" : 0, "maxX" : 2, "bins" : 2},
     { "obs" : 'int(vetoElectronsMediumID)', "minX" : 0, "maxX" : 2, "bins" : 2},
     { "obs" : 'int(vetoElectronsTightID)', "minX" : 0, "maxX" : 2, "bins" : 2},
+    { "obs" : 'int(vetoElectrons)', "minX" : 0, "maxX" : 2, "bins" : 2},
     { "obs" : 'int(vetoMuonsPassIso)', "minX" : 0, "maxX" : 2, "bins" : 2},
     { "obs" : 'int(vetoMuonsCorrJetIso10)', "minX" : 0, "maxX" : 2, "bins" : 2},
     { "obs" : 'int(vetoMuonsMediumID)', "minX" : 0, "maxX" : 2, "bins" : 2},
     { "obs" : 'int(vetoMuonsTightID)', "minX" : 0, "maxX" : 2, "bins" : 2},
+    { "obs" : 'int(vetoMuons)', "minX" : 0, "maxX" : 2, "bins" : 2},
 
 ]
 
 two_leps_histograms = [
     
-    { "obs" : "invMass", "minX" : 0, "maxX" : 13, "bins" : 30 },
-    { "obs" : "dilepBDT", "minX" : -1, "maxX" : 1, "bins" : 60 },
+    { "obs" : "invMass", "minX" : 0, "maxX" : 13, "bins" : 30, "blind" : [4,None] },
+    { "obs" : "dilepBDT", "minX" : -1, "maxX" : 1, "bins" : 60, "blind" : [None,0.1] },
     { "obs" : "dileptonPt", "minX" : 0, "maxX" : 100, "bins" : 30 },
     { "obs" : "deltaPhi", "minX" : 0, "maxX" : 3.2, "bins" : 30 },
     { "obs" : "deltaEta", "minX" : 0, "maxX" : 4, "bins" : 30 },
@@ -130,8 +132,9 @@ extra_study_obs = [
 
 ex_track_histograms = [
     #     #TRACK ONLY
-    { "obs" : "exTrack_invMass", "minX" : 0, "maxX" : 13, "bins" : 30 },
-    { "obs" : "exTrack_dilepBDT", "minX" : -1, "maxX" : 1, "bins" : 60 },
+    
+    { "obs" : "exTrack_invMass", "minX" : 0, "maxX" : 13, "bins" : 30, "blind" : [4,None] },
+    { "obs" : "exTrack_dilepBDT", "minX" : -1, "maxX" : 1, "bins" : 60, "blind" : [None,0.1] },
     { "obs" : "exTrack_dileptonPt", "minX" : 0, "maxX" : 100, "bins" : 30 },
     { "obs" : "exTrack_deltaPhi", "minX" : 0, "maxX" : 3.2, "bins" : 30 },
     { "obs" : "exTrack_deltaEta", "minX" : 0, "maxX" : 4, "bins" : 30 },
@@ -140,16 +143,16 @@ ex_track_histograms = [
     { "obs" : "exTrack_pt3", "minX" : 0, "maxX" : 1000, "bins" : 30 },
     { "obs" : "exTrack_mtautau", "minX" : 0, "maxX" : 200, "bins" : 30 },
     
-    { "obs" : "trackBDT", "minX" : -1, "maxX" : 0.7, "bins" : 30 },
+    { "obs" : "trackBDT", "minX" : 0, "maxX" : 1, "bins" : 30 },
     { "obs" : "secondTrackBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
-    { "obs" : "abs(track.Eta())", "minX" : 0, "maxX" : 3, "bins" : 60 },
-    { "obs" : "abs(lepton.Eta())", "minX" : 0, "maxX" : 3, "bins" : 60 },
+    { "obs" : "abs(track.Eta())", "minX" : 0, "maxX" : 3, "bins" : 60, "sc_obs" : "abs(sc_track.Eta())" },
+    { "obs" : "abs(lepton.Eta())", "minX" : 0, "maxX" : 3, "bins" : 60, "sc_obs" : "abs(sc_lepton.Eta())" },
     { "obs" : "track.Pt()", "minX" : 0, "maxX" : 30, "bins" : 60 },
     { "obs" : "lepton.Pt()", "minX" : 2, "maxX" : 25, "bins" : 60 },
     { "obs" : "secondTrack.Pt()", "minX" : 0, "maxX" : 30, "bins" : 60 },
-    { "obs" : "abs(secondTrack.Eta())", "minX" : 0, "maxX" : 3, "bins" : 60 },
-    { "obs" : "abs(track.Phi())", "minX" : 0, "maxX" : 6, "bins" : 60 },
-    { "obs" : "abs(lepton.Phi())", "minX" : 0, "maxX" : 6, "bins" : 60 },
+    { "obs" : "abs(secondTrack.Eta())", "minX" : 0, "maxX" : 3, "bins" : 60, "sc_obs" : "abs(sc_secondTrack.Eta())" },
+    { "obs" : "abs(track.Phi())", "minX" : 0, "maxX" : 6, "bins" : 60, "sc_obs" : "abs(sc_track.Phi())" },
+    { "obs" : "abs(lepton.Phi())", "minX" : 0, "maxX" : 6, "bins" : 60, "sc_obs" : "abs(sc_lepton.Phi())" },
     { "obs" : "mtl", "minX" : 0, "maxX" : 200, "bins" : 30 },
     { "obs" : "mtt", "minX" : 0, "maxX" : 200, "bins" : 30 },
     { "obs" : "NTracks", "minX" : 0, "maxX" : 7, "bins" : 7 },
@@ -163,6 +166,9 @@ ex_track_histograms = [
     { "obs" : "exTrack_deltaPhiLeadingJetDilepton", "minX" : 0, "maxX" : 4, "bins" : 30 },
 ]
 
+for hist in ex_track_histograms:
+    if hist.get("sc_obs") is None:
+        hist["sc_obs"] = "sc_" + hist["obs"]
 
 two_leps_cuts = [
         #{"name":"invMass_Muons", "title": "invMass - Muons", "condition" : "Met >= 200 && invMass < 12  && invMass > 0.4 && leptonFlavour == \"Muons\""},
@@ -215,24 +221,27 @@ signals = [
               "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm0p86Chi20Chipm.root",
               "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm1p92Chi20Chipm.root",
               "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm3p28Chi20Chipm.root",
-              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm9p73Chi20Chipm.root"
+              #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm9p73Chi20Chipm.root"
               ]
 
 signalNames = [
     "\Delta_{}M 0.8Gev",
     "\Delta_{}M 1.9Gev",
     "\Delta_{}M 3.2Gev",
-    "\Delta_{}M 9.7Gev",
+    #"\Delta_{}M 9.7Gev",
 ]
+
+# For this SC we need baseline cuts and sc cuts
 
 class dilepton_muons(BaseParams):
     signal_dir = signals
     signal_names = signalNames
     bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum"
+    data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/sum/"
     cuts = [
-        {"name":"none", "title": "None", "condition" : "(twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Muons\" && sameSign == 0 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) )"},
-        {"name":"non-orth", "title": "Non Orth", "condition" : "(twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Muons\" && sameSign == 0 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && BTagsDeepMedium == 0 && vetoElectrons == 0 && vetoMuons == 0 && dilepBDT > 0.1)"},
-        {"name":"orth", "title": "Orth", "condition" : "(twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Muons\" && sameSign == 0 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && BTagsDeepMedium == 0 && vetoElectrons == 0 && vetoMuons == 0 && dilepBDT > 0.1 && (leptons[1].Pt() <= 3.5 || deltaR <= 0.3))"},
+        {"name":"none", "title": "None", "condition" : "(twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Muons\" && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && BTagsDeepMedium == 0 && vetoElectrons == 0 && vetoMuons == 0)", "baseline" : "sameSign == 0", "sc" : "sameSign == 1"},
+        {"name":"non-orth", "title": "Non Orth", "condition" : "(twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Muons\" && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && BTagsDeepMedium == 0 && vetoElectrons == 0 && vetoMuons == 0 && dilepBDT > 0.1)", "baseline" : "sameSign == 0", "sc" : "sameSign == 1"},
+        {"name":"orth", "title": "Orth", "condition" : "(twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Muons\" && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && BTagsDeepMedium == 0 && vetoElectrons == 0 && vetoMuons == 0 && dilepBDT > 0.1 && (leptons[1].Pt() <= 3.5 || deltaR <= 0.3))", "baseline" : "sameSign == 0", "sc" : "sameSign == 1"},
     ]
     
     #(twoLeptons == 1 && (leptons[1].Pt() <= 3.5 || deltaR <= 0.3) && MHT >= 220 &&  MET >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1 && BTagsDeepMedium == 0 && vetoElectronsTightID == 0 && vetoMuonsPassIso == 0 && @leptons.size() == 2 && leptonFlavour == \"" + lep + "\" && sameSign == 0)", True)
@@ -242,42 +251,55 @@ class dilepton_muons(BaseParams):
     histograms_defs.extend(extra_study_obs)
     
     weightString = {
-        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016",
+        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight",
     }
     
     calculatedLumi = {
-        'MET' : utils.LUMINOSITY/1000.0,
+        'MET' : 35.778598358,
     }
     
-    plot_data = False
+    plot_sc = True
+    plot_data = True
     plot_overflow = True
+    plot_ratio = True
+    
+    blind_data = True
     
     save_histrograms_to_file = True
-    load_histrograms_from_file = False    
+    load_histrograms_from_file = True    
     histrograms_file = "/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools/analysis/scripts/dilepton_muons.root"
 
 class dilepton_electrons(dilepton_muons):
     cuts = [
-        {"name":"none", "title": "None", "condition" : "(twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Electrons\" && sameSign == 0 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) )"},
-        {"name":"non-orth", "title": "Non Orth", "condition" : "(twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Electrons\" && sameSign == 0 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && BTagsDeepMedium == 0 && vetoElectrons == 0 && vetoMuons == 0 && dilepBDT > 0.1)"},
-        {"name":"orth", "title": "Orth", "condition" : "(twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Electrons\" && sameSign == 0 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && BTagsDeepMedium == 0 && vetoElectrons == 0 && vetoMuons == 0 && dilepBDT > 0.1 && (leptons[1].Pt() <= 3.5 || deltaR <= 0.3))"},
+        {"name":"none", "title": "None", "condition" : "(twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Electrons\" && sameSign == 0 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && BTagsDeepMedium == 0 && vetoElectrons == 0 && vetoMuons == 0)", "baseline" : "sameSign == 0", "sc" : "sameSign == 1"},
+        {"name":"non-orth", "title": "Non Orth", "condition" : "(twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Electrons\" && sameSign == 0 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && BTagsDeepMedium == 0 && vetoElectrons == 0 && vetoMuons == 0 && dilepBDT > 0.1)", "baseline" : "sameSign == 0", "sc" : "sameSign == 1"},
+        {"name":"orth", "title": "Orth", "condition" : "(twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Electrons\" && sameSign == 0 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && BTagsDeepMedium == 0 && vetoElectrons == 0 && vetoMuons == 0 && dilepBDT > 0.1 && (leptons[1].Pt() <= 3.5 || deltaR <= 0.3))", "baseline" : "sameSign == 0", "sc" : "sameSign == 1"},
     ]
     histrograms_file = "/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools/analysis/scripts/dilepton_electrons.root"
 
 class track_electron(dilepton_muons):
     #
     cuts = [
-        {"name":"none", "title": "None", "condition" : "(exclusiveTrack == 1 && MHT >= 220 &&  MET >= 200 && exTrack_invMass < 30 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour == \"Electrons\" )"}
+        {"name":"none", "title": "None", "condition" : "(MHT >= 220 &&  MET >= 200 && BTagsDeepMedium == 0 )", "baseline" : "exclusiveTrack == 1 && trackBDT > 0 && exTrack_invMass < 30 && exclusiveTrackLeptonFlavour == \"Electrons\"  && exTrack_deltaR > 0.05", "sc" : "sc_exclusiveTrack == 1 && sc_trackBDT > 0 && sc_exTrack_invMass < 30 && sc_exclusiveTrackLeptonFlavour == \"Electrons\" && sc_exTrack_deltaR > 0.05"}
     ]
     histograms_defs = []
     histograms_defs.extend(common_histograms)
     histograms_defs.extend(ex_track_histograms)
     histograms_defs.extend(extra_study_obs)
     histrograms_file = "/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools/analysis/scripts/track_electron.root"
+    plot_error = True
 
 class track_muon(track_electron):
     #
     cuts = [
-        {"name":"none", "title": "None", "condition" : "(exclusiveTrack == 1 && MHT >= 220 &&  MET >= 200 && exTrack_invMass < 30 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour == \"Muons\" )"}
+        {"name":"none", "title": "None", "condition" : "(MHT >= 220 &&  MET >= 200 && BTagsDeepMedium == 0 )", "baseline" : "exclusiveTrack == 1 && trackBDT > 0 && exTrack_invMass < 30 && exclusiveTrackLeptonFlavour == \"Muons\"", "sc" : "sc_exclusiveTrack == 1 && sc_trackBDT > 0 && sc_exTrack_invMass < 30 && sc_exclusiveTrackLeptonFlavour == \"Muons\"" }
     ]
     histrograms_file = "/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools/analysis/scripts/track_muon.root"
+    
+    #plot_sc = True
+    
+    #histograms_defs = [
+    #    { "obs" : "exTrack_invMass", "minX" : 0, "maxX" : 13, "bins" : 30, "sc_obs" : "sc_exTrack_invMass"  },
+    #]
+    
+    

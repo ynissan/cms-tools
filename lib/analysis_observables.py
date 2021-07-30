@@ -348,3 +348,12 @@ exclusiveTrackObservablesClassList = {
     "l1" : "TLorentzVector",
     "l2" : "TLorentzVector",
 }
+
+dileptonBDTeventObservables = {
+    'HT' : 'F',
+    'MinDeltaPhiMhtJets' :'F',
+    'MHT' : 'F',
+    'LeadingJetPt' : 'F',
+    'LeadingJet.Eta()' : 'F',
+    'NJets' : 'I',
+}

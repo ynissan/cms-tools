@@ -166,7 +166,12 @@ echo -e "\n\nRUNNING ALL GROUP\n\n"
 #     mkdir "$OUTPUT_DIR/stderr"
 # fi
 
-for sim in ${INPUT_DIR}/sum/*; do
+FILES=${INPUT_DIR}/sum/*
+
+#FILES=(mChipm200GeV_dm0p5GeV.root mChipm500GeV_dm0p43GeV.root mChipm200GeV_dm1p8GeV.root mChipm140GeV_dm0p78GeV.root)
+
+for sim in ${FILES[@]}; do
+    #sim=${INPUT_DIR}/sum/$sim
     if [ -n "$SAM" ]; then
         filename=`echo $(basename $sim .root)`
     else

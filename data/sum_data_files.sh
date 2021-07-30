@@ -37,6 +37,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --jpsi_single_electron)
+        JPSI_SINGLE_ELECTRON=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -69,7 +74,12 @@ elif [ -n "$MASTER" ]; then
     pattern="SingleMuonAOD_"
     INPUT_DIR=$SKIM_DATA_MASTER_OUTPUT_DIR/single
     OUTPUT_DIR=$SKIM_DATA_MASTER_OUTPUT_DIR/sum
+elif [ -n "$JPSI_SINGLE_ELECTRON" ]; then
+    pattern="SingleElectronAOD_"
+    INPUT_DIR=$SKIM_DATA_JPSI_SINGLE_ELECTRON_OUTPUT_DIR/single
+    OUTPUT_DIR=$SKIM_DATA_JPSI_SINGLE_ELECTRON_OUTPUT_DIR/sum
 fi
+
 
 
 count=0

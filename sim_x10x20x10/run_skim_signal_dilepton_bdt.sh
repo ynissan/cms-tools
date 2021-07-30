@@ -66,7 +66,15 @@ executable = /bin/bash
 notification = Never
 EOM
 
-for sim in ${INPUT_DIR}/sum/*; do
+FILES=${INPUT_DIR}/sum/*
+
+#FILES=(mChipm160GeV_dm0p44GeV.root mChipm140GeV_dm4p28GeV.root)
+
+#FILES=(higgsino_mu100_dm0p18Chi20Chipm.root)
+
+
+for sim in ${FILES[@]}; do
+    #sim=${INPUT_DIR}/sum/$sim
     if [ -n "$SAM" ]; then
         filename=`echo $(basename $sim .root)`
     else

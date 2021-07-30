@@ -195,9 +195,12 @@ def createPlots(rootfiles, type, histograms, weight=1):
         rootFile.Close()
 
 #createPlotsFast([signalFile], [signalBasename], histograms, weight, "", [""], plot_par.no_weights)
-def createPlotsFast(rootfiles, types, histograms, weight=1, prefix="", conditions=[""], no_weights = False):
+#category can be data/signal/bg
+def createPlotsFast(rootfiles, types, histograms, weight, category, conditions, plot_par):
     print "Processing "
     print rootfiles
+    
+    no_weights = plot_par.no_weights
     
     i = 0
     for f in rootfiles:
@@ -211,72 +214,90 @@ def createPlotsFast(rootfiles, types, histograms, weight=1, prefix="", condition
         print f
         c = rootFile.Get('tEvent')
         
-        for typeIdx in range(len(types)):
-            type = types[typeIdx]
-            condition = conditions[typeIdx]
+        special_types = [""]
+        if plot_par.plot_sc and category != "signal":
+            special_types.append("sc")
+        
+        for special_type in special_types:
+            
+            typesItr =  types if special_type == "" else [category]
+            conditionsItr = conditions if special_type == "" else [""]
+            
+            for typeIdx in range(len(typesItr)):
+                type = typesItr[typeIdx]
+                condition = conditionsItr[typeIdx]
 
-            for cut in plot_par.cuts:
-                for hist_def in plot_par.histograms_defs:
+                for cut in plot_par.cuts:
+                    for hist_def in plot_par.histograms_defs:
                     
-                    object_retag_map = [{"":""}]
-                    object_string = ""
-                    if hist_def.get("object") is not None and plot_par.object_retag and plot_par.object_retag_map.get(hist_def["object"]) is not None:
-                        print "Retaging object for", hist_def
-                        object_retag_map = plot_par.object_retag_map[hist_def["object"]]
-                        object_string = hist_def["object"]
+                        object_retag_map = [{"":""}]
+                        object_string = ""
+                        if hist_def.get("object") is not None and plot_par.object_retag and plot_par.object_retag_map.get(hist_def["object"]) is not None:
+                            print "Retaging object for", hist_def
+                            object_retag_map = plot_par.object_retag_map[hist_def["object"]]
+                            object_string = hist_def["object"]
                     
-                    for object_retag in object_retag_map:
-                        
-                        object_retag_name = object_retag.keys()[0]
-                        object_retag_cond = object_retag[object_retag_name]
-                        
-                        #print "object_retag_name", object_retag_name, "object_retag_cond", object_retag_cond
-                        #exit(0)
-                        
-                        if prefix != "":
-                            histName =  prefix + "_" + cut["name"] + "_" + hist_def["obs"] + type + ("" if len(object_retag_name) == 0 else ("_" + object_retag_name))
-                        else:
-                            histName =  cut["name"] + "_" + hist_def["obs"] + "_" + type + ("" if len(object_retag_name) == 0 else ("_" + object_retag_name))
                     
-                        conditionStr = "( " + cut["condition"] + " )"
-                        if hist_def.get("condition") is not None:
-                            conditionStr += " && ( " + hist_def["condition"] + " )"
-                        if len(object_string) > 0 and cut.get("object") is not None and cut["object"].get(object_string) is not None:
-                            conditionStr += " && ( " + cut["object"][object_string] + " )"
-                        if len(condition) > 0:
-                            conditionStr += " && ( " + condition + " )"
-                        if len(object_retag_cond) > 0:
-                            conditionStr += " && ( " + object_retag_cond + " )"
+                        object_retag_map_itr = object_retag_map if special_type == "" else [{"":""}]
+                        for object_retag in object_retag_map_itr:
+                    
+                            object_retag_name = object_retag.keys()[0]
+                            object_retag_cond = object_retag[object_retag_name]
+                        
+                            prefix = "sc" if special_type == "sc" else ""
+                        
+                            formula = hist_def.get("formula") if hist_def.get("formula") is not None else hist_def.get("obs")
+                        
+                            if special_type == "sc" and hist_def.get("sc_obs") is not None:
+                                formula = hist_def["sc_obs"]
+                    
+                            if prefix != "":
+                                histName =  prefix + "_" + cut["name"] + "_" + hist_def["obs"] + "_" + type + ("" if len(object_retag_name) == 0 else ("_" + object_retag_name))
+                            else:
+                                histName =  cut["name"] + "_" + hist_def["obs"] + "_" + type + ("" if len(object_retag_name) == 0 else ("_" + object_retag_name))
                 
-                        drawString = ""
-                
-                        if no_weights:
-                            drawString = " ( " + conditionStr + " )"
-                        else:
-                            drawString = plot_par.weightString[plot_par.plot_kind] + " * " + ((str(weight) + " * ") if type != "data" else "") + " ( " + conditionStr + " )"
-                
-                        #print "drawString", drawString
-                        #print "conditionStr", conditionStr
-                
-                        formula = hist_def.get("formula") if hist_def.get("formula") is not None else hist_def.get("obs")
-                
-                        if plot_par.plot_log_x and hist_def["obs"] == "invMass":
-                            hist = utils.getRealLogxHistogramFromTree(histName, c, formula, hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), drawString, plot_par.plot_overflow)
-                        else:
-                            hist = utils.getHistogramFromTree(histName, c, formula, hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), drawString, plot_par.plot_overflow)
-                
-                        if hist is None:
-                            continue
-                        #if "leptonF" in histName:
-                        #    print "Made leptonFlavour for", histName, hist.GetXaxis().GetNbins()
-                        hist.GetXaxis().SetTitle("")
-                        hist.SetTitle("")
-                        hist.Sumw2()
+                            conditionStr = "( " + cut["condition"] + " )"
+                            if special_type == "sc" and cut.get("sc") is not None:
+                                conditionStr += " && ( " + cut["sc"] + " )"
+                            elif cut.get("baseline") is not None:
+                                conditionStr += " && ( " + cut["baseline"] + " )"
+                                
+                            if hist_def.get("condition") is not None:
+                                conditionStr += " && ( " + hist_def["condition"] + " )"
+                            if len(object_string) > 0 and cut.get("object") is not None and cut["object"].get(object_string) is not None:
+                                conditionStr += " && ( " + cut["object"][object_string] + " )"
+                            if len(condition) > 0:
+                                conditionStr += " && ( " + condition + " )"
+                            if len(object_retag_cond) > 0:
+                                conditionStr += " && ( " + object_retag_cond + " )"
+            
+                            drawString = ""
+            
+                            if no_weights:
+                                drawString = " ( " + conditionStr + " )"
+                            else:
+                                drawString = plot_par.weightString[plot_par.plot_kind] + " * " + ((str(weight) + " * ") if (type != "data" and plot_par.use_calculated_lumi_weight)  else "") + " ( " + conditionStr + " )"
+            
+                            #print "drawString", drawString
+                            #print "conditionStr", conditionStr
+            
+                            if plot_par.plot_log_x and hist_def["obs"] == "invMass":
+                                hist = utils.getRealLogxHistogramFromTree(histName, c, formula, hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), drawString, plot_par.plot_overflow)
+                            else:
+                                hist = utils.getHistogramFromTree(histName, c, formula, hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), drawString, plot_par.plot_overflow)
+            
+                            if hist is None:
+                                continue
+                            #if "leptonF" in histName:
+                            #    print "Made leptonFlavour for", histName, hist.GetXaxis().GetNbins()
+                            hist.GetXaxis().SetTitle("")
+                            hist.SetTitle("")
+                            hist.Sumw2()
 
-                        if histograms.get(histName) is None:
-                            histograms[histName] = hist
-                        else:
-                            histograms[histName].Add(hist)
+                            if histograms.get(histName) is None:
+                                histograms[histName] = hist
+                            else:
+                                histograms[histName].Add(hist)
                 
         
         rootFile.Close()
@@ -295,16 +316,16 @@ def createCRPads(pId, ratioPads, twoRations = False):
     if twoRations:
         histLowY = 0.30
     histCPad = TPad("pad" + str(pId),"pad" + str(pId),0,histLowY,1,1)
-    histCPad.SetLeftMargin(0.18)
+    histCPad.SetLeftMargin(0.13)
     #histCPad.SetBottomMargin(0.16)
     if twoRations:
         histRPad = TPad("rpad" + str(pId),"rpad" + str(pId),0,0,1,0.15)
-        histRPad.SetLeftMargin(0.18)
+        histRPad.SetLeftMargin(0.13)
         histR2Pad = TPad("r2pad" + str(pId),"r2pad" + str(pId),0,0.15,1,0.3)
-        histR2Pad.SetLeftMargin(0.18)
+        histR2Pad.SetLeftMargin(0.13)
     else:
         histRPad = TPad("rpad" + str(pId),"rpad" + str(pId),0,0,1,0.24)
-        histRPad.SetLeftMargin(0.18)
+        histRPad.SetLeftMargin(0.13)
     ratioPads[pId] = []
     ratioPads[pId].append(histCPad)
     ratioPads[pId].append(histRPad)
@@ -329,6 +350,9 @@ def createCRPads(pId, ratioPads, twoRations = False):
 
 def plotRatio(c1, pad, memory, dataHist, newBgHist, hist_def, title = "Data / BG",setTitle = True, setStyle = False):
     print "Plotting ratio!"
+    
+    if dataHist is None:
+        return
 
     pad.cd()
     pad.SetGridx()
@@ -437,9 +461,9 @@ def createAllHistograms(histograms, sumTypes):
         if plot_par.plot_data:
             dataFiles = glob(plot_par.data_dir + "/*")
             if plot_par.plot_fast:
-                createPlotsFast(dataFiles, ["data"], histograms, 1, "", [""], plot_par.no_weights)
+                createPlotsFast(dataFiles, ["data"], histograms, 1, "data", [""], plot_par)
             else:
-                createPlots(dataFiles, ["data"], histograms, 1, "", [""], plot_par.no_weights)
+                createPlots(dataFiles, ["data"], histograms, 1, "data", [""], plot_par)
         
         global calculated_lumi
         weight=0
@@ -452,21 +476,22 @@ def createAllHistograms(histograms, sumTypes):
             weight = utils.LUMINOSITY
         
             
-        if plot_par.plot_data and plot_par.plot_sc:
-            print "CREATING SC CATEGORY!"
-            dataFiles = glob(plot_par.sc_data_dir + "/*")
-            createPlotsFast(dataFiles, ["data"], histograms, 1, "sc", [""], plot_par.no_weights)
+        # if plot_par.plot_data and plot_par.plot_sc:
+#             print "CREATING SC CATEGORY!", plot_par.sc_data_dir
+#             if len(plot_par.sc_data_dir) > 0:
+#                 dataFiles = glob(plot_par.sc_data_dir + "/*")
+#                 createPlotsFast(dataFiles, ["data"], histograms, 1, "sc", [""], plot_par)
     
         if plot_par.plot_signal:
             if plot_par.plot_fast:
                 print "Plotting Signal Fast"
                 for signalFile in plot_par.signal_dir:
                     signalBasename = os.path.basename(signalFile)
-                    createPlotsFast([signalFile], [signalBasename], histograms, weight, "", [""], plot_par.no_weights)
+                    createPlotsFast([signalFile], [signalBasename], histograms, weight, "signal", [""], plot_par)
             else:
                 for signalFile in plot_par.signal_dir:
                     signalBasename = os.path.basename(signalFile)
-                    createPlots([signalFile], [signalBasename], histograms, weight, "", [""], plot_par.no_weights)
+                    createPlots([signalFile], [signalBasename], histograms, weight, "signal", [""], plot_par)
         if plot_par.plot_bg:
         
             allBgFiles = glob(plot_par.bg_dir + "/*.root")
@@ -493,9 +518,9 @@ def createAllHistograms(histograms, sumTypes):
                 condArr = [plot_par.bgReTagging[type] for type in typesArr]
 
                 if plot_par.plot_fast:
-                    createPlotsFast(bgFilesToPlot, typesArr, histograms, str(weight), "", condArr, plot_par.no_weights)
+                    createPlotsFast(bgFilesToPlot, typesArr, histograms, str(weight), "bg", condArr, plot_par)
                 else:
-                    createPlots(bgFilesToPlot, typesArr, histograms, str(weight), "", condArr, plot_par.no_weights)
+                    createPlots(bgFilesToPlot, typesArr, histograms, str(weight), "bg", condArr, plot_par)
                     
             else:
                 for type in sumTypes:
@@ -509,9 +534,9 @@ def createAllHistograms(histograms, sumTypes):
                     print "Summing type", type
                     rootfiles = glob(plot_par.bg_dir + "/*" + type + "_*.root")
                     if plot_par.plot_fast:
-                        createPlotsFast(rootfiles, [type], histograms, weight, "", [""], plot_par.no_weights)
+                        createPlotsFast(rootfiles, [type], histograms, weight, "bg", [""], plot_par)
                     else:
-                        createPlots(rootfiles, [type], histograms, weight, "", [""], plot_par.no_weights)
+                        createPlots(rootfiles, [type], histograms, weight, "bg", [""], plot_par)
 
                 for cType in utils.compoundTypes:
             
@@ -524,75 +549,27 @@ def createAllHistograms(histograms, sumTypes):
                     rootFiles = utils.getFilesForCompoundType(cType, plot_par.bg_dir)
                     if len(rootFiles):
                         if plot_par.plot_fast:
-                            createPlotsFast(rootFiles, [cType], histograms, weight, "", [""], plot_par.no_weights)
+                            createPlotsFast(rootFiles, [cType], histograms, weight, "bg", [""], plot_par)
                         else:
-                            createPlots(rootFiles, [cType], histograms, weight, "", [""], plot_par.no_weights)
+                            createPlots(rootFiles, [cType], histograms, weight, "bg", [""], plot_par)
                     else:
                         print "**Couldn't find file for " + cType
         
-            if plot_par.plot_sc:
-                print "CREATING SC CATEGORY!"
-            
-                bgFilesToPlot = []
-                if plot_par.choose_bg_files and plot_par.choose_bg_files_for_sc:
-                    for bgChooseType in plot_par.choose_bg_files_list:
-                        if utils.isCoumpoundType(bgChooseType):
-                            print bgChooseType, "is a compound type!"
-                            bgFilesToPlot.extend(utils.getFilesForCompoundType(bgChooseType, plot_par.sc_bg_dir))
-                        else:
-                            bgFilesToPlot.extend(glob(plot_par.sc_bg_dir + "/*" + bgChooseType + "_*.root"))
-                else:
-                    bgFilesToPlot = glob(plot_par.sc_bg_dir + "/*")
-
-                createPlotsFast(bgFilesToPlot, ["bg"], histograms, weight, "sc", [""], plot_par.no_weights)
-        
-        if plot_par.plot_data and plot_par.blind_data and plot_par.plot_signal:
-            for cut in plot_par.cuts:
-                for hist_def in plot_par.histograms_defs:
-                    firstSignalName = os.path.basename(plot_par.signal_dir[0])
-                    
-                    signal_hist = histograms[cut["name"] + "_" + hist_def["obs"] + "_" + firstSignalName]
-                    
-                    prefixes = [""]
-                    if plot_par.plot_sc:
-                        prefixes.append("sc")
-                    for prefix in prefixes:
-                        histName = None
-                        if prefix != "":
-                            histName =  prefix + "_" + cut["name"] + "_" + hist_def["obs"] + "_data"
-                        else:
-                            histName =  cut["name"] + "_" + hist_def["obs"] + "_data"
-                        data_hist = histograms[histName]
-                        
-                        bg_hist = None
-                        
-                        types = []
-                        if bg_retag:
-                            types = [k for k in plot_par.bgReTagging]
-                            types = sorted(types, key=lambda a: plot_par.bgReTaggingOrder[a])
-                        else:
-                            types = [k for k in utils.bgOrder]
-                            types = sorted(types, key=lambda a: utils.bgOrder[a])
-                        for type in types:
-                            hname = cut["name"] + "_" + hist_def["obs"] + "_" + type
-                            if histograms.get(hname) is not None:
-                                if bg_hist is None:
-                                    bg_hist = histograms[hname].Clone()
-                                else:
-                                    bg_hist.Add(histograms[hname])
-
-                        for i in range(1,data_hist.GetNbinsX() + 1):
-                            data_num = data_hist.GetBinContent(i)
-                            signal_num = signal_hist.GetBinContent(i)
-                            bg_num = bg_hist.GetBinContent(i)
-                            if data_num == 0:
-                                continue
-                            if bg_num == 0:
-                                data_hist.SetBinContent(i, 0)
-                                continue
-                            if ((0.1 * signal_num / math.sqrt(bg_num)) > 0.1):
-                                print "Blinding bin", i, "for", histName
-                                data_hist.SetBinContent(i, 0)
+            # if plot_par.plot_sc:
+#                 print "CREATING SC CATEGORY!"
+#             
+#                 bgFilesToPlot = []
+#                 if plot_par.choose_bg_files and plot_par.choose_bg_files_for_sc:
+#                     for bgChooseType in plot_par.choose_bg_files_list:
+#                         if utils.isCoumpoundType(bgChooseType):
+#                             print bgChooseType, "is a compound type!"
+#                             bgFilesToPlot.extend(utils.getFilesForCompoundType(bgChooseType, plot_par.sc_bg_dir))
+#                         else:
+#                             bgFilesToPlot.extend(glob(plot_par.sc_bg_dir + "/*" + bgChooseType + "_*.root"))
+#                 elif len(plot_par.sc_bg_dir) > 0:
+#                     bgFilesToPlot = glob(plot_par.sc_bg_dir + "/*")
+#                 if len(bgFilesToPlot) > 0:
+#                     createPlotsFast(bgFilesToPlot, ["bg"], histograms, weight, "sc", [""], plot_par)
 
 def saveHistogramsToFile(histograms):
     nFile = TFile(plot_par.histrograms_file, "recreate")
@@ -610,6 +587,71 @@ def loadAllHistograms(histograms):
         histograms[name] = h
     nFile.Close()
 
+def blindHistograms(plot_par, histograms, ):
+    if plot_par.plot_data and plot_par.blind_data and plot_par.plot_signal:
+        print "BLINDING DATA"
+        for cut in plot_par.cuts:
+            for hist_def in plot_par.histograms_defs:
+                firstSignalName = os.path.basename(plot_par.signal_dir[0])
+                
+                signal_hist = histograms[cut["name"] + "_" + hist_def["obs"] + "_" + firstSignalName]
+                
+                prefixes = [""]
+                if plot_par.plot_sc:
+                    prefixes.append("sc")
+                for prefix in prefixes:
+                    histName = None
+                    if prefix != "":
+                        histName =  prefix + "_" + cut["name"] + "_" + hist_def["obs"] + "_data"
+                    else:
+                        histName =  cut["name"] + "_" + hist_def["obs"] + "_data"
+                    data_hist = histograms[histName]
+                    
+                    bg_hist = None
+                    
+                    types = []
+                    if bg_retag:
+                        types = [k for k in plot_par.bgReTagging]
+                        types = sorted(types, key=lambda a: plot_par.bgReTaggingOrder[a])
+                    else:
+                        types = [k for k in utils.bgOrder]
+                        types = sorted(types, key=lambda a: utils.bgOrder[a])
+                    for type in types:
+                        hname = cut["name"] + "_" + hist_def["obs"] + "_" + type
+                        if histograms.get(hname) is not None:
+                            if bg_hist is None:
+                                bg_hist = histograms[hname].Clone()
+                            else:
+                                bg_hist.Add(histograms[hname])
+
+                    for i in range(1,data_hist.GetNbinsX() + 1):
+                        data_num = data_hist.GetBinContent(i)
+                        signal_num = signal_hist.GetBinContent(i)
+                        bg_num = bg_hist.GetBinContent(i)
+                        if data_num == 0:
+                            continue
+                        if bg_num == 0:
+                            data_hist.SetBinContent(i, 0)
+                            continue
+                        if ((0.1 * signal_num / math.sqrt(bg_num)) > 0.1):
+                            print "Blinding bin", i, "for", histName
+                            exit(0)
+                            data_hist.SetBinContent(i, 0)
+                    if hist_def.get("blind") is not None:
+                        
+                        blindLow = hist_def["blind"][0]
+                        blindHigh = hist_def["blind"][1]
+                        blindLowBin = None if blindLow is None else data_hist.FindBin(blindLow)
+                        blindHighBin = None if blindHigh is None else data_hist.FindBin(blindHigh)
+                        print "Got blind from hist_def", hist_def.get("obs"), blindLowBin, blindHighBin
+                        for i in range(1,data_hist.GetNbinsX() + 1):
+                            if (blindLowBin is not None and i <= blindLowBin) or (blindHighBin is not None and i >= blindHighBin):
+                                #print "blinding bin", i
+                                #exit(0)
+                                data_hist.SetBinContent(i, 0)
+                        
+                        
+    
 
 def SubMatrices(mata, matb):
     newmatrix = mata.Clone()
@@ -661,15 +703,23 @@ def main():
     if plot_par.save_histrograms_to_file and not os.path.isfile(plot_par.histrograms_file):
         saveHistogramsToFile(histograms)
     
+    blindHistograms(plot_par, histograms)
+    
     global calculated_lumi  
     global weight
     
     if plot_par.calculatedLumi.get(plot_par.plot_kind) is not None:
         calculated_lumi = plot_par.calculatedLumi.get(plot_par.plot_kind) #should be in fb-1
-        weight = calculated_lumi * 1000 #convert to pb-1
+        if plot_par.use_calculated_lumi_weight:
+            weight = calculated_lumi * 1000 #convert to pb-1
+        else:
+            weight = 1
     else:
         calculated_lumi = utils.LUMINOSITY / 1000
-        weight = utils.LUMINOSITY
+        if use_calculated_lumi_weight:
+            weight = utils.LUMINOSITY
+        else:
+            1
     
     #calculated_lumi= plot_par.calculatedLumi.get(plot_par.plot_kind)
     print "plot_par.plot_kind", plot_par.plot_kind
@@ -682,7 +732,7 @@ def main():
     
     #if plot_single:
     #    c1.SetBottomMargin(0.16)
-    #    c1.SetLeftMargin(0.18)
+    #    c1.SetLeftMargin(0.13)
     print utils.bcolors.BOLD + utils.bcolors.OKGREEN + "c1.cd()" + utils.bcolors.ENDC
     c1.cd()
     
@@ -749,8 +799,9 @@ def main():
                 print utils.bcolors.BOLD + utils.bcolors.OKGREEN + "histPad.cd(" + str(pId) + ")" + utils.bcolors.ENDC
                 pad = histPad.cd(pId)
             if not plot_par.plot_ratio:
-                pad.SetBottomMargin(0.16)
-                pad.SetLeftMargin(0.18)
+                #pad.SetBottomMargin(0.16)
+                pad.SetLeftMargin(0.13)
+                pad.SetRightMargin(0.02)
             histCPad = None
             histRPad = None
             histR2Pad = None
@@ -946,7 +997,7 @@ def main():
                         else:
                             legend.AddEntry(newBgHist, "SM Background", 'F')
                 else:
-                    newBgHist = utils.styledStackFromStack(hs, memory, legend, "", typesInx, True, large_version, plot_par.plot_point)
+                    newBgHist = utils.styledStackFromStack(hs, memory, legend, "", typesInx, True, large_version, plot_par.plot_point, plot_par.bgReTaggingNames)
                     #Will hang otherwise!
                     SetOwnership(newBgHist, False)
                     #newBgHist.SetFillColorAlpha(fillC, 0.35)
@@ -1108,9 +1159,12 @@ def main():
                     scDataHist.SetMarkerColor(kRed)
                     print utils.bcolors.BOLD + utils.bcolors.RED + "scDataHist.Draw(P SAME)" + utils.bcolors.ENDC
                     scDataHist.Draw("P SAME")
-                    legend.AddEntry(scDataHist, "Same-Sign Data", 'p')
+                    legend.AddEntry(scDataHist, "same-sign data", 'p')
                 
                 scBgHistName = "sc_" + cut["name"] + "_" + hist_def["obs"] + "_bg"
+                #print "------------------------"
+                #print "looking for", scBgHistName
+                #print histograms
                 scBgHist = histograms[scBgHistName]
                 if plot_par.normalise:
                     scBgHist.Scale(1./scBgHist.Integral())
@@ -1123,7 +1177,7 @@ def main():
                 print utils.bcolors.BOLD + utils.bcolors.RED + "scBgHist.Draw(HIST SAME " + errorStr + ")" + utils.bcolors.ENDC
                 scBgHist.Draw("HIST SAME " + errorStr)
                 
-                legend.AddEntry(scBgHist, "sc bg", 'l')
+                legend.AddEntry(scBgHist, "same-sign simulation", 'l')
             
             if plot_par.fit_inv_mass_jpsi and plot_par.fit_inv_mass_cut_jpsi == cut["name"] and plot_par.fit_inv_mass_obs_jpsi in hist_def["obs"]:
                 print "FITTING INVARIANT MASS PLOT!", hist_def["obs"]
@@ -1636,10 +1690,13 @@ def main():
                     if plot_par.solid_bg:
                         stackSum = newBgHist
                     else:
-                        stackSum = newBgHist.GetStack().Last().Clone("stackSum")
-                        memory.append(stackSum)
+                        #print newBgHist, newBgHist.GetNhists(), newBgHist.GetStack()
+                        if newBgHist.GetNhists() > 0:
+                            stackSum = newBgHist.GetStack().Last().Clone("stackSum")
+                            memory.append(stackSum)
                     #stackSum = utils.getStackSum(newBgHist)
-                    memory.append(stackSum)
+                    if stackSum is not None:
+                        memory.append(stackSum)
                     plotRatio(c1, histRPad, memory, stackSum, scBgHist, hist_def, "Bg / Bg")
                     if plot_par.plot_data:
                         plotRatio(c1, histR2Pad, memory, dataHist, scDataHist, hist_def, "Data / Data", False)
@@ -1798,8 +1855,9 @@ def main():
             pad.SetGridx()
             pad.SetGridy()
             if not plot_par.plot_ratio:
-                pad.SetBottomMargin(0.16)
-                pad.SetLeftMargin(0.18)
+                #pad.SetBottomMargin(0.16)
+                pad.SetLeftMargin(0.13)
+                pad.SetRightMargin(0.02)
             
             if plot_par.plot_log_x and hist_def["obs"] == "invMass":
                 pad.SetLogx()
@@ -1868,10 +1926,12 @@ def main():
                     if plot_par.solid_bg:
                         stackSum = newBgHist
                     else:
-                        stackSum = newBgHist.GetStack().Last().Clone("stackSum")
-                        memory.append(stackSum)
+                        if newBgHist.GetNhists() > 0:
+                            stackSum = newBgHist.GetStack().Last().Clone("stackSum")
+                            memory.append(stackSum)
                     #stackSum = utils.getStackSum(newBgHist)
-                    memory.append(stackSum)
+                    if stackSum is not None:
+                        memory.append(stackSum)
                     plotRatio(c1, histRPad, memory, stackSum, scBgHist, hist_def, "Bg / Bg")
                     if plot_par.plot_data:
                         plotRatio(c1, histR2Pad, memory, dataHist, scDataHist, hist_def, "Data / Data", False)

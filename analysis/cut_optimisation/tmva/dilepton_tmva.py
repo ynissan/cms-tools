@@ -10,6 +10,7 @@ import os
 
 sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools"))
 from lib import utils
+from lib import analysis_observables
 
 ####### CMDLINE ARGUMENTS #########
 
@@ -103,7 +104,7 @@ preselection = None
 if lepNum == "reco":
     preselection = "twoLeptons" + iso + str(ptRange) + cat + " == 1 && BTagsDeepMedium == 0 && @leptons" + iso + str(ptRange) + cat + ".size() == 2 && leptonFlavour" + iso + str(ptRange) + cat  + " == \"" + lep + "\"" + " && sameSign" + iso + str(ptRange) + cat + " == 0"
 else:
-    preselection = "exclusiveTrack" + iso + str(ptRange) + cat + ' == 1 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour' + iso + str(ptRange) + cat  + " == \"" + lep + "\""
+    preselection = "exclusiveTrack" + iso + str(ptRange) + cat + ' == 1 && BTagsDeepMedium == 0 &&  trackBDT' + iso + str(ptRange) + cat  +    ' >= 0 && exclusiveTrackLeptonFlavour' + iso + str(ptRange) + cat  + " == \"" + lep + "\""
  
 
 for input_file in input_files:
@@ -205,12 +206,16 @@ dataloader.AddVariable(prefix + 'deltaPhiLeadingJetDilepton' + iso + str(ptRange
 dataloader.AddVariable(prefix + 'dilepHt' + iso + str(ptRange) + cat, 'F')
 dataloader.AddVariable(prefix + 'invMass' + iso + str(ptRange) + cat, 'F')
 
-dataloader.AddVariable('HT', 'F')
-dataloader.AddVariable('MinDeltaPhiMhtJets', 'F')
-dataloader.AddVariable('MHT', 'F')
-dataloader.AddVariable('LeadingJetPt', 'F')
-dataloader.AddVariable('LeadingJet.Eta()', 'F')
-dataloader.AddVariable('NJets', 'I')
+# moved to dileptonBDTeventObservables
+# dataloader.AddVariable('HT', 'F')
+# dataloader.AddVariable('MinDeltaPhiMhtJets', 'F')
+# dataloader.AddVariable('MHT', 'F')
+# dataloader.AddVariable('LeadingJetPt', 'F')
+# dataloader.AddVariable('LeadingJet.Eta()', 'F')
+# dataloader.AddVariable('NJets', 'I')
+
+for obs in analysis_observables.dileptonBDTeventObservables:
+    dataloader.AddVariable(obs, analysis_observables.dileptonBDTeventObservables[obs])
 
 preselectionCut = None
 

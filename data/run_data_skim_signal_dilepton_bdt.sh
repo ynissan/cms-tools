@@ -86,8 +86,14 @@ else
         INPUT_DIR=$SKIM_DATA_BDT_SC_OUTPUT_DIR
         
     else
-        OUTPUT_DIR=$SKIM_DATA_SIG_DILEPTON_BDT_OUTPUT_DIR
-        INPUT_DIR=$SKIM_DATA_BDT_OUTPUT_DIR
+        echo HERE
+        
+        #OUTPUT_DIR=$SKIM_DATA_BDT_OUTPUT_DIR
+        INPUT_DIR=$SKIM_DATA_OUTPUT_DIR
+        echo $INPUT_DIR/sum/
+
+        #OUTPUT_DIR=$SKIM_DATA_SIG_DILEPTON_BDT_OUTPUT_DIR
+        #INPUT_DIR=$SKIM_DATA_BDT_OUTPUT_DIR
     fi
 fi
 
@@ -140,8 +146,16 @@ EOM
 #     else
 #         DATA_DIR=$INPUT_DIR/$tb/single
 #     fi
-    
-for data_file in $INPUT_DIR/sum/*; do
+
+echo $INPUT_DIR/sum/
+
+FILES=$INPUT_DIR/sum/*
+FILES=(Run2016C-17Jul2018-v1.METAOD_10.root Run2016G-17Jul2018-v1.METAOD_29.root Run2016B-17Jul2018_ver2-v1.METAOD_5.root Run2016E-17Jul2018-v1.METAOD_17.root Run2016H-17Jul2018-v2.METAOD_43.root Run2016B-17Jul2018_ver2-v1.METAOD_6.root Run2016H-17Jul2018-v2.METAOD_34.root Run2016E-17Jul2018-v1.METAOD_16.root Run2016H-17Jul2018-v2.METAOD_39.root Run2016B-17Jul2018_ver2-v1.METAOD_1.root Run2016D-17Jul2018-v1.METAOD_11.root Run2016D-17Jul2018-v1.METAOD_12.root Run2016F-17Jul2018-v1.METAOD_21.root Run2016D-17Jul2018-v1.METAOD_13.root Run2016G-17Jul2018-v1.METAOD_25.root Run2016H-17Jul2018-v2.METAOD_44.root Run2016G-17Jul2018-v1.METAOD_27.root Run2016H-17Jul2018-v2.METAOD_41.root Run2016C-17Jul2018-v1.METAOD_9.root Run2016H-17Jul2018-v2.METAOD_37.root Run2016H-17Jul2018-v2.METAOD_36.root Run2016F-17Jul2018-v1.METAOD_22.root Run2016F-17Jul2018-v1.METAOD_23.root Run2016H-17Jul2018-v2.METAOD_33.root Run2016B-17Jul2018_ver2-v1.METAOD_3.root Run2016G-17Jul2018-v1.METAOD_31.root Run2016E-17Jul2018-v1.METAOD_20.root Run2016E-17Jul2018-v1.METAOD_19.root Run2016E-17Jul2018-v1.METAOD_15.root Run2016B-17Jul2018_ver2-v1.METAOD_2.root Run2016B-17Jul2018_ver2-v1.METAOD_4.root Run2016H-17Jul2018-v2.METAOD_40.root Run2016H-17Jul2018-v2.METAOD_45.root)
+
+
+for data_file in ${FILES[@]}; do
+#for data_file in $INPUT_DIR/sum/*; do
+    data_file=$INPUT_DIR/sum/$data_file
     echo "Will run:"
     data_file_name=$(basename $data_file .root)
         #out_file=${OUTPUT_DIR}/$tb/single/${data_file_name}.root

@@ -78,7 +78,8 @@ calcDiObsDef = {
 }
 
 extraObsDef = {
-    "passedSingleMuPack" : "bool"
+    "passedSingleMuPack" : "bool",
+    "passedSingleElectronPack" : "bool"
 }
 
 
@@ -526,8 +527,10 @@ def main():
         if data:
             ## Whatever
             extraObs["passedSingleMuPack"][0] = analysis_ntuples.passTrig(c, "SingleMuon")
+            extraObs["passedSingleElectronPack"][0] = analysis_ntuples.passTrig(c, "SingleElectron")
         else:
             extraObs["passedSingleMuPack"][0] = True
+            extraObs["passedSingleElectronPack"][0] = True
         
         ### JET ISOLATION ####
         

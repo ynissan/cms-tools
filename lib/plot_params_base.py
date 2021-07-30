@@ -62,6 +62,7 @@ class BaseParams:
     }
     bgReTagging = {}
     bgReTaggingOrder = {}
+    bgReTaggingNames = {}
     plot_kind = "MET"
     plot_bg = True
     plot_signal = True
@@ -124,3 +125,5 @@ class BaseParams:
     label_text = utils.StampStr.WIP
     cms_location = utils.StampCoor.ABOVE_PLOT
     show_lumi = True
+    
+    use_calculated_lumi_weight = True

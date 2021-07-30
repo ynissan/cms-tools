@@ -377,7 +377,7 @@ def pause(str_='push enter key when ready'):
 def fillth1(h,x, weight=1):
     h.Fill(min(max(x,h.GetXaxis().GetBinLowEdge(1)+epsilon),h.GetXaxis().GetBinLowEdge(h.GetXaxis().GetNbins()+1)-epsilon),weight)
 
-def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, noFillStyle=False, largeVersion = False, plotPoint = False):
+def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, noFillStyle=False, largeVersion = False, plotPoint = False, legendNames = {}):
     newStack = THStack(bgHist.GetName(), title)
     memory.append(newStack)
 
@@ -410,10 +410,13 @@ def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, n
         newStack.Add(newHist)
         if legend is not None:
             #print "Adding to legend " + hist.GetName().split("_")[-1]
+            legendName = hist.GetName().split("_")[-1]
+            if legendNames.get(hist.GetName().split("_")[-1]) is not None:
+                legendName = legendNames[hist.GetName().split("_")[-1]]
             if plotPoint:
-                legend.AddEntry(newHist, hist.GetName().split("_")[-1], 'p')
+                legend.AddEntry(newHist, legendName, 'p')
             else:
-                legend.AddEntry(newHist, hist.GetName().split("_")[-1], 'F')
+                legend.AddEntry(newHist, legendName, 'F')
 
     return newStack
  
@@ -542,7 +545,8 @@ class StampStr:
 
 class StampCoor:
     #ABOVE_PLOT = {"x" : 0.18, "y" : 0.915}
-    ABOVE_PLOT = {"x" : 0.1, "y" : 0.915}
+    #ABOVE_PLOT = {"x" : 0.1, "y" : 0.915}
+    ABOVE_PLOT = {"x" : 0.13, "y" : 0.915}
     ABOVE_PLOT_SPACE_FOR_EXP = {"x" : 0.25, "y" : 0.915}
     TOP_OF_PLOT = {"x" : 0.205, "y" : 0.85}
     TOP_OF_PLOT_LABEL_BELLOW_CMS = {"x" : 0.205, "y" : 0.85, "labelX" : 0.205, "labelY" : 0.8}
@@ -577,12 +581,15 @@ def stamp_plot(lumi = 135.0, label = StampStr.WIP, cmsLocation = StampCoor.ABOVE
     
     tl.SetTextFont(regularfont)
     tl.SetTextSize(0.81*tl.GetTextSize())
-    lumiText = '#sqrt{s}=13 TeV'
-    if showlumi: lumiText+=', L = '+str(lumi)+' fb^{-1}'
+    #lumiText = '#sqrt{s}=13 TeV'
+    lumiText = '(13 TeV)'
+    #if showlumi: lumiText+=', L = '+str(lumi)+' fb^{-1}'
+    if showlumi: lumiText = str(lumi)+' fb^{-1} (13 TeV)'
     # align right
     tl.SetTextAlign(31)
     
-    tl.DrawLatex(0.9,StampCoor.ABOVE_PLOT["y"],lumiText)
+    #tl.DrawLatex(0.9,StampCoor.ABOVE_PLOT["y"],lumiText)
+    tl.DrawLatex(0.98,StampCoor.ABOVE_PLOT["y"],lumiText)
     #tl.SetTextSize(1.0/0.81*tl.GetTextSize())
     
     # testing = TLatex()
@@ -649,18 +656,20 @@ def getJsonLumiSection(lumiSecs):
     return json.dumps(lumiSecsDict)
 
 def get_lumi_from_bril(json_file_name, cern_username, retry=False):
-    status, out = commands.getstatusoutput('ps axu | grep "itrac5117-v.cern.ch:1012" | grep -v grep')
+    #status, out = commands.getstatusoutput('ps axu | grep "itrac5117-v.cern.ch:1012" | grep -v grep')
+    status, out = commands.getstatusoutput('ps axu | grep "itrac5413-v.cern.ch:10121" | grep -v grep')
+    
     if status != 0:
         print "Opening SSH tunnel for brilcalc..."
-        os.system("ssh -f -N -L 10121:itrac5117-v.cern.ch:10121 %s@lxplus.cern.ch" % cern_username)
+        os.system("ssh -f -N -L 10121:itrac5413-v.cern.ch:10121 %s@lxplus.cern.ch" % cern_username)
     else:
         print "Existing tunnel for brilcalc found"
     print "Getting lumi for %s..." % json_file_name
-    status, out = commands.getstatusoutput("export PATH=$HOME/.local/bin:/cvmfs/cms-bril.cern.ch/brilconda/bin:$PATH; brilcalc lumi --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_PHYSICS.json -u /fb -c offsite -i %s > %s.briloutput; grep '|' %s.briloutput | tail -n1" % (json_file_name, json_file_name, json_file_name))
+    status, out = commands.getstatusoutput("eval `scram unsetenv -sh`; export PATH=$HOME/.local/bin:/cvmfs/cms-bril.cern.ch/brilconda/bin:$PATH; brilcalc lumi --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_PHYSICS.json -u /fb -c offsite -i %s > %s.briloutput; grep '|' %s.briloutput | tail -n1" % (json_file_name, json_file_name, json_file_name))
     if status != 0:
         if not retry:
             print "Trying to re-establish the tunnel..."
-            os.system("pkill -f itrac5117")
+            os.system("pkill -f itrac5413")
             get_lumi_from_bril(json_file_name, cern_username, retry=True)
         else:
             print "Error while running brilcalc!"
@@ -684,6 +693,7 @@ def calculateLumiFromLumiSecs(lumiSecs):
         fo.write(json)
     print "Created json file: " + tmpJsonFile
     lumi = get_lumi_from_bril(tmpJsonFile, 'ynissan')
+    #lumi = "" 
     #os.remove(tmpJsonFile)
     return lumi
     
@@ -715,7 +725,7 @@ def getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=
         return None
     binsStr = None
     
-    print "Getting", name, "cond:", condition, "minX", minX, "maxX", maxX, "overflow", overflow
+    print "Getting", name, "obs:", obs, "cond:", condition, "minX", minX, "maxX", maxX, "overflow", overflow
     
     # if tmpName == "hsqrt":
 #         letters = string.ascii_lowercase
@@ -797,6 +807,8 @@ def getLeptonCollectionFileMapFile(baseFileName):
         mapNameFile = "Run2016_MET.root"
     elif "Run2016" in baseFileName and ".SingleMuon" in baseFileName:
         mapNameFile = "Run2016_SingleMuon.root"
+    elif "Run2016" in baseFileName and "SingleElectron" in baseFileName:
+        mapNameFile = "Run2016_SingleElectron.root"
     else:
         mapNameFile = ("_".join(baseFileName.split(".")[1].split("_")[0:3])).split("AOD")[0] + ".root"
 

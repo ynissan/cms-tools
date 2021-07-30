@@ -82,6 +82,10 @@ executable = /bin/bash
 notification = Never
 EOM
 
+#FILES=(WJetsToLNu_HT-600To800_TuneCUETP8M1_11.root TTJets_SingleLeptFromT_TuneCUETP8M1_16.root ST_t-channel_top_3.root TTJets_SingleLeptFromTbar_TuneCUETP8M1_8.root)
+FILES=$INPUT_DIR/sum/type_sum/*
+
+
 for sim in $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
     filename=$(basename $sim .root)
 
@@ -104,7 +108,10 @@ for sim in $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
 
     #for bg_file in $SKIM_OUTPUT_DIR/sum/type_sum/*ZJetsToNuNu_HT-100To200*; do
     #for bg_file in $SKIM_OUTPUT_DIR/sum/type_sum/WW_TuneCUETP8M1*; do
-    for bg_file in $INPUT_DIR/sum/type_sum/*; do
+    for bg_file_name in ${FILES[@]}; do
+    #for bg_file in $INPUT_DIR/sum/type_sum/*; do
+        #bg_file=$INPUT_DIR/sum/type_sum/$bg_file_name
+        bg_file=$bg_file_name
         echo "Will run:"
         bg_file_name=$(basename $bg_file .root)
         out_file=${OUTPUT_DIR}/$filename/single/${bg_file_name}.root

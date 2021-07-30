@@ -82,7 +82,7 @@ def main():
 
         for lep in ["Muons", "Electrons"]:
             c1.cd()
-            hist = utils.getHistogramFromTree(deltaM + "_1t_" + lep, c, "exTrack_dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 *  Weight * BranchingRatio * (exclusiveTrack == 1 && MHT >= 220 && MET >= 200 && exTrack_invMass < 30 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour == \"" + lep + "\")", True)
+            hist = utils.getHistogramFromTree(deltaM + "_1t_" + lep, c, "exTrack_dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 *  Weight * BranchingRatio * (exclusiveTrack == 1 && MHT >= 220 && MET >= 200 && exTrack_invMass < 30 && BTagsDeepMedium == 0 && exTrack_dilepBDT >= 0 && exclusiveTrackLeptonFlavour == \"" + lep + "\")", True)
             hist.Sumw2()
             fnew.cd()
             hist.Write()
@@ -110,7 +110,7 @@ def main():
         
             c1.cd()
             basename = os.path.basename(filename).split(".")[0]
-            hist = utils.getHistogramFromTree(basename, c, "exTrack_dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * (exclusiveTrack == 1 && MHT >= 220 && MET >= 200 && exTrack_invMass < 30 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour == \"" + lep + "\")", True)
+            hist = utils.getHistogramFromTree(basename, c, "exTrack_dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * (exclusiveTrack == 1 && MHT >= 220 && MET >= 200 && exTrack_invMass < 30 && BTagsDeepMedium == 0  && exTrack_dilepBDT >= 0 && exclusiveTrackLeptonFlavour == \"" + lep + "\")", True)
             hist.Sumw2()
             if bg_1t_hist.get(lep) is None:
                 bg_1t_hist[lep] = hist
