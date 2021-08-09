@@ -4,13 +4,18 @@ commonFlatObs = {
     "RunNum" : "int",
     "LumiBlockNum" : "int",
     "EvtNum" : "float",
+    "MT2" : "float",
+}
+
+commonRecalcFlatObs = {
     "MET" : "float",
     "METPhi" : "float",
-    "MT2" : "float",
     "HT" : "float",
     "MHT" : "float",
     "MHTPhi" : "float",
 }
+
+
 
 commonObservablesStringList = ["genFlavour"]
 
@@ -231,6 +236,14 @@ muonsObs = {
     "Muons_MiniIso" : "double",
     "Muons_MT2Activity" : "double",
     "Muons_MTW" : "double",
+}
+
+dyMuonsFlatObs = {
+    "DYMuonsInvMass" : "float"
+}
+
+dyMuonsClassObs = {
+    "DYMuonsSum" : "TLorentzVector",
 }
 
 origMuonsObs = {

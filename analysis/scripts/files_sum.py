@@ -71,7 +71,7 @@ if bg:
             else:
                 WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/bg/skim"
         elif drell_yan:
-            WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/dy_x1x2x1/bg/skim"
+            WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_dy"
         elif no_lepton_selection:
             WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_nlp"
         elif jpsi_muons:

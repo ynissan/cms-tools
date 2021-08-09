@@ -38,7 +38,7 @@ BG_TYPES=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_
 #BG_TYPES=(ST_s-channel_4f_leptonDecays ST_tW_antitop_5f_inclusiveDecays ST_tW_top_5f_inclusiveDecays WGToLNuG ZGTo2LG)
 #BG_TYPES=(ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays DYJetsToLL  WZZ WWZ WW WZ ZZZ ZZ)
 
-#BG_TYPES=(QCD)
+#BG_TYPES=(DYJetsToLL)
 #BG_TYPES=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays WJetsToLNu ZJetsToNuNu WZZ WWZ WW WZ ZZZ ZZ)
 
 #BG_TYPES=(TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT)
@@ -47,7 +47,7 @@ BG_TYPES=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_
 RARE=(WZZ WWZ ZZZ)
 DiBoson=(WZ WW ZZ)
 
-#BG_TYPES=(TT TTJets)
+#BG_TYPES=(QCD)
 
 #MAD_HT_SPLIT_TYPES=(TTJets)
 MAD_HT_SPLIT_TYPES=()
@@ -76,6 +76,7 @@ ANALYZER_PATH="$SCRIPTS_WD/analyzer_x1x2x1.py"
 SKIMMER_PATH="$SCRIPTS_WD/skimmer_x1x2x1.py"
 JPSI_SKIMMER_PATH="$SCRIPTS_WD/skimmer_x1x2x1_jpsi.py"
 MINI_SKIMMER_PATH="$SCRIPTS_WD/mini_skimmer_x1x2x1.py"
+SELECTION_SKIMMER_PATH="$SCRIPTS_WD/skimmer_selection.py"
 LC_SCRIPT_PATH="$SCRIPTS_WD/merge_lepton_collection.py"
 CLONE_SCRIPT="$SCRIPTS_WD/clone_tree_split.py"
 CLONE_SINGLE="$SIM_DIR/clone_sim_file_single.sh"
@@ -96,7 +97,7 @@ TWO_LEPTONS_SKIM_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/bg/skim"
 NLP_SKIM_OUTPUT_DIR="$OUTPUT_WD/bg/skim_nlp"
 JPSI_MUONS_SKIM_OUTPUT_DIR="$OUTPUT_WD/bg/skim_muons_jpsi"
 TWO_LEPTONS_SAME_SIGN_SKIM_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/bg/skim_sc"
-DY_SKIM_OUTPUT_DIR="$DY_OUTPUT_WD/bg/skim"
+DY_SKIM_OUTPUT_DIR="$OUTPUT_WD/bg/skim_dy"
 LC_OUTPUT_DIR="$OUTPUT_WD/bg/lc"
 LC_DATA_OUTPUT_DIR="$OUTPUT_WD/data/lc"
 SKIM_SIG_OUTPUT_DIR="$OUTPUT_WD/signal/skim"
@@ -107,7 +108,7 @@ TWO_LEPTONS_SAM_SKIM_SIG_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/signal/skim_sam"
 SKIM_DATA_OUTPUT_DIR="$OUTPUT_WD/data/skim"
 TWO_LEPTONS_SKIM_DATA_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/data/skim"
 TWO_LEPTONS_SAME_SIGN_SKIM_DATA_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/data/skim_sc"
-DY_SKIM_DATA_OUTPUT_DIR="$DY_OUTPUT_WD/data/skim"
+DY_SKIM_DATA_OUTPUT_DIR="$OUTPUT_WD/data/skim_dy"
 CS_SIG_OUTPUT_DIR="$OUTPUT_WD/signal/cs"
 SKIM_SIG_BDT_OUTPUT_DIR="$OUTPUT_WD/signal/skim_signal_bdt"
 SKIM_SAM_SIG_BDT_OUTPUT_DIR="$OUTPUT_WD/signal/skim_sam_signal_bdt"

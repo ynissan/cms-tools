@@ -186,6 +186,7 @@ cat << EOM >> $output_file
 arguments = $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -i $sim -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$tb $@
 error = ${INPUT_DIR}/stderr/${filename}_track_bdt.err
 output = ${INPUT_DIR}/stdout/${filename}_track_bdt.output
+log = ${INPUT_DIR}/stdout/${filename}_track_bdt.log
 Queue
 EOM
 done

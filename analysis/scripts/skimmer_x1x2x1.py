@@ -13,6 +13,7 @@ sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
 from lib import analysis_ntuples
 from lib import analysis_tools
 from lib import utils
+from lib import analysis_observables
 
 gSystem.Load('LumiSectMap_C')
 from ROOT import LumiSectMap
@@ -94,7 +95,7 @@ if signal:
     replace_lepton_collection = False
     
 def getDyMuons(c):
-    muons = [i for i in range(len(c.Muons)) if c.Muons[i].Pt() >= 15 and bool(c.Muons_mediumID[i]) and bool(c.Muons_passIso[i]) and abs(c.Muons[i].Eta()) <= 2.4]
+    muons = [i for i in range(len(c.Muons)) if c.Muons[i].Pt() >= 20 and bool(c.Muons_mediumID[i]) and bool(c.Muons_passIso[i]) and abs(c.Muons[i].Eta()) <= 2.4]
     
     if len(muons) != 2:
         return None, None
@@ -109,6 +110,16 @@ def getDyMuons(c):
     if not abs(invMass-91.19)<10: return None, None
     
     return muons, invMass
+
+def getWMuon(c):
+    muons = [i for i in range(len(c.Muons)) if c.Muons[i].Pt() >= 20 and bool(c.Muons_mediumID[i]) and bool(c.Muons_passIso[i]) and abs(c.Muons[i].Eta()) <= 2.4]
+    if len(muons) != 1:
+        return None
+    if c.Muons[muons[0]].Pt() < 30:
+        return None
+    return muons
+    
+    
 
 ######## END OF CMDLINE ARGUMENTS ########
 
@@ -151,86 +162,74 @@ def main():
     triggerFile.Close()
     
     flatObs = {}
-    for flatOb in analysis_ntuples.commonFlatObs:
-        flatObs[flatOb] = np.zeros(1,dtype=eval(analysis_ntuples.commonFlatObs[flatOb]))
-    
-    # commonFlatObs = {
-#     "RunNum" : "int",
-#     "LumiBlockNum" : "int",
-#     "EvtNum" : "float",
-#     "MET" : "float",
-#     "METPhi" : "float",
-#     "MT2" : "float",
-#     "HT" : "float",
-#     "MHT" : "float",
-#     "MHTPhi" : "float",
-# }
+    for flatOb in analysis_observables.commonFlatObs:
+        flatObs[flatOb] = np.zeros(1,dtype=eval(analysis_observables.commonFlatObs[flatOb]))
+        
+    commonRecalcFlatObs = {}
+    for commonRecalcFlatOb in analysis_observables.commonRecalcFlatObs:
+        commonRecalcFlatObs[commonRecalcFlatOb] = np.zeros(1,dtype=eval(analysis_observables.commonRecalcFlatObs[commonRecalcFlatOb]))
        
     commonCalcFlatObs = {}
-    for commonCalcFlatOb in analysis_ntuples.commonCalcFlatObs:
-        commonCalcFlatObs[commonCalcFlatOb] = np.zeros(1,dtype=eval(analysis_ntuples.commonCalcFlatObs[commonCalcFlatOb]))
+    for commonCalcFlatOb in analysis_observables.commonCalcFlatObs:
+        commonCalcFlatObs[commonCalcFlatOb] = np.zeros(1,dtype=eval(analysis_observables.commonCalcFlatObs[commonCalcFlatOb]))
     
-   #  commonCalcFlatObs = {
-#     "BranchingRatio" : "float",
-#     "NJets" : "int",
-#     "BTagsLoose" : "int",
-#     "BTagsMedium" : "int",
-#     "BTagsDeepLoose" : "int",
-#     "BTagsDeepMedium" : "int",
-#     "MetDHt" : "float",
-#     "Mt2" : "float",
-#     "NL" : "int",
-# }
-
-# bgFlatObs = {
-#     "madHT" : "float",
-#     "puWeight" : "float",
-#     "CrossSection" : "float",
-# }
-
-    
-   #  var_RunNum = np.zeros(1,dtype=int)
-#     var_LumiBlockNum = np.zeros(1,dtype=int)
-#     var_EvtNum = np.zeros(1,dtype=long)
-#     
-#     var_Met = np.zeros(1,dtype=float)
-#     var_METPhi = np.zeros(1,dtype=float)
-   # var_CrossSection = np.zeros(1,dtype=float)
-    #var_BranchingRatio = np.zeros(1,dtype=float)
-    
-    #var_NJets = np.zeros(1,dtype=int)
-    #var_BTagsLoose = np.zeros(1,dtype=int)
-    #var_BTagsMedium = np.zeros(1,dtype=int)
-    #var_BTagsDeepLoose = np.zeros(1,dtype=int)
-    #var_BTagsDeepMedium = np.zeros(1,dtype=int)
-    #var_Ht = np.zeros(1,dtype=float)
-    #var_MHTPhi = np.zeros(1,dtype=float)
-    #var_madHT = np.zeros(1,dtype=float)
-    #var_Mht = np.zeros(1,dtype=float)
-    #var_MetDHt = np.zeros(1,dtype=float)
-    #var_Mt2 = np.zeros(1,dtype=float)
-    
-    # vetosFlatObs = {
-#     "vetoElectronsPassIso" : "bool",
-#     "vetoElectronsMediumID" : "bool",
-#     "vetoElectronsTightID" : "bool",
-#     "vetoMuonsMediumID" : "bool",
-#     "vetoMuonsTightID" : "bool",
-# }
 
     vetosFlatObs = {}
-    for vetosFlatOb in analysis_ntuples.vetosFlatObs:
-        vetosFlatObs[vetosFlatOb] = np.zeros(1,dtype=eval(analysis_ntuples.vetosFlatObs[vetosFlatOb]))
+    for vetosFlatOb in analysis_observables.vetosFlatObs:
+        vetosFlatObs[vetosFlatOb] = np.zeros(1,dtype=eval(analysis_observables.vetosFlatObs[vetosFlatOb]))
+
+     ### JETS ###
     
+    jetsObs = {}
+    for jetsOb in analysis_observables.jetsObs:
+        jetsObs[jetsOb] = ROOT.std.vector(eval(analysis_observables.jetsObs[jetsOb]))()
+
     
-    # var_vetoElectronsPassIso = np.zeros(1,dtype=bool)
-#     var_vetoElectronsMediumID = np.zeros(1,dtype=bool)
-#     var_vetoElectronsTightID = np.zeros(1,dtype=bool)
-#     
-#     var_vetoMuonsPassIso = np.zeros(1,dtype=bool)
-#     var_vetoMuonsMediumID = np.zeros(1,dtype=bool)
-#     var_vetoMuonsTightID = np.zeros(1,dtype=bool)
-#     
+    jetsCalcObs = {}
+    for jetsCalcOb in analysis_observables.jetsCalcObs:
+        jetsCalcObs[jetsCalcOb] = ROOT.std.vector(eval(analysis_observables.jetsCalcObs[jetsCalcOb]))()
+
+    #### TRACKS ####
+    tracksObs = {}
+    
+    for tracksOb in analysis_observables.tracksObs:
+        tracksObs[tracksOb] = ROOT.std.vector(eval(analysis_observables.tracksObs[tracksOb]))()
+        
+    tracksCalcObs = {}
+    for tracksCalcOb in analysis_observables.tracksCalcObs:
+        tracksCalcObs[tracksCalcOb] = ROOT.std.vector(eval(analysis_observables.tracksCalcObs[tracksCalcOb]))()
+    
+    pionsObs = {}
+    for pionsOb in analysis_observables.pionsObs:
+        pionsObs[pionsOb] = ROOT.std.vector(eval(analysis_observables.pionsObs[pionsOb]))()
+        
+    photonObs = {}
+    for photonOb in analysis_observables.photonObs:
+        photonObs[photonOb] = ROOT.std.vector(eval(analysis_observables.photonObs[photonOb]))()
+    
+    ### LEPTONS ###
+    
+    electronsObs = {}
+    for electronsOb in analysis_observables.electronsObs:
+        electronsObs[electronsOb] = ROOT.std.vector(eval(analysis_observables.electronsObs[electronsOb]))()
+
+    electronsCalcObs = {}
+    for electronsCalcOb in analysis_observables.electronsCalcObs:
+        electronsCalcObs[electronsCalcOb] = ROOT.std.vector(eval(analysis_observables.electronsCalcObs[electronsCalcOb]))()
+
+    muonsObs = {}
+    for muonsOb in analysis_observables.muonsObs:
+        muonsObs[muonsOb] = ROOT.std.vector(eval(analysis_observables.muonsObs[muonsOb]))()
+
+    muonsCalcObs = {}
+    for muonsCalcOb in analysis_observables.muonsCalcObs:
+        muonsCalcObs[muonsCalcOb] = ROOT.std.vector(eval(analysis_observables.muonsCalcObs[muonsCalcOb]))()
+        
+    
+    ### DY LEPTONS ###
+        
+        
+    #     
 #     var_DYMuons = ROOT.std.vector(TLorentzVector)()
 #     var_DYMuonsSum = TLorentzVector()
 #     var_DYMuonsInvMass = np.zeros(1,dtype=float)
@@ -241,121 +240,42 @@ def main():
 #     var_DYMuons_MiniIso = ROOT.std.vector(double)()
 #     var_DYMuons_MT2Activity = ROOT.std.vector(double)()
 #     var_DYMuons_MTW = ROOT.std.vector(double)()
-    
-    #var_Electrons_isZ = ROOT.std.vector(bool)()
-    #var_Muons_isZ = ROOT.std.vector(bool)()
-    
-#     var_GenParticles = ROOT.std.vector(TLorentzVector)()
-#     var_GenParticles_ParentId = ROOT.std.vector(int)()
-#     var_GenParticles_ParentIdx = ROOT.std.vector(int)()
-#     var_GenParticles_PdgId = ROOT.std.vector(int)()
-#     var_GenParticles_Status = ROOT.std.vector(int)()
-    
-    #var_LeadingJetPt = np.zeros(1,dtype=float)
-    #var_NL = np.zeros(1,dtype=int)
-    #var_NLGen = np.zeros(1,dtype=int)
-    #var_NLGenZ = np.zeros(1,dtype=int)
-    #var_puWeight = np.zeros(1,dtype=float)
 
-     ### JETS ###
-    
-    jetsObs = {}
-    for jetsOb in analysis_ntuples.jetsObs:
-        jetsObs[jetsOb] = ROOT.std.vector(eval(analysis_ntuples.jetsObs[jetsOb]))()
-    
-    # jetsObs = {
-#     "Jets" : "TLorentzVector",
-#     "Jets_bDiscriminatorCSV" : "double",
-#     "Jets_bJetTagDeepCSVBvsAll" : "double",
-#     "Jets_electronEnergyFraction" : "double",
-#     "Jets_muonEnergyFraction" : "double",
-#     "Jets_muonMultiplicity" : "int",
-#     "Jets_multiplicity" : "int",
-#     "Jets_electronMultiplicity" : "int",
-#     "Jets_partonFlavor" : "int",
-#     "Jets_qgLikelihood" : "double"
+    dyMuonsObs = {}
+    for muonsOb in analysis_observables.muonsObs:
+        dyMuonsObs[muonsOb] = ROOT.std.vector(eval(analysis_observables.muonsObs[muonsOb]))()
+
+# muonsObs = {
+#     "Muons" : "TLorentzVector",
+#     "Muons_charge" : "int",
+#     "Muons_mediumID" : "bool",
+#     "Muons_passIso" : "bool",
+#     "Muons_tightID" : "bool",
+#     "Muons_MiniIso" : "double",
+#     "Muons_MT2Activity" : "double",
+#     "Muons_MTW" : "double",
 # }
 
-    # var_Jets = ROOT.std.vector(TLorentzVector)()
-#     var_Jets_bDiscriminatorCSV = ROOT.std.vector(double)()
-#     var_Jets_bJetTagDeepCSVBvsAll = ROOT.std.vector(double)()
-#     var_Jets_electronEnergyFraction = ROOT.std.vector(double)()
-#     var_Jets_muonEnergyFraction = ROOT.std.vector(double)()
-#     var_Jets_muonMultiplicity = ROOT.std.vector(int)()
-#     var_Jets_multiplicity = ROOT.std.vector(int)()
-#     var_Jets_electronMultiplicity = ROOT.std.vector(int)()
-#     
+    dyMuonsFlatObs = {}
+    for dyMuonsFlatOb in analysis_observables.dyMuonsFlatObs:
+        dyMuonsFlatObs[dyMuonsFlatOb] = np.zeros(1,dtype=analysis_observables.dyMuonsFlatObs[dyMuonsFlatOb])
+    
+    dyMuonsClassObs = {}
+    for dyMuonsClassOb in analysis_observables.dyMuonsClassObs:
+        dyMuonsClassObs[dyMuonsClassOb] = eval(analysis_observables.dyMuonsClassObs[dyMuonsClassOb])()
 
-#     jetsCalcObs = {
-#     "Jets_muonCorrected" : "TLorentzVector",
-#     "Jets_electronCorrected" : "TLorentzVector",
+
+# dyFlatMuonsObs = {
+#     "DYMuonsSum" : "TLorentzVector",
+#     "DYMuonsInvMass" : "float"
 # }
-    #var_Jets_muonCorrected = ROOT.std.vector(TLorentzVector)()
-    #var_Jets_electronCorrected = ROOT.std.vector(TLorentzVector)()
-    
-    jetsCalcObs = {}
-    for jetsCalcOb in analysis_ntuples.jetsCalcObs:
-        jetsCalcObs[jetsCalcOb] = ROOT.std.vector(eval(analysis_ntuples.jetsCalcObs[jetsCalcOb]))()
-    
-    # var_LeadingJetPartonFlavor = np.zeros(1,dtype=int)
-#     var_LeadingJetQgLikelihood = np.zeros(1,dtype=float)
-#     var_LeadingJetMinDeltaRMuons = np.zeros(1,dtype=float)
-#     var_LeadingJetMinDeltaRElectrons = np.zeros(1,dtype=float)
-#     
-#     var_MinDeltaPhiMetJets = np.zeros(1,dtype=float)
-#     var_MinDeltaPhiMhtJets = np.zeros(1,dtype=float)
-#     
-#     var_MinCsv30 = np.zeros(1,dtype=float)
-#     var_MinCsv25 = np.zeros(1,dtype=float)
-#     var_MaxCsv30 = np.zeros(1,dtype=float)
-#     var_MaxCsv25 = np.zeros(1,dtype=float)
-#     
-#     var_MinDeepCsv30 = np.zeros(1,dtype=float)
-#     var_MinDeepCsv25 = np.zeros(1,dtype=float)
-#     var_MaxDeepCsv30 = np.zeros(1,dtype=float)
-#     var_MaxDeepCsv25 = np.zeros(1,dtype=float)
 
-    #### TRACKS ####
-    tracksObs = {}
-    
-    for tracksOb in analysis_ntuples.tracksObs:
-        tracksObs[tracksOb] = ROOT.std.vector(eval(analysis_ntuples.tracksObs[tracksOb]))()
-        
-    tracksCalcObs = {}
-    for tracksCalcOb in analysis_ntuples.tracksCalcObs:
-        tracksCalcObs[tracksCalcOb] = ROOT.std.vector(eval(analysis_ntuples.tracksCalcObs[tracksCalcOb]))()
-    
-    pionsObs = {}
-    for pionsOb in analysis_ntuples.pionsObs:
-        pionsObs[pionsOb] = ROOT.std.vector(eval(analysis_ntuples.pionsObs[pionsOb]))()
-        
-    photonObs = {}
-    for photonOb in analysis_ntuples.photonObs:
-        photonObs[photonOb] = ROOT.std.vector(eval(analysis_ntuples.photonObs[photonOb]))()
-    
-    ### LEPTONS ###
-    
-    electronsObs = {}
-    for electronsOb in analysis_ntuples.electronsObs:
-        electronsObs[electronsOb] = ROOT.std.vector(eval(analysis_ntuples.electronsObs[electronsOb]))()
-
-    electronsCalcObs = {}
-    for electronsCalcOb in analysis_ntuples.electronsCalcObs:
-        electronsCalcObs[electronsCalcOb] = ROOT.std.vector(eval(analysis_ntuples.electronsCalcObs[electronsCalcOb]))()
-
-    muonsObs = {}
-    for muonsOb in analysis_ntuples.muonsObs:
-        muonsObs[muonsOb] = ROOT.std.vector(eval(analysis_ntuples.muonsObs[muonsOb]))()
-
-    muonsCalcObs = {}
-    for muonsCalcOb in analysis_ntuples.muonsCalcObs:
-        muonsCalcObs[muonsCalcOb] = ROOT.std.vector(eval(analysis_ntuples.muonsCalcObs[muonsCalcOb]))()
     
     ### GEN PARTICLES ###
 
     genParticlesObs = {}
-    for genParticlesOb in analysis_ntuples.genParticlesObs:
-        genParticlesObs[genParticlesOb] = ROOT.std.vector(eval(analysis_ntuples.genParticlesObs[genParticlesOb]))()
+    for genParticlesOb in analysis_observables.genParticlesObs:
+        genParticlesObs[genParticlesOb] = ROOT.std.vector(eval(analysis_observables.genParticlesObs[genParticlesOb]))()
     
 #     genParticlesObs = {
 #     "GenParticles" : "TLorentzVector",
@@ -366,16 +286,16 @@ def main():
 # }
     
     commonObservablesStringObs = {}
-    for commonObservablesStringOb in analysis_ntuples.commonObservablesStringList:
+    for commonObservablesStringOb in analysis_observables.commonObservablesStringList:
         commonObservablesStringObs[commonObservablesStringOb] = ROOT.std.string()
     
     genVecObs = {}
-    for genVecOb in utils.genObservablesVecList:
-        genVecObs[genVecOb] = ROOT.std.vector(eval(utils.genObservablesVecList[genVecOb]))()
+    for genVecOb in analysis_observables.genObservablesVecList:
+        genVecObs[genVecOb] = ROOT.std.vector(eval(analysis_observables.genObservablesVecList[genVecOb]))()
     
     genCalcObs = {}
-    for DTypeOb in utils.commonObservablesDTypesList:
-        genCalcObs[DTypeOb] = np.zeros(1,dtype=utils.commonObservablesDTypesList[DTypeOb])
+    for DTypeOb in analysis_observables.commonObservablesDTypesList:
+        genCalcObs[DTypeOb] = np.zeros(1,dtype=analysis_observables.commonObservablesDTypesList[DTypeOb])
     
     #var_category = np.zeros(1,dtype=bool)
     
@@ -389,7 +309,7 @@ def main():
             for ptRange in ptRanges:
                 leptonsCorrJetVars[lep + "_pass" + CorrJetObs + str(ptRange)] = ROOT.std.vector(eval(utils.leptonsCorrJetVecList[CorrJetObs]))()
                 
-    print leptonsCorrJetVars
+    #print leptonsCorrJetVars
     
     # DILEPTON OBSERVABLES
     
@@ -405,131 +325,49 @@ def main():
                 if iso + str(ptRange) + cat == utils.defaultJetIsoSetting:
                     postfixi = [iso + str(ptRange) + cat, ""]
                 for postfix in postfixi:
-                    for vecObs in utils.dileptonObservablesVecList:
-                        dileptonVars[vecObs + postfix] = ROOT.std.vector(eval(utils.dileptonObservablesVecList[vecObs]))()
-                    for stringObs in utils.dileptonObservablesStringList:
+                    for vecObs in analysis_observables.dileptonObservablesVecList:
+                        dileptonVars[vecObs + postfix] = ROOT.std.vector(eval(analysis_observables.dileptonObservablesVecList[vecObs]))()
+                    for stringObs in analysis_observables.dileptonObservablesStringList:
                         dileptonVars[stringObs + postfix] = ROOT.std.string("")
-                    for DTypeObs in utils.dileptonObservablesDTypesList:
-                        dileptonVars[DTypeObs + postfix] = np.zeros(1,dtype=utils.dileptonObservablesDTypesList[DTypeObs])
+                    for DTypeObs in analysis_observables.dileptonObservablesDTypesList:
+                        dileptonVars[DTypeObs + postfix] = np.zeros(1,dtype=analysis_observables.dileptonObservablesDTypesList[DTypeObs])
 
-    print dileptonVars
+    #print dileptonVars
        
     var_LeadingJet = TLorentzVector()
     
     ### TRIGGER ###
     
     triggerObs = {}
-    for triggerOb in analysis_ntuples.triggerObs:
-        triggerObs[triggerOb] = ROOT.std.vector(eval(analysis_ntuples.triggerObs[triggerOb]))()
+    for triggerOb in analysis_observables.triggerObs:
+        triggerObs[triggerOb] = ROOT.std.vector(eval(analysis_observables.triggerObs[triggerOb]))()
 
     tEvent = TTree('tEvent','tEvent')
     
+    for flatOb in analysis_observables.commonFlatObs:
+        print "tEvent.Branch(" + flatOb + "," +  "flatObs[flatOb]" + "," + flatOb + "/" + utils.typeTranslation[analysis_observables.commonFlatObs[flatOb]] + ")"
+        tEvent.Branch(flatOb, flatObs[flatOb],flatOb + "/" + utils.typeTranslation[analysis_observables.commonFlatObs[flatOb]])
     
+    for flatOb in analysis_observables.commonRecalcFlatObs:
+        print "tEvent.Branch(" + flatOb + "," +  "commonRecalcFlatObs[flatOb]" + "," + flatOb + "/" + utils.typeTranslation[analysis_observables.commonRecalcFlatObs[flatOb]] + ")"
+        tEvent.Branch(flatOb, commonRecalcFlatObs[flatOb],flatOb + "/" + utils.typeTranslation[analysis_observables.commonRecalcFlatObs[flatOb]])
     
-#     tEvent.Branch('RunNum', var_RunNum,'RunNum/I')
-#     tEvent.Branch('LumiBlockNum', var_LumiBlockNum,'LumiBlockNum/I')
-#     tEvent.Branch('EvtNum', var_EvtNum,'EvtNum/L')
-#     
-#     
-#     tEvent.Branch('Met', var_Met,'Met/D')
-#     tEvent.Branch('METPhi', var_METPhi,'METPhi/D')
-#     tEvent.Branch('CrossSection', var_CrossSection,'CrossSection/D')
-#     tEvent.Branch('BranchingRatio', var_BranchingRatio,'BranchingRatio/D')
-#     tEvent.Branch('NJets', var_NJets,'NJets/I')
-#     tEvent.Branch('BTagsLoose', var_BTagsLoose,'BTagsLoose/I')
-#     tEvent.Branch('BTagsMedium', var_BTagsMedium,'BTagsMedium/I')
-#     tEvent.Branch('BTagsDeepLoose', var_BTagsDeepLoose,'BTagsDeepLoose/I')
-#     tEvent.Branch('BTagsDeepMedium', var_BTagsDeepMedium,'BTagsDeepMedium/I')
-#     
-#     tEvent.Branch('NL', var_NL,'NL/I')
-#     tEvent.Branch('NLGen', var_NLGen,'NLGen/I')
-#     tEvent.Branch('NLGenZ', var_NLGenZ,'NLGenZ/I')
-#     tEvent.Branch('Ht', var_Ht,'Ht/D')
-#     tEvent.Branch('madHT', var_madHT,'madHT/D')
-#     tEvent.Branch('Mht', var_Mht,'Mht/D')
-#     tEvent.Branch('MHTPhi', var_MHTPhi,'MHTPhi/D')
-#     tEvent.Branch('MetDHt', var_MetDHt,'MetDHt/D')
-#     #tEvent.Branch('MetDHt2', var_MetDHt2,'MetDHt2/D')
-#     tEvent.Branch('Mt2', var_Mt2,'Mt2/D')
-#     tEvent.Branch('puWeight', var_puWeight,'puWeight/D')
-#     
-#     
-#     
-#     tEvent.Branch('vetoElectronsPassIso', var_vetoElectronsPassIso,'vetoElectronsPassIso/O')
-#     #tEvent.Branch('vetoElectronsPassJetIso', var_vetoElectronsPassJetIso,'vetoElectronsPassJetIso/O')
-#     tEvent.Branch('vetoElectronsMediumID', var_vetoElectronsMediumID,'vetoElectronsMediumID/O')
-#     tEvent.Branch('vetoElectronsTightID', var_vetoElectronsTightID,'vetoElectronsTightID/O')
-#     
-#     tEvent.Branch('vetoMuonsPassIso', var_vetoMuonsPassIso,'vetoMuonsPassIso/O')
-#     #tEvent.Branch('vetoMuonsPassJetIso', var_vetoMuonsPassJetIso,'vetoMuonsPassJetIso/O')
-#     tEvent.Branch('vetoMuonsMediumID', var_vetoMuonsMediumID,'vetoMuonsMediumID/O')
-#     tEvent.Branch('vetoMuonsTightID', var_vetoMuonsTightID,'vetoMuonsTightID/O')
-#     
-#     if signal:
-#         tEvent.Branch('Electrons_isZ', 'std::vector<bool>', var_Electrons_isZ)
-#         tEvent.Branch('Muons_isZ', 'std::vector<bool>', var_Muons_isZ)
-#         tEvent.Branch('genFlavour', 'std::string', var_genFlavour)
-    # if dy:
-#         tEvent.Branch('DYMuons', 'std::vector<TLorentzVector>', var_DYMuons)
-#         tEvent.Branch('DYMuons_charge', 'std::vector<int>', var_DYMuons_charge)
-#         tEvent.Branch('DYMuons_mediumID', 'std::vector<bool>', var_DYMuons_mediumID)
-#         tEvent.Branch('DYMuons_passIso', 'std::vector<bool>', var_DYMuons_passIso)
-#         tEvent.Branch('DYMuons_tightID', 'std::vector<bool>', var_DYMuons_tightID)
-#         tEvent.Branch('DYMuons_MiniIso', 'std::vector<double>', var_DYMuons_MiniIso)
-#         tEvent.Branch('DYMuons_MT2Activity', 'std::vector<double>', var_DYMuons_MT2Activity)
-#         tEvent.Branch('DYMuons_MTW', 'std::vector<double>', var_DYMuons_MTW)
-#         tEvent.Branch('DYMuonsSum', 'TLorentzVector', var_DYMuonsSum)
-#         tEvent.Branch('DYMuonsInvMass', var_DYMuonsInvMass,'DYMuonsInvMass/D')
+    for commonCalcFlatOb in analysis_observables.commonCalcFlatObs:
+        print "tEvent.Branch(" + commonCalcFlatOb  + "," + "commonCalcFlatObs[commonCalcFlatOb]" + "," + commonCalcFlatOb + "/" + utils.typeTranslation[analysis_observables.commonCalcFlatObs[commonCalcFlatOb]] + ")"
+        tEvent.Branch(commonCalcFlatOb, commonCalcFlatObs[commonCalcFlatOb],commonCalcFlatOb + "/" + utils.typeTranslation[analysis_observables.commonCalcFlatObs[commonCalcFlatOb]])
     
-#     tEvent.Branch('GenParticles', 'std::vector<TLorentzVector>', var_GenParticles)
-#     tEvent.Branch('GenParticles_ParentId', 'std::vector<int>', var_GenParticles_ParentId)
-#     tEvent.Branch('GenParticles_ParentIdx', 'std::vector<int>', var_GenParticles_ParentIdx)
-#     tEvent.Branch('GenParticles_PdgId', 'std::vector<int>', var_GenParticles_PdgId)
-#     tEvent.Branch('GenParticles_Status', 'std::vector<int>', var_GenParticles_Status)
-# 
-#     tEvent.Branch('Jets', 'std::vector<TLorentzVector>', var_Jets)
-#     tEvent.Branch('Jets_bDiscriminatorCSV', 'std::vector<double>', var_Jets_bDiscriminatorCSV)
-#     tEvent.Branch('Jets_bJetTagDeepCSVBvsAll', 'std::vector<double>', var_Jets_bJetTagDeepCSVBvsAll)
-#     
-#     tEvent.Branch('Jets_electronEnergyFraction', 'std::vector<double>', var_Jets_electronEnergyFraction)
-#     tEvent.Branch('Jets_muonEnergyFraction', 'std::vector<double>', var_Jets_muonEnergyFraction)
-#     
-#     tEvent.Branch('Jets_muonMultiplicity', 'std::vector<int>', var_Jets_muonMultiplicity)
-#     tEvent.Branch('Jets_multiplicity', 'std::vector<int>', var_Jets_multiplicity)
-#     tEvent.Branch('Jets_electronMultiplicity', 'std::vector<int>', var_Jets_electronMultiplicity)
-#     
-#     tEvent.Branch('Jets_muonCorrected', 'std::vector<TLorentzVector>', var_Jets_muonCorrected)
-#     tEvent.Branch('Jets_electronCorrected', 'std::vector<TLorentzVector>', var_Jets_electronCorrected)
-# 
-#     tEvent.Branch('LeadingJetPartonFlavor', var_LeadingJetPartonFlavor,'LeadingJetPartonFlavor/I')
-#     tEvent.Branch('LeadingJetQgLikelihood', var_LeadingJetQgLikelihood,'LeadingJetQgLikelihood/D')
-#     tEvent.Branch('LeadingJetMinDeltaRMuons', var_LeadingJetMinDeltaRMuons,'LeadingJetMinDeltaRMuons/D')
-#     tEvent.Branch('LeadingJetMinDeltaRElectrons', var_LeadingJetMinDeltaRElectrons,'LeadingJetMinDeltaRElectrons/D')
-#     
-#     tEvent.Branch('MinDeltaPhiMetJets', var_MinDeltaPhiMetJets,'MinDeltaPhiMetJets/D')
-#     tEvent.Branch('MinDeltaPhiMhtJets', var_MinDeltaPhiMhtJets,'MinDeltaPhiMhtJets/D')
-#     tEvent.Branch('LeadingJetPt', var_LeadingJetPt,'LeadingJetPt/D')
-
-    for flatOb in analysis_ntuples.commonFlatObs:
-        print "tEvent.Branch(" + flatOb + "," +  "flatObs[flatOb]" + "," + flatOb + "/" + utils.typeTranslation[analysis_ntuples.commonFlatObs[flatOb]] + ")"
-        tEvent.Branch(flatOb, flatObs[flatOb],flatOb + "/" + utils.typeTranslation[analysis_ntuples.commonFlatObs[flatOb]])
-     
-    for commonCalcFlatOb in analysis_ntuples.commonCalcFlatObs:
-        print "tEvent.Branch(" + commonCalcFlatOb  + "," + "commonCalcFlatObs[commonCalcFlatOb]" + "," + commonCalcFlatOb + "/" + utils.typeTranslation[analysis_ntuples.commonCalcFlatObs[commonCalcFlatOb]] + ")"
-        tEvent.Branch(commonCalcFlatOb, commonCalcFlatObs[commonCalcFlatOb],commonCalcFlatOb + "/" + utils.typeTranslation[analysis_ntuples.commonCalcFlatObs[commonCalcFlatOb]])
+    for vetosFlatOb in analysis_observables.vetosFlatObs:
+        tEvent.Branch(vetosFlatOb, vetosFlatObs[vetosFlatOb],vetosFlatOb + "/" + utils.typeTranslation[analysis_observables.vetosFlatObs[vetosFlatOb]])
     
-    for vetosFlatOb in analysis_ntuples.vetosFlatObs:
-        tEvent.Branch(vetosFlatOb, vetosFlatObs[vetosFlatOb],vetosFlatOb + "/" + utils.typeTranslation[analysis_ntuples.vetosFlatObs[vetosFlatOb]])
+    for jetsOb in analysis_observables.jetsObs:
+        tEvent.Branch(jetsOb, 'std::vector<' + analysis_observables.jetsObs[jetsOb] + '>', jetsObs[jetsOb])
     
-    for jetsOb in analysis_ntuples.jetsObs:
-        tEvent.Branch(jetsOb, 'std::vector<' + analysis_ntuples.jetsObs[jetsOb] + '>', jetsObs[jetsOb])
-    
-    for jetsCalcOb in analysis_ntuples.jetsCalcObs:
-        tEvent.Branch(jetsCalcOb, 'std::vector<' + analysis_ntuples.jetsCalcObs[jetsCalcOb] + '>', jetsCalcObs[jetsCalcOb])
+    for jetsCalcOb in analysis_observables.jetsCalcObs:
+        tEvent.Branch(jetsCalcOb, 'std::vector<' + analysis_observables.jetsCalcObs[jetsCalcOb] + '>', jetsCalcObs[jetsCalcOb])
     
     if not data:
-        for genParticlesOb in analysis_ntuples.genParticlesObs:
-            tEvent.Branch(genParticlesOb, 'std::vector<' + analysis_ntuples.genParticlesObs[genParticlesOb] + '>', genParticlesObs[genParticlesOb])
+        for genParticlesOb in analysis_observables.genParticlesObs:
+            tEvent.Branch(genParticlesOb, 'std::vector<' + analysis_observables.genParticlesObs[genParticlesOb] + '>', genParticlesObs[genParticlesOb])
         ## Signal Gen Stuff
         if signal:
             for genVecOb in utils.genObservablesVecList:
@@ -538,7 +376,7 @@ def main():
             for DTypeOb in utils.commonObservablesDTypesList:
                 tEvent.Branch("gen_" + DTypeOb, genCalcObs[DTypeOb],"gen_" + DTypeOb + "/" + utils.typeTranslation[utils.commonObservablesDTypesList[DTypeOb]])
     
-    for commonObservablesStringOb in analysis_ntuples.commonObservablesStringList:
+    for commonObservablesStringOb in analysis_observables.commonObservablesStringList:
         tEvent.Branch(commonObservablesStringOb, 'std::string', commonObservablesStringObs[commonObservablesStringOb])
     
     for lep in ["Muons", "Electrons", "tracks"]:
@@ -552,43 +390,43 @@ def main():
             
     ###### Tracks #######
     
-    for tracksOb in analysis_ntuples.tracksObs:
-        tEvent.Branch(tracksOb, 'std::vector<' + analysis_ntuples.tracksObs[tracksOb] + '>', tracksObs[tracksOb])
+    for tracksOb in analysis_observables.tracksObs:
+        tEvent.Branch(tracksOb, 'std::vector<' + analysis_observables.tracksObs[tracksOb] + '>', tracksObs[tracksOb])
     
-    for tracksCalcOb in analysis_ntuples.tracksCalcObs:
-        tEvent.Branch(tracksCalcOb, 'std::vector<' + analysis_ntuples.tracksCalcObs[tracksCalcOb] + '>', tracksCalcObs[tracksCalcOb])
+    for tracksCalcOb in analysis_observables.tracksCalcObs:
+        tEvent.Branch(tracksCalcOb, 'std::vector<' + analysis_observables.tracksCalcObs[tracksCalcOb] + '>', tracksCalcObs[tracksCalcOb])
     
-    for pionsOb in analysis_ntuples.pionsObs:
-        tEvent.Branch(pionsOb, 'std::vector<' + analysis_ntuples.pionsObs[pionsOb] + '>', pionsObs[pionsOb])
+    for pionsOb in analysis_observables.pionsObs:
+        tEvent.Branch(pionsOb, 'std::vector<' + analysis_observables.pionsObs[pionsOb] + '>', pionsObs[pionsOb])
         
-    for photonOb in analysis_ntuples.photonObs:
-        tEvent.Branch(photonOb, 'std::vector<' + analysis_ntuples.photonObs[photonOb] + '>', photonObs[photonOb])
+    for photonOb in analysis_observables.photonObs:
+        tEvent.Branch(photonOb, 'std::vector<' + analysis_observables.photonObs[photonOb] + '>', photonObs[photonOb])
     
-    for electronsOb in analysis_ntuples.electronsObs:
-        tEvent.Branch(electronsOb, 'std::vector<' + analysis_ntuples.electronsObs[electronsOb] + '>', electronsObs[electronsOb])
+    for electronsOb in analysis_observables.electronsObs:
+        tEvent.Branch(electronsOb, 'std::vector<' + analysis_observables.electronsObs[electronsOb] + '>', electronsObs[electronsOb])
     
-    for electronsCalcOb in analysis_ntuples.electronsCalcObs:
-        tEvent.Branch(electronsCalcOb, 'std::vector<' + analysis_ntuples.electronsCalcObs[electronsCalcOb] + '>', electronsCalcObs[electronsCalcOb])
+    for electronsCalcOb in analysis_observables.electronsCalcObs:
+        tEvent.Branch(electronsCalcOb, 'std::vector<' + analysis_observables.electronsCalcObs[electronsCalcOb] + '>', electronsCalcObs[electronsCalcOb])
     
-    for muonsOb in analysis_ntuples.muonsObs:
-        tEvent.Branch(muonsOb, 'std::vector<' + analysis_ntuples.muonsObs[muonsOb] + '>', muonsObs[muonsOb])
+    for muonsOb in analysis_observables.muonsObs:
+        tEvent.Branch(muonsOb, 'std::vector<' + analysis_observables.muonsObs[muonsOb] + '>', muonsObs[muonsOb])
     
-    for muonsCalcOb in analysis_ntuples.muonsCalcObs:
-        tEvent.Branch(muonsCalcOb, 'std::vector<' + analysis_ntuples.muonsCalcObs[muonsCalcOb] + '>', muonsCalcObs[muonsCalcOb])
+    for muonsCalcOb in analysis_observables.muonsCalcObs:
+        tEvent.Branch(muonsCalcOb, 'std::vector<' + analysis_observables.muonsCalcObs[muonsCalcOb] + '>', muonsCalcObs[muonsCalcOb])
+        
+        
+    if dy:
+        for muonsOb in analysis_observables.muonsObs:
+            tEvent.Branch("DY" + muonsOb, 'std::vector<' + analysis_observables.muonsObs[muonsOb] + '>', dyMuonsObs[muonsOb])
+        
+        for dyMuonsFlatOb in analysis_observables.dyMuonsFlatObs:
+            tEvent.Branch(dyMuonsFlatOb, dyMuonsFlatObs[dyMuonsFlatOb],dyMuonsFlatOb + "/" + utils.typeTranslation[analysis_observables.dyMuonsFlatObs[dyMuonsFlatOb]])
+    
+        for dyMuonsClassOb in analysis_observables.dyMuonsClassObs:
+            tEvent.Branch(dyMuonsClassOb, analysis_observables.dyMuonsClassObs[dyMuonsClassOb], dyMuonsClassObs[dyMuonsClassOb])
+
 
     tEvent.Branch('LeadingJet', 'TLorentzVector', var_LeadingJet)
-    
-    # tEvent.Branch('MinCsv30', var_MinCsv30,'MinCsv30/D')
-#     tEvent.Branch('MinCsv25', var_MinCsv25,'MinCsv25/D')
-#     tEvent.Branch('MaxCsv30', var_MaxCsv30,'MaxCsv30/D')
-#     tEvent.Branch('MaxCsv25', var_MaxCsv25,'MaxCsv25/D')
-#     
-#     tEvent.Branch('MinDeepCsv30', var_MinDeepCsv30,'MinDeepCsv30/D')
-#     tEvent.Branch('MinDeepCsv25', var_MinDeepCsv25,'MinDeepCsv25/D')
-#     tEvent.Branch('MaxDeepCsv30', var_MaxDeepCsv30,'MaxDeepCsv30/D')
-#     tEvent.Branch('MaxDeepCsv25', var_MaxDeepCsv25,'MaxDeepCsv25/D')
-#     
-#     tEvent.Branch('category', var_category,'vetoMuonsTightID/O')
     
     for iso in utils.leptonIsolationList:
         for cat in utils.leptonIsolationCategories:
@@ -600,19 +438,19 @@ def main():
                 if iso + str(ptRange) + cat == utils.defaultJetIsoSetting:
                     postfixi = [iso + str(ptRange) + cat, ""]
                 for postfix in postfixi:
-                    for vecObs in utils.dileptonObservablesVecList:
-                        print "tEvent.Branch(" + vecObs + postfix, 'std::vector<' + utils.dileptonObservablesVecList[vecObs] + '>', dileptonVars[vecObs + postfix], ")"
-                        tEvent.Branch(vecObs + postfix, 'std::vector<' + utils.dileptonObservablesVecList[vecObs] + '>', dileptonVars[vecObs + postfix])
-                    for stringObs in utils.dileptonObservablesStringList:
+                    for vecObs in analysis_observables.dileptonObservablesVecList:
+                        print "tEvent.Branch(" + vecObs + postfix, 'std::vector<' + analysis_observables.dileptonObservablesVecList[vecObs] + '>', dileptonVars[vecObs + postfix], ")"
+                        tEvent.Branch(vecObs + postfix, 'std::vector<' + analysis_observables.dileptonObservablesVecList[vecObs] + '>', dileptonVars[vecObs + postfix])
+                    for stringObs in analysis_observables.dileptonObservablesStringList:
                         print "tEvent.Branch(" + stringObs + postfix, 'std::string', dileptonVars[stringObs + postfix],")"
                         tEvent.Branch(stringObs + postfix, 'std::string', dileptonVars[stringObs + postfix])
-                    for DTypeObs in utils.dileptonObservablesDTypesList:
-                        print "tEvent.Branch(" + DTypeObs + postfix, dileptonVars[DTypeObs + postfix],DTypeObs + postfix + "/" + utils.typeTranslation[utils.dileptonObservablesDTypesList[DTypeObs]], ")"
-                        tEvent.Branch(DTypeObs + postfix, dileptonVars[DTypeObs + postfix],DTypeObs + postfix + "/" + utils.typeTranslation[utils.dileptonObservablesDTypesList[DTypeObs]])
+                    for DTypeObs in analysis_observables.dileptonObservablesDTypesList:
+                        print "tEvent.Branch(" + DTypeObs + postfix, dileptonVars[DTypeObs + postfix],DTypeObs + postfix + "/" + utils.typeTranslation[analysis_observables.dileptonObservablesDTypesList[DTypeObs]], ")"
+                        tEvent.Branch(DTypeObs + postfix, dileptonVars[DTypeObs + postfix],DTypeObs + postfix + "/" + utils.typeTranslation[analysis_observables.dileptonObservablesDTypesList[DTypeObs]])
                         
     if not signal:
-        for triggerOb in analysis_ntuples.triggerObs:
-            tEvent.Branch(triggerOb, 'std::vector<' + analysis_ntuples.triggerObs[triggerOb] + '>', triggerObs[triggerOb])
+        for triggerOb in analysis_observables.triggerObs:
+            tEvent.Branch(triggerOb, 'std::vector<' + analysis_observables.triggerObs[triggerOb] + '>', triggerObs[triggerOb])
     
     vars = {}
     
@@ -758,22 +596,100 @@ def main():
         else:
             vars["passed2016BFilter"][0] = True
         
-        for tracksOb in analysis_ntuples.tracksObs:
+        for tracksOb in analysis_observables.tracksObs:
             tracksObs[tracksOb] = getattr(c, tracksOb)
         
-        for pionsOb in analysis_ntuples.pionsObs:
+        for pionsOb in analysis_observables.pionsObs:
             pionsObs[pionsOb] = getattr(c, pionsOb)
         
-        for photonOb in analysis_ntuples.photonObs:
+        for photonOb in analysis_observables.photonObs:
             photonObs[photonOb] = getattr(c, photonOb)
         
-        for jetsOb in analysis_ntuples.jetsObs:
+        for jetsOb in analysis_observables.jetsObs:
             jetsObs[jetsOb] = getattr(c, jetsOb)
         
-        nj, btagsLoose, ljet = analysis_ntuples.eventNumberOfJets25Pt2_4Eta_Loose(c.Jets, c.Jets_bDiscriminatorCSV)
-        nj, btagsMedium, ljet = analysis_ntuples.eventNumberOfJets25Pt2_4Eta_Medium(c.Jets, c.Jets_bDiscriminatorCSV)
-        nj, btagsDeepLoose, ljet = analysis_ntuples.eventNumberOfJets25Pt2_4Eta_DeepLoose(c.Jets, c.Jets_bJetTagDeepCSVBvsAll)
-        nj, btagsDeepMedium, ljet = analysis_ntuples.eventNumberOfJets25Pt2_4Eta_DeepMedium(c.Jets, c.Jets_bJetTagDeepCSVBvsAll)
+        MET = c.MET
+        METPhi = c.METPhi
+        MHT = c.MHT
+        HT = c.HT
+        MHTPhi = c.MHTPhi
+        
+        for flatOb in commonRecalcFlatObs:
+            commonRecalcFlatObs[flatOb][0] = getattr(c, flatOb)
+        
+        muons = []
+        if dy:
+           
+            muons, invMass = getDyMuons(c)
+            if muons is None:
+                muons = getWMuon(c)
+                if muons is None:
+                    continue
+                invMass = -1
+            
+            metVec = TLorentzVector()
+            metVec.SetPtEtaPhiE(c.MET,0,c.METPhi,c.MET)
+            
+            for i in range(len(muons)):
+                metVec += c.Muons[muons[i]]
+            
+            MET = abs(metVec.Pt())
+            
+            if MET > 3000:
+                print "HERE WE GO!!!"
+                print "c.MET=", c.MET, "metVec=", metVec.Pt(), "MET=", MET
+                #print "c.Muons[muons[0]].Pt()=", c.Muons[muons[0]].Pt(), "c.Muons[muons[1]].Pt()=", c.Muons[muons[1]].Pt()
+                print "-------"
+            
+            METPhi = metVec.Phi()
+            
+            jetsHt = [i for i in range(len(c.Jets)) if c.Jets[i].Pt() >= 30 and abs(c.Jets[i].Eta()) <= 2.4 and all(abs(c.Muons[j].DeltaR(c.Jets[i])) > 0.1 for j in muons)]
+            jetsMht = [i for i in range(len(c.Jets)) if c.Jets[i].Pt() >= 30 and abs(c.Jets[i].Eta()) <= 5 and all(abs(c.Muons[j].DeltaR(c.Jets[i])) > 0.1 for j in muons)]
+            
+            #print "jetsHt=", jetsHt
+            #print "jetsMht=", jetsMht
+            
+            HT = 0
+            for i in jetsHt:
+                HT += c.Jets[i].Pt()
+            MhtVec = TLorentzVector()
+            metVec.SetPtEtaPhiE(0,0,0,0)
+            for i in jetsMht:
+                MhtVec -= c.Jets[i]
+            MHT = MhtVec.Pt()
+            MHTPhi = MhtVec.Phi()
+            
+            for flatOb in commonRecalcFlatObs:
+                commonRecalcFlatObs[flatOb][0] = eval(flatOb)
+            
+            # CLEAN JETS FROM THE DY MUONS
+            
+            for jetsOb in analysis_observables.jetsObs:
+                jetsObs[jetsOb] = ROOT.std.vector(eval(analysis_observables.jetsObs[jetsOb]))()
+
+            
+            for i in range(c.Jets.size()):
+                if all(abs(c.Muons[j].DeltaR(c.Jets[i])) > 0.1 for j in muons):
+                    for jetsOb in analysis_observables.jetsObs:
+                        jetsObs[jetsOb].push_back(getattr(c, jetsOb)[i])
+            
+            # CLEAN TRACKS FROM THE DY MUONS
+            
+            for tracksOb in analysis_observables.tracksObs:
+                tracksObs[tracksOb] = ROOT.std.vector(eval(analysis_observables.tracksObs[tracksOb]))()
+            
+            for i in range(c.tracks.size()):
+                if all(abs(c.Muons[j].DeltaR(c.tracks[i])) > 0.01 for j in muons):
+                    for tracksOb in analysis_observables.tracksObs:
+                        if analysis_observables.tracksObs[tracksOb] == "bool":
+                            tracksObs[tracksOb].push_back(bool(getattr(c, tracksOb)[i]))
+                        else:
+                            tracksObs[tracksOb].push_back(getattr(c, tracksOb)[i])
+        
+        nj, btagsLoose, ljet = analysis_ntuples.eventNumberOfJets25Pt2_4Eta_Loose(jetsObs["Jets"], jetsObs["Jets_bDiscriminatorCSV"])
+        nj, btagsMedium, ljet = analysis_ntuples.eventNumberOfJets25Pt2_4Eta_Medium(jetsObs["Jets"], jetsObs["Jets_bDiscriminatorCSV"])
+        nj, btagsDeepLoose, ljet = analysis_ntuples.eventNumberOfJets25Pt2_4Eta_DeepLoose(jetsObs["Jets"], jetsObs["Jets_bJetTagDeepCSVBvsAll"])
+        nj, btagsDeepMedium, ljet = analysis_ntuples.eventNumberOfJets25Pt2_4Eta_DeepMedium(jetsObs["Jets"], jetsObs["Jets_bJetTagDeepCSVBvsAll"])
         
         if ljet is None and not jpsi:
             #print "No ljet:",ljet 
@@ -785,12 +701,12 @@ def main():
         afterNj += 1
         
         #if not duoLepton: continue
-        commonCalcFlatObs["MinDeltaPhiMetJets"][0] = analysis_ntuples.eventMinDeltaPhiMetJets25Pt2_4Eta(c.Jets, c.MET, c.METPhi)
-        commonCalcFlatObs["MinDeltaPhiMhtJets"][0] = analysis_ntuples.eventMinDeltaPhiMhtJets25Pt2_4Eta(c.Jets, c.MHT, c.MHTPhi)
+        commonCalcFlatObs["MinDeltaPhiMetJets"][0] = analysis_ntuples.eventMinDeltaPhiMetJets25Pt2_4Eta(jetsObs["Jets"], MET, METPhi)
+        commonCalcFlatObs["MinDeltaPhiMhtJets"][0] = analysis_ntuples.eventMinDeltaPhiMhtJets25Pt2_4Eta(jetsObs["Jets"], MHT, MHTPhi)
         if not dy and not jpsi:
             if commonCalcFlatObs["MinDeltaPhiMetJets"][0] < 0.4: continue
-            if c.MHT < 100: continue
-            if c.MET < 120: continue
+            if MHT < 100: continue
+            if MET < 120: continue
         #Keep 2 b-tags for two-leptons
         # if two_leptons:
 #             if btags > 2: continue
@@ -809,7 +725,6 @@ def main():
         for flatOb in flatObs:
             flatObs[flatOb][0] = getattr(c, flatOb)
     
-    
         commonCalcFlatObs["CrossSection"][0] = crossSection
         commonCalcFlatObs["NJets"][0] = nj
         commonCalcFlatObs["BTagsLoose"][0] = btagsLoose
@@ -821,14 +736,14 @@ def main():
             commonCalcFlatObs["LeadingJetPt"][0] = -1
             var_LeadingJet = TLorentzVector()
         else:
-            commonCalcFlatObs["LeadingJetPt"][0] = c.Jets[ljet].Pt()
-            var_LeadingJet = c.Jets[ljet]
+            commonCalcFlatObs["LeadingJetPt"][0] = jetsObs["Jets"][ljet].Pt()
+            var_LeadingJet = jetsObs["Jets"][ljet]
 
-        commonCalcFlatObs["MinCsv30"][0], commonCalcFlatObs["MaxCsv30"][0] = analysis_ntuples.minMaxCsv(c.Jets, c.Jets_bDiscriminatorCSV, 30)
-        commonCalcFlatObs["MinCsv25"][0], commonCalcFlatObs["MaxCsv25"][0] = analysis_ntuples.minMaxCsv(c.Jets, c.Jets_bDiscriminatorCSV, 25)
+        commonCalcFlatObs["MinCsv30"][0], commonCalcFlatObs["MaxCsv30"][0] = analysis_ntuples.minMaxCsv(jetsObs["Jets"], jetsObs["Jets_bDiscriminatorCSV"], 30)
+        commonCalcFlatObs["MinCsv25"][0], commonCalcFlatObs["MaxCsv25"][0] = analysis_ntuples.minMaxCsv(jetsObs["Jets"], jetsObs["Jets_bDiscriminatorCSV"], 25)
         
-        commonCalcFlatObs["MinDeepCsv30"][0], commonCalcFlatObs["MaxDeepCsv30"][0] = analysis_ntuples.minMaxCsv(c.Jets, c.Jets_bJetTagDeepCSVBvsAll, 30)
-        commonCalcFlatObs["MinDeepCsv25"][0], commonCalcFlatObs["MaxDeepCsv25"][0] = analysis_ntuples.minMaxCsv(c.Jets, c.Jets_bJetTagDeepCSVBvsAll, 25)
+        commonCalcFlatObs["MinDeepCsv30"][0], commonCalcFlatObs["MaxDeepCsv30"][0] = analysis_ntuples.minMaxCsv(jetsObs["Jets"], jetsObs["Jets_bJetTagDeepCSVBvsAll"], 30)
+        commonCalcFlatObs["MinDeepCsv25"][0], commonCalcFlatObs["MaxDeepCsv25"][0] = analysis_ntuples.minMaxCsv(jetsObs["Jets"], jetsObs["Jets_bJetTagDeepCSVBvsAll"], 25)
         
         #if var_MaxCsv25[0] > 0.7:
         #    continue
@@ -877,13 +792,58 @@ def main():
             takeLeptonsFrom = currLeptonCollectionMap.get(c.RunNum, c.LumiBlockNum, c.EvtNum)
         else:
             takeLeptonsFrom = c
-
-        for electronsOb in analysis_ntuples.electronsObs:
-            electronsObs[electronsOb] = getattr(takeLeptonsFrom, electronsOb)
         
-        if not dy:
-            for muonsOb in analysis_ntuples.muonsObs:
+        if dy:
+            #print "muons=", muons
+            muons, invMass = getDyMuons(takeLeptonsFrom)
+            if muons is None:
+                muons = getWMuon(takeLeptonsFrom)
+                if muons is None:
+                    continue
+                invMass = -1
+            if muons is None:
+                print "WHAT IS GOING ON?"
+            
+            for muonsOb in analysis_observables.muonsObs:
+                dyMuonsObs[muonsOb] = ROOT.std.vector(eval(analysis_observables.muonsObs[muonsOb]))()
+
+            for dyMuonsFlatOb in analysis_observables.dyMuonsFlatObs:
+                dyMuonsFlatObs[dyMuonsFlatOb] = np.zeros(1,dtype=analysis_observables.dyMuonsFlatObs[dyMuonsFlatOb])
+    
+            for dyMuonsClassOb in analysis_observables.dyMuonsClassObs:
+                dyMuonsClassObs[dyMuonsClassOb] = eval(analysis_observables.dyMuonsClassObs[dyMuonsClassOb])()
+            
+            for muonsOb in analysis_observables.muonsObs:
+                if analysis_observables.muonsObs[muonsOb] == "bool":
+                    for j in range(len(muons)):
+                        dyMuonsObs[muonsOb].push_back(bool(getattr(takeLeptonsFrom, muonsOb)[muons[j]]))
+                else:
+                    for j in range(len(muons)):
+                        dyMuonsObs[muonsOb].push_back(getattr(takeLeptonsFrom, muonsOb)[muons[j]])
+            
+            if len(muons) == 2:
+                dyMuonsClassObs["DYMuonsSum"] = takeLeptonsFrom.Muons[muons[0]] + takeLeptonsFrom.Muons[muons[1]]
+            else:
+                dyMuonsClassObs["DYMuonsSum"] = takeLeptonsFrom.Muons[muons[0]]
+            #print "invMass=", invMass
+            dyMuonsFlatObs["DYMuonsInvMass"][0] = invMass
+            
+            for muonsOb in analysis_observables.muonsObs:
+                muonsObs[muonsOb] = ROOT.std.vector(eval(analysis_observables.muonsObs[muonsOb]))()
+            
+            for i in range(takeLeptonsFrom.Muons.size()):
+                if all(i != j for j in muons):
+                    for muonsOb in analysis_observables.muonsObs:
+                        if analysis_observables.muonsObs[muonsOb] == "bool":
+                            muonsObs[muonsOb].push_back(bool(getattr(takeLeptonsFrom, muonsOb)[i]))
+                        else:
+                            muonsObs[muonsOb].push_back(getattr(takeLeptonsFrom, muonsOb)[i])
+        else:
+            for muonsOb in analysis_observables.muonsObs:
                 muonsObs[muonsOb] = getattr(takeLeptonsFrom, muonsOb)
+        
+        for electronsOb in analysis_observables.electronsObs:
+                electronsObs[electronsOb] = getattr(takeLeptonsFrom, electronsOb)
         
         commonCalcFlatObs["NL"][0] = nL
         
@@ -906,14 +866,14 @@ def main():
             var_triggerPrescales = c.TriggerPrescales
             var_triggerVersion = c.TriggerVersion
         
-        for electronsCalcOb in analysis_ntuples.electronsCalcObs:
-            electronsCalcObs[electronsCalcOb] = ROOT.std.vector(eval(analysis_ntuples.electronsCalcObs[electronsCalcOb]))()
+        for electronsCalcOb in analysis_observables.electronsCalcObs:
+            electronsCalcObs[electronsCalcOb] = ROOT.std.vector(eval(analysis_observables.electronsCalcObs[electronsCalcOb]))()
         
-        for muonsCalcOb in analysis_ntuples.muonsCalcObs:
-            muonsCalcObs[muonsCalcOb] = ROOT.std.vector(eval(analysis_ntuples.muonsCalcObs[muonsCalcOb]))()
+        for muonsCalcOb in analysis_observables.muonsCalcObs:
+            muonsCalcObs[muonsCalcOb] = ROOT.std.vector(eval(analysis_observables.muonsCalcObs[muonsCalcOb]))()
         
-        for tracksCalcOb in analysis_ntuples.tracksCalcObs:
-            tracksCalcObs[tracksCalcOb] = ROOT.std.vector(eval(analysis_ntuples.tracksCalcObs[tracksCalcOb]))()
+        for tracksCalcOb in analysis_observables.tracksCalcObs:
+            tracksCalcObs[tracksCalcOb] = ROOT.std.vector(eval(analysis_observables.tracksCalcObs[tracksCalcOb]))()
         
         for i in range(electronsObs["Electrons"].size()):
             electronsCalcObs["Electrons_deltaRLJ"].push_back(electronsObs["Electrons"][i].DeltaR(var_LeadingJet))
@@ -988,7 +948,7 @@ def main():
                 #elif lepIso == "JetIso":
                 #    isoJets[lep][lepIso] =  [var_Jets[j] for j in range(len(var_Jets)) if var_Jets[j].Pt() > 25 and (var_Jets_multiplicity[j] >=10 or eval("var_Jets_" + lep + "EnergyFraction")[j] <= (0.3 if lep == "electron" else 0.1))]
                 elif lepIso == "NonJetIso":
-                    isoJets[lep][lepIso] = [ c.Jets[j] for j in range(len(c.Jets)) ]# if var_Jets[j].Pt() > 25 ]
+                    isoJets[lep][lepIso] = [ jetsObs["Jets"][j] for j in range(len(jetsObs["Jets"])) ]# if var_Jets[j].Pt() > 25 ]
         
         for lep in isoJets:
 
@@ -997,7 +957,7 @@ def main():
             
             for i in range(leptonsVec.size()):
                 leptonsCorrJetVars[isoJets[lep]["obs"] + "_passNoIso"].push_back(True)
-                min, minCan = analysis_ntuples.minDeltaLepLeps(leptonsVec[i], c.Jets)
+                min, minCan = analysis_ntuples.minDeltaLepLeps(leptonsVec[i], jetsObs["Jets"])
                 if min is None:
                     eval(leptonsVecName.lower() + "CalcObs")[leptonsVecName  + "_minDeltaRJets"].push_back(-1)
                     eval(leptonsVecName.lower() + "CalcObs")[leptonsVecName  + "_closestJet"].push_back(-1)
@@ -1018,9 +978,9 @@ def main():
 #                     else:
 #                         leptonsCorrJetVars[isoJets[lep]["obs"] + "_passNonJetIso"].push_back(False)
         
-        jetsCalcObs["Jets_muonCorrected"] = ROOT.std.vector(TLorentzVector)(c.Jets)
-        jetsCalcObs["Jets_electronCorrected"] = ROOT.std.vector(TLorentzVector)(c.Jets)
-        jetsCalcObs["Jets_trackCorrected"] = ROOT.std.vector(TLorentzVector)(c.Jets)
+        jetsCalcObs["Jets_muonCorrected"] = ROOT.std.vector(TLorentzVector)(jetsObs["Jets"])
+        jetsCalcObs["Jets_electronCorrected"] = ROOT.std.vector(TLorentzVector)(jetsObs["Jets"])
+        jetsCalcObs["Jets_trackCorrected"] = ROOT.std.vector(TLorentzVector)(jetsObs["Jets"])
         
         #non_iso_jet_electrons = [ i for i in range(len(electronsObs["Electrons"])) if analysis_ntuples.electronPassesKinematicSelection(i, electronsObs["Electrons"], electronsCalcObs["Electrons_deltaRLJ"]) and electronsCalcObs["Electrons_minDeltaRJets"][i] >= 0 and electronsCalcObs["Electrons_minDeltaRJets"][i] < 0.4 ]
         #non_iso_jet_muons = [ i for i in range(len(muonsObs["Muons"])) if analysis_ntuples.muonPassesLooseSelection(i, muonsObs["Muons"], muonsObs["Muons_mediumID"], muonsCalcObs["Muons_deltaRLJ"])and muonsCalcObs["Muons_minDeltaRJets"][i] >= 0 and muonsCalcObs["Muons_minDeltaRJets"][i] < 0.4 ]
@@ -1028,7 +988,7 @@ def main():
         # changing this definition. We no longer ignore high-Pt leptons, and we no longer look at the leading jet
         non_iso_jet_electrons = [ i for i in range(len(electronsObs["Electrons"])) if electronsCalcObs["Electrons_minDeltaRJets"][i] >= 0 and electronsCalcObs["Electrons_minDeltaRJets"][i] < 0.4 ]
         non_iso_jet_muons = [ i for i in range(len(muonsObs["Muons"])) if analysis_ntuples.muonPassesJetIsoSelection(i, muonsObs["Muons"], muonsObs["Muons_mediumID"]) and muonsCalcObs["Muons_minDeltaRJets"][i] >= 0 and muonsCalcObs["Muons_minDeltaRJets"][i] < 0.4 ]
-        non_iso_jet_tracks = [ i for i in range(len(c.tracks)) if abs(c.tracks[i].Eta()) < 2.4 and c.tracks_trkRelIso[i] < 0.1 and c.tracks_dxyVtx[i] < 0.02 and c.tracks_dzVtx[i] < 0.05 and tracksCalcObs["tracks_minDeltaRJets"][i] >= 0 and tracksCalcObs["tracks_minDeltaRJets"][i] < 0.4]
+        non_iso_jet_tracks = [ i for i in range(len(tracksObs["tracks"])) if abs(tracksObs["tracks"][i].Eta()) < 2.4 and tracksObs["tracks_trkRelIso"][i] < 0.1 and tracksObs["tracks_dxyVtx"][i] < 0.02 and tracksObs["tracks_dzVtx"][i] < 0.05 and tracksCalcObs["tracks_minDeltaRJets"][i] >= 0 and tracksCalcObs["tracks_minDeltaRJets"][i] < 0.4]
         
         for i in non_iso_jet_electrons:
             for j in range(jetsCalcObs["Jets_electronCorrected"].size()):
@@ -1040,15 +1000,15 @@ def main():
                     jetsCalcObs["Jets_muonCorrected"][j] -= muonsObs["Muons"][i]
         for i in non_iso_jet_tracks:
             for j in range(jetsCalcObs["Jets_trackCorrected"].size()):
-                if jetsCalcObs["Jets_trackCorrected"][j].DeltaR(c.tracks[i]) < 0.4:
-                    jetsCalcObs["Jets_trackCorrected"][j] -= c.tracks[i]
+                if jetsCalcObs["Jets_trackCorrected"][j].DeltaR(tracksObs["tracks"][i]) < 0.4:
+                    jetsCalcObs["Jets_trackCorrected"][j] -= tracksObs["tracks"][i]
         
         for lepIso in utils.leptonIsolationList:
             for lep in isoJets:
                 if lepIso != "CorrJetIso":
                     continue
                 for ptRange in utils.leptonCorrJetIsoPtRange:
-                    isoJets[lep][str(ptRange)] = [jetsCalcObs["Jets_" + lep + "Corrected"][j] for j in range(len(jetsCalcObs["Jets_" + lep + "Corrected"])) if c.Jets_multiplicity[j] >=10 or (jetsCalcObs["Jets_" + lep + "Corrected"][j].E() > 0 and jetsCalcObs["Jets_" + lep + "Corrected"][j].Pt() > ptRange)]
+                    isoJets[lep][str(ptRange)] = [jetsCalcObs["Jets_" + lep + "Corrected"][j] for j in range(len(jetsCalcObs["Jets_" + lep + "Corrected"])) if jetsObs["Jets_multiplicity"][j] >=10 or (jetsCalcObs["Jets_" + lep + "Corrected"][j].E() > 0 and jetsCalcObs["Jets_" + lep + "Corrected"][j].Pt() > ptRange)]
           
         for lep in isoJets:
              
@@ -1098,7 +1058,7 @@ def main():
         else:
             commonCalcFlatObs["LeadingJetMinDeltaRMuons"][0] = min
         
-        for vecObs in utils.dileptonObservablesVecList:
+        for vecObs in analysis_observables.dileptonObservablesVecList:
             for iso in utils.leptonIsolationList:
                 for cat in utils.leptonIsolationCategories:
                     ptRanges = [""]
@@ -1109,9 +1069,9 @@ def main():
                         if iso + str(ptRange) + cat == utils.defaultJetIsoSetting:
                             postfixi = [iso + str(ptRange) + cat, ""]
                         for postfix in postfixi:
-                            dileptonVars[vecObs + postfix] = ROOT.std.vector(eval(utils.dileptonObservablesVecList[vecObs]))()
+                            dileptonVars[vecObs + postfix] = ROOT.std.vector(eval(analysis_observables.dileptonObservablesVecList[vecObs]))()
                             if postfix == utils.defaultJetIsoSetting:
-                                dileptonVars[vecObs] = ROOT.std.vector(eval(utils.dileptonObservablesVecList[vecObs]))()
+                                dileptonVars[vecObs] = ROOT.std.vector(eval(analysis_observables.dileptonObservablesVecList[vecObs]))()
                             
         foundTwoLeptons = False
         foundSingleLepton = False
@@ -1133,9 +1093,9 @@ def main():
                     #print "default=", utils.defaultJetIsoSetting
                     #print iso + str(ptRange) + cat, postfixi
                     
-                    for DTypeObs in utils.dileptonObservablesDTypesList:
+                    for DTypeObs in analysis_observables.dileptonObservablesDTypesList:
                         for postfix in postfixi:
-                            if utils.dileptonObservablesDTypesList[DTypeObs] == "bool":
+                            if analysis_observables.dileptonObservablesDTypesList[DTypeObs] == "bool":
                                 dileptonVars[DTypeObs + postfix][0] = 0
                             else:
                                 dileptonVars[DTypeObs + postfix][0] = -1
@@ -1158,6 +1118,9 @@ def main():
                     else:
                         leptons, leptonsIdx, leptonsCharge, leptonFlavour, same_sign = analysis_ntuples.getTwoLeptonsAfterSelection(electronsObs["Electrons"], leptonsCorrJetVars["Electrons_pass" + iso + str(ptRange)], electronsCalcObs["Electrons_deltaRLJ"], electronsObs["Electrons_charge"], muonsObs["Muons"], leptonsCorrJetVars["Muons_pass" + iso + str(ptRange)], muonsObs["Muons_mediumID"], muonsCalcObs["Muons_deltaRLJ"], muonsObs["Muons_charge"], utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], muonsObs["Muons_tightID"])
                     
+                    if leptons is None and dy:
+                        continue
+                    
                     if leptons is None:
                         if jpsi_muons:
                             ll, leptonIdx, t, ti = analysis_ntuples.getSingleJPsiLeptonAfterSelection(24, 24, muonsObs["Muons"], leptonsCorrJetVars["Muons_pass" + iso + str(ptRange)], muonsObs["Muons_mediumID"], muonsObs["Muons_charge"], tracksObs["tracks"], tracksObs["tracks_charge"], utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], muonsObs["Muons_tightID"], muonsObs["Muons_passIso"])
@@ -1177,7 +1140,7 @@ def main():
                         #print ientry, leptons, leptonsIdx, leptonsCharge, leptonFlavour, same_sign
                         
                         pt = TLorentzVector()
-                        pt.SetPtEtaPhiE(c.MET,0,c.METPhi,c.MET)
+                        pt.SetPtEtaPhiE(MET,0,METPhi,MET)
                         
                         for postfix in postfixi:
                         
@@ -1203,9 +1166,9 @@ def main():
                             dileptonVars["deltaPhi" + postfix][0] = abs(leptons[0].DeltaPhi(leptons[1]))
                             dileptonVars["deltaEta" + postfix][0] = abs(leptons[0].Eta() - leptons[1].Eta())
                             dileptonVars["deltaR" + postfix][0] = abs(leptons[0].DeltaR(leptons[1]))
-                            dileptonVars["pt3" + postfix][0] = analysis_tools.pt3(leptons[0].Pt(),leptons[0].Phi(),leptons[1].Pt(),leptons[1].Phi(),c.MET,c.METPhi)
-                            dileptonVars["mt1" + postfix][0] = analysis_tools.MT2(c.MET, c.METPhi, leptons[0])
-                            dileptonVars["mt2" + postfix][0] = analysis_tools.MT2(c.MET, c.METPhi, leptons[1])
+                            dileptonVars["pt3" + postfix][0] = analysis_tools.pt3(leptons[0].Pt(),leptons[0].Phi(),leptons[1].Pt(),leptons[1].Phi(),MET,METPhi)
+                            dileptonVars["mt1" + postfix][0] = analysis_tools.MT2(MET, METPhi, leptons[0])
+                            dileptonVars["mt2" + postfix][0] = analysis_tools.MT2(MET, METPhi, leptons[1])
                             
                             #if leptons[0].Pt() < 1 or leptons[1].Pt() < 1:
                             #    print "FUCK!"
@@ -1216,7 +1179,7 @@ def main():
                             dileptonVars["mtautau" + postfix][0] = analysis_tools.Mtautau(pt, leptons[0], leptons[1])
                             dileptonVars["deltaEtaLeadingJetDilepton" + postfix][0] = abs((leptons[0] + leptons[1]).Eta() - var_LeadingJet.Eta())
                             dileptonVars["deltaPhiLeadingJetDilepton" + postfix][0] = abs((leptons[0] + leptons[1]).DeltaPhi(var_LeadingJet))
-                            dileptonVars["dilepHt" + postfix][0] = analysis_ntuples.htJet25Leps(c.Jets, leptons)
+                            dileptonVars["dilepHt" + postfix][0] = analysis_ntuples.htJet25Leps(jetsObs["Jets"], leptons)
                             dileptonVars["deltaPhiMetLepton1" + postfix][0] = abs(leptons[0].DeltaPhi(pt))
                             dileptonVars["deltaPhiMetLepton2" + postfix][0] = abs(leptons[1].DeltaPhi(pt))
                             
@@ -1303,10 +1266,10 @@ def main():
                                                 dileptonVars["tc" + postfix][0] = True
                             
                     for postfix in postfixi:
-                        for vecObs in utils.dileptonObservablesVecList:
+                        for vecObs in analysis_observables.dileptonObservablesVecList:
                             #print "tEvent.SetBranchAddress(" + vecObs + postfix +","+ str(dileptonVars[vecObs + postfix]) + ")"
                             tEvent.SetBranchAddress(vecObs + postfix, dileptonVars[vecObs + postfix])
-                        for stringObs in utils.dileptonObservablesStringList:
+                        for stringObs in analysis_observables.dileptonObservablesStringList:
                             #print "tEvent.SetBranchAddress(" + stringObs + postfix +","+ str(dileptonVars[stringObs + postfix]) + ")"
                             tEvent.SetBranchAddress(stringObs + postfix, dileptonVars[stringObs + postfix])
         
@@ -1377,46 +1340,53 @@ def main():
 #         tEvent.SetBranchAddress('Jets_electronCorrected', var_Jets_electronCorrected)
         
         
-        for jetsOb in analysis_ntuples.jetsObs:
+        for jetsOb in analysis_observables.jetsObs:
             tEvent.SetBranchAddress(jetsOb, jetsObs[jetsOb])
         
-        for jetsCalcOb in analysis_ntuples.jetsCalcObs:
+        for jetsCalcOb in analysis_observables.jetsCalcObs:
             tEvent.SetBranchAddress(jetsCalcOb, jetsCalcObs[jetsCalcOb])
         
         
         if not data:
-            for genParticlesOb in analysis_ntuples.genParticlesObs:
+            for genParticlesOb in analysis_observables.genParticlesObs:
                 genParticlesObs[genParticlesOb] = getattr(c, genParticlesOb)
-            for genParticlesOb in analysis_ntuples.genParticlesObs:
+            for genParticlesOb in analysis_observables.genParticlesObs:
                 tEvent.SetBranchAddress(genParticlesOb, genParticlesObs[genParticlesOb])
     
-        for commonObservablesStringOb in analysis_ntuples.commonObservablesStringList:
+        for commonObservablesStringOb in analysis_observables.commonObservablesStringList:
             tEvent.SetBranchAddress(commonObservablesStringOb, commonObservablesStringObs[commonObservablesStringOb])
    
-        for tracksOb in analysis_ntuples.tracksObs:
+        for tracksOb in analysis_observables.tracksObs:
             tEvent.SetBranchAddress(tracksOb, tracksObs[tracksOb])
         
-        for tracksCalcOb in analysis_ntuples.tracksCalcObs:
+        for tracksCalcOb in analysis_observables.tracksCalcObs:
             tEvent.SetBranchAddress(tracksCalcOb, tracksCalcObs[tracksCalcOb])
         
-        for pionsOb in analysis_ntuples.pionsObs:
+        for pionsOb in analysis_observables.pionsObs:
             tEvent.SetBranchAddress(pionsOb, pionsObs[pionsOb])
         
-        for photonOb in analysis_ntuples.photonObs:
+        for photonOb in analysis_observables.photonObs:
             tEvent.SetBranchAddress(photonOb, photonObs[photonOb])
         
-        for electronsOb in analysis_ntuples.electronsObs:
+        for electronsOb in analysis_observables.electronsObs:
             tEvent.SetBranchAddress(electronsOb, electronsObs[electronsOb])
         
-        for electronsCalcOb in analysis_ntuples.electronsCalcObs:
+        for electronsCalcOb in analysis_observables.electronsCalcObs:
             tEvent.SetBranchAddress(electronsCalcOb, electronsCalcObs[electronsCalcOb])
         
-        for muonsOb in analysis_ntuples.muonsObs:
+        for muonsOb in analysis_observables.muonsObs:
             tEvent.SetBranchAddress(muonsOb, muonsObs[muonsOb])
         
-        for muonsCalcOb in analysis_ntuples.muonsCalcObs:
+        for muonsCalcOb in analysis_observables.muonsCalcObs:
             tEvent.SetBranchAddress(muonsCalcOb, muonsCalcObs[muonsCalcOb])
         
+        if dy:
+            for muonsOb in analysis_observables.muonsObs:
+                tEvent.SetBranchAddress("DY" + muonsOb, dyMuonsObs[muonsOb])
+
+            for dyMuonsClassOb in analysis_observables.dyMuonsClassObs:
+                tEvent.SetBranchAddress(dyMuonsClassOb, dyMuonsClassObs[dyMuonsClassOb])
+         
         tEvent.SetBranchAddress('LeadingJet', var_LeadingJet)
         
         if signal:
@@ -1456,20 +1426,20 @@ def main():
                     g1 = c.GenParticles[genZL[1]]
                 
                 pt = TLorentzVector()
-                pt.SetPtEtaPhiE(c.MET,0,c.METPhi,c.MET)
+                pt.SetPtEtaPhiE(MET,0,METPhi,MET)
                 
                 genCalcObs["invMass"][0] = (g1 + g2).M()
                 genCalcObs["dileptonPt"][0] = abs((g1 + g2).Pt())
                 genCalcObs["deltaPhi"][0] = abs(g1.DeltaPhi(g2))
                 genCalcObs["deltaEta"][0] = abs(g1.Eta() - g2.Eta())
                 genCalcObs["deltaR"][0] = abs(g1.DeltaR(g2))
-                genCalcObs["pt3"][0] = analysis_tools.pt3(g1.Pt(),g1.Phi(),g2.Pt(),g2.Phi(),c.MET,c.METPhi)
-                genCalcObs["mt1"][0] = analysis_tools.MT2(c.MET, c.METPhi, g1)
-                genCalcObs["mt2"][0] = analysis_tools.MT2(c.MET, c.METPhi, g2)
+                genCalcObs["pt3"][0] = analysis_tools.pt3(g1.Pt(),g1.Phi(),g2.Pt(),g2.Phi(),MET,METPhi)
+                genCalcObs["mt1"][0] = analysis_tools.MT2(MET, METPhi, g1)
+                genCalcObs["mt2"][0] = analysis_tools.MT2(MET, METPhi, g2)
                 genCalcObs["mtautau"][0] = analysis_tools.Mtautau(pt, g1, g2)
                 genCalcObs["deltaEtaLeadingJetDilepton"][0] = abs((g1 + g2).Eta() - var_LeadingJet.Eta())
                 genCalcObs["deltaPhiLeadingJetDilepton"][0] = abs((g1 + g2).DeltaPhi(var_LeadingJet))
-                genCalcObs["dilepHt"][0] = analysis_ntuples.htJet25Leps(c.Jets, [g1,g2])
+                genCalcObs["dilepHt"][0] = analysis_ntuples.htJet25Leps(jetsObs["Jets"], [g1,g2])
                 #genCalcObs["deltaPhiMetLepton1"][0] = abs(g1.DeltaPhi(pt))
                 #genCalcObs["deltaPhiMetLepton2"][0] = abs(g2.DeltaPhi(pt))
                 
@@ -1496,12 +1466,12 @@ def main():
                 tEvent.SetBranchAddress(genVecOb, genVecObs[genVecOb])
         
         if not signal:
-            for triggerOb in analysis_ntuples.triggerObs:
+            for triggerOb in analysis_observables.triggerObs:
                 tEvent.SetBranchAddress(triggerOb, triggerObs[triggerOb])
             
         metDHt = 9999999
         if c.HT != 0:
-            metDHt = c.MET / c.HT
+            metDHt = MET / c.HT
         
         commonCalcFlatObs["MetDHt"][0] = metDHt
         
@@ -1509,18 +1479,18 @@ def main():
             commonCalcFlatObs["LeadingJetPartonFlavor"][0] = -1
             commonCalcFlatObs["LeadingJetQgLikelihood"][0] = -1
         else:
-            commonCalcFlatObs["LeadingJetPartonFlavor"][0] = c.Jets_partonFlavor[ljet]
-            commonCalcFlatObs["LeadingJetQgLikelihood"][0] = c.Jets_qgLikelihood[ljet]
+            commonCalcFlatObs["LeadingJetPartonFlavor"][0] = jetsObs["Jets_partonFlavor"][ljet]
+            commonCalcFlatObs["LeadingJetQgLikelihood"][0] = jetsObs["Jets_qgLikelihood"][ljet]
         
         
         if not data:    
-            vars["tEffhMetMhtRealXMet2016"][0] = tEffhMetMhtRealXMet2016.Eval(c.MET)
-            vars["tEffhMetMhtRealXMet2017"][0] = tEffhMetMhtRealXMet2017.Eval(c.MET)
-            vars["tEffhMetMhtRealXMet2018"][0] = tEffhMetMhtRealXMet2018.Eval(c.MET)
+            vars["tEffhMetMhtRealXMet2016"][0] = tEffhMetMhtRealXMet2016.Eval(MET)
+            vars["tEffhMetMhtRealXMet2017"][0] = tEffhMetMhtRealXMet2017.Eval(MET)
+            vars["tEffhMetMhtRealXMet2018"][0] = tEffhMetMhtRealXMet2018.Eval(MET)
     
-            vars["tEffhMetMhtRealXMht2016"][0] = tEffhMetMhtRealXMht2016.Eval(c.MHT)
-            vars["tEffhMetMhtRealXMht2017"][0] = tEffhMetMhtRealXMht2017.Eval(c.MHT)
-            vars["tEffhMetMhtRealXMht2018"][0] = tEffhMetMhtRealXMht2018.Eval(c.MHT)
+            vars["tEffhMetMhtRealXMht2016"][0] = tEffhMetMhtRealXMht2016.Eval(MHT)
+            vars["tEffhMetMhtRealXMht2017"][0] = tEffhMetMhtRealXMht2017.Eval(MHT)
+            vars["tEffhMetMhtRealXMht2018"][0] = tEffhMetMhtRealXMht2018.Eval(MHT)
             
             vars["passedMhtMet6pack"][0] = True
             vars["passedSingleMuPack"][0] = True

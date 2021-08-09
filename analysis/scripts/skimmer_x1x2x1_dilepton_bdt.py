@@ -189,7 +189,10 @@ def main():
                                     if eval("tree.twoLeptons"  + postfix) == 1 and tree.BTagsDeepMedium == 0 and eval("tree.leptons"  + postfix).size() == 2:
                                         eventPassed = True
                                         leptonFlavour = eval("tree.leptonFlavour"  + postfix)
-                                elif eval("tree." + sc_prefix + "exclusiveTrack"  + postfix) == 1 and tree.BTagsDeepMedium == 0 and eval("tree." + sc_prefix + "trackBDT"  + postfix) >= 0:
+                                # Before
+                                #elif eval("tree." + sc_prefix + "exclusiveTrack"  + postfix) == 1 and tree.BTagsDeepMedium == 0 and eval("tree." + sc_prefix + "trackBDT"  + postfix) >= 0:
+                                # Making new version without trackBDT precut
+                                elif eval("tree." + sc_prefix + "exclusiveTrack"  + postfix) == 1 and tree.BTagsDeepMedium == 0:
                                     eventPassed = True
                                     leptonFlavour = eval("tree." + sc_prefix + "exclusiveTrackLeptonFlavour"  + postfix)
                                 if not jpsi and eventPassed:

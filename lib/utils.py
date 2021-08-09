@@ -707,10 +707,14 @@ def getStackSum(hist):
 def mkhistlogx(name, title, nbins, xmin, xmax):
     logxmin = TMath.Log10(xmin)
     logxmax = TMath.Log10(xmax)
+    
     binwidth = (logxmax-logxmin)/nbins
+    #print "logxmin", logxmin, "logxmax", logxmax, "binwidth", binwidth
     xbins = array.array('d',[0]*(nbins+1))##might need to be defined out as 0's
     #xbins[0] = TMath.Power(10,logxmin)#xmin
     for i in range(0,nbins+1):
+        binval = xmin + TMath.Power(10,logxmin+i*binwidth)
+        #print "bin", i, "val", binval
         xbins[i] = xmin + TMath.Power(10,logxmin+i*binwidth)    
     #print 'xbins', xbins        
     h = TH1F(name,title,nbins,xbins);

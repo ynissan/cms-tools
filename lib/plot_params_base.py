@@ -55,6 +55,8 @@ class BaseParams:
     data_dir = None
     sc_bg_dir = None
     sc_data_dir = None
+    
+    # This is in fb-1
     calculatedLumi = {}
     weightString = {
         'MET' : "passedMhtMet6pack * tEffhMetMhtRealXMht2016",
@@ -77,6 +79,8 @@ class BaseParams:
     plot_ratio = False
     plot_point = False
     plot_efficiency = False
+    plot_grid_x = False
+    plot_grid_y = False
     create_canvas = False
     plot_custom_ratio = False
     #customRatios = [  [["DiBoson"],["TTJets"]],  [["WJetsToLNu"],["ZJetsToNuNu"]]  ]
@@ -110,6 +114,7 @@ class BaseParams:
     histrograms_file = ""
     
     bg_retag = False
+    
     object_retag = False
     object_retag_map = {}
     

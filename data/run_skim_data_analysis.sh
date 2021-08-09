@@ -49,6 +49,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --selection)
+        SELECTION=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         --jpsi_single_electron)
         JPSI_SINGLE_ELECTRON=true
         POSITIONAL+=("$1")
@@ -117,7 +122,7 @@ file_limit=0
 i=0
 count=0
 input_files=""
-files_per_job=1
+files_per_job=10
 
 #files_per_job=1
 
@@ -131,10 +136,17 @@ elif [ -n "$JPSI_SINGLE_ELECTRON" ]; then
 fi
 
 #for fullname in ${DATA_NTUPLES_DIR}/Run2016*SingleMuon*; do
-for fullname in ${DATA_NTUPLES_DIR}/Run2016*${DATA_PATTERN}*; do
+
+INPUT_DIR=${DATA_NTUPLES_DIR}
+
+if [ -n "SELECTION" ]; then
+    INPUT_DIR=${DY_SKIM_DATA_OUTPUT_DIR}/single
+fi
+
+for fullname in ${INPUT_DIR}/Run2016*${DATA_PATTERN}*; do
     name=$(basename $fullname)
-    if [ -f "$FILE_OUTPUT/$name" ]; then
-        echo "$name exist. Skipping..."
+    if [ -z "SELECTION" ] && [ -f "$FILE_OUTPUT/$name" ]; then
+        #echo "$name exist. Skipping..."
         continue
     fi
     input_files="$input_files $fullname"

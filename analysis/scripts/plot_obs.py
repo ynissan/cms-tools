@@ -281,13 +281,16 @@ def createPlotsFast(rootfiles, types, histograms, weight, category, conditions, 
                             #print "drawString", drawString
                             #print "conditionStr", conditionStr
             
-                            if plot_par.plot_log_x and hist_def["obs"] == "invMass":
+                            if plot_par.plot_log_x and plot_par.plot_real_log_x and hist_def["obs"] == "invMass":
+                                print "Using getRealLogxHistogramFromTree"
+                                #exit(0)
                                 hist = utils.getRealLogxHistogramFromTree(histName, c, formula, hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), drawString, plot_par.plot_overflow)
                             else:
                                 hist = utils.getHistogramFromTree(histName, c, formula, hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), drawString, plot_par.plot_overflow)
             
                             if hist is None:
                                 continue
+                            print "Bins for new histogram is:", hist.GetXaxis().GetNbins()
                             #if "leptonF" in histName:
                             #    print "Made leptonFlavour for", histName, hist.GetXaxis().GetNbins()
                             hist.GetXaxis().SetTitle("")
@@ -355,8 +358,10 @@ def plotRatio(c1, pad, memory, dataHist, newBgHist, hist_def, title = "Data / BG
         return
 
     pad.cd()
-    pad.SetGridx()
-    pad.SetGridy()
+    if plot_par.plot_grid_x:
+        pad.SetGridx()
+    if plot_par.plot_grid_y:
+        pad.SetGridy()
     rdataHist = dataHist.Clone()
     memory.append(rdataHist)
     rdataHist.Divide(newBgHist)
@@ -716,10 +721,10 @@ def main():
             weight = 1
     else:
         calculated_lumi = utils.LUMINOSITY / 1000
-        if use_calculated_lumi_weight:
+        if plot_par.use_calculated_lumi_weight:
             weight = utils.LUMINOSITY
         else:
-            1
+            weight = 1
     
     #calculated_lumi= plot_par.calculatedLumi.get(plot_par.plot_kind)
     print "plot_par.plot_kind", plot_par.plot_kind
@@ -1135,7 +1140,7 @@ def main():
                     pad = histPad.cd(pId)
                     pad.cd()
                     dataHist.Draw("P e")
-                legend.AddEntry(dataHist, "Data", 'p')
+                legend.AddEntry(dataHist, "data", 'p')
             
             #dataHist.Draw("P e")
             
@@ -1659,9 +1664,11 @@ def main():
             
             if not (linear and plot_single):
                 pad.SetLogy()
-                
-            pad.SetGridx()
-            pad.SetGridy()
+            
+            if plot_par.plot_grid_x: 
+                pad.SetGridx()
+            if plot_par.plot_grid_y:
+                pad.SetGridy()
             
             if plot_par.plot_log_x and hist_def["obs"] == "invMass":
                 pad.SetLogx()
@@ -1852,8 +1859,10 @@ def main():
                     pad = histPad.cd(pId)
             
             pad.SetLogy(0)
-            pad.SetGridx()
-            pad.SetGridy()
+            if plot_par.plot_grid_x:
+                pad.SetGridx()
+            if plot_par.plot_grid_y:
+                pad.SetGridy()
             if not plot_par.plot_ratio:
                 #pad.SetBottomMargin(0.16)
                 pad.SetLeftMargin(0.13)

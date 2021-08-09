@@ -55,6 +55,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --selection)
+        SELECTION=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         --master)
         MASTER=true
         POSITIONAL+=("$1")
@@ -82,6 +87,9 @@ if [ -n "$TWO_LEPTONS" ]; then
     fi
 elif [ -n "$DY" ]; then
     OUTPUT_DIR=$DY_SKIM_DATA_OUTPUT_DIR
+    if [ -n "SELECTION" ]; then
+        SCRIPT_PATH=$SELECTION_SKIMMER_PATH
+    fi
 elif [ -n "$JPSI_MUONS" ]; then
     OUTPUT_DIR=$SKIM_DATA_JPSI_MUONS_OUTPUT_DIR
 elif [ -n "$MINI" ]; then

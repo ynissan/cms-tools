@@ -49,7 +49,7 @@ COMMAND=$SCRIPTS_WD/skimmer_x1x2x1_dilepton_bdt.py
 if [ -n "$DRELL_YAN" ]; then
     echo "GOT DY"
     echo "HERE: $@"
-    INPUT_DIR=$SKIM_DY_BG_SIG_BDT_OUTPUT_DIR
+    INPUT_DIR=$DY_SKIM_OUTPUT_DIR
 elif [ -n "$JPSI_MUONS" ]; then
     INPUT_DIR=$SKIM_MASTER_OUTPUT_DIR
     BDT_DIR=$SKIM_MASTER_OUTPUT_DIR/split/tmva
@@ -80,10 +80,10 @@ EOM
 
 FILES=$INPUT_DIR/sum/type_sum/*
 #FILES=(ZJetsToNuNu_HT-400To600_13TeV-madgraph_1.root TTJets_DiLept_TuneCUETP8M1_9.root TTJets_SingleLeptFromT_TuneCUETP8M1_1.root WJetsToLNu_HT-1200To2500_TuneCUETP8M1_2.root ZJetsToNuNu_HT-400To600_13TeV-madgraph_2.root)
-FILES=(TTJets_SingleLeptFromT_TuneCUETP8M1_15.root ZJetsToNuNu_HT-400To600_13TeV-madgraph_4.root)
+#FILES=(TTJets_SingleLeptFromT_TuneCUETP8M1_15.root ZJetsToNuNu_HT-400To600_13TeV-madgraph_4.root)
 
 for bg_file in ${FILES[@]}; do
-    bg_file=$INPUT_DIR/sum/type_sum/$bg_file
+    #bg_file=$INPUT_DIR/sum/type_sum/$bg_file
     cmd="$CONDOR_WRAPPER $COMMAND -i $bg_file -bdt $BDT_DIR -bg $@"
     bg_file_name=$(basename $bg_file .root)
     echo $cmd
