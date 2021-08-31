@@ -377,7 +377,7 @@ def pause(str_='push enter key when ready'):
 def fillth1(h,x, weight=1):
     h.Fill(min(max(x,h.GetXaxis().GetBinLowEdge(1)+epsilon),h.GetXaxis().GetBinLowEdge(h.GetXaxis().GetNbins()+1)-epsilon),weight)
 
-def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, noFillStyle=False, largeVersion = False, plotPoint = False, legendNames = {}):
+def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, noFillStyle=False, largeVersion = False, plotPoint = False, legendNames = {}, noStack=False):
     newStack = THStack(bgHist.GetName(), title)
     memory.append(newStack)
 
@@ -395,7 +395,10 @@ def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, n
         colorI = i
         if colorInx is not None:
             colorI = colorInx[i]
+        print colorI, colorInx
         formatHist(newHist, colorPalette[colorI], 0.35, noFillStyle, largeVersion)
+        if noStack:
+            newHist.SetFillStyle(0)
         lineC = TColor.GetColor(colorPalette[colorI]["fillColor"])
         
         #newHist.SetMarkerColorAlpha(colorPalette[colorI]["markerColor"], 0.9)
@@ -415,6 +418,8 @@ def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, n
                 legendName = legendNames[hist.GetName().split("_")[-1]]
             if plotPoint:
                 legend.AddEntry(newHist, legendName, 'p')
+            elif noStack:
+                legend.AddEntry(newHist, legendName, 'l')
             else:
                 legend.AddEntry(newHist, legendName, 'F')
 
@@ -723,6 +728,14 @@ def mkhistlogx(name, title, nbins, xmin, xmax):
 def getRealLogxHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=True):
     h = mkhistlogx(name + "_logx", "", bins, minX, maxX)
     return getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow, name + "_logx", True)
+
+def getHistogramFromTreeCutsomBinsX(name, tree, obs, customBinsX, condition, overflow=True):
+    xbins = array.array('d',[0]*(len(customBinsX)))
+    for i in range(len(customBinsX)):
+        xbins[i] = customBinsX[i]
+    h = TH1F(name+"_customx","",len(customBinsX)-1, xbins)
+    return getHistogramFromTree(name, tree, obs, None, None, None, condition, overflow, name + "_customx", True)
+    
     
 def getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=True, tmpName="hsqrt", predefBins = False, twoD = False, binsY = None, minBinsY = None, maxBinsY = None):
     if tree.GetEntries() == 0:

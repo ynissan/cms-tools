@@ -186,7 +186,8 @@ def main():
                                 eventPassed = False
                                 leptonFlavour = ""
                                 if prefix == "reco":
-                                    if eval("tree.twoLeptons"  + postfix) == 1 and tree.BTagsDeepMedium == 0 and eval("tree.leptons"  + postfix).size() == 2:
+                                    #if eval("tree.twoLeptons"  + postfix) == 1 and tree.BTagsDeepMedium == 0 and eval("tree.leptons"  + postfix).size() == 2:
+                                    if eval("tree.twoLeptons"  + postfix) == 1 and eval("tree.leptons"  + postfix).size() == 2:
                                         eventPassed = True
                                         leptonFlavour = eval("tree.leptonFlavour"  + postfix)
                                 # Before

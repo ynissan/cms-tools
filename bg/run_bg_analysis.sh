@@ -130,7 +130,7 @@ fi
 
 files=()
 
-if [ -z "$DY" ] && [ -z "$SELECTION" ]; then
+if [ -z "$SELECTION" ]; then
     for type in ${BG_TYPES[@]}; do 
         echo "Checking type $type"
         if [ "$type" = "DYJetsToLL" ]; then
@@ -221,7 +221,7 @@ for type in reg madHtFilesGt600 madHtFilesLt600; do
             continue
         fi
         
-        if [ -z "$DY" ] && [ -z "$SELECTION" ] && [ -f "$FILE_OUTPUT/$name" ]; then
+        if [ -z "$SELECTION" ] && [ -f "$FILE_OUTPUT/$name" ]; then
             #echo "$name exist. Skipping..."
             continue
         fi

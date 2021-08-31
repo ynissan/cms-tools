@@ -22,14 +22,14 @@ signals = [
               "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm0p86Chi20Chipm.root",
               "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm1p92Chi20Chipm.root",
               "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm3p28Chi20Chipm.root",
-              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm9p73Chi20Chipm.root"
+              #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm9p73Chi20Chipm.root"
               ]
 
 signalNames = [
-    "\Delta_{}M 0.8Gev",
-    "\Delta_{}M 1.9Gev",
-    "\Delta_{}M 3.2Gev",
-    "\Delta_{}M 9.7Gev",
+    "\Delta_{}M 0.8 Gev",
+    "\Delta_{}M 1.9 Gev",
+    "\Delta_{}M 3.2 Gev",
+    #"\Delta_{}M 9.7Gev",
 ]
 
 # histogram params:
@@ -37,9 +37,15 @@ signalNames = [
 # object - for the purpose of retagging
 # condition - adds a specific condition to the histogram
 # obs - either the name of the histogram of the formula
+# sc_obs - that's the obs for same-charge CR
 # formula - in case we want to override the obs with a specific formula (for naming two histograms differently)
+# sc_formula - formula for same-charge CR
 # bins - bins num
+# customBins - replaces the bins, minX, minY with custom binning array of low edges (plus one higher one)
 # minX, maxX - for x axis
+# minY, maxY, binsY - for y axis
+# 2D - boolean for 2D
+# plotStr - replaces the "hist" string when drawing the histogram
 # units - x axis title
 # legendCoor - legend coordinates
 # legendCol - legend columns number
@@ -47,6 +53,7 @@ signalNames = [
 # cmsLocation - where to put the CMS label
 # showLumi - bool
 # linearYspace - how much space to leave for legend
+# blind - blind a specific interval
 
 class BaseParams:
     signal_dir = None
@@ -65,6 +72,7 @@ class BaseParams:
     bgReTagging = {}
     bgReTaggingOrder = {}
     bgReTaggingNames = {}
+    
     plot_kind = "MET"
     plot_bg = True
     plot_signal = True
@@ -81,12 +89,17 @@ class BaseParams:
     plot_efficiency = False
     plot_grid_x = False
     plot_grid_y = False
-    create_canvas = False
     plot_custom_ratio = False
+    
+    create_canvas = False
+    
     #customRatios = [  [["DiBoson"],["TTJets"]],  [["WJetsToLNu"],["ZJetsToNuNu"]]  ]
     customRatios = [  [["tc_btag_veto"],["tc_2_btags"]]  ]
     choose_bg_files = False
     choose_bg_files_list = ["TTJets"]
+    # plot only specific subset of BG categories
+    choose_bg_categories = False
+    choose_bg_categories_list = []
     #choose_bg_files_list = ["WJetsToLNu"]
     choose_bg_files_for_sc = False
     ignore_bg_files = ["TT_TuneCUETP8M2T4_13TeV-powheg-pythia8.root", "TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root"]
@@ -101,7 +114,10 @@ class BaseParams:
     cuts = []
     efficiencies = []
     normalise = False
+    normalise_each_bg = False
+    normalise_integral_positive_only = False
     no_weights = False
+    
     fit_inv_mass_jpsi = False
     fit_inv_mass_obs_jpsi = ""
     fit_inv_mass_cut_jpsi = "none"
@@ -132,3 +148,12 @@ class BaseParams:
     show_lumi = True
     
     use_calculated_lumi_weight = True
+    
+    subtract_same_charge = False
+    
+    plot_custom_types = []
+    # used for cleaned-z and cleaned-w. They have different files and conditions attached to them.
+    custom_types_dir = []
+    custom_types_label = []
+    custom_types_conditions = []
+    custom_types_common_files = False

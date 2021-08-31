@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from ROOT import *
 from glob import glob
@@ -43,58 +43,10 @@ parser.add_argument('-jpsi_electrons', '--jpsi_electrons', dest='jpsi_electrons'
 
 args = parser.parse_args()
 
-print args
-
-madHTgt = None
-madHTlt = None
-if args.madHTgt:
-    madHTgt = int(args.madHTgt[0])
-    print "Got madHT lower bound of " + str(madHTgt)
-if args.madHTlt:
-    madHTlt = int(args.madHTlt[0])
-    print "Got madHT upper bound of " + str(madHTlt)
-
-
-signal = args.signal
-bg = args.bg
-data = args.data
-dy = args.dy
-sam = args.sam
-no_lepton_selection = args.no_lepton_selection
-jpsi_muons = args.jpsi_muons
-jpsi_electrons = args.jpsi_electrons
-jpsi = False
-
-if dy:
-    print "Got Drell-Yan"
-    #exit(0)
-if no_lepton_selection:
-    print "NO LEPTON SELECTION!"
-
-if jpsi_muons or jpsi_electrons:
-    jpsi = True
-    print "Got JPSI"
-    if jpsi_muons:
-        print "MUONS"
-    else:
-        print "ELECTRONS"
-
-input_file = None
-if args.input_file:
-    input_file = args.input_file[0].strip()
-output_file = None
-if args.output_file:
-    output_file = args.output_file[0].strip()
-
-if (bg and signal):
-    signal = True
-    bg = False
-
-replace_lepton_collection = True
-if signal:
-    replace_lepton_collection = False
+print(args)
     
 def getDyMuons(c):
+    #print "getDyMuons"
     muons = [i for i in range(len(c.Muons)) if c.Muons[i].Pt() >= 20 and bool(c.Muons_mediumID[i]) and bool(c.Muons_passIso[i]) and abs(c.Muons[i].Eta()) <= 2.4]
     
     if len(muons) != 2:
@@ -140,6 +92,55 @@ commonBranches = {
 
 def main():
     
+    madHTgt = None
+    madHTlt = None
+    if args.madHTgt:
+        madHTgt = int(args.madHTgt[0])
+        print("Got madHT lower bound of " + str(madHTgt))
+    if args.madHTlt:
+        madHTlt = int(args.madHTlt[0])
+        print("Got madHT upper bound of " + str(madHTlt))
+
+
+    signal = args.signal
+    bg = args.bg
+    data = args.data
+    dy = args.dy
+    sam = args.sam
+    no_lepton_selection = args.no_lepton_selection
+    jpsi_muons = args.jpsi_muons
+    jpsi_electrons = args.jpsi_electrons
+    jpsi = False
+
+    if dy:
+        print("Got Drell-Yan")
+        #exit(0)
+    if no_lepton_selection:
+        print("NO LEPTON SELECTION!")
+
+    if jpsi_muons or jpsi_electrons:
+        jpsi = True
+        print("Got JPSI")
+        if jpsi_muons:
+            print("MUONS")
+        else:
+            print("ELECTRONS")
+
+    input_file = None
+    if args.input_file:
+        input_file = args.input_file[0].strip()
+    output_file = None
+    if args.output_file:
+        output_file = args.output_file[0].strip()
+
+    if (bg and signal):
+        signal = True
+        bg = False
+
+    replace_lepton_collection = True
+    if signal:
+        replace_lepton_collection = False
+    
     import os
     from lib import utils
     
@@ -147,7 +148,7 @@ def main():
         utils.defaultJetIsoSetting = "NoIso"
     
     triggerFileName = os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/susy-trig-plots.root")
-    print "Opening trigger file: " + triggerFileName
+    print("Opening trigger file: " + triggerFileName)
     
     triggerFile = TFile(triggerFileName, "read")
     
@@ -345,15 +346,15 @@ def main():
     tEvent = TTree('tEvent','tEvent')
     
     for flatOb in analysis_observables.commonFlatObs:
-        print "tEvent.Branch(" + flatOb + "," +  "flatObs[flatOb]" + "," + flatOb + "/" + utils.typeTranslation[analysis_observables.commonFlatObs[flatOb]] + ")"
+        print("tEvent.Branch(" + flatOb + "," +  "flatObs[flatOb]" + "," + flatOb + "/" + utils.typeTranslation[analysis_observables.commonFlatObs[flatOb]] + ")")
         tEvent.Branch(flatOb, flatObs[flatOb],flatOb + "/" + utils.typeTranslation[analysis_observables.commonFlatObs[flatOb]])
     
     for flatOb in analysis_observables.commonRecalcFlatObs:
-        print "tEvent.Branch(" + flatOb + "," +  "commonRecalcFlatObs[flatOb]" + "," + flatOb + "/" + utils.typeTranslation[analysis_observables.commonRecalcFlatObs[flatOb]] + ")"
+        print("tEvent.Branch(" + flatOb + "," +  "commonRecalcFlatObs[flatOb]" + "," + flatOb + "/" + utils.typeTranslation[analysis_observables.commonRecalcFlatObs[flatOb]] + ")")
         tEvent.Branch(flatOb, commonRecalcFlatObs[flatOb],flatOb + "/" + utils.typeTranslation[analysis_observables.commonRecalcFlatObs[flatOb]])
     
     for commonCalcFlatOb in analysis_observables.commonCalcFlatObs:
-        print "tEvent.Branch(" + commonCalcFlatOb  + "," + "commonCalcFlatObs[commonCalcFlatOb]" + "," + commonCalcFlatOb + "/" + utils.typeTranslation[analysis_observables.commonCalcFlatObs[commonCalcFlatOb]] + ")"
+        print("tEvent.Branch(" + commonCalcFlatOb  + "," + "commonCalcFlatObs[commonCalcFlatOb]" + "," + commonCalcFlatOb + "/" + utils.typeTranslation[analysis_observables.commonCalcFlatObs[commonCalcFlatOb]] + ")")
         tEvent.Branch(commonCalcFlatOb, commonCalcFlatObs[commonCalcFlatOb],commonCalcFlatOb + "/" + utils.typeTranslation[analysis_observables.commonCalcFlatObs[commonCalcFlatOb]])
     
     for vetosFlatOb in analysis_observables.vetosFlatObs:
@@ -385,7 +386,7 @@ def main():
             if CorrJetObs == "CorrJetIso":
                  ptRanges = utils.leptonCorrJetIsoPtRange
             for ptRange in ptRanges:
-                print "tEvent.Branch(" + lep + "_pass" + CorrJetObs + str(ptRange), 'std::vector<' + str(utils.leptonsCorrJetVecList[CorrJetObs]) + '>', leptonsCorrJetVars[lep + "_pass" + CorrJetObs + str(ptRange)], ")"
+                print("tEvent.Branch(" + lep + "_pass" + CorrJetObs + str(ptRange), 'std::vector<' + str(utils.leptonsCorrJetVecList[CorrJetObs]) + '>', leptonsCorrJetVars[lep + "_pass" + CorrJetObs + str(ptRange)], ")")
                 tEvent.Branch(lep + "_pass" +  CorrJetObs + str(ptRange), 'std::vector<' + utils.leptonsCorrJetVecList[CorrJetObs] + '>', leptonsCorrJetVars[lep + "_pass" + CorrJetObs + str(ptRange)])
             
     ###### Tracks #######
@@ -415,7 +416,7 @@ def main():
         tEvent.Branch(muonsCalcOb, 'std::vector<' + analysis_observables.muonsCalcObs[muonsCalcOb] + '>', muonsCalcObs[muonsCalcOb])
         
         
-    if dy:
+    if False:#dy:
         for muonsOb in analysis_observables.muonsObs:
             tEvent.Branch("DY" + muonsOb, 'std::vector<' + analysis_observables.muonsObs[muonsOb] + '>', dyMuonsObs[muonsOb])
         
@@ -439,13 +440,13 @@ def main():
                     postfixi = [iso + str(ptRange) + cat, ""]
                 for postfix in postfixi:
                     for vecObs in analysis_observables.dileptonObservablesVecList:
-                        print "tEvent.Branch(" + vecObs + postfix, 'std::vector<' + analysis_observables.dileptonObservablesVecList[vecObs] + '>', dileptonVars[vecObs + postfix], ")"
+                        print("tEvent.Branch(" + vecObs + postfix, 'std::vector<' + analysis_observables.dileptonObservablesVecList[vecObs] + '>', dileptonVars[vecObs + postfix], ")")
                         tEvent.Branch(vecObs + postfix, 'std::vector<' + analysis_observables.dileptonObservablesVecList[vecObs] + '>', dileptonVars[vecObs + postfix])
                     for stringObs in analysis_observables.dileptonObservablesStringList:
-                        print "tEvent.Branch(" + stringObs + postfix, 'std::string', dileptonVars[stringObs + postfix],")"
+                        print("tEvent.Branch(" + stringObs + postfix, 'std::string', dileptonVars[stringObs + postfix],")")
                         tEvent.Branch(stringObs + postfix, 'std::string', dileptonVars[stringObs + postfix])
                     for DTypeObs in analysis_observables.dileptonObservablesDTypesList:
-                        print "tEvent.Branch(" + DTypeObs + postfix, dileptonVars[DTypeObs + postfix],DTypeObs + postfix + "/" + utils.typeTranslation[analysis_observables.dileptonObservablesDTypesList[DTypeObs]], ")"
+                        print("tEvent.Branch(" + DTypeObs + postfix, dileptonVars[DTypeObs + postfix],DTypeObs + postfix + "/" + utils.typeTranslation[analysis_observables.dileptonObservablesDTypesList[DTypeObs]], ")")
                         tEvent.Branch(DTypeObs + postfix, dileptonVars[DTypeObs + postfix],DTypeObs + postfix + "/" + utils.typeTranslation[analysis_observables.dileptonObservablesDTypesList[DTypeObs]])
                         
     if not signal:
@@ -459,13 +460,13 @@ def main():
         tEvent.Branch(commonBranche, vars[commonBranche], commonBranche + "/" + utils.typeTranslation[commonBranches[commonBranche]])
     
     chain = TChain('TreeMaker2/PreSelection')
-    print "Opening", input_file
+    print("Opening", input_file)
     chain.Add(input_file)
     c = chain.CloneTree()
     chain = None
-    print "Creating " + output_file
+    print("Creating " + output_file)
     fnew = TFile(output_file,'recreate')
-    print "Created."
+    print("Created.")
 
     hHt = TH1F('hHt','hHt',100,0,3000)
     hHtWeighted = TH1F('hHtWeighted','hHtWeighted',100,0,3000)
@@ -475,7 +476,7 @@ def main():
     lumiSecs = LumiSectMap()
     
     nentries = c.GetEntries()
-    print 'Analysing', nentries, "entries"
+    print('Analysing', nentries, "entries")
 
     count = 0
     afterPreselection = 0
@@ -490,9 +491,9 @@ def main():
     if signal:
         if sam:
             chiM = os.path.basename(input_file).split("_")[2]
-            print "Got chiM=" + chiM
+            print("Got chiM=" + chiM)
             crossSection = utils.samCrossSections.get(chiM)
-            print "Cross Section is", crossSection
+            print("Cross Section is", crossSection)
         else:
             filename = (os.path.basename(input_file).split("Chi20Chipm")[0]).replace("p", ".")
             crossSection = utils.getCrossSection(filename)
@@ -503,17 +504,17 @@ def main():
                 crossSection = 1.21547
     elif bg and "DYJetsToLL_M-5to50_" in input_file:
         fileBasename = os.path.basename(input_file).split(".root")[0].split("RunIISummer16MiniAODv3.")[1].split("_TuneCUETP8M1")[0]
-        print "Checking DY CS for", fileBasename
+        print("Checking DY CS for", fileBasename)
         crossSection = utils.dyCrossSections.get(fileBasename)
-        print "Got cs", crossSection
+        print("Got cs", crossSection)
     
     currLeptonCollectionMap = None
     currLeptonCollectionFileMapFile = None
     
-    print "Starting Loop"
+    print("Starting Loop")
     for ientry in range(nentries):
         if ientry % 1000 == 0:
-            print "Processing " + str(ientry)
+            print("Processing " + str(ientry))
         c.GetEntry(ientry)
 
         ### MADHT ###
@@ -627,64 +628,56 @@ def main():
                     continue
                 invMass = -1
             
-            metVec = TLorentzVector()
-            metVec.SetPtEtaPhiE(c.MET,0,c.METPhi,c.MET)
+            #metVector = TLorentzVector()
+            #metVector.SetPtEtaPhiE(c.MET,0,c.METPhi,c.MET)
             
-            for i in range(len(muons)):
-                metVec += c.Muons[muons[i]]
+            #for i in range(len(muons)):
+            #    metVector += c.Muons[muons[i]]
+            #print abs(metVector.Pt()), metVector.Phi()
+            #recalcMET = abs(metVector.Pt())    
+            #recalcMETPhi = metVector.Phi()
             
-            MET = abs(metVec.Pt())
-            
-            if MET > 3000:
-                print "HERE WE GO!!!"
-                print "c.MET=", c.MET, "metVec=", metVec.Pt(), "MET=", MET
-                #print "c.Muons[muons[0]].Pt()=", c.Muons[muons[0]].Pt(), "c.Muons[muons[1]].Pt()=", c.Muons[muons[1]].Pt()
-                print "-------"
-            
-            METPhi = metVec.Phi()
-            
-            jetsHt = [i for i in range(len(c.Jets)) if c.Jets[i].Pt() >= 30 and abs(c.Jets[i].Eta()) <= 2.4 and all(abs(c.Muons[j].DeltaR(c.Jets[i])) > 0.1 for j in muons)]
-            jetsMht = [i for i in range(len(c.Jets)) if c.Jets[i].Pt() >= 30 and abs(c.Jets[i].Eta()) <= 5 and all(abs(c.Muons[j].DeltaR(c.Jets[i])) > 0.1 for j in muons)]
-            
-            #print "jetsHt=", jetsHt
+            #jetsHt = [i for i in range(len(c.Jets)) if c.Jets[i].Pt() >= 30 and abs(c.Jets[i].Eta()) <= 2.4 and all(abs(c.Muons[j].DeltaR(c.Jets[i])) > 0.1 for j in muons)]
+            #jetsMht = [i for i in range(len(c.Jets)) if c.Jets[i].Pt() >= 30 and abs(c.Jets[i].Eta()) <= 5 and all(abs(c.Muons[j].DeltaR(c.Jets[i])) > 0.1 for j in muons)]
+    
+            #print "jetsHt=", jetsHt, "len(c.Jets)", len(c.Jets)
             #print "jetsMht=", jetsMht
+            if False:
+                HT = 0
+                for i in jetsHt:
+                    HT += c.Jets[i].Pt()
+                MhtVec = TLorentzVector()
+                MhtVec.SetPtEtaPhiE(0,0,0,0)
+                for i in jetsMht:
+                    MhtVec -= c.Jets[i]
+                MHT = MhtVec.Pt()
+                MHTPhi = MhtVec.Phi()
+            if False:
+                for flatOb in commonRecalcFlatObs:
+                    commonRecalcFlatObs[flatOb][0] = eval(flatOb)
             
-            HT = 0
-            for i in jetsHt:
-                HT += c.Jets[i].Pt()
-            MhtVec = TLorentzVector()
-            metVec.SetPtEtaPhiE(0,0,0,0)
-            for i in jetsMht:
-                MhtVec -= c.Jets[i]
-            MHT = MhtVec.Pt()
-            MHTPhi = MhtVec.Phi()
+                # CLEAN JETS FROM THE DY MUONS
             
-            for flatOb in commonRecalcFlatObs:
-                commonRecalcFlatObs[flatOb][0] = eval(flatOb)
-            
-            # CLEAN JETS FROM THE DY MUONS
-            
-            for jetsOb in analysis_observables.jetsObs:
-                jetsObs[jetsOb] = ROOT.std.vector(eval(analysis_observables.jetsObs[jetsOb]))()
+                for jetsOb in analysis_observables.jetsObs:
+                    jetsObs[jetsOb] = ROOT.std.vector(eval(analysis_observables.jetsObs[jetsOb]))()
 
+                for i in range(c.Jets.size()):
+                    if all(abs(c.Muons[j].DeltaR(c.Jets[i])) > 0.1 for j in muons):
+                        for jetsOb in analysis_observables.jetsObs:
+                            jetsObs[jetsOb].push_back(getattr(c, jetsOb)[i])
             
-            for i in range(c.Jets.size()):
-                if all(abs(c.Muons[j].DeltaR(c.Jets[i])) > 0.1 for j in muons):
-                    for jetsOb in analysis_observables.jetsObs:
-                        jetsObs[jetsOb].push_back(getattr(c, jetsOb)[i])
+                # CLEAN TRACKS FROM THE DY MUONS
             
-            # CLEAN TRACKS FROM THE DY MUONS
+                for tracksOb in analysis_observables.tracksObs:
+                    tracksObs[tracksOb] = ROOT.std.vector(eval(analysis_observables.tracksObs[tracksOb]))()
             
-            for tracksOb in analysis_observables.tracksObs:
-                tracksObs[tracksOb] = ROOT.std.vector(eval(analysis_observables.tracksObs[tracksOb]))()
-            
-            for i in range(c.tracks.size()):
-                if all(abs(c.Muons[j].DeltaR(c.tracks[i])) > 0.01 for j in muons):
-                    for tracksOb in analysis_observables.tracksObs:
-                        if analysis_observables.tracksObs[tracksOb] == "bool":
-                            tracksObs[tracksOb].push_back(bool(getattr(c, tracksOb)[i]))
-                        else:
-                            tracksObs[tracksOb].push_back(getattr(c, tracksOb)[i])
+                for i in range(c.tracks.size()):
+                    if all(abs(c.Muons[j].DeltaR(c.tracks[i])) > 0.01 for j in muons):
+                        for tracksOb in analysis_observables.tracksObs:
+                            if analysis_observables.tracksObs[tracksOb] == "bool":
+                                tracksObs[tracksOb].push_back(bool(getattr(c, tracksOb)[i]))
+                            else:
+                                tracksObs[tracksOb].push_back(getattr(c, tracksOb)[i])
         
         nj, btagsLoose, ljet = analysis_ntuples.eventNumberOfJets25Pt2_4Eta_Loose(jetsObs["Jets"], jetsObs["Jets_bDiscriminatorCSV"])
         nj, btagsMedium, ljet = analysis_ntuples.eventNumberOfJets25Pt2_4Eta_Medium(jetsObs["Jets"], jetsObs["Jets_bDiscriminatorCSV"])
@@ -761,39 +754,40 @@ def main():
         
         if replace_lepton_collection:
             if currLeptonCollectionMap is None or not currLeptonCollectionMap.contains(c.RunNum, c.LumiBlockNum, c.EvtNum):
-                print "NEED NEW LEPTON COLLECTION..."
+                print("NEED NEW LEPTON COLLECTION...")
                 if currLeptonCollectionMap is not None:
                     currLeptonCollectionMap.Delete()
                     currLeptonCollectionMap = None
                 currLeptonCollection = None
                 currLeptonCollectionFileMapFile = utils.getLeptonCollectionFileMapFile(baseFileName)
                 if currLeptonCollectionFileMapFile is None:
-                    print "FATAL: could not open LeptonCollectionFileMapFile"
+                    print("FATAL: could not open LeptonCollectionFileMapFile")
                     exit(1)
-                print "currLeptonCollectionFileMapFile", currLeptonCollectionFileMapFile
+                print("currLeptonCollectionFileMapFile", currLeptonCollectionFileMapFile)
                 currLeptonCollectionFileMap = utils.getLeptonCollectionFileMap(currLeptonCollectionFileMapFile, c.RunNum, c.LumiBlockNum, c.EvtNum)
-                print "Got currLeptonCollectionFileMap"
+                print("Got currLeptonCollectionFileMap")
                 if currLeptonCollectionFileMap is None:
-                    print "FATAL: could not find file map. continuing..."
+                    print("FATAL: could not find file map. continuing...")
                     exit(1) 
                 currLeptonCollectionFileName = currLeptonCollectionFileMap.get(c.RunNum, c.LumiBlockNum, c.EvtNum)
                 currLeptonCollectionFileMap.Delete()
                 currLeptonCollectionFileMap = None
-                print "currLeptonCollectionFileName=", currLeptonCollectionFileName
+                print("currLeptonCollectionFileName=", currLeptonCollectionFileName)
                 
                 currLeptonCollectionMap = utils.getLeptonCollection(currLeptonCollectionFileName)
-                print "currLeptonCollectionMap=", currLeptonCollectionMap
+                print("currLeptonCollectionMap=", currLeptonCollectionMap)
                 currLeptonCollectionFileMapFile.Close()
             
             if currLeptonCollectionMap is None:
-                print "FATAL: could not find lepton map for ",c.RunNum, c.LumiBlockNum, c.EvtNum, " continuing..."
+                print("FATAL: could not find lepton map for ",c.RunNum, c.LumiBlockNum, c.EvtNum, " continuing...")
                 exit(1)
             
             takeLeptonsFrom = currLeptonCollectionMap.get(c.RunNum, c.LumiBlockNum, c.EvtNum)
         else:
             takeLeptonsFrom = c
         
-        if dy:
+        if False:#dy:
+            #print "In DY section"
             #print "muons=", muons
             muons, invMass = getDyMuons(takeLeptonsFrom)
             if muons is None:
@@ -802,7 +796,7 @@ def main():
                     continue
                 invMass = -1
             if muons is None:
-                print "WHAT IS GOING ON?"
+                print("WHAT IS GOING ON?")
             
             for muonsOb in analysis_observables.muonsObs:
                 dyMuonsObs[muonsOb] = ROOT.std.vector(eval(analysis_observables.muonsObs[muonsOb]))()
@@ -1304,41 +1298,7 @@ def main():
         vetosFlatObs["vetoMuonsPassIso"][0] = 0 if len([ i for i in range(muonsObs["Muons"].size()) if muonsObs["Muons"][i].Pt() > 20 and  bool(muonsObs["Muons_passIso"][i]) ]) == 0 else 1
         #var_vetoMuonsPassJetIso[0] = 0 if len([ i for i in range(len(var_Muons)) if var_Muons[i].Pt() > 25 and  bool(var_Muons_passJetIso[i]) ]) == 0 else 1
         vetosFlatObs["vetoMuonsMediumID"][0] = 0 if len([ i for i in range(muonsObs["Muons"].size()) if muonsObs["Muons"][i].Pt() > 20 and  bool(muonsObs["Muons_mediumID"][i]) ]) == 0 else 1
-        vetosFlatObs["vetoMuonsTightID"][0] = 0 if len([ i for i in range(muonsObs["Muons"].size()) if muonsObs["Muons"][i].Pt() > 20 and  bool(muonsObs["Muons_tightID"][i]) ]) == 0 else 1
-        
-        # if dy:
-#             
-#             tEvent.SetBranchAddress('DYMuons', var_DYMuons)
-#             tEvent.SetBranchAddress('DYMuons_charge', var_DYMuons_charge)
-#             tEvent.SetBranchAddress('DYMuonsSum', var_DYMuonsSum)
-#             
-#             tEvent.SetBranchAddress('DYMuons_mediumID', var_DYMuons_mediumID)
-#             tEvent.SetBranchAddress('DYMuons_passIso', var_DYMuons_passIso)
-#             tEvent.SetBranchAddress('DYMuons_tightID', var_DYMuons_tightID)
-#         
-#             tEvent.SetBranchAddress('DYMuons_MiniIso', var_DYMuons_MiniIso)
-#             tEvent.SetBranchAddress('DYMuons_MT2Activity', var_DYMuons_MT2Activity)
-#             tEvent.SetBranchAddress('DYMuons_MTW', var_DYMuons_MTW)
-
-        # tEvent.SetBranchAddress('GenParticles', var_GenParticles)
-#         tEvent.SetBranchAddress('GenParticles_ParentId', var_GenParticles_ParentId)
-#         tEvent.SetBranchAddress('GenParticles_Status', var_GenParticles_Status)
-#         tEvent.SetBranchAddress('GenParticles_ParentIdx', var_GenParticles_ParentIdx)
-#         tEvent.SetBranchAddress('GenParticles_PdgId', var_GenParticles_PdgId)
-#         tEvent.SetBranchAddress('Jets', var_Jets)
-#         tEvent.SetBranchAddress('Jets_bDiscriminatorCSV', var_Jets_bDiscriminatorCSV)
-#         tEvent.SetBranchAddress('Jets_bJetTagDeepCSVBvsAll', var_Jets_bJetTagDeepCSVBvsAll)
-#         tEvent.SetBranchAddress('Jets_electronEnergyFraction', var_Jets_electronEnergyFraction)
-#         tEvent.SetBranchAddress('Jets_muonEnergyFraction', var_Jets_muonEnergyFraction)
-#         #tEvent.SetBranchAddress('Jets_minDeltaRElectrons', var_Jets_minDeltaRElectrons)
-#         #tEvent.SetBranchAddress('Jets_minDeltaRMuons', var_Jets_minDeltaRMuons)
-#         tEvent.SetBranchAddress('Jets_muonMultiplicity', var_Jets_muonMultiplicity)
-#         tEvent.SetBranchAddress('Jets_multiplicity', var_Jets_multiplicity)
-#         tEvent.SetBranchAddress('Jets_electronMultiplicity', var_Jets_electronMultiplicity)
-#         
-#         tEvent.SetBranchAddress('Jets_muonCorrected', var_Jets_muonCorrected)
-#         tEvent.SetBranchAddress('Jets_electronCorrected', var_Jets_electronCorrected)
-        
+        vetosFlatObs["vetoMuonsTightID"][0] = 0 if len([ i for i in range(muonsObs["Muons"].size()) if muonsObs["Muons"][i].Pt() > 20 and  bool(muonsObs["Muons_tightID"][i]) ]) == 0 else 1        
         
         for jetsOb in analysis_observables.jetsObs:
             tEvent.SetBranchAddress(jetsOb, jetsObs[jetsOb])
@@ -1380,7 +1340,7 @@ def main():
         for muonsCalcOb in analysis_observables.muonsCalcObs:
             tEvent.SetBranchAddress(muonsCalcOb, muonsCalcObs[muonsCalcOb])
         
-        if dy:
+        if False:#dy:
             for muonsOb in analysis_observables.muonsObs:
                 tEvent.SetBranchAddress("DY" + muonsOb, dyMuonsObs[muonsOb])
 
@@ -1510,28 +1470,28 @@ def main():
             
             vars["passedMhtMet6pack"][0] = analysis_ntuples.passTrig(c, "MhtMet6pack")
             vars["passedSingleMuPack"][0] = analysis_ntuples.passTrig(c, "SingleMuon")
-    
+        print("tEvent.Fill()")
         tEvent.Fill()
 
     fnew.cd()
     tEvent.Write()
-    print 'just created', fnew.GetName()
-    print "Total: " + str(nentries)
-    print "Right Process: " + str(count)
-    print "After MET: " + str(afterMET)
-    print "After NJ: " + str(afterNj)
-    print "After Preselection: " + str(afterPreselection)
-    print "After Leptons: " + str(afterLeptons)
-    print "nL:"
-    print nLMap
-    print "nLGen:"
-    print nLGenMap
-    print "nLGenZ:"
-    print nLGenMapZ
+    print('just created', fnew.GetName())
+    print("Total: " + str(nentries))
+    print("Right Process: " + str(count))
+    print("After MET: " + str(afterMET))
+    print("After NJ: " + str(afterNj))
+    print("After Preselection: " + str(afterPreselection))
+    print("After Leptons: " + str(afterLeptons))
+    print("nL:")
+    print(nLMap)
+    print("nLGen:")
+    print(nLGenMap)
+    print("nLGenZ:")
+    print(nLGenMapZ)
 
-    hHt.Write()
-    hHtWeighted.Write()
-    hHtAfterMadHt.Write()
+    hHt.Write('hHt')
+    hHtWeighted.Write('hHtWeighted')
+    hHtAfterMadHt.Write('hHtAfterMadHt')
     
     if data:
         lumiSecs.Write("lumiSecs") 
