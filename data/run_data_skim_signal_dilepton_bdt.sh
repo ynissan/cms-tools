@@ -116,6 +116,7 @@ should_transfer_files = IF_NEEDED
 executable = /bin/bash
 notification = Never
 priority = 0
+request_memory = 16 GB
 EOM
 
 #for sim in $SKIM_BG_SIG_BDT_OUTPUT_DIR/*; do

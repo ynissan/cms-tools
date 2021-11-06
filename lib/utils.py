@@ -2,13 +2,13 @@ from ROOT import *
 import sys
 import numpy as np
 
-from lib import histograms
-from lib import cuts
+#from lib import histograms
+#from lib import cuts
 import os, re
 import json
 import time
 import array
-import commands
+import subprocess
 import math
 from glob import glob
 import random
@@ -96,7 +96,7 @@ dyCrossSections = {
 
 #LUMINOSITY = 35900. #pb^-1
 LUMINOSITY = 135000.
-CMS_WD="/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src"
+CMS_WD="/afs/desy.de/user/n/nissanuv/CMSSW_11_3_1/src"
 CS_DIR="/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/cs/stdout"
 LEPTON_COLLECTION_DIR="/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection"
 LEPTON_COLLECTION_FILES_MAP_DIR="/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollectionFilesMaps"
@@ -167,8 +167,10 @@ tracksVars = (
 
 leptonsCorrJetVecList = {
     "CorrJetIso" : "bool",
+    "CorrJetD3Iso" : "bool",
     #"NonJetIso" : "bool",
-    #"JetIso" : "bool",
+    "JetIso" : "bool",
+    "JetD3Iso" : "bool",
     "NoIso" : "bool",
 }
 
@@ -176,12 +178,14 @@ leptonCorrJetIsoPtRange = [0, 1, 5, 10, 15, 20]
 
 #leptonCorrJetIsoPtRange = [0, 10]
 
-defaultJetIsoSetting = "CorrJetIso10"
+defaultJetIsoSetting = "JetIso"
 
 #leptonIsolationList = [ "JetIso", "CorrJetIso", "NonJetIso" ]
 #leptonIsolationList = [ "CorrJetIso", "NonJetIso", "NoIso" ]
 #leptonIsolationList = [ "CorrJetIso", "NoIso" ]
-leptonIsolationList = [ "NoIso", "CorrJetIso" ]
+leptonIsolationList = [ "NoIso", "CorrJetIso", "JetIso" ]
+leptonIsolationCrList = [ "CorrJetD3Iso", "JetD3Iso" ]
+leptonIsolationIncList = leptonIsolationList + leptonIsolationCrList
 # leptonIsolationCategories = {
 #     "" : { "lowPtTightMuons" : False, "muonPt" : 2},
 #     "LowPt" : { "lowPtTightMuons" : False, "muonPt" : 1.5},
@@ -238,7 +242,7 @@ def existsInCoumpoundType(key):
     return False
 
 def getFilesForCompoundType(cType, directory):
-    print "In getFilesForCompoundType"
+    print("In getFilesForCompoundType")
     bgFiles = []
     #print compoundTypes[cType]
     for miniType in compoundTypes[cType]:
@@ -259,8 +263,8 @@ def getFilesForCompoundType(cType, directory):
 
 def createHistograms(definitions, cutsDef) :
     histograms = {}
-    for name, definition in definitions.items():
-        for cut, cutDef in cutsDef.items():
+    for name, definition in list(definitions.items()):
+        for cut, cutDef in list(cutsDef.items()):
             histName = name
             if cut != "none":
                 if name == "HT":
@@ -279,20 +283,20 @@ def createHistograms(definitions, cutsDef) :
     return histograms
 
 def scaleHistograms(histograms, histDefs, weight):
-    for name, hist in histograms.items():
-        if histDefs.has_key(name) and histDefs[name].has_key("noScale") and histDefs[name]["noScale"] :
-            print "Not scaling " + name + " ... Skipping."
+    for name, hist in list(histograms.items()):
+        if name in histDefs and "noScale" in histDefs[name] and histDefs[name]["noScale"] :
+            print("Not scaling " + name + " ... Skipping.")
             continue
         histograms[name].Scale(weight)
 
 def writeHistograms(histList):
-    for name, hist in histList.items():
+    for name, hist in list(histList.items()):
         histList[name].Write()
     
 def printNullHistograms(histList):
-    for name, hist in histList.items():
+    for name, hist in list(histList.items()):
         if histList[name].GetMaximum() == 0:
-            print "Null Historgram " + name
+            print("Null Historgram " + name)
 
 def getSortedKeysFromRootFile(rootFile):
     hashKeys = rootFile.GetListOfKeys()
@@ -308,7 +312,7 @@ def getSortedCutsFromRootFile(rootFile):
     cutsOrder = []
     for i, cut in enumerate(histograms.cutsOrder):
         cutsOrder.append({ "name" : cut, "hists" : []})
-    print cutsOrder
+    print(cutsOrder)
     for hashKey in hashKeys:
         histName = hashKey.GetName()
         splitName = histName.split("_")
@@ -369,9 +373,9 @@ def formatLegend(legend):
     
 def pause(str_='push enter key when ready'):
     import sys
-    print str_
+    print(str_)
     sys.stdout.flush() 
-    raw_input('')
+    input('')
 
 
 def fillth1(h,x, weight=1):
@@ -388,14 +392,14 @@ def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, n
 
     for i, hist in enumerate(bgHists):
         if hist.GetMaximum() == 0:
-            print "Skipping " + hist.GetName()
+            print("Skipping " + hist.GetName())
             continue
         newHist = hist.Clone()
         memory.append(newHist)
         colorI = i
         if colorInx is not None:
             colorI = colorInx[i]
-        print colorI, colorInx
+        print(colorI, colorInx)
         formatHist(newHist, colorPalette[colorI], 0.35, noFillStyle, largeVersion)
         if noStack:
             newHist.SetFillStyle(0)
@@ -526,18 +530,18 @@ def getCrossSection(filename):
     p = re.compile("^NLO\+NLL.*")
     for m in ("","-"):
         f = CS_DIR + "/" + filename + m + ".output"
-        print "Checking ", f
+        print("Checking ", f)
         fh = open(f, "r")
         for line in fh.readlines():
                 if p.match(line):
-                        print line
+                        print(line)
                         crossSection = float(line.split("(")[1].split(" ")[0])
-                        print "CrossSection: ", crossSection
+                        print("CrossSection: ", crossSection)
                         fh.close()
                         cs += crossSection
                         break
                 fh.close()
-    print "Summed cs:", cs
+    print("Summed cs:", cs)
     if cs > 0:
         return cs
     return None
@@ -576,7 +580,7 @@ def stamp_plot(lumi = 135.0, label = StampStr.WIP, cmsLocation = StampCoor.ABOVE
     # DEFUALT TEXT SIZE IS 0.05
     tl.SetTextSize(0.85*tl.GetTextSize())
     tl.DrawLatex(cmsLocation["x"],cmsLocation["y"], 'CMS')
-    print cmsLocation
+    print(cmsLocation)
 
     tl.SetTextFont(extraTextFont)
     tl.SetTextSize(0.78*tl.GetTextSize())
@@ -662,30 +666,32 @@ def getJsonLumiSection(lumiSecs):
 
 def get_lumi_from_bril(json_file_name, cern_username, retry=False):
     #status, out = commands.getstatusoutput('ps axu | grep "itrac5117-v.cern.ch:1012" | grep -v grep')
-    status, out = commands.getstatusoutput('ps axu | grep "itrac5413-v.cern.ch:10121" | grep -v grep')
+    import subprocess
+    subprocess.getstatusoutput('ls')
+    status, out = subprocess.getstatusoutput('ps axu | grep "itrac5413-v.cern.ch:10121" | grep -v grep')
     
     if status != 0:
-        print "Opening SSH tunnel for brilcalc..."
+        print("Opening SSH tunnel for brilcalc...")
         os.system("ssh -f -N -L 10121:itrac5413-v.cern.ch:10121 %s@lxplus.cern.ch" % cern_username)
     else:
-        print "Existing tunnel for brilcalc found"
-    print "Getting lumi for %s..." % json_file_name
-    status, out = commands.getstatusoutput("eval `scram unsetenv -sh`; export PATH=$HOME/.local/bin:/cvmfs/cms-bril.cern.ch/brilconda/bin:$PATH; brilcalc lumi --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_PHYSICS.json -u /fb -c offsite -i %s > %s.briloutput; grep '|' %s.briloutput | tail -n1" % (json_file_name, json_file_name, json_file_name))
+        print("Existing tunnel for brilcalc found")
+    print("Getting lumi for %s..." % json_file_name)
+    status, out = subprocess.getstatusoutput("eval `scram unsetenv -sh`; export PATH=$HOME/.local/bin:/cvmfs/cms-bril.cern.ch/brilconda/bin:$PATH; brilcalc lumi --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_PHYSICS.json -u /fb -c offsite -i %s > %s.briloutput; grep '|' %s.briloutput | tail -n1" % (json_file_name, json_file_name, json_file_name))
     if status != 0:
         if not retry:
-            print "Trying to re-establish the tunnel..."
+            print("Trying to re-establish the tunnel...")
             os.system("pkill -f itrac5413")
             get_lumi_from_bril(json_file_name, cern_username, retry=True)
         else:
-            print "Error while running brilcalc!"
+            print("Error while running brilcalc!")
             if cern_username == "ynissan":
-                print "Did you set your CERN username with '--cern_username'?"
+                print("Did you set your CERN username with '--cern_username'?")
         lumi = -1
     else:
-        print "Output: " + out
+        print("Output: " + out)
         lumi = float(out.split("|")[-2])
     
-    print "lumi:", lumi
+    print("lumi:", lumi)
     return lumi
 
 def calculateLumiFromLumiSecs(lumiSecs):
@@ -696,7 +702,7 @@ def calculateLumiFromLumiSecs(lumiSecs):
     tmpJsonFile = "/tmp/tmp_json_" + str(timestamp) + ".json"
     with open(tmpJsonFile, "w") as fo:
         fo.write(json)
-    print "Created json file: " + tmpJsonFile
+    print("Created json file: " + tmpJsonFile)
     lumi = get_lumi_from_bril(tmpJsonFile, 'ynissan')
     #lumi = "" 
     #os.remove(tmpJsonFile)
@@ -742,7 +748,7 @@ def getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=
         return None
     binsStr = None
     
-    print "Getting", name, "obs:", obs, "cond:", condition, "minX", minX, "maxX", maxX, "overflow", overflow
+    print("Getting", name, "obs:", obs, "cond:", condition, "minX", minX, "maxX", maxX, "overflow", overflow)
     
     # if tmpName == "hsqrt":
 #         letters = string.ascii_lowercase
@@ -757,7 +763,7 @@ def getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=
             binsStr = ">>" + tmpName + "(" + str(bins) + ","
             #print """tree.Draw(""" + obs + binsStr + str(minX) + "," + str(maxX) + ")", condition+""")"""
             if twoD:
-                print "tree.Draw(" + obs + binsStr + str(minX) + "," + str(maxX) + "," + str(binsY) + "," + str(minBinsY) + "," + str(maxBinsY) +"))"
+                print("tree.Draw(" + obs + binsStr + str(minX) + "," + str(maxX) + "," + str(binsY) + "," + str(minBinsY) + "," + str(maxBinsY) +"))")
                 tree.Draw(obs + binsStr + str(minX) + "," + str(maxX) + "," + str(binsY) + "," + str(minBinsY) + "," + str(maxBinsY) +")", condition, "e")
             else:
                 tree.Draw(obs + binsStr + str(minX) + "," + str(maxX) + ")", condition, "e")
@@ -829,13 +835,13 @@ def getLeptonCollectionFileMapFile(baseFileName):
     else:
         mapNameFile = ("_".join(baseFileName.split(".")[1].split("_")[0:3])).split("AOD")[0] + ".root"
 
-    print mapNameFile
+    print(mapNameFile)
     if not os.path.isfile(LEPTON_COLLECTION_FILES_MAP_DIR + "/" + mapNameFile):
-        print "File " + LEPTON_COLLECTION_FILES_MAP_DIR + "/" + mapNameFile + " does not exist."
+        print("File " + LEPTON_COLLECTION_FILES_MAP_DIR + "/" + mapNameFile + " does not exist.")
         return None
-    print "Opening file map: " + LEPTON_COLLECTION_FILES_MAP_DIR + "/" + mapNameFile
+    print("Opening file map: " + LEPTON_COLLECTION_FILES_MAP_DIR + "/" + mapNameFile)
     currLeptonCollectionFileMapFile = TFile(LEPTON_COLLECTION_FILES_MAP_DIR + "/" + mapNameFile, "read")
-    print "After open"
+    print("After open")
     if currLeptonCollectionFileMapFile is None:
         return None
     
@@ -845,10 +851,10 @@ def getLeptonCollectionFileMap(currLeptonCollectionFileMapFile, runNum, lumiBloc
     #import gc
     currLeptonCollectionFileMap = None
     keys = currLeptonCollectionFileMapFile.GetListOfKeys()
-    print "Looping over keys"
-    print [key.GetName() for key in keys]
+    print("Looping over keys")
+    print([key.GetName() for key in keys])
     for key in keys:
-        print key.GetName()
+        print(key.GetName())
         currLeptonCollectionFileMap = currLeptonCollectionFileMapFile.Get(key.GetName())
         if not currLeptonCollectionFileMap.contains(runNum, lumiBlockNum, evtNum):
             currLeptonCollectionFileMap.IsA().Destructor(currLeptonCollectionFileMap)
@@ -856,25 +862,25 @@ def getLeptonCollectionFileMap(currLeptonCollectionFileMapFile, runNum, lumiBloc
             currLeptonCollectionFileMap = None
             #gc.collect()
             continue
-        print "Found the correct file map!"
+        print("Found the correct file map!")
         return currLeptonCollectionFileMap
-    print "Could not find file map for ", runNum, lumiBlockNum, evtNum
+    print("Could not find file map for ", runNum, lumiBlockNum, evtNum)
     return None 
     
 def getLeptonCollection(currLeptonCollectionFileName):
-    print "Opening file map: " + LEPTON_COLLECTION_DIR + "/" + currLeptonCollectionFileName
+    print("Opening file map: " + LEPTON_COLLECTION_DIR + "/" + currLeptonCollectionFileName)
     currLeptonCollectionFile = TFile(LEPTON_COLLECTION_DIR + "/" + currLeptonCollectionFileName, "read")
-    print "After open"
+    print("After open")
     leptonCollectionMap = currLeptonCollectionFile.Get("leptonCollectionMap")
     currLeptonCollectionFile.Close()
     return leptonCollectionMap
 
 def getDmFromFileName(filename):
-    print "Filename: " + filename
+    print("Filename: " + filename)
     return filename.split('_')[-1].split('Chi20Chipm')[0]
 
 def getPointFromSamFileName(filename):
-    print "Filename: " + filename
+    print("Filename: " + filename)
     return "_".join(os.path.basename(filename).split('.')[0].split('_')[0:2])
 
 def calcSignificance(sigHist, bgHist, ignoreCrossSection = False):
@@ -983,20 +989,20 @@ def calcSignificanceLlhdSingleCount(sigHist, bgHist):
                 lhdH1 *= lhd(bgNum,0.1*sigNum,bgNum,bgError)
                 
                 if lhdH1 / lhdH0 != 1 and calcZ(lhdH1, lhdH0) > 0:
-                    print "OOOOOOPPPPS!", "lhdH1", lhdH1, "lhdH0", lhdH0, "sigNum", sigNum, "bgNum", bgNum, "bgError", bgError, "Z", calcZ(lhdH1, lhdH0)
+                    print("OOOOOOPPPPS!", "lhdH1", lhdH1, "lhdH0", lhdH0, "sigNum", sigNum, "bgNum", bgNum, "bgError", bgError, "Z", calcZ(lhdH1, lhdH0))
                 #sig += 0.1 * (sigNum / math.sqrt(bgNum))
                 #print "**sigNum=", sigNum, "bgNum=", bgNum, "sig=", sig
                 break
             else:
                 #print "sigNum=", sigNum, "bgNum=", bgNum, "sig=", 0.1 * (sigNum / math.sqrt(bgNum))
                 if lhdH1 / lhdH0 != 1 and calcZ(lhdH1, lhdH0) > 0:
-                    print "BEFORE OOOOOOPPPPS!", "lhdH1", lhdH1, "lhdH0", lhdH0, "sigNum", sigNum, "bgNum", bgNum, "bgError", bgError, "Z", calcZ(lhdH1, lhdH0)
+                    print("BEFORE OOOOOOPPPPS!", "lhdH1", lhdH1, "lhdH0", lhdH0, "sigNum", sigNum, "bgNum", bgNum, "bgError", bgError, "Z", calcZ(lhdH1, lhdH0))
                 
                 lhdH0 *= lhd(bgNum,0,bgNum,bgError)
                 lhdH1 *= lhd(bgNum,0.1*sigNum,bgNum,bgError)
                 
                 if lhdH1 / lhdH0 != 1 and calcZ(lhdH1, lhdH0) > 0:
-                    print "AFTER OOOOOOPPPPS!", "lhdH1", lhdH1, "lhdH0", lhdH0, "sigNum", sigNum, "bgNum", bgNum, "bgError", bgError, "Z", calcZ(lhdH1, lhdH0)
+                    print("AFTER OOOOOOPPPPS!", "lhdH1", lhdH1, "lhdH0", lhdH0, "sigNum", sigNum, "bgNum", bgNum, "bgError", bgError, "Z", calcZ(lhdH1, lhdH0))
                 
     
     if lhdH1 / lhdH0 == 1:
@@ -1004,7 +1010,7 @@ def calcSignificanceLlhdSingleCount(sigHist, bgHist):
                 
     bayesfactor = lhdH1/lhdH0
     if math.log(bayesfactor)/abs(math.log(bayesfactor)) >0:
-        print "WOW!! lhdH1", lhdH1, "lhdH0", lhdH0
+        print("WOW!! lhdH1", lhdH1, "lhdH0", lhdH0)
         
     return calcZ(lhdH1, lhdH0)
 

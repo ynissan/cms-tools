@@ -141,7 +141,9 @@ def main():
                     ll, leptonIdx, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(c.Electrons, getattr(c, "Electrons_pass" + iso + str(ptRange)), c.Electrons_deltaRLJ, c.Electrons_charge, c.Muons, getattr(c, "Muons_pass" + iso + str(ptRange)), c.Muons_mediumID, c.Muons_deltaRLJ, c.Muons_charge, utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], c.Muons_tightID)
                     
                     if ll is None:
-                        leptons, leptonsIdx, leptonsCharge, leptonFlavour, same_sign = analysis_ntuples.getTwoLeptonsAfterSelection(c.Electrons, getattr(c, "Electrons_pass" + iso + str(ptRange)), c.Electrons_deltaRLJ, c.Electrons_charge, c.Muons, getattr(c, "Muons_pass" + iso + str(ptRange)), c.Muons_mediumID, c.Muons_deltaRLJ, c.Muons_charge, utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], c.Muons_tightID)
+                        leptons, leptonsIdx, leptonsCharge, leptonFlavour, same_sign, isoCr, isoCrMinDr = analysis_ntuples.getTwoLeptonsAfterSelection(c.Electrons, getattr(c, "Electrons_pass" + iso + str(ptRange)), c.Electrons_deltaRLJ, c.Electrons_charge, c.Muons, getattr(c, "Muons_pass" + iso + str(ptRange)), c.Muons_mediumID, c.Muons_deltaRLJ, c.Muons_charge, utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], c.Muons_tightID, False)
+                        if isoCr > 0: 
+                            continue
                         #if same_sign:
                         #    continue
                         if leptons is not None:

@@ -26,7 +26,7 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 shopt -s expand_aliases
 
 # CMS ENV
-cd ~/CMSSW_10_1_0/src
+cd ~/CMSSW_11_3_1/src
 
 export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
 source $VO_CMS_SW_DIR/cmsset_default.sh

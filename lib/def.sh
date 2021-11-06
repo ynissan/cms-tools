@@ -34,16 +34,20 @@ DATA_NTUPLES_DIR="/pnfs/desy.de/cms/tier2/store/user/*/NtupleHub/ProductionRun2v
 
 BG_TYPES=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays DYJetsToLL WJetsToLNu ZJetsToNuNu WZZ WWZ WW WZ ZZZ ZZ)
 
-BG_TYPES=(TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays WJetsToLNu ZJetsToNuNu)
+#BG_TYPES=(QCD)
 
-#BG_TYPES=(WJetsToLNu ZJetsToNuNu TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT)
+# 10 jobs per file for this list
+#BG_TYPES=(QCD TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays)
+#continue with 8 of these
+#BG_TYPES=(DYJetsToLL WJetsToLNu ZJetsToNuNu WZZ WWZ WW WZ ZZZ ZZ)
+
 #BG_TYPES=(ST_s-channel_4f_leptonDecays ST_tW_antitop_5f_inclusiveDecays ST_tW_top_5f_inclusiveDecays WGToLNuG ZGTo2LG)
 #BG_TYPES=(ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays DYJetsToLL  WZZ WWZ WW WZ ZZZ ZZ)
 
 #BG_TYPES=(DYJetsToLL)
 #BG_TYPES=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays WJetsToLNu ZJetsToNuNu WZZ WWZ WW WZ ZZZ ZZ)
 
-#BG_TYPES=(TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT)
+#BG_TYPES=(QCD)
 #BG_TYPES=(TTJets_DiLept)
 
 RARE=(WZZ WWZ ZZZ)
@@ -58,7 +62,7 @@ MAD_HT_SPLIT_TYPES=()
 # LEPTON_ISOLATION_CATEGORIES=("" LowPt LowPtTight)
 # LEPTON_CORR_JET_ISO_RANGE=(0 1 5 10 15)
 
-LEPTON_ISOLATION_LIST=(NoIso CorrJetIso)
+LEPTON_ISOLATION_LIST=(NoIso CorrJetIso JetIso)
 LEPTON_ISOLATION_CATEGORIES=("")
 LEPTON_CORR_JET_ISO_RANGE=(0 1 5 10 15 20)
 

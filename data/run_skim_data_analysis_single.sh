@@ -6,7 +6,7 @@ shopt -s nullglob
 shopt -s expand_aliases
 
 # CMS ENV
-cd ~/CMSSW_10_1_0/src
+cd ~/CMSSW_11_3_1/src
 
 export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
 source $VO_CMS_SW_DIR/cmsset_default.sh
@@ -87,7 +87,7 @@ if [ -n "$TWO_LEPTONS" ]; then
     fi
 elif [ -n "$DY" ]; then
     OUTPUT_DIR=$DY_SKIM_DATA_OUTPUT_DIR
-    if [ -n "SELECTION" ]; then
+    if [ -n "$SELECTION" ]; then
         SCRIPT_PATH=$SELECTION_SKIMMER_PATH
     fi
 elif [ -n "$JPSI_MUONS" ]; then

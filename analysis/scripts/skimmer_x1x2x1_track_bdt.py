@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3.8
 
 from ROOT import *
 from glob import glob
@@ -9,6 +9,7 @@ import numpy as np
 import os
 import xml.etree.ElementTree as ET
 from math import *
+import cppyy
 
 sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools"))
 sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
@@ -48,17 +49,17 @@ jpsi_muons = args.jpsi_muons
 if args.sam:
     signal = True
 
-print "SAME CHARGE=", sc
+print("SAME CHARGE=", sc)
 
 jpsi = False
 
 if jpsi_muons:
     jpsi = True
-    print "Got JPSI"
+    print("Got JPSI")
     if jpsi_muons:
-        print "MUONS"
+        print("MUONS")
     else:
-        print "ELECTRONS"
+        print("ELECTRONS")
 
 input_file = None
 if args.input_file:
@@ -83,7 +84,7 @@ branches = {}
 
 def fillInNonTrackInfo(c, postfix, prefix):
     for stringObs in analysis_observables.exclusiveTrackObservablesStringList:
-        exTrackVars[prefix + stringObs + postfix] = ROOT.std.string("")
+        exTrackVars[prefix + stringObs + postfix] = cppyy.gbl.std.string("")
         #print "*"
         #print branches[stringObs + postfix]
         #print "**"
@@ -145,49 +146,49 @@ def main():
                     for sameCharge in [False, True]:
                         prefix = "sc_" if sameCharge else ""
                         for stringObs in analysis_observables.exclusiveTrackObservablesStringList:
-                            exTrackVars[prefix + stringObs + postfix] = ROOT.std.string("")
+                            exTrackVars[prefix + stringObs + postfix] = cppyy.gbl.std.string("")
                             if c.GetBranchStatus(prefix + stringObs + postfix):
-                                print "Reseting branch", prefix + stringObs + postfix
+                                print("Reseting branch", prefix + stringObs + postfix)
                                 branches[prefix + stringObs + postfix] = c.GetBranch(prefix + stringObs + postfix)
                                 branches[prefix + stringObs + postfix].Reset()
                                 c.SetBranchAddress(prefix + stringObs + postfix, exTrackVars[prefix + stringObs + postfix])
                             else:
-                                print "Branching", prefix + stringObs + postfix
+                                print("Branching", prefix + stringObs + postfix)
                                 branches[prefix + stringObs + postfix] = c.Branch(prefix + stringObs + postfix, 'std::string', exTrackVars[prefix + stringObs + postfix])
                                 c.SetBranchAddress(prefix + stringObs + postfix, exTrackVars[prefix + stringObs + postfix])
                         for DTypeObs in analysis_observables.commonObservablesDTypesList:
                             exTrackVars[prefix + "exTrack_" + DTypeObs + postfix] = np.zeros(1,dtype=analysis_observables.commonObservablesDTypesList[DTypeObs])
                             if c.GetBranchStatus(prefix + "exTrack_" + DTypeObs + postfix):
-                                print "Reseting branch", prefix + "exTrack_" + DTypeObs + postfix
+                                print("Reseting branch", prefix + "exTrack_" + DTypeObs + postfix)
                                 branches[prefix + "exTrack_" + DTypeObs + postfix] = c.GetBranch(prefix + "exTrack_" + DTypeObs + postfix)
                                 branches[prefix + "exTrack_" + DTypeObs + postfix].Reset()
                                 c.SetBranchAddress(prefix + "exTrack_" + DTypeObs + postfix, exTrackVars[prefix + "exTrack_" + DTypeObs + postfix])
                                 #branches["exTrack_" + DTypeObs + postfix].SetAddress(exTrackVars["exTrack_" + DTypeObs + postfix])
                             else:
-                                print "Branching", prefix + "exTrack_" + DTypeObs + postfix
+                                print("Branching", prefix + "exTrack_" + DTypeObs + postfix)
                                 branches[prefix + "exTrack_" + DTypeObs + postfix] = c.Branch(prefix + "exTrack_" + DTypeObs + postfix, exTrackVars[prefix + stringObs + postfix], prefix + "exTrack_" + DTypeObs + postfix + "/" + utils.typeTranslation[analysis_observables.commonObservablesDTypesList[DTypeObs]])
                                 c.SetBranchAddress(prefix + "exTrack_" + DTypeObs + postfix, exTrackVars[prefix + "exTrack_" + DTypeObs + postfix])
                         for DTypeObs in analysis_observables.exclusiveTrackObservablesDTypesList:
                             exTrackVars[prefix + DTypeObs + postfix] = np.zeros(1,dtype=analysis_observables.exclusiveTrackObservablesDTypesList[DTypeObs])
                             if c.GetBranchStatus(prefix + DTypeObs + postfix):
-                                print "Reseting branch", prefix + DTypeObs + postfix
+                                print("Reseting branch", prefix + DTypeObs + postfix)
                                 branches[prefix + DTypeObs + postfix] = c.GetBranch(prefix + DTypeObs + postfix)
                                 branches[prefix + DTypeObs + postfix].Reset()
                                 c.SetBranchAddress(prefix + DTypeObs + postfix, exTrackVars[prefix + DTypeObs + postfix])
                                 #branches[DTypeObs + postfix].SetAddress(exTrackVars[DTypeObs + postfix])
                             else:
-                                print "Branching", prefix + DTypeObs + postfix
+                                print("Branching", prefix + DTypeObs + postfix)
                                 branches[prefix + DTypeObs + postfix] = c.Branch(prefix + DTypeObs + postfix, exTrackVars[prefix + DTypeObs + postfix], prefix + DTypeObs + postfix + "/" + utils.typeTranslation[analysis_observables.exclusiveTrackObservablesDTypesList[DTypeObs]])
                                 c.SetBranchAddress(prefix + DTypeObs + postfix, exTrackVars[prefix + DTypeObs + postfix])
                         for CTypeObs in analysis_observables.exclusiveTrackObservablesClassList:
                             exTrackVars[prefix + CTypeObs + postfix] = eval(analysis_observables.exclusiveTrackObservablesClassList[CTypeObs])()
                             if c.GetBranchStatus(prefix + CTypeObs + postfix):
-                                print "Reseting branch", prefix + CTypeObs + postfix
+                                print("Reseting branch", prefix + CTypeObs + postfix)
                                 branches[prefix + CTypeObs + postfix] = c.GetBranch(prefix + CTypeObs + postfix)
                                 branches[prefix + CTypeObs + postfix].Reset()
                                 c.SetBranchAddress(prefix + CTypeObs + postfix, exTrackVars[prefix + CTypeObs + postfix])
                             else:
-                                print "Branching", prefix + CTypeObs + postfix
+                                print("Branching", prefix + CTypeObs + postfix)
                                 branches[prefix + CTypeObs + postfix] = c.Branch(prefix + CTypeObs + postfix, analysis_observables.exclusiveTrackObservablesClassList[CTypeObs], exTrackVars[prefix + CTypeObs + postfix])
                                 c.SetBranchAddress(prefix + CTypeObs + postfix, exTrackVars[prefix + CTypeObs + postfix])
                 if not jpsi:
@@ -203,7 +204,7 @@ def main():
                         track_bdt_specs_maps[lep + iso + str(ptRange) + cat] = track_bdt_specs_map
                         track_bdt_readers[lep + iso + str(ptRange) + cat] = track_bdt_reader
 
-    print 'Analysing', nentries, "entries"
+    print('Analysing', nentries, "entries")
 
     afterMonoLepton = 0
     afterUniversalBdt = 0
@@ -219,7 +220,7 @@ def main():
     
     for ientry in range(nentries):
         if ientry % 100 == 0:
-            print "Processing " + str(ientry) + " out of " + str(nentries)
+            print("Processing " + str(ientry) + " out of " + str(nentries))
         c.GetEntry(ientry)
         #continue
         
@@ -266,10 +267,10 @@ def main():
                                 leptonCharge = c.Muons_charge[lepIdx]
                         
                             if leptonCharge == 0:
-                                print "WHAT?! leptonCharge=0"
+                                print("WHAT?! leptonCharge=0")
                         
                             exTrackVars[prefix + "lepton_charge" + postfix][0] = leptonCharge
-                            exTrackVars[prefix + "exclusiveTrackLeptonFlavour" + postfix] = ROOT.std.string(leptonFlavour)
+                            exTrackVars[prefix + "exclusiveTrackLeptonFlavour" + postfix] = cppyy.gbl.std.string(leptonFlavour)
     
                             afterMonoLepton += 1
                     
@@ -408,9 +409,7 @@ def main():
                                 exTrackVars[prefix + "secondTrack" + postfix] = c.tracks[secondTrack]
                             else:
                                 exTrackVars[prefix + "secondTrack" + postfix] = TLorentzVector()
-                        
-                        
-                        
+                    
                             exTrackVars[prefix + "exTrack_invMass" + postfix][0] = (l1 + l2).M()
                             exTrackVars[prefix + "exTrack_dileptonPt" + postfix][0] = abs((l1 + l2).Pt())
                             exTrackVars[prefix + "exTrack_deltaPhi" + postfix][0] =  abs(l1.DeltaPhi(l2))
@@ -434,7 +433,7 @@ def main():
                             exTrackVars[prefix + "exTrack_deltaEtaLeadingJetDilepton" + postfix][0] = abs((l1 + l2).Eta() - c.LeadingJet.Eta())
                             exTrackVars[prefix + "exTrack_deltaPhiLeadingJetDilepton" + postfix][0] = abs((l1 + l2).DeltaPhi(c.LeadingJet))
                     
-                            exTrackVars[prefix + "exTrack_dilepHt" + postfix][0] = analysis_ntuples.htJet25Leps(c.Jets, [l1,l2])
+                            exTrackVars[prefix + "exTrack_dilepHt" + postfix][0] = analysis_ntuples.htJet30Leps(c.Jets, [l1,l2])
                     
                             exTrackVars[prefix + "deltaRMetTrack" + postfix][0] = abs(c.tracks[oppositeChargeTrack].DeltaR(pt))
                             exTrackVars[prefix + "deltaPhiMetTrack" + postfix][0] = abs(c.tracks[oppositeChargeTrack].DeltaPhi(pt))
@@ -459,14 +458,14 @@ def main():
     
     file.Close()
 
-    print "nentries=" + str(nentries)
-    print "totalTracks=" + str(totalTracks)
-    print "totalSurvivedTracks=" + str(totalSurvivedTracks)
-    print "eventsWithGreaterThanOneOppSignTracks=" + str(eventsWithGreaterThanOneOppSignTracks)
-    print "noSurvivingTracks=" + str(noSurvivingTracks)
-    print "afterAtLeastOneTrack=" + str(afterAtLeastOneTrack)
-    print "afterMonoLepton=" + str(afterMonoLepton)
-    print "afterUniversalBdt=" + str(afterUniversalBdt)
-    print "afterMonoTrack=" + str(afterMonoTrack)
+    print("nentries=" + str(nentries))
+    print("totalTracks=" + str(totalTracks))
+    print("totalSurvivedTracks=" + str(totalSurvivedTracks))
+    print("eventsWithGreaterThanOneOppSignTracks=" + str(eventsWithGreaterThanOneOppSignTracks))
+    print("noSurvivingTracks=" + str(noSurvivingTracks))
+    print("afterAtLeastOneTrack=" + str(afterAtLeastOneTrack))
+    print("afterMonoLepton=" + str(afterMonoLepton))
+    print("afterUniversalBdt=" + str(afterUniversalBdt))
+    print("afterMonoTrack=" + str(afterMonoTrack))
 
 main()

@@ -366,76 +366,7 @@ signalNames = [
     "\Delta_{}M 9.7Gev",
 ]
 
-class BaseParams:
-    signal_dir = None
-    signal_names = None
-    bg_dir = None
-    data_dir = None
-    sc_bg_dir = None
-    sc_data_dir = None
-    calculatedLumi = {}
-    weightString = {
-        'MET' : "passedMhtMet6pack * tEffhMetMhtRealXMht2016",
-        'SingleMuon' : "1"
-    }
-    bgReTagging = {}
-    bgReTaggingOrder = {}
-    plot_kind = "MET"
-    plot_bg = True
-    plot_signal = True
-    plot_rand = False
-    plot_fast = True
-    plot_title = True
-    plot_overflow = True
-    plot_significance = False
-    plot_error = False
-    plot_sc = False
-    plot_data = False
-    plot_ratio = False
-    plot_point = False
-    plot_efficiency = False
-    create_canvas = False
-    plot_custom_ratio = False
-    #customRatios = [  [["DiBoson"],["TTJets"]],  [["WJetsToLNu"],["ZJetsToNuNu"]]  ]
-    customRatios = [  [["tc_btag_veto"],["tc_2_btags"]]  ]
-    choose_bg_files = False
-    choose_bg_files_list = ["TTJets"]
-    #choose_bg_files_list = ["WJetsToLNu"]
-    choose_bg_files_for_sc = False
-    ignore_bg_files = ["TT_TuneCUETP8M2T4_13TeV-powheg-pythia8.root", "TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root"]
-    #ignore_bg_files = []
-    blind_data = True
-    plot_log_x = False
-    plot_real_log_x = False
-    nostack = False
-    solid_bg = False
-    logXplots = ["invMass"]
-    histograms_defs = []
-    cuts = []
-    efficiencies = []
-    normalise = False
-    no_weights = False
-    fit_inv_mass_jpsi = False
-    fit_inv_mass_obs_jpsi = ""
-    fit_inv_mass_cut_jpsi = "none"
-    fit_inv_mass_jpsi_func = "gauss"
-    fit_inv_mass_jpsi_func_bg = False
-    fit_inv_mass_jpsi_bg_func = "linear"
-    
-    save_histrograms_to_file = False
-    load_histrograms_from_file = False
-    histrograms_file = ""
-    
-    bg_retag = False
-    object_retag = False
-    object_retag_map = {}
-    
-    sig_line_width = 2
 
-    legend_coordinates = {"x1" : .20, "y1" : .60, "x2" : .89, "y2" : .89}
-    legend_columns = 2
-    legend_border = 0
-    
 class lepton_selection(BaseParams):
     signal_dir = [
               #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm0p86Chi20Chipm.root",

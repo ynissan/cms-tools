@@ -151,9 +151,16 @@ class BaseParams:
     
     subtract_same_charge = False
     
+    sc_label = "same-sign simulation"
+    sc_ratio_label = "sc"
+    
     plot_custom_types = []
     # used for cleaned-z and cleaned-w. They have different files and conditions attached to them.
     custom_types_dir = []
     custom_types_label = []
     custom_types_conditions = []
     custom_types_common_files = False
+    
+    cms_tools_base_dir = os.path.expandvars("$CMSSW_BASE/src/cms-tools")
+    histograms_root_files_dir = cms_tools_base_dir + "/analysis/scripts/histograms_root_files"
+    

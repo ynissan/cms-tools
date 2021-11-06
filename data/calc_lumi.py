@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3.8
 
 from ROOT import *
 from glob import glob
@@ -44,7 +44,7 @@ lumiSecs = LumiSectMap()
 data_files = glob(input_dir + "/*")
     
 for f in data_files: 
-    print f
+    print(f)
     rootFile = TFile(f)
     if rootFile.GetListOfKeys().Contains("lumiSecs"):
         lumis = rootFile.Get('lumiSecs')
@@ -52,9 +52,9 @@ for f in data_files:
         col.Add(lumis)
         lumiSecs.Merge(col)
     else:
-        print "Bad file", f
+        print("Bad file", f)
         os.remove(f)
     rootFile.Close()
 
 lumi = utils.calculateLumiFromLumiSecs(lumiSecs)
-print "Luminosity=", lumi
+print("Luminosity=", lumi)

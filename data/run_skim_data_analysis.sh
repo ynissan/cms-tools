@@ -122,7 +122,7 @@ file_limit=0
 i=0
 count=0
 input_files=""
-files_per_job=10
+files_per_job=4
 
 #files_per_job=1
 
@@ -139,13 +139,13 @@ fi
 
 INPUT_DIR=${DATA_NTUPLES_DIR}
 
-if [ -n "SELECTION" ]; then
+if [ -n "$SELECTION" ]; then
     INPUT_DIR=${DY_SKIM_DATA_OUTPUT_DIR}/single
 fi
-
+#echo HERE: ${INPUT_DIR}/Run2016*${DATA_PATTERN}*
 for fullname in ${INPUT_DIR}/Run2016*${DATA_PATTERN}*; do
     name=$(basename $fullname)
-    if [ -z "SELECTION" ] && [ -f "$FILE_OUTPUT/$name" ]; then
+    if [ -z "$SELECTION" ] && [ -f "$FILE_OUTPUT/$name" ]; then
         #echo "$name exist. Skipping..."
         continue
     fi

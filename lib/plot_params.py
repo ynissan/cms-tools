@@ -10,5 +10,6 @@ from plot_params_leptons import *
 from plot_params_analysis_categories import *
 from plot_params_jet_isolation import *
 from plot_params_track_bdt import *
+from plot_params_dilepton_bdt import *
 
 default_params = track_selection

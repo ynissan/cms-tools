@@ -102,7 +102,7 @@ print bg_files
 preselection = None
     
 if lepNum == "reco":
-    preselection = "twoLeptons" + iso + str(ptRange) + cat + " == 1 && BTagsDeepMedium == 0 && @leptons" + iso + str(ptRange) + cat + ".size() == 2 && leptonFlavour" + iso + str(ptRange) + cat  + " == \"" + lep + "\"" + " && sameSign" + iso + str(ptRange) + cat + " == 0"
+    preselection = "twoLeptons" + iso + str(ptRange) + cat + " == 1 && BTagsDeepMedium == 0 && @leptons" + iso + str(ptRange) + cat + ".size() == 2 && leptonFlavour" + iso + str(ptRange) + cat  + " == \"" + lep + "\"" + " && sameSign" + iso + str(ptRange) + cat + " == 0" + " && isoCr" + iso + str(ptRange) + cat + " == 0"
 else:
     # Before 
     #preselection = "exclusiveTrack" + iso + str(ptRange) + cat + ' == 1 && BTagsDeepMedium == 0 &&  trackBDT' + iso + str(ptRange) + cat  +    ' >= 0 && exclusiveTrackLeptonFlavour' + iso + str(ptRange) + cat  + " == \"" + lep + "\""
@@ -203,9 +203,11 @@ dataloader = dataloaders[lepNum + lep + iso + str(ptRange) + cat]
 dataloader.AddVariable(prefix + 'deltaPhi' + iso + str(ptRange) + cat, 'F')
 dataloader.AddVariable(prefix + 'deltaEta' + iso + str(ptRange) + cat, 'F')
 dataloader.AddVariable(prefix + 'deltaR' + iso + str(ptRange) + cat, 'F')
-dataloader.AddVariable(prefix + 'pt3' + iso + str(ptRange) + cat, 'F')
-dataloader.AddVariable(prefix + 'deltaEtaLeadingJetDilepton' + iso + str(ptRange) + cat, 'F')
-dataloader.AddVariable(prefix + 'deltaPhiLeadingJetDilepton' + iso + str(ptRange) + cat, 'F')
+# REMOVE THIS
+#dataloader.AddVariable(prefix + 'pt3' + iso + str(ptRange) + cat, 'F')
+#dataloader.AddVariable(prefix + 'deltaEtaLeadingJetDilepton' + iso + str(ptRange) + cat, 'F')
+#dataloader.AddVariable(prefix + 'deltaPhiLeadingJetDilepton' + iso + str(ptRange) + cat, 'F')
+# ------------
 dataloader.AddVariable(prefix + 'dilepHt' + iso + str(ptRange) + cat, 'F')
 dataloader.AddVariable(prefix + 'invMass' + iso + str(ptRange) + cat, 'F')
 

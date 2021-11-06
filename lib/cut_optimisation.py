@@ -20,13 +20,13 @@ def get_method_hists(folders, method, gtestBGHists=None, gtrainBGHists=None, gte
             return (gtestBGHists, gtrainBGHists, gtestSignalHists, gtrainSignalHists, gmethods, gnames)
     for dir in folders:
         name = os.path.basename(dir)
-        print "dir=" + dir
-        print "name=" + name
+        print("dir=" + dir)
+        print("name=" + name)
         names.append(name)
     
         inputFile = dir + "/" + name  + ".root"
-        print "Opening file", inputFile
-        print "get_method_hists condition=" + condition
+        print("Opening file", inputFile)
+        print("get_method_hists condition=" + condition)
         fin = TFile(inputFile)
 
         trainTree = fin.Get("dataset/TrainTree")
@@ -112,9 +112,9 @@ def getHighestZ(trainSignalHist, trainBGHist, testSignalHist, testBGHist, h=None
 
     ST = (trainSignalHist.Integral() + testSignalHist.Integral())*cs
     BT = (trainBGHist.Integral() + testBGHist.Integral())*cs
-    print "=================="
-    print "Signal: " + str(ST)
-    print "Background: " + str(BT)
+    print("==================")
+    print("Signal: " + str(ST))
+    print("Background: " + str(BT))
 
     for i in range(numOfBins):
         S = (trainSignalHist.Integral(i,numOfBins+1) + testSignalHist.Integral(i,numOfBins+1))*cs
@@ -169,11 +169,11 @@ def getSpectatorsMemMap(vars):
 def prepareReader(xmlfilename, vars, varsMap, specs=None, specsMap=None):
     reader = TMVA.Reader()
     for var in vars:
-        print "AddVar=" + var["name"]
+        print("AddVar=" + var["name"])
         reader.AddVariable(var["name"], varsMap[var["name"]])
     if specs is not None:
         for spec in specs:
-            print "AddSpec=" + spec["name"]
+            print("AddSpec=" + spec["name"])
             reader.AddSpectator(spec["name"], specsMap[spec["name"]])
     reader.BookMVA("BDT", xmlfilename)
     return reader

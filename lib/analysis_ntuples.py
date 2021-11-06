@@ -34,7 +34,7 @@ def passTrig(c,trigname):
     return False
 
 def printTrigNames(c, trigname):
-    print ",".join([ c.TriggerNames[trigidx] for trigidx in triggerIndeces[trigname]])
+    print(",".join([ c.TriggerNames[trigidx] for trigidx in triggerIndeces[trigname]]))
         
 
 def getTrigEffGraph(file, name):
@@ -72,26 +72,18 @@ def numberOfJets(jets, jets_bDiscriminatorCSV, pt, eta, csv):
                 btags += 1
     return nj, btags, leadingJet
 
-# def numberOfJets30Pt2_4Eta_Loose(event):
-# 	return numberOfJets(event.Jets, event.Jets_bDiscriminatorCSV, 30, 2.4, BTAG_CSV_LOOSE)
-# 
-# def numberOfJets25Pt2_4Eta_Loose(event):
-# 	return numberOfJets(event.Jets, event.Jets_bDiscriminatorCSV, 25, 2.4, BTAG_CSV_LOOSE)
-# 
-# def numberOfJets25Pt2_4Eta_Loose2(event):
-# 	return numberOfJets(event.Jets, event.Jets_bDiscriminatorCSV, 25, 2.4, BTAG_CSV_LOOSE2)
 
-def eventNumberOfJets25Pt2_4Eta_Loose(jets, jets_bDiscriminatorCSV):
-    return numberOfJets(jets, jets_bDiscriminatorCSV, 25, 2.4, BTAG_CSV_LOOSE)
+def eventNumberOfJets30Pt2_4Eta_Loose(jets, jets_bDiscriminatorCSV):
+    return numberOfJets(jets, jets_bDiscriminatorCSV, 30, 2.4, BTAG_CSV_LOOSE)
 
-def eventNumberOfJets25Pt2_4Eta_Medium(jets, jets_bDiscriminatorCSV):
-    return numberOfJets(jets, jets_bDiscriminatorCSV, 25, 2.4, BTAG_CSV_MEDIUM)
+def eventNumberOfJets30Pt2_4Eta_Medium(jets, jets_bDiscriminatorCSV):
+    return numberOfJets(jets, jets_bDiscriminatorCSV, 30, 2.4, BTAG_CSV_MEDIUM)
 
-def eventNumberOfJets25Pt2_4Eta_DeepLoose(jets, jets_bDiscriminatorCSV):
-    return numberOfJets(jets, jets_bDiscriminatorCSV, 25, 2.4, BTAG_DEEP_CSV_LOOSE)
+def eventNumberOfJets30Pt2_4Eta_DeepLoose(jets, jets_bDiscriminatorCSV):
+    return numberOfJets(jets, jets_bDiscriminatorCSV, 30, 2.4, BTAG_DEEP_CSV_LOOSE)
     
-def eventNumberOfJets25Pt2_4Eta_DeepMedium(jets, jets_bDiscriminatorCSV):
-    return numberOfJets(jets, jets_bDiscriminatorCSV, 25, 2.4, BTAG_DEEP_CSV_MEDIUM)
+def eventNumberOfJets30Pt2_4Eta_DeepMedium(jets, jets_bDiscriminatorCSV):
+    return numberOfJets(jets, jets_bDiscriminatorCSV, 30, 2.4, BTAG_DEEP_CSV_MEDIUM)
 
 def numberOfLooseBTags(event):
     loose = 0
@@ -100,16 +92,16 @@ def numberOfLooseBTags(event):
             loose+=1
     return loose
 
-def htJet25(event):
+def htJet30(event):
     leps = [l for l in event.Electrons] + [m for m in event.Muons]
     cleanJets = [ j for j in event.Jets if min(j.DeltaR(l) for l in leps) > 0.4 ]
-    objects25 = [ j for j in cleanJets if j.Pt() > 25 ] + leps
-    return sum([x.Pt() for x in objects25])
+    objects30 = [ j for j in cleanJets if j.Pt() > 30 ] + leps
+    return sum([x.Pt() for x in objects30])
 
-def htJet25Leps(jets, leps):
+def htJet30Leps(jets, leps):
     cleanJets = [ j for j in jets if min(j.DeltaR(l) for l in leps) > 0.4 ]
-    objects25 = [ j for j in cleanJets if j.Pt() > 25 ] + leps
-    return sum([x.Pt() for x in objects25])
+    objects30 = [ j for j in cleanJets if j.Pt() > 30 ] + leps
+    return sum([x.Pt() for x in objects30])
 
 def minDeltaPhiMetJets(jets, MET, METPhi, pt, eta):
     jets = [ j for j in jets if j.Pt() > pt and abs(j.Eta()) <= eta ]
@@ -127,17 +119,17 @@ def minDeltaPhiMhtJets(jets, MHT, MHTPhi, pt, eta):
     mhtvec.SetPtEtaPhiE(MHT, 0, MHTPhi, MHT)
     return min([abs(j.DeltaPhi(mhtvec)) for j in jets])
 
-def minDeltaPhiMetJets25Pt2_4Eta(event):
-    return minDeltaPhiMetJets(event.Jets, event.MET, event.METPhi, 25, 2.4)
+def minDeltaPhiMetJets30Pt2_4Eta(event):
+    return minDeltaPhiMetJets(event.Jets, event.MET, event.METPhi, 30, 2.4)
 
-def minDeltaPhiMhtJets25Pt2_4Eta(event):
-    return minDeltaPhiMhtJets(event.Jets, event.MHT, event.MHTPhi, 25, 2.4)
+def minDeltaPhiMhtJets30Pt2_4Eta(event):
+    return minDeltaPhiMhtJets(event.Jets, event.MHT, event.MHTPhi, 30, 2.4)
 
-def eventMinDeltaPhiMetJets25Pt2_4Eta(jets, MET, METPhi):
-    return minDeltaPhiMetJets(jets, MET, METPhi, 25, 2.4)
+def eventMinDeltaPhiMetJets30Pt2_4Eta(jets, MET, METPhi):
+    return minDeltaPhiMetJets(jets, MET, METPhi, 30, 2.4)
 
-def eventMinDeltaPhiMhtJets25Pt2_4Eta(jets, MHT, MHTPhi):
-    return minDeltaPhiMhtJets(jets, MHT, MHTPhi, 25, 2.4)
+def eventMinDeltaPhiMhtJets30Pt2_4Eta(jets, MHT, MHTPhi):
+    return minDeltaPhiMhtJets(jets, MHT, MHTPhi, 30, 2.4)
 
 
 def numberOfMediumBTags(event):
@@ -158,7 +150,7 @@ def numberOfMediumBTags(event):
 def isDuoTauEvent(event):
 	partSize = event.GenParticles.size()
 	if partSize == 0:
-		print "No Taus!"
+		print("No Taus!")
 		return False
 	nT = 0
 	t1 = None
@@ -200,10 +192,10 @@ def classifyGenZLeptons(c):
             else:
                 genNonZL.append(ipart)
     if len(genZL) != 2 or (abs(c.GenParticles_PdgId[genZL[0]]) != abs(c.GenParticles_PdgId[genZL[1]])) or (c.GenParticles_PdgId[genZL[0]] * c.GenParticles_PdgId[genZL[1]] > 0 ):
-        print "****** WOW!"
-        print "genZL=" + str(genZL) 
+        print("****** WOW!")
+        print("genZL=" + str(genZL)) 
         for i in genZL:
-            print "PdgId" + str(i) + "=" + str(c.GenParticles_PdgId[i])
+            print("PdgId" + str(i) + "=" + str(c.GenParticles_PdgId[i]))
         return None, None
     # if len(genNonZL) == 0:
     # 		print "===="
@@ -290,7 +282,7 @@ def passed2016BFilter(t, data=False):
     return True
 
 def electronPassesKinematicSelection(i, electrons, electrons_deltaRLJ):
-    return electrons[i].Pt() <= 20 and (electrons_deltaRLJ[i] >= 0.4 or electrons_deltaRLJ[i] < 0)
+    return electrons[i].Pt() <= 15 and (electrons_deltaRLJ[i] >= 0.4 or electrons_deltaRLJ[i] < 0)
 
 def electronPassesLooseSelection(i, electrons, electrons_passIso):
     return bool(electrons_passIso[i])
@@ -302,7 +294,7 @@ def electronPassesTightSelection(i, electrons, electrons_passIso, electrons_delt
 def muonPassesKinematicSelection(i, muons, muons_deltaRLJ, muonLowerPt = 2):
     #if muonLowerPt<2:
         #print "low pt", muonLowerPt
-    return muons[i].Pt()>= muonLowerPt and muons[i].Pt() <= 20 and (muons_deltaRLJ[i] >= 0.4 or muons_deltaRLJ[i] < 0)
+    return muons[i].Pt()>= muonLowerPt and muons[i].Pt() <= 15 and (muons_deltaRLJ[i] >= 0.4 or muons_deltaRLJ[i] < 0)
 
 def muonPassesLooseSelection(i, muons, muons_mediumID, muons_deltaRLJ, muonLowerPt = 2, muonLowerPtTight = False, muons_tightID = None):
     if not muonPassesKinematicSelection(i, muons, muons_deltaRLJ, muonLowerPt):
@@ -362,8 +354,6 @@ def countLeptonsAfterSelection(Electrons, Electrons_passJetIso, Electrons_deltaR
         if muonPassesTightSelection(i, Muons, Muons_mediumID, Muons_passJetIso, Muons_deltaRLJ, muonLowerPt, muonLowerPtTight, muons_tightID):
             nL += 1
     return nL
-
-#{"name":"none", "title": "No Cuts", "condition" : "exclusiveTrack == 1 && Ht > 200 && passedSingleMuPack == 1 && Muons_tightID[leptonIdx] == 1 && lepton.Pt() > 10 && track.Pt() < 25 && Muons[0].Pt() < 100"},
 
 def hasHighPtJpsiMuon(highPtLeptonPtThreshold, Leptons, Leptons_passIso, leptons_tightID):
     for i in range(Leptons.size()):
@@ -470,12 +460,14 @@ def getTwoJPsiLeptonsAfterSelection(highPtLeptonPtThreshold, lowPtLeptonPtThresh
     
     return None, None, None
 
-def getTwoLeptonsAfterSelection(Electrons, Electrons_passJetIso, Electrons_deltaRLJ, Electrons_charge, Muons, Muons_passJetIso, Muons_mediumID, Muons_deltaRLJ, Muons_charge, muonLowerPt = 2, muonLowerPtTight = False, muons_tightID = None):
+def getTwoLeptonsAfterSelection(Electrons, Electrons_passJetIso, Electrons_deltaRLJ, Electrons_charge, Muons, Muons_passJetIso, Muons_mediumID, Muons_deltaRLJ, Muons_charge, muonLowerPt = 2, muonLowerPtTight = False, muons_tightID = None, createJetIsoCr = False, Electrons_passJetCrIso = None, Muons_passJetCrIso = None, Electrons_minDrD3Iso = None, Muons_minDrD3Iso = None):
     leps = []
     lepCharges = []
     lepIdx = []
     lepFlavour = None
     nL = 0
+    jetIsoCr = 0
+    minDrJetIsoCr = -1
     
     for i in range(Electrons.size()):
         e = Electrons[i]
@@ -484,27 +476,76 @@ def getTwoLeptonsAfterSelection(Electrons, Electrons_passJetIso, Electrons_delta
             #print "here..."
             nL += 1
             if nL > 2:
-                return None, None, None, None, None
+                return None, None, None, None, None, None, None
             leps.append(e)
             lepIdx.append(i)
             lepCharges.append(Electrons_charge[i])
             lepFlavour = "Electrons"
-    if nL == 1:
-        return None, None, None, None, None
+    if createJetIsoCr and nL < 2:
+        for i in range(Electrons.size()):
+            e = Electrons[i]
+            #print e, e.Pt(), bool(Electrons_passJetIso[i]), Electrons_deltaRLJ[i]
+            if electronPassesTightSelection(i, Electrons, Electrons_passJetCrIso, Electrons_deltaRLJ):
+                #print "here..."
+                nL += 1
+                if nL > 2:
+                    return None, None, None, None, None, None, None
+                leps.append(e)
+                lepIdx.append(i)
+                lepCharges.append(Electrons_charge[i])
+                jetIsoCr += 1
+                lepFlavour = "Electrons"
+                if minDrJetIsoCr == -1:
+                    minDrJetIsoCr = Electrons_minDrD3Iso[i]
+                else:
+                    minDrJetIsoCr = min(minDrJetIsoCr, Electrons_minDrD3Iso[i])
+        
+    if nL == 1 and jetIsoCr == 0:
+        return None, None, None, None, None, None, None
+    elif nL == 1 and jetIsoCr == 1:
+        # reset - we don't care about a single CR electron
+        leps = []
+        lepCharges = []
+        lepIdx = []
+        lepFlavour = None
+        nL = 0
+        jetIsoCr = 0
+        minDrJetIsoCr = -1
     
     for i in range(Muons.size()):
         m = Muons[i]
         if muonPassesTightSelection(i, Muons, Muons_mediumID, Muons_passJetIso, Muons_deltaRLJ, muonLowerPt, muonLowerPtTight, muons_tightID):
             nL += 1
             if nL > 2:
-                return None, None, None, None, None
+                return None, None, None, None, None, None, None
             leps.append(m)
             lepIdx.append(i)
             lepCharges.append(Muons_charge[i])
             lepFlavour = "Muons"
     
+    if nL < 2 and createJetIsoCr:
+        for i in range(Muons.size()):
+            m = Muons[i]
+            if muonPassesTightSelection(i, Muons, Muons_mediumID, Muons_passJetCrIso, Muons_deltaRLJ, muonLowerPt, muonLowerPtTight, muons_tightID):
+                nL += 1
+                if nL > 2:
+                    return None, None, None, None, None, None, None
+                leps.append(m)
+                lepIdx.append(i)
+                lepCharges.append(Muons_charge[i])
+                lepFlavour = "Muons"
+                jetIsoCr += 1
+                if minDrJetIsoCr == -1:
+                    minDrJetIsoCr = Muons_minDrD3Iso[i]
+                else:
+                    minDrJetIsoCr = min(minDrJetIsoCr, Muons_minDrD3Iso[i])
+    
     if nL != 2:
-        return None, None, None, None, None
+        return None, None, None, None, None, None, None
+    
+    if lepIdx[0] == lepIdx[1]:
+        print("How can two leptons have same idx?!")
+        exit(1)
         
     same_sign = False
     if lepCharges[0] * lepCharges[1] > 0:
@@ -518,7 +559,7 @@ def getTwoLeptonsAfterSelection(Electrons, Electrons_passJetIso, Electrons_delta
     #if lepFlavour == "Electrons":
     #    print "YEY!!!"
     
-    return leps, lepIdx, lepCharges, lepFlavour, same_sign
+    return leps, lepIdx, lepCharges, lepFlavour, same_sign, jetIsoCr, minDrJetIsoCr
 
 
 #[36,37,39,40]

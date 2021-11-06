@@ -50,6 +50,10 @@ plot_par = plot_params.default_params
 if args.type is not None:
     plot_par = eval("plot_params." + args.type[0])
 
+if plot_par.normalise and plot_par.normalise_each_bg:
+    print("Don't use both normalise and normalise_each_bg")
+    exit(1)
+
 bg_retag = plot_par.bg_retag
 
 if args.output_file:
@@ -209,6 +213,7 @@ def createPlotsFast(rootfiles, types, histograms, weight, category, conditions, 
         if os.path.basename(f) in plot_par.ignore_bg_files:
             print "File", f, "in ignore list. Skipping..."
             continue
+        print "opening", f
         rootFile = TFile(f)
         if not_full and i > 0:
             break
@@ -523,7 +528,7 @@ def createAllHistograms(histograms, sumTypes):
 
         
         if plot_par.plot_bg:
-        
+            
             allBgFiles = glob(plot_par.bg_dir + "/*.root")
             
             print sumTypes
@@ -557,6 +562,8 @@ def createAllHistograms(histograms, sumTypes):
                     createPlots(bgFilesToPlot, typesArr, histograms, str(weight), "bg", condArr, plot_par)
                     
             else:
+                #print "*****"
+                #exit(0)
                 for type in sumTypes:
                     if utils.existsInCoumpoundType(type):
                         continue
@@ -635,6 +642,7 @@ def subtracSameCharge(histograms):
                                 histograms[hname].Add(histograms[scname], -1)
 
 def normaliseBgTypes(histograms):
+    print "normaliseBgTypes"
     if not plot_par.plot_rand:
         if plot_par.plot_bg:
             if plot_par.normalise_each_bg:
@@ -787,6 +795,27 @@ def main():
     if plot_par.plot_error:
         errorStr = "e"
     
+    global calculated_lumi  
+    global weight
+    
+    if plot_par.calculatedLumi.get(plot_par.plot_kind) is not None:
+        calculated_lumi = plot_par.calculatedLumi.get(plot_par.plot_kind) #should be in fb-1
+        if plot_par.use_calculated_lumi_weight:
+            weight = calculated_lumi * 1000 #convert to pb-1
+        else:
+            weight = 1
+    else:
+        calculated_lumi = utils.LUMINOSITY / 1000
+        if plot_par.use_calculated_lumi_weight:
+            weight = utils.LUMINOSITY
+        else:
+            weight = 1
+    
+    #calculated_lumi= plot_par.calculatedLumi.get(plot_par.plot_kind)
+    print "plot_par.plot_kind", plot_par.plot_kind
+    print "plot_par.calculatedLumi", plot_par.calculatedLumi
+    print "calculated_lumi", calculated_lumi
+    
     createSumTypes(sumTypes)
     
     if plot_par.load_histrograms_from_file and os.path.isfile(plot_par.histrograms_file):
@@ -817,27 +846,6 @@ def main():
     
     blindHistograms(plot_par, histograms)
     #scaleHistograms(plot_par, histograms)
-    
-    global calculated_lumi  
-    global weight
-    
-    if plot_par.calculatedLumi.get(plot_par.plot_kind) is not None:
-        calculated_lumi = plot_par.calculatedLumi.get(plot_par.plot_kind) #should be in fb-1
-        if plot_par.use_calculated_lumi_weight:
-            weight = calculated_lumi * 1000 #convert to pb-1
-        else:
-            weight = 1
-    else:
-        calculated_lumi = utils.LUMINOSITY / 1000
-        if plot_par.use_calculated_lumi_weight:
-            weight = utils.LUMINOSITY
-        else:
-            weight = 1
-    
-    #calculated_lumi= plot_par.calculatedLumi.get(plot_par.plot_kind)
-    print "plot_par.plot_kind", plot_par.plot_kind
-    print "plot_par.calculatedLumi", plot_par.calculatedLumi
-    print "calculated_lumi", calculated_lumi
         
     print "Plotting observable"
 
@@ -1328,7 +1336,7 @@ def main():
                 #print "looking for", scBgHistName
                 #print histograms
                 scBgHist = histograms[scBgHistName]
-                if plot_par.normalise:
+                if plot_par.normalise and scBgHist.Integral() > 0:
                     scBgHist.Scale(1./scBgHist.Integral())
                 if not (linear and plot_single):
                     scBgHist.SetMinimum(0.0001)
@@ -1339,7 +1347,7 @@ def main():
                 print utils.bcolors.BOLD + utils.bcolors.RED + "scBgHist.Draw(HIST SAME " + errorStr + ")" + utils.bcolors.ENDC
                 scBgHist.Draw("HIST SAME " + errorStr)
                 
-                legend.AddEntry(scBgHist, "same-sign simulation", 'l')
+                legend.AddEntry(scBgHist, plot_par.sc_label, 'l')
             
             if len(plot_par.plot_custom_types) > 0:
                 for i in range(len(plot_par.plot_custom_types)):
@@ -1871,9 +1879,9 @@ def main():
                     #stackSum = utils.getStackSum(newBgHist)
                     if stackSum is not None:
                         memory.append(stackSum)
-                    plotRatio(c1, histRPad, memory, stackSum, scBgHist, hist_def, "sim / sc")
+                    plotRatio(c1, histRPad, memory, stackSum, scBgHist, hist_def, "sim / " + plot_par.sc_ratio_label)
                     if plot_par.plot_data:
-                        plotRatio(c1, histR2Pad, memory, dataHist, scDataHist, hist_def, "data / sc", False)
+                        plotRatio(c1, histR2Pad, memory, dataHist, scDataHist, hist_def, "data / " + plot_par.sc_ratio_label, False)
                     #print "-------", pId, ratioPads
                 else:
                     if plot_par.plot_custom_ratio > 0:
@@ -2138,9 +2146,9 @@ def main():
                     #stackSum = utils.getStackSum(newBgHist)
                     if stackSum is not None:
                         memory.append(stackSum)
-                    plotRatio(c1, histRPad, memory, stackSum, scBgHist, hist_def, "sim / sc")
+                    plotRatio(c1, histRPad, memory, stackSum, scBgHist, hist_def, "sim / " + plot_par.sc_ratio_label)
                     if plot_par.plot_data:
-                        plotRatio(c1, histR2Pad, memory, dataHist, scDataHist, hist_def, "data / sc", False)
+                        plotRatio(c1, histR2Pad, memory, dataHist, scDataHist, hist_def, "data / " + plot_par.sc_ratio_label, False)
                 else:
                     if plot_par.plot_custom_ratio > 0:
                         bgHists = hs.GetHists()

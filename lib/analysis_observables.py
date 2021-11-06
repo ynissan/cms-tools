@@ -15,8 +15,6 @@ commonRecalcFlatObs = {
     "MHTPhi" : "float",
 }
 
-
-
 commonObservablesStringList = ["genFlavour"]
 
 bgFlatObs = {
@@ -320,7 +318,9 @@ dileptonObservablesDTypesList = {
     "j_psi" : "bool",
     "upsilon_1" : "bool",
     "upsilon_2" : "bool",
-    "NSelectionLeptons" : "int"
+    "NSelectionLeptons" : "int",
+    "isoCr" : "int",
+    "isoCrMinDr" : "float"
 }
 
 commonPostBdtObservablesDTypesList = {
