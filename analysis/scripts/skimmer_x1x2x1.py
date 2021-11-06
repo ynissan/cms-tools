@@ -74,7 +74,6 @@ def getWMuon(c):
     return muons
     
     
-
 ######## END OF CMDLINE ARGUMENTS ########
 
 commonBranches = {
