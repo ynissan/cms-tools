@@ -98,6 +98,7 @@ universe = vanilla
 should_transfer_files = IF_NEEDED
 executable = /bin/bash
 notification = Never
+request_memory = 16 GB
 EOM
 
 #for sim in ${SIG_DUP_OUTPUT_DIR}/single/*; do

@@ -76,6 +76,7 @@ universe = vanilla
 should_transfer_files = IF_NEEDED
 executable = /bin/bash
 notification = Never
+request_memory = 16 GB
 EOM
 
 FILES=$INPUT_DIR/sum/type_sum/*

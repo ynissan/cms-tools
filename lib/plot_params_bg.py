@@ -40,6 +40,42 @@ bgReTaggingCollectedNoTauTau = {
     "fake" : "(rf || ff)",
 }
 
+bgReTaggingCollectedNoTauTauCorrJetIso = {
+    "tc" : "tcCorrJetIso15 * (!tautauCorrJetIso15)",
+    #"tautau" : "tautau",
+    "other" : "otherCorrJetIso15 * (!tautauCorrJetIso15) * (!omegaCorrJetIso15) * (!rho_0CorrJetIso15) * (!etaCorrJetIso15) * (!phiCorrJetIso15) * (!eta_primeCorrJetIso15) * (!j_psiCorrJetIso15) * (!upsilon_1CorrJetIso15) * (!upsilon_2CorrJetIso15)",
+    "resonances" : "(scCorrJetIso15 || omegaCorrJetIso15 || rho_0CorrJetIso15 || etaCorrJetIso15 || phiCorrJetIso15 || eta_primeCorrJetIso15 || j_psiCorrJetIso15 || upsilon_1CorrJetIso15 || upsilon_2CorrJetIso15)",
+    "nbody" : "n_bodyCorrJetIso15 * (!tautauCorrJetIso15)",
+    "fake" : "(rfCorrJetIso15 || ffCorrJetIso15)",
+}
+
+bgReTaggingCollectedCorrJetIso15 = {
+    "tc" : "tcCorrJetIso15 * (!tautauCorrJetIso15)",
+    "tautau" : "tautauCorrJetIso15",
+    "other" : "otherCorrJetIso15 * (!tautauCorrJetIso15) * (!omegaCorrJetIso15) * (!rho_0CorrJetIso15) * (!etaCorrJetIso15) * (!phiCorrJetIso15) * (!eta_primeCorrJetIso15) * (!j_psiCorrJetIso15) * (!upsilon_1CorrJetIso15) * (!upsilon_2CorrJetIso15)",
+    "resonances" : "(scCorrJetIso15 || omegaCorrJetIso15 || rho_0CorrJetIso15 || etaCorrJetIso15 || phiCorrJetIso15 || eta_primeCorrJetIso15 || j_psiCorrJetIso15 || upsilon_1CorrJetIso15 || upsilon_2CorrJetIso15)",
+    "nbody" : "n_bodyCorrJetIso15 * (!tautauCorrJetIso15)",
+    "fake" : "(rfCorrJetIso15 || ffCorrJetIso15)",
+}
+
+bgReTaggingCollectedNoTauTauCorrJetIso10 = {
+    "tc" : "tcCorrJetIso10 * (!tautauCorrJetIso10)",
+    #"tautau" : "tautau",
+    "other" : "otherCorrJetIso10 * (!tautauCorrJetIso10) * (!omegaCorrJetIso10) * (!rho_0CorrJetIso10) * (!etaCorrJetIso10) * (!phiCorrJetIso10) * (!eta_primeCorrJetIso10) * (!j_psiCorrJetIso10) * (!upsilon_1CorrJetIso10) * (!upsilon_2CorrJetIso10)",
+    "resonances" : "(scCorrJetIso10 || omegaCorrJetIso10 || rho_0CorrJetIso10 || etaCorrJetIso10 || phiCorrJetIso10 || eta_primeCorrJetIso10 || j_psiCorrJetIso10 || upsilon_1CorrJetIso10 || upsilon_2CorrJetIso10)",
+    "nbody" : "n_bodyCorrJetIso10 * (!tautauCorrJetIso10)",
+    "fake" : "(rfCorrJetIso10 || ffCorrJetIso10)",
+}
+
+bgReTaggingCollectedCorrJetIso10 = {
+    "tc" : "tcCorrJetIso10 * (!tautauCorrJetIso10)",
+    "tautau" : "tautauCorrJetIso10",
+    "other" : "otherCorrJetIso10 * (!tautauCorrJetIso10) * (!omegaCorrJetIso10) * (!rho_0CorrJetIso10) * (!etaCorrJetIso10) * (!phiCorrJetIso10) * (!eta_primeCorrJetIso10) * (!j_psiCorrJetIso10) * (!upsilon_1CorrJetIso10) * (!upsilon_2CorrJetIso10)",
+    "resonances" : "(scCorrJetIso10 || omegaCorrJetIso10 || rho_0CorrJetIso10 || etaCorrJetIso10 || phiCorrJetIso10 || eta_primeCorrJetIso10 || j_psiCorrJetIso10 || upsilon_1CorrJetIso10 || upsilon_2CorrJetIso10)",
+    "nbody" : "n_bodyCorrJetIso10 * (!tautauCorrJetIso10)",
+    "fake" : "(rfCorrJetIso10 || ffCorrJetIso10)",
+}
+
 bgReTaggingResonances = {
     #"tc" : "tc * (!tautau)",
     #"tautau" : "tautau",
@@ -569,7 +605,9 @@ class dilepton_muons_bg_isocr_min_dr(dilepton_muons_bg_isocr):
     normalise = False
 
 class dilepton_muons_bg_isocr_notautau(dilepton_muons_bg_isocr):
-    
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_notautau.root"
+    save_histrograms_to_file = True
+    load_histrograms_from_file = False
     bgReTagging = bgReTaggingCollectedNoTauTau
     cuts = [
         {"name":"none", "title": "None", "condition" : "(BTagsDeepMedium == 0 && twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Muons\" && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSign == 0 && isoCr == 0 && !tautau", "sc" : "sameSign == 0 && isoCr >= 1 && !tautau"},
@@ -584,9 +622,162 @@ class dilepton_muons_bg_isocr_notautau(dilepton_muons_bg_isocr):
         #{"name":"none", "title": "None", "condition" : "(BTagsDeepMedium == 0 && twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Muons\" && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSign == 0 && isoCr == 0 && !tautau", "sc" : "sameSign == 0 && isoCr >= 1 && !tautau"},
     ]
 
+class dilepton_muons_bg_isocr_notautau_corrjetiso(dilepton_muons_bg_isocr_notautau):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_notautau_corrjetiso.root"
+    save_histrograms_to_file = True
+    load_histrograms_from_file = False
+    bgReTagging = bgReTaggingCollectedNoTauTauCorrJetIso
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_0.4/sum/type_sum"
+    cuts = [
+        {"name":"none", "title": "None", "condition" : "(BTagsDeepMedium == 0 && twoLeptonsCorrJetIso15 == 1 && MHT >= 220 &&  MET >= 200 && @leptonsCorrJetIso15.size() == 2 && leptonFlavourCorrJetIso15 == \"Muons\" && invMassCorrJetIso15 < 12  && invMassCorrJetIso15 > 0.4 && !(invMassCorrJetIso15 > 3 && invMassCorrJetIso15 < 3.2) && !(invMassCorrJetIso15 > 0.75 && invMassCorrJetIso15 < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 == 0 && !tautauCorrJetIso15", "sc" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 >= 1 && !tautauCorrJetIso15"},
+        {"name":"isocr1", "title": "isoCr == 1", "condition" : "(BTagsDeepMedium == 0 && twoLeptonsCorrJetIso15 == 1 && MHT >= 220 &&  MET >= 200 && @leptonsCorrJetIso15.size() == 2 && leptonFlavourCorrJetIso15 == \"Muons\" && invMassCorrJetIso15 < 12  && invMassCorrJetIso15 > 0.4 && !(invMassCorrJetIso15 > 3 && invMassCorrJetIso15 < 3.2) && !(invMassCorrJetIso15 > 0.75 && invMassCorrJetIso15 < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 == 0 && !tautauCorrJetIso15", "sc" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 == 1 && !tautauCorrJetIso15"},
+        {"name":"mindr01", "title": "MinDr >= 0.1 && isoCr == 1", "condition" : "(BTagsDeepMedium == 0 && twoLeptonsCorrJetIso15 == 1 && MHT >= 220 &&  MET >= 200 && @leptonsCorrJetIso15.size() == 2 && leptonFlavourCorrJetIso15 == \"Muons\" && invMassCorrJetIso15 < 12  && invMassCorrJetIso15 > 0.4 && !(invMassCorrJetIso15 > 3 && invMassCorrJetIso15 < 3.2) && !(invMassCorrJetIso15 > 0.75 && invMassCorrJetIso15 < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 == 0 && !tautauCorrJetIso15", "sc" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 == 1 && !tautauCorrJetIso15 && isoCrMinDrCorrJetIso15 >= 0.1"},
+        {"name":"mindr02", "title": "MinDr >= 0.2 && isoCr == 1", "condition" : "(BTagsDeepMedium == 0 && twoLeptonsCorrJetIso15 == 1 && MHT >= 220 &&  MET >= 200 && @leptonsCorrJetIso15.size() == 2 && leptonFlavourCorrJetIso15 == \"Muons\" && invMassCorrJetIso15 < 12  && invMassCorrJetIso15 > 0.4 && !(invMassCorrJetIso15 > 3 && invMassCorrJetIso15 < 3.2) && !(invMassCorrJetIso15 > 0.75 && invMassCorrJetIso15 < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 == 0 && !tautauCorrJetIso15", "sc" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 == 1 && !tautauCorrJetIso15 && isoCrMinDrCorrJetIso15 >= 0.2"},
+        {"name":"isocr011", "title": "MinDr >= 0.1 && isoCr >= 1", "condition" : "(BTagsDeepMedium == 0 && twoLeptonsCorrJetIso15 == 1 && MHT >= 220 &&  MET >= 200 && @leptonsCorrJetIso15.size() == 2 && leptonFlavourCorrJetIso15 == \"Muons\" && invMassCorrJetIso15 < 12  && invMassCorrJetIso15 > 0.4 && !(invMassCorrJetIso15 > 3 && invMassCorrJetIso15 < 3.2) && !(invMassCorrJetIso15 > 0.75 && invMassCorrJetIso15 < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 == 0 && !tautauCorrJetIso15", "sc" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 >= 1 && !tautauCorrJetIso15 && isoCrMinDrCorrJetIso15 >= 0.1"},
+        {"name":"isocr02", "title": "MinDr >= 0.2 && isoCr >= 1", "condition" : "(BTagsDeepMedium == 0 && twoLeptonsCorrJetIso15 == 1 && MHT >= 220 &&  MET >= 200 && @leptonsCorrJetIso15.size() == 2 && leptonFlavourCorrJetIso15 == \"Muons\" && invMassCorrJetIso15 < 12  && invMassCorrJetIso15 > 0.4 && !(invMassCorrJetIso15 > 3 && invMassCorrJetIso15 < 3.2) && !(invMassCorrJetIso15 > 0.75 && invMassCorrJetIso15 < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 == 0 && !tautauCorrJetIso15", "sc" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 >= 1 && !tautauCorrJetIso15 && isoCrMinDrCorrJetIso15 >= 0.2"},
+        #{"name":"nj", "title": "NJ >= 2", "condition" : "(NJets >= 2 && BTagsDeepMedium == 0 && twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Muons\" && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSign == 0 && isoCr == 0 && !tautau", "sc" : "sameSign == 0 && isoCr >= 1 && !tautau"},
+        #{"name": "bdt", "title": "bdt >= 0.1", "condition" : "(dilepBDT >= 0.1 && BTagsDeepMedium == 0 && twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Muons\" && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSign == 0 && isoCr == 0 && !tautau", "sc" : "sameSign == 0 && isoCr >= 1 && !tautau"},
+        
+        #{"name":"none", "title": "None", "condition" : "(BTagsDeepMedium == 0 && twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Muons\" && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSign == 0 && isoCr == 0 && !tautau", "sc" : "sameSign == 0 && isoCr >= 1 && !tautau"},
+    ]
+    
+    histograms_defs = [
+        { "obs" : "invMassCorrJetIso15", "minX" : 0, "maxX" : 13, "bins" : 6, "blind" : [4,None]},# "customBins"  : [0,2,4,6,10,12] },
+        { "obs" : "dilepBDTCorrJetIso15", "minX" : -1, "maxX" : 1, "bins" : 6, "blind" : [None,0.1]},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
+        { "obs" : "isoCrMinDrCorrJetIso15", "minX" : 0, "maxX" : 0.4, "bins" : 8},
+        { "obs" : "deltaRCorrJetIso15", "minX" : 0, "maxX" : 3.5, "bins" : 8},
+        { "obs" : "dilepHtCorrJetIso15", "minX" : 200, "maxX" : 800, "bins" : 8},
+        { "obs" : "dileptonPtCorrJetIso15", "minX" : 0, "maxX" : 30, "bins" : 8},
+        { "obs" : "MHT", "minX" : 220, "maxX" : 800, "bins" : 8},
+        { "obs" : "MinDeltaPhiMhtJets", "minX" : 0, "maxX" : 3.5, "bins" : 8},
+        { "obs" : "leptonsCorrJetIso15[0].Pt()", "minX" : 0, "maxX" : 20, "bins" : 8},
+        { "obs" : "deltaPhiMetLepton1CorrJetIso15", "minX" : 0, "maxX" : 3.5, "bins" : 8},
+        { "obs" : "mt1CorrJetIso15", "minX" : 0, "maxX" : 200, "bins" : 8},
+        { "obs" : "leptonsCorrJetIso15[0].Eta()", "minX" : -2.4, "maxX" : 2.4, "bins" : 8},
+        { "obs" : "NJets", "minX" : 0, "maxX" : 6, "bins" : 6},
+        { "obs" : "deltaPhiMetLepton2CorrJetIso15", "minX" : 0, "maxX" : 3.5, "bins" : 8},
+        { "obs" : "LeadingJetPt", "minX" : 0, "maxX" : 500, "bins" : 8},
+        { "obs" : "LeadingJet.Eta()", "minX" : -2.4, "maxX" : 2.4, "bins" : 8},
+        { "obs" : "deltaEtaCorrJetIso15", "minX" : 0, "maxX" : 5, "bins" : 8},
+        { "obs" : "HT", "minX" : 0, "maxX" : 500, "bins" : 8},
+        { "obs" : "leptonsCorrJetIso15[0].Phi()", "minX" : 0, "maxX" : 3.5, "bins" : 8},
+    ]
+
+class dilepton_muons_bg_isocr_notautau_corrjetiso_no_norm(dilepton_muons_bg_isocr_notautau_corrjetiso):
+    load_histrograms_from_file = True
+    normalise = False
+
+class dilepton_muons_bg_isocr_inclusive_corrjetiso(dilepton_muons_bg_isocr_notautau_corrjetiso):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_inclusive_corrjetiso.root"
+    bgReTagging = bgReTaggingCollectedCorrJetIso15
+    cuts = [
+        {"name":"none", "title": "None", "condition" : "(BTagsDeepMedium == 0 && twoLeptonsCorrJetIso15 == 1 && MHT >= 220 &&  MET >= 200 && @leptonsCorrJetIso15.size() == 2 && leptonFlavourCorrJetIso15 == \"Muons\" && invMassCorrJetIso15 < 12  && invMassCorrJetIso15 > 0.4 && !(invMassCorrJetIso15 > 3 && invMassCorrJetIso15 < 3.2) && !(invMassCorrJetIso15 > 0.75 && invMassCorrJetIso15 < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 == 0", "sc" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 >= 1"},
+        #{"name":"isocr1", "title": "isoCr == 1", "condition" : "(BTagsDeepMedium == 0 && twoLeptonsCorrJetIso15 == 1 && MHT >= 220 &&  MET >= 200 && @leptonsCorrJetIso15.size() == 2 && leptonFlavourCorrJetIso15 == \"Muons\" && invMassCorrJetIso15 < 12  && invMassCorrJetIso15 > 0.4 && !(invMassCorrJetIso15 > 3 && invMassCorrJetIso15 < 3.2) && !(invMassCorrJetIso15 > 0.75 && invMassCorrJetIso15 < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 == 0 && !tautauCorrJetIso15", "sc" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 == 1"},
+        #{"name":"mindr01", "title": "MinDr >= 0.1 && isoCr == 1", "condition" : "(BTagsDeepMedium == 0 && twoLeptonsCorrJetIso15 == 1 && MHT >= 220 &&  MET >= 200 && @leptonsCorrJetIso15.size() == 2 && leptonFlavourCorrJetIso15 == \"Muons\" && invMassCorrJetIso15 < 12  && invMassCorrJetIso15 > 0.4 && !(invMassCorrJetIso15 > 3 && invMassCorrJetIso15 < 3.2) && !(invMassCorrJetIso15 > 0.75 && invMassCorrJetIso15 < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 == 0 && !tautauCorrJetIso15", "sc" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 == 1 && isoCrMinDrCorrJetIso15 >= 0.1"},
+        #{"name":"mindr02", "title": "MinDr >= 0.2 && isoCr == 1", "condition" : "(BTagsDeepMedium == 0 && twoLeptonsCorrJetIso15 == 1 && MHT >= 220 &&  MET >= 200 && @leptonsCorrJetIso15.size() == 2 && leptonFlavourCorrJetIso15 == \"Muons\" && invMassCorrJetIso15 < 12  && invMassCorrJetIso15 > 0.4 && !(invMassCorrJetIso15 > 3 && invMassCorrJetIso15 < 3.2) && !(invMassCorrJetIso15 > 0.75 && invMassCorrJetIso15 < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 == 0 && !tautauCorrJetIso15", "sc" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 == 1 && isoCrMinDrCorrJetIso15 >= 0.2"},
+        #{"name":"isocr011", "title": "MinDr >= 0.1 && isoCr >= 1", "condition" : "(BTagsDeepMedium == 0 && twoLeptonsCorrJetIso15 == 1 && MHT >= 220 &&  MET >= 200 && @leptonsCorrJetIso15.size() == 2 && leptonFlavourCorrJetIso15 == \"Muons\" && invMassCorrJetIso15 < 12  && invMassCorrJetIso15 > 0.4 && !(invMassCorrJetIso15 > 3 && invMassCorrJetIso15 < 3.2) && !(invMassCorrJetIso15 > 0.75 && invMassCorrJetIso15 < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 == 0 && !tautauCorrJetIso15", "sc" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 >= 1 && isoCrMinDrCorrJetIso15 >= 0.1"},
+        #{"name":"isocr02", "title": "MinDr >= 0.2 && isoCr >= 1", "condition" : "(BTagsDeepMedium == 0 && twoLeptonsCorrJetIso15 == 1 && MHT >= 220 &&  MET >= 200 && @leptonsCorrJetIso15.size() == 2 && leptonFlavourCorrJetIso15 == \"Muons\" && invMassCorrJetIso15 < 12  && invMassCorrJetIso15 > 0.4 && !(invMassCorrJetIso15 > 3 && invMassCorrJetIso15 < 3.2) && !(invMassCorrJetIso15 > 0.75 && invMassCorrJetIso15 < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 == 0 && !tautauCorrJetIso15", "sc" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 >= 1 && isoCrMinDrCorrJetIso15 >= 0.2"},
+        #{"name":"nj", "title": "NJ >= 2", "condition" : "(NJets >= 2 && BTagsDeepMedium == 0 && twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Muons\" && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSign == 0 && isoCr == 0 && !tautau", "sc" : "sameSign == 0 && isoCr >= 1 && !tautau"},
+        #{"name": "bdt", "title": "bdt >= 0.1", "condition" : "(dilepBDT >= 0.1 && BTagsDeepMedium == 0 && twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Muons\" && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSign == 0 && isoCr == 0 && !tautau", "sc" : "sameSign == 0 && isoCr >= 1 && !tautau"},
+        
+        #{"name":"none", "title": "None", "condition" : "(BTagsDeepMedium == 0 && twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Muons\" && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSign == 0 && isoCr == 0 && !tautau", "sc" : "sameSign == 0 && isoCr >= 1 && !tautau"},
+    ]
+
+class dilepton_muons_bg_isocr_inclusive_corrjetiso_no_norm(dilepton_muons_bg_isocr_inclusive_corrjetiso):
+    normalise = False
+    load_histrograms_from_file = True
+
+class dilepton_muons_bg_isocr_tautau_corrjetiso15(dilepton_muons_bg_isocr_inclusive_corrjetiso):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_tautau_corrjetiso15.root"
+    choose_bg_categories_list = ["tautau"]
+    choose_bg_categories = True
+    cuts = [
+        #{"name":"none", "title": "None", "condition" : "(BTagsDeepMedium == 0 && twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Muons\" && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSign == 0 && isoCr == 0", "sc" : "sameSign == 0 && isoCr >= 1 && " + dilepton_muons_bg_isocr.bgReTagging["tautau"]},
+        {"name":"none", "title": "None", "condition" : "(BTagsDeepMedium == 0 && twoLeptonsCorrJetIso15 == 1 && MHT >= 220 &&  MET >= 200 && @leptonsCorrJetIso15.size() == 2 && leptonFlavourCorrJetIso15 == \"Muons\" && invMassCorrJetIso15 < 12  && invMassCorrJetIso15 > 0.4 && !(invMassCorrJetIso15 > 3 && invMassCorrJetIso15 < 3.2) && !(invMassCorrJetIso15 > 0.75 && invMassCorrJetIso15 < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 == 0", "sc" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 >= 1 && " + dilepton_muons_bg_isocr_inclusive_corrjetiso.bgReTagging["tautau"] + " == 1"},
+    ]
+
+class dilepton_muons_bg_isocr_tautau_corrjetiso15_no_norm(dilepton_muons_bg_isocr_tautau_corrjetiso15):
+    normalise = False
+    load_histrograms_from_file = True
+
+class dilepton_muons_bg_isocr_notautau_corrjetiso_15_0_6(dilepton_muons_bg_isocr_notautau_corrjetiso):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_notautau_corrjetiso_15_0_6.root"
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum"
+
+class dilepton_muons_bg_isocr_notautau_corrjetiso_15_0_6_no_norm(dilepton_muons_bg_isocr_notautau_corrjetiso_15_0_6):
+    normalise = False
+    load_histrograms_from_file = True
+
+class dilepton_muons_bg_isocr_notautau_corrjetiso_10(dilepton_muons_bg_isocr_notautau_corrjetiso):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_notautau_corrjetiso_10.root"
+    bgReTagging = bgReTaggingCollectedNoTauTauCorrJetIso10
+    cuts = [
+        {"name":"none", "title": "None", "condition" : "(BTagsDeepMedium == 0 && twoLeptonsCorrJetIso10 == 1 && MHT >= 220 &&  MET >= 200 && @leptonsCorrJetIso10.size() == 2 && leptonFlavourCorrJetIso10 == \"Muons\" && invMassCorrJetIso10 < 12  && invMassCorrJetIso10 > 0.4 && !(invMassCorrJetIso10 > 3 && invMassCorrJetIso10 < 3.2) && !(invMassCorrJetIso10 > 0.75 && invMassCorrJetIso10 < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSignCorrJetIso10 == 0 && isoCrCorrJetIso10 == 0 && !tautauCorrJetIso10", "sc" : "sameSignCorrJetIso10 == 0 && isoCrCorrJetIso10 >= 1 && !tautauCorrJetIso10"},
+        {"name":"isocr1", "title": "isoCr == 1", "condition" : "(BTagsDeepMedium == 0 && twoLeptonsCorrJetIso10 == 1 && MHT >= 220 &&  MET >= 200 && @leptonsCorrJetIso10.size() == 2 && leptonFlavourCorrJetIso10 == \"Muons\" && invMassCorrJetIso10 < 12  && invMassCorrJetIso10 > 0.4 && !(invMassCorrJetIso10 > 3 && invMassCorrJetIso10 < 3.2) && !(invMassCorrJetIso10 > 0.75 && invMassCorrJetIso10 < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSignCorrJetIso10 == 0 && isoCrCorrJetIso10 == 0 && !tautauCorrJetIso10", "sc" : "sameSignCorrJetIso10 == 0 && isoCrCorrJetIso10 == 1 && !tautauCorrJetIso10"},
+        {"name":"mindr01", "title": "MinDr >= 0.1 && isoCr == 1", "condition" : "(BTagsDeepMedium == 0 && twoLeptonsCorrJetIso10 == 1 && MHT >= 220 &&  MET >= 200 && @leptonsCorrJetIso10.size() == 2 && leptonFlavourCorrJetIso10 == \"Muons\" && invMassCorrJetIso10 < 12  && invMassCorrJetIso10 > 0.4 && !(invMassCorrJetIso10 > 3 && invMassCorrJetIso10 < 3.2) && !(invMassCorrJetIso10 > 0.75 && invMassCorrJetIso10 < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSignCorrJetIso10 == 0 && isoCrCorrJetIso10 == 0 && !tautauCorrJetIso10", "sc" : "sameSignCorrJetIso10 == 0 && isoCrCorrJetIso10 == 1 && !tautauCorrJetIso10 && isoCrMinDrCorrJetIso10 >= 0.1"},
+        {"name":"mindr02", "title": "MinDr >= 0.2 && isoCr == 1", "condition" : "(BTagsDeepMedium == 0 && twoLeptonsCorrJetIso10 == 1 && MHT >= 220 &&  MET >= 200 && @leptonsCorrJetIso10.size() == 2 && leptonFlavourCorrJetIso10 == \"Muons\" && invMassCorrJetIso10 < 12  && invMassCorrJetIso10 > 0.4 && !(invMassCorrJetIso10 > 3 && invMassCorrJetIso10 < 3.2) && !(invMassCorrJetIso10 > 0.75 && invMassCorrJetIso10 < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSignCorrJetIso10 == 0 && isoCrCorrJetIso10 == 0 && !tautauCorrJetIso10", "sc" : "sameSignCorrJetIso10 == 0 && isoCrCorrJetIso10 == 1 && !tautauCorrJetIso10 && isoCrMinDrCorrJetIso10 >= 0.2"},
+        {"name":"isocr011", "title": "MinDr >= 0.1 && isoCr >= 1", "condition" : "(BTagsDeepMedium == 0 && twoLeptonsCorrJetIso10 == 1 && MHT >= 220 &&  MET >= 200 && @leptonsCorrJetIso10.size() == 2 && leptonFlavourCorrJetIso10 == \"Muons\" && invMassCorrJetIso10 < 12  && invMassCorrJetIso10 > 0.4 && !(invMassCorrJetIso10 > 3 && invMassCorrJetIso10 < 3.2) && !(invMassCorrJetIso10 > 0.75 && invMassCorrJetIso10 < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSignCorrJetIso10 == 0 && isoCrCorrJetIso10 == 0 && !tautauCorrJetIso10", "sc" : "sameSignCorrJetIso10 == 0 && isoCrCorrJetIso10 >= 1 && !tautauCorrJetIso10 && isoCrMinDrCorrJetIso10 >= 0.1"},
+        {"name":"isocr02", "title": "MinDr >= 0.2 && isoCr >= 1", "condition" : "(BTagsDeepMedium == 0 && twoLeptonsCorrJetIso10 == 1 && MHT >= 220 &&  MET >= 200 && @leptonsCorrJetIso10.size() == 2 && leptonFlavourCorrJetIso10 == \"Muons\" && invMassCorrJetIso10 < 12  && invMassCorrJetIso10 > 0.4 && !(invMassCorrJetIso10 > 3 && invMassCorrJetIso10 < 3.2) && !(invMassCorrJetIso10 > 0.75 && invMassCorrJetIso10 < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSignCorrJetIso10 == 0 && isoCrCorrJetIso10 == 0 && !tautauCorrJetIso10", "sc" : "sameSignCorrJetIso10 == 0 && isoCrCorrJetIso10 >= 1 && !tautauCorrJetIso10 && isoCrMinDrCorrJetIso10 >= 0.2"},
+        #{"name":"nj", "title": "NJ >= 2", "condition" : "(NJets >= 2 && BTagsDeepMedium == 0 && twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Muons\" && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSign == 0 && isoCr == 0 && !tautau", "sc" : "sameSign == 0 && isoCr >= 1 && !tautau"},
+        #{"name": "bdt", "title": "bdt >= 0.1", "condition" : "(dilepBDT >= 0.1 && BTagsDeepMedium == 0 && twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Muons\" && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSign == 0 && isoCr == 0 && !tautau", "sc" : "sameSign == 0 && isoCr >= 1 && !tautau"},
+        
+        #{"name":"none", "title": "None", "condition" : "(BTagsDeepMedium == 0 && twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Muons\" && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSign == 0 && isoCr == 0 && !tautau", "sc" : "sameSign == 0 && isoCr >= 1 && !tautau"},
+    ]
+    histograms_defs = [
+        { "obs" : "invMassCorrJetIso10", "minX" : 0, "maxX" : 13, "bins" : 6, "blind" : [4,None]},# "customBins"  : [0,2,4,6,10,12] },
+        { "obs" : "dilepBDTCorrJetIso10", "minX" : -1, "maxX" : 1, "bins" : 6, "blind" : [None,0.1]},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
+        { "obs" : "isoCrMinDrCorrJetIso10", "minX" : 0, "maxX" : 0.4, "bins" : 8},
+        { "obs" : "deltaRCorrJetIso10", "minX" : 0, "maxX" : 3.5, "bins" : 8},
+        { "obs" : "dilepHtCorrJetIso10", "minX" : 200, "maxX" : 800, "bins" : 8},
+        { "obs" : "dileptonPtCorrJetIso10", "minX" : 0, "maxX" : 30, "bins" : 8},
+        { "obs" : "MHT", "minX" : 220, "maxX" : 800, "bins" : 8},
+        { "obs" : "MinDeltaPhiMhtJets", "minX" : 0, "maxX" : 3.5, "bins" : 8},
+        { "obs" : "leptonsCorrJetIso10[0].Pt()", "minX" : 0, "maxX" : 20, "bins" : 8},
+        { "obs" : "deltaPhiMetLepton1CorrJetIso10", "minX" : 0, "maxX" : 3.5, "bins" : 8},
+        { "obs" : "mt1CorrJetIso10", "minX" : 0, "maxX" : 200, "bins" : 8},
+        { "obs" : "leptonsCorrJetIso10[0].Eta()", "minX" : -2.4, "maxX" : 2.4, "bins" : 8},
+        { "obs" : "NJets", "minX" : 0, "maxX" : 6, "bins" : 6},
+        { "obs" : "deltaPhiMetLepton2CorrJetIso10", "minX" : 0, "maxX" : 3.5, "bins" : 8},
+        { "obs" : "LeadingJetPt", "minX" : 0, "maxX" : 500, "bins" : 8},
+        { "obs" : "LeadingJet.Eta()", "minX" : -2.4, "maxX" : 2.4, "bins" : 8},
+        { "obs" : "deltaEtaCorrJetIso10", "minX" : 0, "maxX" : 5, "bins" : 8},
+        { "obs" : "HT", "minX" : 0, "maxX" : 500, "bins" : 8},
+        { "obs" : "leptonsCorrJetIso10[0].Phi()", "minX" : 0, "maxX" : 3.5, "bins" : 8},
+    ]
+
+class dilepton_muons_bg_isocr_notautau_corrjetiso_10_no_norm(dilepton_muons_bg_isocr_notautau_corrjetiso_10):
+    normalise = False
+    load_histrograms_from_file = True
+
+class dilepton_muons_bg_isocr_inclusive_corrjetiso_10(dilepton_muons_bg_isocr_notautau_corrjetiso_10):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_inclusive_corrjetiso_10.root"
+    bgReTagging = bgReTaggingCollectedCorrJetIso10
+    cuts = [
+        {"name":"none", "title": "None", "condition" : "(BTagsDeepMedium == 0 && twoLeptonsCorrJetIso10 == 1 && MHT >= 220 &&  MET >= 200 && @leptonsCorrJetIso10.size() == 2 && leptonFlavourCorrJetIso10 == \"Muons\" && invMassCorrJetIso10 < 12  && invMassCorrJetIso10 > 0.4 && !(invMassCorrJetIso10 > 3 && invMassCorrJetIso10 < 3.2) && !(invMassCorrJetIso10 > 0.75 && invMassCorrJetIso10 < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSignCorrJetIso10 == 0 && isoCrCorrJetIso10 == 0", "sc" : "sameSignCorrJetIso10 == 0 && isoCrCorrJetIso10 >= 1"},
+    ]
+
+class dilepton_muons_bg_isocr_notautau_corrjetiso_10_0_6(dilepton_muons_bg_isocr_notautau_corrjetiso_10):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_notautau_corrjetiso_10_0_6.root"
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum"
+
+class dilepton_muons_bg_isocr_notautau_corrjetiso_mindr(dilepton_muons_bg_isocr_notautau_corrjetiso):
+    cuts = [
+        {"name":"none", "title": "None", "condition" : "(BTagsDeepMedium == 0 && twoLeptonsCorrJetIso15 == 1 && MHT >= 220 &&  MET >= 200 && @leptonsCorrJetIso15.size() == 2 && leptonFlavourCorrJetIso15 == \"Muons\" && invMassCorrJetIso15 < 12  && invMassCorrJetIso15 > 0.4 && !(invMassCorrJetIso15 > 3 && invMassCorrJetIso15 < 3.2) && !(invMassCorrJetIso15 > 0.75 && invMassCorrJetIso15 < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 > 0 && !tautauCorrJetIso15", "sc" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 >= 1 && !tautauCorrJetIso15"},
+    ]
+    histograms_defs = [
+        { "obs" : "isoCrMinDrCorrJetIso15", "minX" : 0, "maxX" : 0.4, "bins" : 8},
+    ]
+    plot_sc = False
+    plot_ratio = False
+    normalise = False
+
+class dilepton_muons_bg_isocr_notautau_corrjetiso_10_0_6_no_norm(dilepton_muons_bg_isocr_notautau_corrjetiso_10_0_6):
+    normalise = False
+    load_histrograms_from_file = True
+
 class dilepton_muons_bg_isocr_notautau_working_02_corrjetiso(dilepton_muons_bg_isocr):
     bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_dr_0.2_working/sum/type_sum"
-    bgReTagging = bgReTaggingCollectedNoTauTau
+    bgReTagging = bgReTaggingCollectedNoTauTauCorrJetIso
     cuts = [
         {"name":"none", "title": "None", "condition" : "(BTagsDeepMedium == 0 && twoLeptonsCorrJetIso15 == 1 && MHT >= 220 &&  MET >= 200 && @leptonsCorrJetIso15.size() == 2 && leptonFlavourCorrJetIso15 == \"Muons\" && invMassCorrJetIso15 < 12  && invMassCorrJetIso15 > 0.4 && !(invMassCorrJetIso15 > 3 && invMassCorrJetIso15 < 3.2) && !(invMassCorrJetIso15 > 0.75 && invMassCorrJetIso15 < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 == 0 && !tautauCorrJetIso15", "sc" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 >= 1 && !tautauCorrJetIso15"},
         {"name":"isocr1", "title": "isoCr == 1", "condition" : "(BTagsDeepMedium == 0 && twoLeptonsCorrJetIso15 == 1 && MHT >= 220 &&  MET >= 200 && @leptonsCorrJetIso15.size() == 2 && leptonFlavourCorrJetIso15 == \"Muons\" && invMassCorrJetIso15 < 12  && invMassCorrJetIso15 > 0.4 && !(invMassCorrJetIso15 > 3 && invMassCorrJetIso15 < 3.2) && !(invMassCorrJetIso15 > 0.75 && invMassCorrJetIso15 < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 == 0 && !tautauCorrJetIso15", "sc" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 == 1 && !tautauCorrJetIso15"},
@@ -682,6 +873,7 @@ class dilepton_muons_bg_isocr_fake(dilepton_muons_bg_isocr_tc):
 #dilepton_muons_bg_isocr_sm dilepton_muons_bg_isocr_sm_wjets dilepton_muons_bg_isocr_sm_ttjets dilepton_muons_bg_isocr_sm_dy dilepton_muons_bg_isocr_sm_zjets dilepton_muons_bg_isocr_sm_rare dilepton_muons_bg_isocr_sm_diboson
 
 class dilepton_muons_bg_isocr_sm(dilepton_muons_bg_isocr):
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_0.4/sum/type_sum"
     load_histrograms_from_file = False
     histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_sm.root"
     cuts = [
@@ -700,6 +892,50 @@ class dilepton_muons_bg_isocr_sm(dilepton_muons_bg_isocr):
     nostack = False
     sc_label = "Jet Iso #Delta_{}R CR"
     sc_ratio_label = "cr"
+
+class dilepton_muons_bg_isocr_sm_corrjetiso_15(dilepton_muons_bg_isocr_sm):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_sm_corrjetiso_15.root"
+    cuts = [
+        {"name":"none", "title": "None", "condition" : "(BTagsDeepMedium == 0 && twoLeptonsCorrJetIso15 == 1 && MHT >= 220 &&  MET >= 200 && @leptonsCorrJetIso15.size() == 2 && leptonFlavourCorrJetIso15 == \"Muons\" && invMassCorrJetIso15 < 12  && invMassCorrJetIso15 > 0.4 && !(invMassCorrJetIso15 > 3 && invMassCorrJetIso15 < 3.2) && !(invMassCorrJetIso15 > 0.75 && invMassCorrJetIso15 < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 == 0 && !tautauCorrJetIso15", "sc" : "sameSignCorrJetIso15 == 0 && isoCrCorrJetIso15 >= 1 && !tautauCorrJetIso15"},
+    ]
+    histograms_defs = [
+        { "obs" : "invMassCorrJetIso15", "minX" : 0, "maxX" : 13, "bins" : 6, "blind" : [4,None]},# "customBins"  : [0,2,4,6,10,12] },
+        { "obs" : "dilepBDTCorrJetIso15", "minX" : -1, "maxX" : 1, "bins" : 6, "blind" : [None,0.1]},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
+        { "obs" : "isoCrMinDrCorrJetIso15", "minX" : 0, "maxX" : 0.4, "bins" : 8},
+        { "obs" : "deltaRCorrJetIso15", "minX" : 0, "maxX" : 3.5, "bins" : 8},
+        { "obs" : "dilepHtCorrJetIso15", "minX" : 200, "maxX" : 800, "bins" : 8},
+        { "obs" : "dileptonPtCorrJetIso15", "minX" : 0, "maxX" : 30, "bins" : 8},
+        { "obs" : "MHT", "minX" : 220, "maxX" : 800, "bins" : 8},
+        { "obs" : "MinDeltaPhiMhtJets", "minX" : 0, "maxX" : 3.5, "bins" : 8},
+        { "obs" : "leptonsCorrJetIso15[0].Pt()", "minX" : 0, "maxX" : 20, "bins" : 8},
+        { "obs" : "deltaPhiMetLepton1CorrJetIso15", "minX" : 0, "maxX" : 3.5, "bins" : 8},
+        { "obs" : "mt1CorrJetIso15", "minX" : 0, "maxX" : 200, "bins" : 8},
+        { "obs" : "leptonsCorrJetIso15[0].Eta()", "minX" : -2.4, "maxX" : 2.4, "bins" : 8},
+        { "obs" : "NJets", "minX" : 0, "maxX" : 6, "bins" : 6},
+        { "obs" : "deltaPhiMetLepton2CorrJetIso15", "minX" : 0, "maxX" : 3.5, "bins" : 8},
+        { "obs" : "LeadingJetPt", "minX" : 0, "maxX" : 500, "bins" : 8},
+        { "obs" : "LeadingJet.Eta()", "minX" : -2.4, "maxX" : 2.4, "bins" : 8},
+        { "obs" : "deltaEtaCorrJetIso15", "minX" : 0, "maxX" : 5, "bins" : 8},
+        { "obs" : "HT", "minX" : 0, "maxX" : 500, "bins" : 8},
+        { "obs" : "leptonsCorrJetIso15[0].Phi()", "minX" : 0, "maxX" : 3.5, "bins" : 8},
+    ]
+    
+class dilepton_muons_bg_isocr_sm_mindr(dilepton_muons_bg_isocr_sm):
+    plot_sc = False
+    plot_ratio = False
+    cuts = [
+        #{"name":"none", "title": "None", "condition" : "(BTagsDeepMedium == 0 && twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Muons\" && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSign == 0", "sc" : "sameSign == 0 && isoCr >= 1"},
+        {"name":"none", "title": "None", "condition" : "(BTagsDeepMedium == 0 && MHT >= 220 &&  MET >= 200 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "", "sc" : "sameSign == 0 && isoCr >= 1"},
+        #{"name":"mindr", "title": "MinDr >= 0.2", "condition" : "(BTagsDeepMedium == 0 && twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Muons\" && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSign == 0 && isoCr == 0", "sc" : "sameSign == 0 && isoCr >= 1 && isoCrMinDr >= 0.2"},
+        #{"name":"nj", "title": "NJ >= 2", "condition" : "(NJets >= 2 && BTagsDeepMedium == 0 && twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Muons\" && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSign == 0 && isoCr == 0", "sc" : "sameSign == 0 && isoCr >= 1"},
+        #{"name": "bdt", "title": "bdt >= 0.1", "condition" : "(dilepBDT >= 0.1 && BTagsDeepMedium == 0 && twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Muons\" && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSign == 0 && isoCr == 0", "sc" : "sameSign == 0 && isoCr >= 1"},
+    ]
+    histograms_defs = [
+        { "obs" : "Muons_minDeltaRJets", "minX" : 0, "maxX" : 3, "bins" : 30, "blind" : [4,None], "condition" : "Muons_passCorrJetIso15 == 1 && Jets[Muons_closestJet].Pt() > 15 && Jets[Muons_closestJet].Pt() < 30"},# "customBins"  : [0,2,4,6,10,12] },
+        { "obs" : "Muons_minDeltaRJets_cr", "formula": "Muons_minDeltaRJets" ,"minX" : 0, "maxX" : 3, "bins" : 30, "blind" : [4,None], "condition" : "Muons_passCorrJetIso15 == 0 && Jets[Muons_closestJet].Pt() > 15 && Jets[Muons_closestJet].Pt() < 30"},# "customBins"  : [0,2,4,6,10,12] },
+    ]
+    normalise = False
+    
 
 class dilepton_muons_bg_isocr_sm_wjets(dilepton_muons_bg_isocr_sm):
     histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_sm_wjets.root"

@@ -36,7 +36,6 @@ all = args.all
 print "No norm=" + str(no_norm)
 print "All=" + str(all)
 
-	
 ######## END OF CMDLINE ARGUMENTS ########
 
 dir = os.path.dirname(output_file_name)
@@ -66,10 +65,16 @@ for lep in ["Electrons", "Muons"]:
     for iso in utils.leptonIsolationList:
         for cat in utils.leptonIsolationCategories:
             ptRanges = [""]
+            drCuts = [""]
             if iso == "CorrJetIso":
                 ptRanges = utils.leptonCorrJetIsoPtRange
+                drCuts = utils.leptonCorrJetIsoDrCuts
             for ptRange in ptRanges:
-                dataloaders[lep + iso + str(ptRange) + cat] = TMVA.DataLoader("dataset")
+                for drCut in drCuts:
+                    cuts = ""
+                    if len(str(ptRange)) > 0:
+                        cuts = str(ptRange) + "Dr" + str(drCut)
+                    dataloaders[lep + iso + cuts + cat] = TMVA.DataLoader("dataset")
                 
 bgFiles = []
 bTrees = []
@@ -84,15 +89,21 @@ for input_file in input_files:
         for iso in utils.leptonIsolationList:
             for cat in utils.leptonIsolationCategories:
                 ptRanges = [""]
+                drCuts = [""]
                 if iso == "CorrJetIso":
                     ptRanges = utils.leptonCorrJetIsoPtRange
+                    drCuts = utils.leptonCorrJetIsoDrCuts
                 for ptRange in ptRanges:
-                    sTree = fsignal.Get(lep + iso + str(ptRange) + cat)
-                    if sTree.GetEntries() == 0:
-                        print "Emtpy. Skipping"
-                        continue
-                    sTrees.append(sTree)
-                    dataloaders[lep + iso + str(ptRange) + cat].AddSignalTree(sTree, 1)
+                    for drCut in drCuts:
+                        cuts = ""
+                        if len(str(ptRange)) > 0:
+                            cuts = str(ptRange) + "Dr" + str(drCut)
+                        sTree = fsignal.Get(lep + iso + cuts + cat)
+                        if sTree.GetEntries() == 0:
+                            print "Emtpy. Skipping"
+                            continue
+                        sTrees.append(sTree)
+                        dataloaders[lep + iso + cuts + cat].AddSignalTree(sTree, 1)
                     
 for bg_file in bg_files:
     if "QCD" in bg_file:
@@ -104,16 +115,22 @@ for bg_file in bg_files:
     for iso in utils.leptonIsolationList:
         for cat in utils.leptonIsolationCategories:
             ptRanges = [""]
+            drCuts = [""]
             if iso == "CorrJetIso":
                 ptRanges = utils.leptonCorrJetIsoPtRange
+                drCuts = utils.leptonCorrJetIsoDrCuts
             for ptRange in ptRanges:
-                bTree = fbackground.Get(iso + str(ptRange) + cat)
-                if bTree.GetEntries() == 0:
-                    print "Emtpy. Skipping"
-                    continue
-                bTrees.append(bTree)
-                for lep in ["Electrons", "Muons"]:
-                    dataloaders[lep + iso + str(ptRange) + cat].AddBackgroundTree(bTree, 1)
+                for drCut in drCuts:
+                    cuts = ""
+                    if len(str(ptRange)) > 0:
+                        cuts = str(ptRange) + "Dr" + str(drCut)
+                    bTree = fbackground.Get(iso + cuts + cat)
+                    if bTree.GetEntries() == 0:
+                        print "Emtpy. Skipping"
+                        continue
+                    bTrees.append(bTree)
+                    for lep in ["Electrons", "Muons"]:
+                        dataloaders[lep + iso + cuts + cat].AddBackgroundTree(bTree, 1)
 
 # cuts defining the signal and background sample
 preselectionCut = TCut("")
@@ -123,39 +140,47 @@ for lep in ["Electrons", "Muons"]:
     for iso in utils.leptonIsolationList:
         for cat in utils.leptonIsolationCategories:
             ptRanges = [""]
+            drCuts = [""]
             if iso == "CorrJetIso":
                 ptRanges = utils.leptonCorrJetIsoPtRange
+                drCuts = utils.leptonCorrJetIsoDrCuts
+            
             for ptRange in ptRanges:
-                dataloader = dataloaders[lep + iso + str(ptRange) + cat]
+                for drCut in drCuts:
+                    cuts = ""
+                    if len(str(ptRange)) > 0:
+                        cuts = str(ptRange) + "Dr" + str(drCut)
+                    postfix = iso + cuts + cat
+                    dataloader = dataloaders[lep + postfix]
                 
-                # Variables
-                dataloader.AddVariable('track.Eta()', 'F')
-                dataloader.AddVariable('track.Pt()', 'F')
-                dataloader.AddVariable('track.Phi()', 'F')
-                #dataloader.AddVariable('log(dxyVtx)', 'F')
-                #dataloader.AddVariable('log(dzVtx)', 'F')
-                #dataloader.AddVariable('log(trkMiniRelIso)', 'F')
-                #dataloader.AddVariable('log(trkRelIso)', 'F')
+                    # Variables
+                    dataloader.AddVariable('track.Eta()', 'F')
+                    dataloader.AddVariable('track.Pt()', 'F')
+                    dataloader.AddVariable('track.Phi()', 'F')
+                    #dataloader.AddVariable('log(dxyVtx)', 'F')
+                    #dataloader.AddVariable('log(dzVtx)', 'F')
+                    #dataloader.AddVariable('log(trkMiniRelIso)', 'F')
+                    #dataloader.AddVariable('log(trkRelIso)', 'F')
                 
-                dataloader.AddVariable('deltaEtaLJ', 'F')
-                dataloader.AddVariable('deltaRLJ', 'F')
+                    dataloader.AddVariable('deltaEtaLJ', 'F')
+                    dataloader.AddVariable('deltaRLJ', 'F')
 
-                ## FULL
-                dataloader.AddVariable('deltaEtaLL', 'F')
-                dataloader.AddVariable('deltaRLL', 'F')
-                dataloader.AddVariable('mtt', 'F')
-                #dataloader.AddVariable('deltaRMet', 'F')
-                dataloader.AddVariable('deltaPhiMet', 'F')
-                dataloader.AddVariable('lepton.Eta()', 'F')
-                dataloader.AddVariable('lepton.Phi()', 'F')
-                dataloader.AddVariable('lepton.Pt()', 'F')
-                dataloader.AddVariable('invMass', 'F')
+                    ## FULL
+                    dataloader.AddVariable('deltaEtaLL', 'F')
+                    dataloader.AddVariable('deltaRLL', 'F')
+                    dataloader.AddVariable('mtt', 'F')
+                    #dataloader.AddVariable('deltaRMet', 'F')
+                    dataloader.AddVariable('deltaPhiMht', 'F')
+                    dataloader.AddVariable('lepton.Eta()', 'F')
+                    dataloader.AddVariable('lepton.Phi()', 'F')
+                    dataloader.AddVariable('lepton.Pt()', 'F')
+                    dataloader.AddVariable('invMass', 'F')
 
-                if no_norm:
-                    dataloader.PrepareTrainingAndTestTree(preselectionLeptonCut, "SplitMode=random:!V:NormMode=None")
-                else:
-                    dataloader.PrepareTrainingAndTestTree(preselectionLeptonCut, "SplitMode=random:!V")
-                factory.BookMethod(dataloader, TMVA.Types.kBDT, lep + iso + str(ptRange) + cat, "NTrees=200:MaxDepth=3")
+                    if no_norm:
+                        dataloader.PrepareTrainingAndTestTree(preselectionLeptonCut, "SplitMode=random:!V:NormMode=None")
+                    else:
+                        dataloader.PrepareTrainingAndTestTree(preselectionLeptonCut, "SplitMode=random:!V")
+                    factory.BookMethod(dataloader, TMVA.Types.kBDT, lep + postfix, "NTrees=200:MaxDepth=3")
 #factory.BookMethod(dataloader, TMVA.Types.kBDT, "BDT2","NTrees=2000:nEventsMin=2000:MaxDepth=4:BoostType=AdaBoost:AdaBoostBeta=0.6:UseRandomisedTrees=True:UseNVars=6:nCuts=2000:PruneMethod=CostComplexity:PruneStrength=-1")
 #if all:
 #    factory.BookMethod(dataloader, TMVA.Types.kMLP, "MLP", "H:!V:NeuronType=tanh:VarTransform=N:NCycles=600:HiddenLayers=N+5:TestRate=5:!UseRegulator" )

@@ -80,6 +80,7 @@ universe = vanilla
 should_transfer_files = IF_NEEDED
 executable = /bin/bash
 notification = Never
+request_memory = 16 GB
 EOM
 
 #FILES=(WJetsToLNu_HT-600To800_TuneCUETP8M1_11.root TTJets_SingleLeptFromT_TuneCUETP8M1_16.root ST_t-channel_top_3.root TTJets_SingleLeptFromTbar_TuneCUETP8M1_8.root)

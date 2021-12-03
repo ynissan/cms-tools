@@ -174,11 +174,12 @@ leptonsCorrJetVecList = {
     "NoIso" : "bool",
 }
 
-leptonCorrJetIsoPtRange = [0, 1, 5, 10, 15, 20]
+leptonCorrJetIsoPtRange = [0, 1, 5, 10, 10.5, 11, 11.5, 12, 12.5, 13, 15, 20]
+leptonCorrJetIsoDrCuts = [0.4,0.45,0.5,0.55,0.6]
 
 #leptonCorrJetIsoPtRange = [0, 10]
 
-defaultJetIsoSetting = "JetIso"
+defaultJetIsoSetting = "CorrJetIso10Dr0.5"
 
 #leptonIsolationList = [ "JetIso", "CorrJetIso", "NonJetIso" ]
 #leptonIsolationList = [ "CorrJetIso", "NonJetIso", "NoIso" ]
@@ -879,6 +880,11 @@ def getDmFromFileName(filename):
     print("Filename: " + filename)
     return filename.split('_')[-1].split('Chi20Chipm')[0]
 
+def getPointFromFileName(filename):
+    print("Filename: " + filename)
+    return os.path.basename(filename).split('Chi20Chipm')[0].split('higgsino_')[1]
+
+
 def getPointFromSamFileName(filename):
     print("Filename: " + filename)
     return "_".join(os.path.basename(filename).split('.')[0].split('_')[0:2])
@@ -915,6 +921,20 @@ def calcSignificance(sigHist, bgHist, ignoreCrossSection = False):
                 bgErr = 0.2 * bgNum
                 sig = math.sqrt(sig**2 + (cs * (sigNum / math.sqrt(bgNum + bgErr**2)))**2)
     return sig
+
+def calcSignificanceCutCount(sigHist, bgHist, binNum, binMax = -1):    
+    binsNumber = sigHist.GetNbinsX()
+    print("integrating from", binNum, "to", binsNumber if binMax == -1 else binMax)
+    sigNum = sigHist.Integral(binNum, binsNumber if binMax == -1 else binMax)
+    bgNum = bgHist.Integral(binNum, binsNumber if binMax == -1 else binMax)
+    if bgNum == 0:
+        return 0
+    bgErr = 0.2 * bgNum
+    print("sigNum", sigNum, "bgNum", bgNum)
+    return sigNum / math.sqrt(bgNum + bgErr**2)
+    # This is the version for a transfer factor of 0.8
+    #return sigNum / math.sqrt(1.8*bgNum)
+
 
 def calcSignificanceNoAcc(sigHist, bgHist, ignoreCrossSection = False):
     sig = 0

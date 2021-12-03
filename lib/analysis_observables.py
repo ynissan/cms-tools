@@ -300,8 +300,13 @@ extraObservablesDTypesList = {
 
 dileptonObservablesDTypesList = {
     "twoLeptons" : "bool",
+    
     "deltaPhiMetLepton1" : "float",
     "deltaPhiMetLepton2" : "float",
+    
+    "deltaPhiMhtLepton1" : "float",
+    "deltaPhiMhtLepton2" : "float",
+    
     "tautau" : "bool",
     "rr" : "bool",
     "rf" : "bool",
@@ -346,10 +351,13 @@ exclusiveTrackObservablesDTypesList = {
     "mtt" : "float",
     "mtl" : "float",
     "NTracks" : "int",
-    "deltaRMetTrack" : "float",
-    "deltaRMetLepton" : "float",
+    
     "deltaPhiMetTrack" : "float",
     "deltaPhiMetLepton" : "float",
+    
+    "deltaPhiMhtTrack" : "float",
+    "deltaPhiMhtLepton" : "float",
+    
     "trackBDT" : "float",
     "secondTrackBDT" : "float"
 }

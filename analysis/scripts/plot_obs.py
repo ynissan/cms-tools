@@ -266,7 +266,7 @@ def createPlotsFast(rootfiles, types, histograms, weight, category, conditions, 
                             conditionStr = "( " + cut["condition"] + " )"
                             if special_type == "sc" and cut.get("sc") is not None:
                                 conditionStr += " && ( " + cut["sc"] + " )"
-                            elif cut.get("baseline") is not None:
+                            elif cut.get("baseline") is not None and len(cut["baseline"]) > 0:
                                 conditionStr += " && ( " + cut["baseline"] + " )"
                                 
                             if hist_def.get("condition") is not None:

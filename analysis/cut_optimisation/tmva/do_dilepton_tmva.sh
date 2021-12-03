@@ -56,6 +56,7 @@ fi
 
 #priority = 0
 #+RequestRuntime = 86400
+#request_memory = 16 GB
 
 cat << EOM > $output_file
 universe = vanilla
@@ -94,31 +95,40 @@ for group in "${!SIM_GROUP[@]}"; do
             for iso in "${LEPTON_ISOLATION_LIST[@]}"; do
                 for category in "${LEPTON_ISOLATION_CATEGORIES[@]}"; do
                     ptRanges=("")
+                    drCuts=("")
                     #ptRanges[0]=""
                     if [[ $iso == "CorrJetIso" ]]; then
                         ptRanges=("${LEPTON_CORR_JET_ISO_RANGE[@]}")
+                        drCuts=("${LEPTON_CORR_JET_ISO_DR_CUTS[@]}")
                     fi
                     for ptRange in "${ptRanges[@]}"; do
-                        echo ${lepNum}${lep}${iso}${category}${ptRange}
-                        dir="$OUTPUT_DIR/${lepNum}${lep}${iso}${category}${ptRange}"
-                        if [ ! -d $dir ]; then
-                            mkdir $dir
-                        fi
-                        cmd="$CONDOR_WRAPPER $CUT_OPTIMISATION_SCRIPTS/dilepton_tmva.py -i $input -bg $BG_INPUT -o $dir/${lepNum}${lep}${iso}${category}${ptRange}.root -lepNum $lepNum -lep $lep -iso $iso -ptRange $ptRange -cat $category"
-                        #echo "$dir/dataset/weights/TMVAClassification_${lepNum}${lep}${iso}${category}${ptRange}.xml"
-                        #exit 0
-                        if [ -f "$dir/dataset/weights/TMVAClassification_${lepNum}${lep}${iso}${category}${ptRange}.weights.xml" ]; then 
-                            echo "file $dir/dataset/weights/TMVAClassification_${lepNum}${lep}${iso}${category}${ptRange}.weights.xml exists. Skipping..."
-                            continue
-                        fi
-                        echo $cmd
+                        for drCut in  "${drCuts[@]}"; do
+                            cuts=$ptRange
+                            if [ ! -z "$ptRange" ]; then
+                                cuts=${ptRange}Dr${drCut}
+                            fi
+                            
+                            echo ${lepNum}${lep}${iso}${category}${cuts}
+                            dir="$OUTPUT_DIR/${lepNum}${lep}${iso}${category}${cuts}"
+                            if [ ! -d $dir ]; then
+                                mkdir $dir
+                            fi
+                            cmd="$CONDOR_WRAPPER $CUT_OPTIMISATION_SCRIPTS/dilepton_tmva.py -i $input -bg $BG_INPUT -o $dir/${lepNum}${lep}${iso}${category}${cuts}.root -lepNum $lepNum -lep $lep -iso $iso -ptRange $cuts -cat $category"
+                            #echo "$dir/dataset/weights/TMVAClassification_${lepNum}${lep}${iso}${category}${ptRange}.xml"
+                            #exit 0
+                            if [ -f "$dir/dataset/weights/TMVAClassification_${lepNum}${lep}${iso}${category}${cuts}.weights.xml" ]; then 
+                                echo "file $dir/dataset/weights/TMVAClassification_${lepNum}${lep}${iso}${category}${cuts}.weights.xml exists. Skipping..."
+                                continue
+                            fi
+                            echo $cmd
 cat << EOM >> $output_file
 arguments = $cmd
-error = ${dir}/${lepNum}${lep}${iso}${category}${ptRange}.err
-output = ${dir}/${lepNum}${lep}${iso}${category}${ptRange}.output
+error = ${dir}/${lepNum}${lep}${iso}${category}${cuts}.err
+output = ${dir}/${lepNum}${lep}${iso}${category}${cuts}.output
+log = ${dir}/${lepNum}${lep}${iso}${category}${cuts}.log
 Queue
 EOM
-                      
+                        done
                     done
                 done
             done
