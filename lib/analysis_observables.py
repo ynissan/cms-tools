@@ -375,6 +375,6 @@ dileptonBDTeventObservables = {
     'MinDeltaPhiMhtJets' :'F',
     'MHT' : 'F',
     'LeadingJetPt' : 'F',
-    'LeadingJet.Eta()' : 'F',
+    'abs(LeadingJet.Eta())' : 'F',
     'NJets' : 'I',
 }

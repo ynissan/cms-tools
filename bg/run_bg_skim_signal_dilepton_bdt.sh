@@ -71,12 +71,13 @@ timestamp=$(date +%Y%m%d_%H%M%S%N)
 output_file="${WORK_DIR}/condor_submut.${timestamp}"
 echo "output file: $output_file"
 
+#request_memory = 16 GB
+
 cat << EOM > $output_file
 universe = vanilla
 should_transfer_files = IF_NEEDED
 executable = /bin/bash
 notification = Never
-request_memory = 16 GB
 EOM
 
 FILES=$INPUT_DIR/sum/type_sum/*

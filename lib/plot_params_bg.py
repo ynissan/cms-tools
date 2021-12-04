@@ -49,6 +49,15 @@ bgReTaggingCollectedNoTauTauCorrJetIso = {
     "fake" : "(rfCorrJetIso15 || ffCorrJetIso15)",
 }
 
+bgReTaggingCollectedNoTauTauCorrJetIso15_04 = {
+    "tc" : "tcCorrJetIso15Dr0.4 * (!tautauCorrJetIso15Dr0.4)",
+    #"tautau" : "tautau",
+    "other" : "otherCorrJetIso15Dr0.4 * (!tautauCorrJetIso15Dr0.4) * (!omegaCorrJetIso15Dr0.4) * (!rho_0CorrJetIso15Dr0.4) * (!etaCorrJetIso15Dr0.4) * (!phiCorrJetIso15Dr0.4) * (!eta_primeCorrJetIso15Dr0.4) * (!j_psiCorrJetIso15Dr0.4) * (!upsilon_1CorrJetIso15Dr0.4) * (!upsilon_2CorrJetIso15Dr0.4)",
+    "resonances" : "(scCorrJetIso15Dr0.4 || omegaCorrJetIso15Dr0.4 || rho_0CorrJetIso15Dr0.4 || etaCorrJetIso15Dr0.4 || phiCorrJetIso15Dr0.4 || eta_primeCorrJetIso15Dr0.4 || j_psiCorrJetIso15Dr0.4 || upsilon_1CorrJetIso15Dr0.4 || upsilon_2CorrJetIso15Dr0.4)",
+    "nbody" : "n_bodyCorrJetIso15Dr0.4 * (!tautauCorrJetIso15Dr0.4)",
+    "fake" : "(rfCorrJetIso15Dr0.4 || ffCorrJetIso15Dr0.4)",
+}
+
 bgReTaggingCollectedCorrJetIso15 = {
     "tc" : "tcCorrJetIso15 * (!tautauCorrJetIso15)",
     "tautau" : "tautauCorrJetIso15",
@@ -662,6 +671,40 @@ class dilepton_muons_bg_isocr_notautau_corrjetiso(dilepton_muons_bg_isocr_notaut
         { "obs" : "HT", "minX" : 0, "maxX" : 500, "bins" : 8},
         { "obs" : "leptonsCorrJetIso15[0].Phi()", "minX" : 0, "maxX" : 3.5, "bins" : 8},
     ]
+
+
+class dilepton_muons_bg_isocr_notautau_corrjetiso_15_04(dilepton_muons_bg_isocr_notautau_corrjetiso):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_notautau_corrjetiso_15_04.root"
+    save_histrograms_to_file = True
+    load_histrograms_from_file = False
+    bgReTagging = bgReTaggingCollectedNoTauTauCorrJetIso15_04
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum"
+    cuts = [
+        {"name":"none", "title": "None", "condition" : "(MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptonsCorrJetIso15Dr0.4 == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavourCorrJetIso15Dr0.4 == \"Muons\" && invMassCorrJetIso15Dr0.4 < 12  && invMassCorrJetIso15Dr0.4 > 0.4 && !(invMassCorrJetIso15Dr0.4 > 3 && invMassCorrJetIso15Dr0.4 < 3.2) && !(invMassCorrJetIso15Dr0.4 > 0.75 && invMassCorrJetIso15Dr0.4 < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSignCorrJetIso15Dr0.4 == 0 && isoCrCorrJetIso15Dr0.4 == 0 && !tautauCorrJetIso15Dr0.4", "sc" : "sameSignCorrJetIso15Dr0.4 == 0 && isoCrCorrJetIso15Dr0.4 >= 1 && !tautauCorrJetIso15Dr0.4"},
+    ]
+    
+    histograms_defs = [
+        { "obs" : "invMassCorrJetIso15Dr0.4", "minX" : 0, "maxX" : 13, "bins" : 6, "blind" : [4,None]},# "customBins"  : [0,2,4,6,10,12] },
+        { "obs" : "dilepBDTCorrJetIso15Dr0.4", "minX" : -1, "maxX" : 1, "bins" : 6, "blind" : [None,0.1]},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
+        { "obs" : "isoCrMinDrCorrJetIso15Dr0.4", "minX" : 0, "maxX" : 0.4, "bins" : 8},
+        { "obs" : "deltaRCorrJetIso15Dr0.4", "minX" : 0, "maxX" : 3.5, "bins" : 8},
+        { "obs" : "dilepHtCorrJetIso15Dr0.4", "minX" : 200, "maxX" : 800, "bins" : 8},
+        { "obs" : "dileptonPtCorrJetIso15Dr0.4", "minX" : 0, "maxX" : 30, "bins" : 8},
+        { "obs" : "MHT", "minX" : 220, "maxX" : 800, "bins" : 8},
+        { "obs" : "MinDeltaPhiMhtJets", "minX" : 0, "maxX" : 3.5, "bins" : 8},
+        { "obs" : "leptonsCorrJetIso15Dr0.4[0].Pt()", "minX" : 0, "maxX" : 20, "bins" : 8},
+        { "obs" : "deltaPhiMetLepton1CorrJetIso15Dr0.4", "minX" : 0, "maxX" : 3.5, "bins" : 8},
+        { "obs" : "mt1CorrJetIso15Dr0.4", "minX" : 0, "maxX" : 200, "bins" : 8},
+        { "obs" : "leptonsCorrJetIso15Dr0.4[0].Eta()", "minX" : -2.4, "maxX" : 2.4, "bins" : 8},
+        { "obs" : "NJets", "minX" : 0, "maxX" : 6, "bins" : 6},
+        { "obs" : "deltaPhiMetLepton2CorrJetIso15Dr0.4", "minX" : 0, "maxX" : 3.5, "bins" : 8},
+        { "obs" : "LeadingJetPt", "minX" : 0, "maxX" : 500, "bins" : 8},
+        { "obs" : "LeadingJet.Eta()", "minX" : -2.4, "maxX" : 2.4, "bins" : 8},
+        { "obs" : "deltaEtaCorrJetIso15Dr0.4", "minX" : 0, "maxX" : 5, "bins" : 8},
+        { "obs" : "HT", "minX" : 0, "maxX" : 500, "bins" : 8},
+        { "obs" : "leptonsCorrJetIso15Dr0.4[0].Phi()", "minX" : 0, "maxX" : 3.5, "bins" : 8},
+    ]
+
 
 class dilepton_muons_bg_isocr_notautau_corrjetiso_no_norm(dilepton_muons_bg_isocr_notautau_corrjetiso):
     load_histrograms_from_file = True
