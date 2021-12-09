@@ -125,7 +125,7 @@ for obs in analysis_observables.dileptonBDTeventObservables:
         variablesUsed.append(obs)
 
 preselection = None
-    
+
 if lepNum == "reco":
     #preselection = "twoLeptons" + iso + str(ptRange) + cat + " == 1 && BTagsDeepMedium == 0 && MinDeltaPhiMetJets > 0.4 && @leptons" + iso + str(ptRange) + cat + ".size() == 2 && leptonFlavour" + iso + str(ptRange) + cat  + " == \"" + lep + "\"" + " && sameSign" + iso + str(ptRange) + cat + " == 0" + " && isoCr" + iso + str(ptRange) + cat + " == 0"
     preselection = "twoLeptons" + iso + str(ptRange) + cat + " == 1 && BTagsDeepMedium == 0 && MinDeltaPhiMetJets > 0.4 && leptonFlavour" + iso + str(ptRange) + cat  + " == \"" + lep + "\"" + " && sameSign" + iso + str(ptRange) + cat + " == 0" + " && isoCr" + iso + str(ptRange) + cat + " == 0"

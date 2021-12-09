@@ -39,9 +39,9 @@ args = parser.parse_args()
 
 output_file = None
 
-histograms_file = "./sig_bg_histograms.root"
+histograms_file = "./sig_bg_histograms_for_jet_iso_scan.root"
 #histograms_file = "./met.root"
-s
+
 signals = [
     "mu100_dm4p30",
     "mu100_dm3p28",
@@ -62,6 +62,8 @@ output_dir = "./signal_region_plots"
 if not os.path.isdir(output_dir):
     os.mkdir(output_dir)
 
+jetiso = "CorrJetIso11Dr0.55"
+
 ######## END OF CMDLINE ARGUMENTS ########
 
 def main():
@@ -71,11 +73,22 @@ def main():
     histograms = TFile(histograms_file, 'read')
     
     for lepNum in [1, 2]:
+        
+        if lepNum != 2:
+            continue
+        
         for lep in ["Muons", "Electrons"]:
+            
+            if lep != "Muons":
+                continue
             
             orthOpt = [True, False] if (lepNum == 2 and lep == "Muons") else [False]
             for orth in orthOpt:
-                histname = "bg_" + ("1t" if lepNum == 1 else "2l") + "_" + ("orth_" if orth else "") + lep
+                
+                if orth:
+                    continue
+                #"bg_2l_" + ("orth_" if orth else "") + lep + "_" + jetiso
+                histname = "bg_" + ("1t" if lepNum == 1 else "2l") + "_" + ("orth_" if orth else "") + lep + "_" + jetiso
                 print("Getting", histname) 
                 bg_hist = histograms.Get(histname)
             
@@ -83,11 +96,8 @@ def main():
             
                 signal_histograms = []
                 for signal in signals:
-                
-                
-                    #"bg_2l_" + ("orth_" if orth else "") + lep + "_" + jetiso
-                
-                    histname = signal + "_" + ("1t" if lepNum == 1 else "2l") + "_" + ("orth_" if orth else "") + lep
+                    
+                    histname = signal + "_" + ("1t" if lepNum == 1 else "2l") + "_" + ("orth_" if orth else "") + lep + "_" + jetiso
                     print("Getting", histname) 
                     hist = histograms.Get(histname)
                     maximum = max(maximum, hist.GetMaximum())

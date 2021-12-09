@@ -942,6 +942,7 @@ def calcSignificanceNoAcc(sigHist, bgHist, ignoreCrossSection = False):
     bgNum = 0
     #accumulate = False
     binsNumber = sigHist.GetNbinsX()
+    #print "binsNumber", binsNumber
     cs = 1
     if not ignoreCrossSection:
         cs = 0.1
@@ -971,6 +972,7 @@ def calcSignificanceNoAcc(sigHist, bgHist, ignoreCrossSection = False):
             #print "sigNum=", sigNum, "bgNum=", bgNum, "sig=", 0.1 * (sigNum / math.sqrt(bgNum))
         bgErr = 0.2 * bgNum
         sig = math.sqrt(sig**2 + (cs * (sigNum / math.sqrt(sigNum + bgNum + bgErr**2)))**2)
+        #sig = math.sqrt(sig**2 + (cs * (sigNum / math.sqrt(bgNum + bgErr**2)))**2)
     return sig
 
 def calcZ(lhdH1, lhdH0):
