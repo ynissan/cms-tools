@@ -166,6 +166,10 @@ def main():
         baseFileName = os.path.basename(filename)
         output_file = output_dir + "/" + baseFileName
         print "output_file", output_file
+        
+        if os.path.isfile(output_file):
+            print "File exits. Skipping", output_file
+            continue
 
         f = TFile(filename)
         c = f.Get('tEvent')

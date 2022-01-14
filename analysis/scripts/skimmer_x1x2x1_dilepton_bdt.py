@@ -219,11 +219,11 @@ def main():
                                             #print k, v
                                             try:
                                                 if k in analysis_observables.dileptonBDTeventObservables:
-                                                    #if k == "abs(LeadingJet.Eta())":
-                                                    #    v[0] = eval("abs(tree.LeadingJet.Eta())")
-                                                    #else:
+                                                    if k == "LeadingJet.Eta()":
+                                                        v[0] = eval("tree.LeadingJet.Eta()")
+                                                    else:
                                                         #print "getattr(tree, k)", k
-                                                    v[0] = getattr(tree, k)
+                                                        v[0] = getattr(tree, k)
                                                 else:
                                                     #print k, " not in analysis_observables.dileptonBDTeventObservables"
                                                     #print "eval", "tree." + sc_prefix  + k
@@ -249,7 +249,8 @@ def main():
                                                     else:
                                                         v[0] = getattr(tree, sc_prefix + k)
                                                 
-                                            except:
+                                            except Exception as e:
+                                                print "exception", e
                                                 print ientry, k, name, getattr(tree, "twoLeptons"  + iso + cuts + cat), getattr(tree, "exclusiveTrack"  + iso + cuts + cat)
                                                 print "ERROR!!! GIVING UP..."
                                                 exit(0)

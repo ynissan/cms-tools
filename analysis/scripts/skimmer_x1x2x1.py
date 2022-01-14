@@ -697,8 +697,12 @@ def main():
         commonCalcFlatObs["MinDeltaPhiMhtJets"][0] = analysis_ntuples.eventMinDeltaPhiMhtJets30Pt2_4Eta(jetsObs["Jets"], MHT, MHTPhi)
         if not dy and not jpsi:
             #if commonCalcFlatObs["MinDeltaPhiMetJets"][0] < 0.4: continue
-            if MHT < 140: continue
-            if MET < 140: continue
+            #if MHT < 140: continue
+            #if MET < 140: continue
+            
+            if MHT < 100: continue
+            #if MET < 140: continue
+            
         #Keep 2 b-tags for two-leptons
         # if two_leptons:
 #             if btags > 2: continue
@@ -1173,7 +1177,8 @@ def main():
                                 if nT > 0 and (jpsi_muons or commonCalcFlatObs["BTagsLoose"][0] == 0 or commonCalcFlatObs["BTagsMedium"][0] == 0 or commonCalcFlatObs["BTagsDeepLoose"][0] == 0 or commonCalcFlatObs["BTagsDeepMedium"][0] == 0):
                                     commonCalcFlatObs["category"][0] = 1
                                     foundSingleLepton = True
-                        if leptons is not None and (jpsi_muons or commonCalcFlatObs["BTagsLoose"][0] < 3 or commonCalcFlatObs["BTagsMedium"][0] < 3 or commonCalcFlatObs["BTagsDeepLoose"][0] < 3 or commonCalcFlatObs["BTagsDeepMedium"][0] < 3):
+                        #if leptons is not None and (jpsi_muons or commonCalcFlatObs["BTagsLoose"][0] < 3 or commonCalcFlatObs["BTagsMedium"][0] < 3 or commonCalcFlatObs["BTagsDeepLoose"][0] < 3 or commonCalcFlatObs["BTagsDeepMedium"][0] < 3):
+                        if leptons is not None and (jpsi_muons or commonCalcFlatObs["BTagsLoose"][0] == 0 or commonCalcFlatObs["BTagsMedium"][0] == 0 or commonCalcFlatObs["BTagsDeepLoose"][0] == 0 or commonCalcFlatObs["BTagsDeepMedium"][0] == 0):
                 
                             #print var_BTagsLoose[0], var_BTagsMedium[0], var_BTagsDeepLoose[0], var_BTagsDeepMedium[0]
                 

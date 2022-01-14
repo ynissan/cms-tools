@@ -243,7 +243,7 @@ def existsInCoumpoundType(key):
     return False
 
 def getFilesForCompoundType(cType, directory):
-    print("In getFilesForCompoundType")
+    print("In getFilesForCompoundType", cType, directory)
     bgFiles = []
     #print compoundTypes[cType]
     for miniType in compoundTypes[cType]:
@@ -251,14 +251,14 @@ def getFilesForCompoundType(cType, directory):
         #    print "skipping", miniType, "because not in", sumTypes
         #    continue
         #print "globbing", miniType
-        if "ST_" in miniType:
+        #if "ST_" in miniType:
             #print "In ST***"
             #print "Globing " + directory + "/" + miniType + ".root"
-            bgFiles.extend(glob(directory + "/" + miniType + ".root"))
-        else:
+        #    bgFiles.extend(glob(directory + "/" + miniType + ".root"))
+        #else:
             #print "Globing " + directory + "/" + miniType + "_*.root"
-            bgFiles.extend(glob(directory + "/" + miniType + "_*.root"))
-
+        bgFiles.extend(glob(directory + "/" + miniType + "_*.root"))
+    #print(bgFiles)
     return bgFiles
 
 
