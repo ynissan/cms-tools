@@ -36,6 +36,8 @@ signalNames = [
 # 
 # object - for the purpose of retagging
 # condition - adds a specific condition to the histogram
+# baseline - adds a specific condition to the histogram (for not sc)
+# sc - adds a specific condition to the histogram for sc
 # obs - either the name of the histogram of the formula
 # sc_obs - that's the obs for same-charge CR
 # formula - in case we want to override the obs with a specific formula (for naming two histograms differently)

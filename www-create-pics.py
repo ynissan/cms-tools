@@ -35,6 +35,8 @@ print "globing", output_path + "/*.pdf"
 print glob.glob(output_path + "/*.pdf")
 
 for ifile in sorted(glob.glob(output_path + "/*.pdf")):
+    if "_log.pdf" in ifile:
+        continue
     print ifile
     outfile = ifile.split("/")[-1]
     

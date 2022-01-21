@@ -272,6 +272,11 @@ def createPlotsFast(rootfiles, types, histograms, weight, category, conditions, 
                                 
                             if hist_def.get("condition") is not None:
                                 conditionStr += " && ( " + hist_def["condition"] + " )"
+                            if special_type == "" and hist_def.get("baseline") is not None:
+                                conditionStr += " && ( " + hist_def["baseline"] + " )"
+                            if special_type == "sc" and hist_def.get("sc") is not None:
+                                conditionStr += " && ( " + hist_def["sc"] + " )"
+                            
                             if len(object_string) > 0 and cut.get("object") is not None and cut["object"].get(object_string) is not None:
                                 conditionStr += " && ( " + cut["object"][object_string] + " )"
                             if len(condition) > 0:
@@ -379,9 +384,18 @@ def plotRatio(c1, pad, memory, dataHist, newBgHist, hist_def, title = "Data / BG
         pad.SetGridx()
     if plot_par.plot_grid_y:
         pad.SetGridy()
+    
+    chi2 = dataHist.Chi2Test(newBgHist, "WW")
+    print(chi2)
+    #exit(0)
+    
     rdataHist = dataHist.Clone()
     memory.append(rdataHist)
+    
     rdataHist.Divide(newBgHist)
+    
+    
+    
     rdataHist.SetMinimum(0.5)
     rdataHist.SetMaximum(1.5)
     #rdataHist.SetMaximum(5)
@@ -403,6 +417,19 @@ def plotRatio(c1, pad, memory, dataHist, newBgHist, hist_def, title = "Data / BG
     line = TLine(rdataHist.GetXaxis().GetXmin(),1,rdataHist.GetXaxis().GetXmax(),1);
     line.SetLineColor(kRed);
     line.Draw("SAME");
+    
+    tl = TLatex()
+    tl.SetNDC()
+    print((tl.GetTextSize()))
+    tl.SetTextSize(0.2) 
+    print((tl.GetTextSize()))
+    #tl.SetTextSize(0.5)
+    tl.SetTextFont(132)
+    tl.DrawLatex(.5,.5,"p_value = " + "{:.2f}".format(chi2))
+    #tl.DrawLatex(.1,.01,"error = " + "{:.2f}".format(100 * fit_only_signal_integral_error[hist_def["obs"]] / fit_only_signal_integral[hist_def["obs"]]) + "%")
+                
+    
+    
     memory.append(line)
     c1.Modified()
 
@@ -1121,7 +1148,27 @@ def main():
                     else:
                         hist.SetMinimum(0)
                     maximum = max(hist.GetMaximum(), maximum)
+            
+            if plot_par.plot_sc:
+                if plot_par.plot_data:
+                    scDataHistName = "sc_" + cut["name"] + "_" + hist_def["obs"] + "_data"
+                    scDataHist = histograms[scDataHistName]
                     
+                    if plot_par.normalise and scDataHist.Integral() > 0:
+                        scDataHistNorm = scDataHist.Clone()
+                        scDataHistNorm.Scale(1./scDataHistNorm.Integral())
+                        maximum = max(scDataHistNorm.GetMaximum(), maximum)
+                    else:
+                        maximum = max(scDataHist.GetMaximum(), maximum)
+                scBgHistName = "sc_" + cut["name"] + "_" + hist_def["obs"] + "_bg"
+                scBgHist = histograms[scBgHistName]
+                if plot_par.normalise and scBgHist.Integral() > 0: 
+                    scBgHistNorm = scBgHist.Clone()
+                    scBgHistNorm.Scale(1./scBgHistNorm.Integral())
+                    maximum = max(scBgHistNorm.GetMaximum(), maximum)
+                else:
+                    maximum = max(scBgHist.GetMaximum(), maximum)
+            
             if maximum == 0:
                 maximum == 10
             
