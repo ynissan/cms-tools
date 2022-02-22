@@ -222,6 +222,6 @@ def main():
                 
                 print("===========")
                 print(("1t" if lepNum == 1 else "2l") + "_" + ("orth_" if orth else "") + lep)
-                print(cut_values)  
+                print(list(reversed(cut_values)))  
     exit(0)
 main()

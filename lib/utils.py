@@ -141,6 +141,17 @@ bgOrder = {
     #"TT" : 7,
 }
 
+bgReTaggingNames = {
+    "Rare" : "Rare",
+    "DiBoson" : "VV",
+    "DYJetsToLL" : "DY+jets",
+    "TTJets" : "t#bar{t}",
+    "ZJetsToNuNu" : "Z+jets#rightarrow#nu#nu",
+    "QCD" : "QCD multijet",
+    "WJetsToLNu" : "W+jets#rightarrow_{}l#nu",
+    #"TT" : 7,
+}
+
 #Z Jets
 # bgOrder = {
 #     "Rare" : 0,
@@ -417,8 +428,8 @@ def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, n
         
         newStack.Add(newHist)
         if legend is not None:
-            #print "Adding to legend " + hist.GetName().split("_")[-1]
             legendName = hist.GetName().split("_")[-1]
+            print("Adding to legend " + legendName, legendNames)
             if legendNames.get(hist.GetName().split("_")[-1]) is not None:
                 legendName = legendNames[hist.GetName().split("_")[-1]]
             if plotPoint:
@@ -973,6 +984,36 @@ def calcSignificanceNoAcc(sigHist, bgHist, ignoreCrossSection = False):
         bgErr = 0.2 * bgNum
         sig = math.sqrt(sig**2 + (cs * (sigNum / math.sqrt(sigNum + bgNum + bgErr**2)))**2)
         #sig = math.sqrt(sig**2 + (cs * (sigNum / math.sqrt(bgNum + bgErr**2)))**2)
+    return sig
+
+def calcSignificanceTransferFactor(sigHist, bgHist, transferFactor, transferFactorError):
+    sig = 0
+    sigNum = 0
+    bgNum = 0
+    binsNumber = sigHist.GetNbinsX()
+    startBin = bgHist.FindBin(0)
+    for ibin in range(startBin, binsNumber + 1):
+        
+        sigNum = sigHist.GetBinContent(ibin)
+        ncrCount = bgHist.GetBinContent(ibin)
+        if ncrCount == 0:
+            ncrCount = 1
+        ncrError = bgHist.GetBinError(ibin)
+        bgNum = ncrCount * transferFactor
+        
+        if sigNum == 0:
+            continue
+        
+        #bgErr^2 = b^2*[ (ncrError/ncrCount)**2 + (transferFactorError/transferFactor)**2 ]
+        #This is already squared
+        bgErr2 = bgNum**2 * ( (ncrError/ncrCount)**2 + (transferFactorError/transferFactor)**2 )
+        
+        currSig = ( (sigNum / math.sqrt(bgNum + bgErr2)))
+        print("sigNum,ncrCount,ncrError,bgNum,transferFactor,transferFactorError,bgErr2,currSig",sigNum,ncrCount,ncrError,bgNum,transferFactor,transferFactorError,bgErr2,currSig)
+        
+        
+        sig = math.sqrt(sig**2 + currSig**2)
+        
     return sig
 
 def calcZ(lhdH1, lhdH0):

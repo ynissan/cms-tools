@@ -154,23 +154,12 @@ bgReTaggingNamesFull = {
     "fake" : "fake"
 }
 
-def injetcJetIsoToCuts(cuts, jetIso):
-    for cut in cuts:
-        cut["condition"] = cut["condition"].replace("%%%", jetIso)
-        cut["baseline"] = cut["baseline"].replace("%%%", jetIso)
-        cut["sc"] = cut["sc"].replace("%%%", jetIso)
-        
-def injetcJetIsoToHistograms(hists, jetIso):
-    for hist in hists:
-        hist["obs"] = hist["obs"].replace("%%%", jetIso)
-        if hist.get("formula") is not None:
-            hist["formula"] = hist["formula"].replace("%%%", jetIso)
-
 basic_histograms_defs = [
         { "obs" : "invMass%%%", "minX" : 0, "maxX" : 13, "bins" : 6, "blind" : [4,None]},# "customBins"  : [0,2,4,6,10,12] },
         { "obs" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 6, "blind" : [None,0.1]},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
-        { "obs" : "dilepBDT%%%_fine", "formula" : "dilepBDT%%%","minX" : -1, "maxX" : 1, "bins" : 15, "blind" : [None,0.1]},
-        { "obs" : "dilepBDT%%%_custom", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 6, "blind" : [None,0.1], "customBins"  : [-1,-0.6,-0.3,0,0.10,0.26,0.34,0.38,0.42,1] },
+        { "obs" : "dilepBDT%%%_mid", "formula" : "dilepBDT%%%","minX" : -1, "maxX" : 1, "bins" : 12, "blind" : [None,0.1]},
+        { "obs" : "dilepBDT%%%_fine", "formula" : "dilepBDT%%%","minX" : -1, "maxX" : 1, "bins" : 24, "blind" : [None,0.1]},
+        #{ "obs" : "dilepBDT%%%_custom", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 6, "blind" : [None,0.1], "customBins"  : [-1,-0.6,-0.3,0,0.10,0.26,0.34,0.38,0.42,1] },
         { "obs" : "deltaR%%%", "minX" : 0, "maxX" : 3.5, "bins" : 8},
         { "obs" : "dilepHt%%%", "minX" : 200, "maxX" : 800, "bins" : 8},
         { "obs" : "dileptonPt%%%", "minX" : 0, "maxX" : 30, "bins" : 8},
@@ -192,7 +181,7 @@ basic_histograms_defs = [
     
 notautau_cuts = [
         {"name":"none", "title": "None", "condition" : "(MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && !tautau%%%)", "baseline" : "isoCr%%% == 0", "sc" : "isoCr%%% >= 1"},
-        {"name":"bdt", "title": "BDT > 0.35", "condition" : "(dilepBDT%%% > 0.35 &&  MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && !tautau%%%)", "baseline" : "isoCr%%% == 0", "sc" : "isoCr%%% >= 1"},
+        {"name":"bdt", "title": "BDT > 0.2", "condition" : "(dilepBDT%%% > 0.2 &&  MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && !tautau%%%)", "baseline" : "isoCr%%% == 0", "sc" : "isoCr%%% >= 1"},
     ]
 
 class dilepton_muons_bg_isocr_no_retag(BaseParams):
@@ -231,6 +220,24 @@ class dilepton_muons_bg_isocr_no_retag_CorrJetIso10_06_no_norm(dilepton_muons_bg
     histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_no_retag_CorrJetIso10_06.root"
     normalise = False
 
+class dilepton_muons_bg_isocr_no_retag_CorrJetIso10_5_55(dilepton_muons_bg_isocr_no_retag):
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum_full_met_range/type_sum"
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_no_retag_CorrJetIso10_5_55.root"
+    cuts = copy.deepcopy(notautau_cuts)
+    injetcJetIsoToCuts(cuts, "CorrJetIso10.5Dr0.55")
+    histograms_defs = copy.deepcopy(basic_histograms_defs)
+    injetcJetIsoToHistograms(histograms_defs, "CorrJetIso10.5Dr0.55")
+    weightString = {
+        #'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight",
+        'MET' : "Weight",
+    }
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True 
+    
+class dilepton_muons_bg_isocr_no_retag_CorrJetIso10_5_055_no_norm(dilepton_muons_bg_isocr_no_retag_CorrJetIso10_5_55):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_no_retag_CorrJetIso10_5_55.root"
+    normalise = False
+
 
 class dilepton_muons_bg_isocr_no_retag_CorrJetIso10_04(dilepton_muons_bg_isocr_no_retag_CorrJetIso10_06):
     cuts = copy.deepcopy(notautau_cuts)
@@ -256,6 +263,21 @@ class dilepton_muons_bg_isocr_no_retag_CorrJetIso15_05(dilepton_muons_bg_isocr_n
 
 class dilepton_muons_bg_isocr_no_retag_CorrJetIso15_05_no_norm(dilepton_muons_bg_isocr_no_retag_CorrJetIso15_05):
     normalise = False
+
+class dilepton_muons_bg_isocr_no_retag_CorrJetIso11_055(dilepton_muons_bg_isocr_no_retag_CorrJetIso15_05):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_no_retag_CorrJetIso11_055.root"
+    save_histrograms_to_file = False
+    load_histrograms_from_file = False 
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum_full_met_range/type_sum"
+    cuts = copy.deepcopy(notautau_cuts)
+    injetcJetIsoToCuts(cuts, "CorrJetIso11Dr0.55")
+    histograms_defs = copy.deepcopy(basic_histograms_defs)
+    injetcJetIsoToHistograms(histograms_defs, "CorrJetIso11Dr0.55")
+    weightString = {
+        #'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight",
+        #'MET' : "Weight",
+        'MET' : "1"
+    }
 
 
 class dilepton_muons_bg_isocr_no_retag_scan_full_met_range(dilepton_muons_bg_isocr_no_retag_CorrJetIso15_05):
@@ -288,8 +310,9 @@ class dilepton_muons_bg_isocr_no_retag_scan_full_met_range(dilepton_muons_bg_iso
                         jetIso = iso + str(ptRange) + "Dr" + str(drCut) + cat
                     else:
                         continue
-                    for obs in ["invMass", "dilepBDT"]:
-                        hist_def = { "obs" : obs + "%%%", "minX" : 0 if obs == "invMass" else -1, "maxX" : 13 if obs == "invMass" else 1, "bins" : 6, "condition" : "(MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && !tautau%%%)", "baseline" : "isoCr%%% == 0", "sc" : "isoCr%%% >= 1"}
+                    #for obs in ["invMass", "dilepBDT"]:
+                    for obs in ["dilepBDT"]:
+                        hist_def = { "obs" : obs + "%%%", "minX" : 0 if obs == "invMass" else -1, "maxX" : 13 if obs == "invMass" else 1, "bins" : 6, "blind" : [None, 0],  "condition" : "(MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && !tautau%%%)", "baseline" : "isoCr%%% == 0", "sc" : "isoCr%%% >= 1"}
                         #print(hist_def["obs"],jetIso)
                         #print(hist_def["obs"].replace("%%%", jetIso))
                         #print(hist_def["obs"])
@@ -300,8 +323,298 @@ class dilepton_muons_bg_isocr_no_retag_scan_full_met_range(dilepton_muons_bg_iso
                         hist_def["baseline"] = hist_def["baseline"].replace("%%%", jetIso)
                         hist_def["sc"] = hist_def["sc"].replace("%%%", jetIso)
                         histograms_defs.append(hist_def)
-        
+
+class dilepton_muons_bg_isocr_no_retag_scan_full_met_range_work_progress(dilepton_muons_bg_isocr_no_retag_CorrJetIso15_05):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_no_retag_scan_full_met_range_work_progress.root"
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True 
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum_full_met_range/type_sum"
+    cuts = [
+        {"name":"none", "title": "None", "condition" : "1", "baseline" : "1", "sc" : "1"},
+        #{"name":"bdt", "title": "BDT > 0.35", "condition" : "(dilepBDT%%% > 0.35 &&  MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && !tautau%%%)", "baseline" : "isoCr%%% == 0", "sc" : "isoCr%%% >= 1"},
+    ]
+    histograms_defs = [
+    #    { "obs" : "invMass%%%", "minX" : 0, "maxX" : 13, "bins" : 6, "blind" : [4,None]},# "customBins"  : [0,2,4,6,10,12] },
+    #    { "obs" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 6, "blind" : [None,0.1]}
+    ]
+    
+    for iso in utils.leptonIsolationList:
+        for cat in utils.leptonIsolationCategories:
+            ptRanges = [""]
+            drCuts = [""]
+            if iso == "CorrJetIso":
+                ptRanges = utils.leptonCorrJetIsoPtRange
+                drCuts = utils.leptonCorrJetIsoDrCuts
+            else:
+                continue
+            for ptRange in ptRanges:
+                for drCut in drCuts:
+                    jetIso = ""
+                    if len(str(ptRange)) > 0:
+                        jetIso = iso + str(ptRange) + "Dr" + str(drCut) + cat
+                    else:
+                        continue
+                    #for obs in ["invMass", "dilepBDT"]:
+                    for obs in ["dilepBDT"]:
+                        hist_def = { "obs" : obs + "%%%", "minX" : 0 if obs == "invMass" else -1, "maxX" : 13 if obs == "invMass" else 1, "bins" : 24, "blind" : [None, 0],  "condition" : "(MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && !tautau%%%)", "baseline" : "isoCr%%% == 0", "sc" : "isoCr%%% >= 1"}
+                        #print(hist_def["obs"],jetIso)
+                        #print(hist_def["obs"].replace("%%%", jetIso))
+                        #print(hist_def["obs"])
+                        hist_def["obs"] = hist_def["obs"].replace("%%%", jetIso)
+                        #print(hist_def["obs"])
+                        #exit(0)
+                        hist_def["condition"] = hist_def["condition"].replace("%%%", jetIso)
+                        hist_def["baseline"] = hist_def["baseline"].replace("%%%", jetIso)
+                        hist_def["sc"] = hist_def["sc"].replace("%%%", jetIso)
+                        histograms_defs.append(hist_def)
+
+class dilepton_muons_bg_isocr_scan_full_met_range_tautau_vs_no_tautau(dilepton_muons_bg_isocr_no_retag_CorrJetIso15_05):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_scan_full_met_range_tautau_vs_no_tautau.root"
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True 
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum_full_met_range/type_sum"
+    cuts = [
+        {"name":"none", "title": "None", "condition" : "1", "baseline" : "1", "sc" : "1"},
+        #{"name":"bdt", "title": "BDT > 0.35", "condition" : "(dilepBDT%%% > 0.35 &&  MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && !tautau%%%)", "baseline" : "isoCr%%% == 0", "sc" : "isoCr%%% >= 1"},
+    ]
+    histograms_defs = [
+    #    { "obs" : "invMass%%%", "minX" : 0, "maxX" : 13, "bins" : 6, "blind" : [4,None]},# "customBins"  : [0,2,4,6,10,12] },
+    #    { "obs" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 6, "blind" : [None,0.1]}
+    ]
+    
+    sc_label = "#tau#tau"
+    sc_ratio_label = "#tau#tau"
+    
+    for iso in utils.leptonIsolationList:
+        for cat in utils.leptonIsolationCategories:
+            ptRanges = [""]
+            drCuts = [""]
+            if iso == "CorrJetIso":
+                ptRanges = utils.leptonCorrJetIsoPtRange
+                drCuts = utils.leptonCorrJetIsoDrCuts
+            else:
+                continue
+            for ptRange in ptRanges:
+                for drCut in drCuts:
+                    jetIso = ""
+                    if len(str(ptRange)) > 0:
+                        jetIso = iso + str(ptRange) + "Dr" + str(drCut) + cat
+                    else:
+                        continue
+                    #for obs in ["invMass", "dilepBDT"]:
+                    for obs in ["dilepBDT"]:
+                        hist_def = { "obs" : obs + "%%%", "minX" : 0 if obs == "invMass" else -1, "maxX" : 13 if obs == "invMass" else 1, "bins" : 24, "blind" : [None, 0],  "condition" : "(MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && isoCr%%% == 0 )", "baseline" : "!tautau%%%", "sc" : "tautau%%%"}
+                        #print(hist_def["obs"],jetIso)
+                        #print(hist_def["obs"].replace("%%%", jetIso))
+                        #print(hist_def["obs"])
+                        hist_def["obs"] = hist_def["obs"].replace("%%%", jetIso)
+                        #print(hist_def["obs"])
+                        #exit(0)
+                        hist_def["condition"] = hist_def["condition"].replace("%%%", jetIso)
+                        hist_def["baseline"] = hist_def["baseline"].replace("%%%", jetIso)
+                        hist_def["sc"] = hist_def["sc"].replace("%%%", jetIso)
+                        histograms_defs.append(hist_def)
+
+class dilepton_muons_bg_isocr_scan_full_met_range_tautau_vs_no_tautau_no_norm(dilepton_muons_bg_isocr_scan_full_met_range_tautau_vs_no_tautau):
+    normalise = False
 class dilepton_muons_bg_isocr_no_retag_scan_full_met_range_no_norm(dilepton_muons_bg_isocr_no_retag_scan_full_met_range):
+    normalise = False
+
+class dilepton_muons_bg_isocr_no_retag_scan_full_met_range_data(dilepton_muons_bg_isocr_no_retag_scan_full_met_range):
+    plot_bg = False
+    plot_data = True
+    blind_data = True
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_no_retag_scan_full_met_range_data.root"
+    data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/slim"
+
+class dilepton_muons_bg_isocr_no_retag_scan_full_met_range_data_fine(dilepton_muons_bg_isocr_no_retag_scan_full_met_range_data):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_no_retag_scan_full_met_range_data_fine.root"
+    histograms_defs = [
+    #    { "obs" : "invMass%%%", "minX" : 0, "maxX" : 13, "bins" : 6, "blind" : [4,None]},# "customBins"  : [0,2,4,6,10,12] },
+    #    { "obs" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 6, "blind" : [None,0.1]}
+    ]
+    plot_overflow = False
+    for iso in utils.leptonIsolationList:
+        for cat in utils.leptonIsolationCategories:
+            ptRanges = [""]
+            drCuts = [""]
+            if iso == "CorrJetIso":
+                ptRanges = utils.leptonCorrJetIsoPtRange
+                drCuts = utils.leptonCorrJetIsoDrCuts
+            else:
+                continue
+            for ptRange in ptRanges:
+                for drCut in drCuts:
+                    jetIso = ""
+                    if len(str(ptRange)) > 0:
+                        jetIso = iso + str(ptRange) + "Dr" + str(drCut) + cat
+                    else:
+                        continue
+                    #for obs in ["invMass", "dilepBDT"]:
+                    for obs in ["dilepBDT"]:
+                        hist_def = { "obs" : obs + "%%%", "minX" : 0 if obs == "invMass" else -1, "maxX" : 13 if obs == "invMass" else 0, "bins" : 6, "blind" : [None, 0],  "condition" : "(MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && !tautau%%%)", "baseline" : "isoCr%%% == 0", "sc" : "isoCr%%% >= 1"}
+                        #print(hist_def["obs"],jetIso)
+                        #print(hist_def["obs"].replace("%%%", jetIso))
+                        #print(hist_def["obs"])
+                        hist_def["obs"] = hist_def["obs"].replace("%%%", jetIso)
+                        #print(hist_def["obs"])
+                        #exit(0)
+                        hist_def["condition"] = hist_def["condition"].replace("%%%", jetIso)
+                        hist_def["baseline"] = hist_def["baseline"].replace("%%%", jetIso)
+                        hist_def["sc"] = hist_def["sc"].replace("%%%", jetIso)
+                        histograms_defs.append(hist_def)
+
+
+class dilepton_muons_bg_isocr_no_retag_scan_full_met_range_optimised_bins(dilepton_muons_bg_isocr_no_retag_CorrJetIso15_05):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_no_retag_scan_full_met_range_optimised_bins.root"
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True 
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum_full_met_range/type_sum"
+    cuts = [
+        {"name":"none", "title": "None", "condition" : "1", "baseline" : "1", "sc" : "1"},
+        #{"name":"bdt", "title": "BDT > 0.35", "condition" : "(dilepBDT%%% > 0.35 &&  MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && !tautau%%%)", "baseline" : "isoCr%%% == 0", "sc" : "isoCr%%% >= 1"},
+    ]
+    histograms_defs = [
+    #    { "obs" : "invMass%%%", "minX" : 0, "maxX" : 13, "bins" : 6, "blind" : [4,None]},# "customBins"  : [0,2,4,6,10,12] },
+    #    { "obs" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 6, "blind" : [None,0.1]}
+    ]
+    
+    for iso in utils.leptonIsolationList:
+        for cat in utils.leptonIsolationCategories:
+            ptRanges = [""]
+            drCuts = [""]
+            if iso == "CorrJetIso":
+                ptRanges = utils.leptonCorrJetIsoPtRange
+                drCuts = utils.leptonCorrJetIsoDrCuts
+            else:
+                continue
+            for ptRange in ptRanges:
+                for drCut in drCuts:
+                    jetIso = ""
+                    if len(str(ptRange)) > 0:
+                        jetIso = iso + str(ptRange) + "Dr" + str(drCut) + cat
+                    else:
+                        continue
+                    #for obs in ["invMass", "dilepBDT"]:
+                    for obs in ["dilepBDT"]:
+                        hist_def = { "obs" : obs + "%%%", "minX" : 0 if obs == "invMass" else -1, "maxX" : 13 if obs == "invMass" else 1, "customBins"  : [-1,-0.6,-0.4,-0.2,0,0.1, 0.18, 0.22, 0.38, 0.42, 0.46,1], "blind" : [None, 0],  "condition" : "(MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && !tautau%%%)", "baseline" : "isoCr%%% == 0", "sc" : "isoCr%%% >= 1"}
+                        #hist_def = { "obs" : obs + "%%%", "minX" : 0 if obs == "invMass" else -1, "maxX" : 13 if obs == "invMass" else 1, "bins"  : 6, "blind" : [None, 0],  "condition" : "(MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && !tautau%%%)", "baseline" : "isoCr%%% == 0", "sc" : "isoCr%%% >= 1"}
+                        #print(hist_def["obs"],jetIso)
+                        #print(hist_def["obs"].replace("%%%", jetIso))
+                        #print(hist_def["obs"])
+                        hist_def["obs"] = hist_def["obs"].replace("%%%", jetIso)
+                        #print(hist_def["obs"])
+                        #exit(0)
+                        hist_def["condition"] = hist_def["condition"].replace("%%%", jetIso)
+                        hist_def["baseline"] = hist_def["baseline"].replace("%%%", jetIso)
+                        hist_def["sc"] = hist_def["sc"].replace("%%%", jetIso)
+                        histograms_defs.append(hist_def)
+
+
+class dilepton_muons_bg_isocr_no_retag_scan_full_met_range_optimised_bins_no_norm(dilepton_muons_bg_isocr_no_retag_scan_full_met_range_optimised_bins):
+    normalise = False
+
+class dilepton_muons_bg_isocr_no_retag_scan_full_met_range_optimised_bins_tautau(dilepton_muons_bg_isocr_no_retag_CorrJetIso15_05):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_no_retag_scan_full_met_range_optimised_bins_tautau.root"
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True 
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum_full_met_range/type_sum"
+    cuts = [
+        {"name":"none", "title": "None", "condition" : "1", "baseline" : "1", "sc" : "1"},
+        #{"name":"bdt", "title": "BDT > 0.35", "condition" : "(dilepBDT%%% > 0.35 &&  MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && !tautau%%%)", "baseline" : "isoCr%%% == 0", "sc" : "isoCr%%% >= 1"},
+    ]
+    histograms_defs = [
+    #    { "obs" : "invMass%%%", "minX" : 0, "maxX" : 13, "bins" : 6, "blind" : [4,None]},# "customBins"  : [0,2,4,6,10,12] },
+    #    { "obs" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 6, "blind" : [None,0.1]}
+    ]
+    
+    for iso in utils.leptonIsolationList:
+        for cat in utils.leptonIsolationCategories:
+            ptRanges = [""]
+            drCuts = [""]
+            if iso == "CorrJetIso":
+                ptRanges = utils.leptonCorrJetIsoPtRange
+                drCuts = utils.leptonCorrJetIsoDrCuts
+            else:
+                continue
+            for ptRange in ptRanges:
+                for drCut in drCuts:
+                    jetIso = ""
+                    if len(str(ptRange)) > 0:
+                        jetIso = iso + str(ptRange) + "Dr" + str(drCut) + cat
+                    else:
+                        continue
+                    #for obs in ["invMass", "dilepBDT"]:
+                    for obs in ["dilepBDT"]:
+                        hist_def = { "obs" : obs + "%%%", "minX" : 0 if obs == "invMass" else -1, "maxX" : 13 if obs == "invMass" else 1, "customBins"  : [-1,-0.6,-0.4,-0.2,0,0.1, 0.18, 0.22, 0.38, 0.42, 0.46,1], "blind" : [None, 0],  "condition" : "(MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && tautau%%%)", "baseline" : "isoCr%%% == 0", "sc" : "isoCr%%% >= 1"}
+                        #hist_def = { "obs" : obs + "%%%", "minX" : 0 if obs == "invMass" else -1, "maxX" : 13 if obs == "invMass" else 1, "bins"  : 6, "blind" : [None, 0],  "condition" : "(MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && !tautau%%%)", "baseline" : "isoCr%%% == 0", "sc" : "isoCr%%% >= 1"}
+                        #print(hist_def["obs"],jetIso)
+                        #print(hist_def["obs"].replace("%%%", jetIso))
+                        #print(hist_def["obs"])
+                        hist_def["obs"] = hist_def["obs"].replace("%%%", jetIso)
+                        #print(hist_def["obs"])
+                        #exit(0)
+                        hist_def["condition"] = hist_def["condition"].replace("%%%", jetIso)
+                        hist_def["baseline"] = hist_def["baseline"].replace("%%%", jetIso)
+                        hist_def["sc"] = hist_def["sc"].replace("%%%", jetIso)
+                        histograms_defs.append(hist_def)
+
+class dilepton_muons_bg_isocr_no_retag_scan_full_met_range_optimised_bins_full(dilepton_muons_bg_isocr_no_retag_CorrJetIso15_05):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_no_retag_scan_full_met_range_optimised_bins_full.root"
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True 
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum_full_met_range/type_sum"
+    cuts = [
+        {"name":"none", "title": "None", "condition" : "1", "baseline" : "1", "sc" : "1"},
+        #{"name":"bdt", "title": "BDT > 0.35", "condition" : "(dilepBDT%%% > 0.35 &&  MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && !tautau%%%)", "baseline" : "isoCr%%% == 0", "sc" : "isoCr%%% >= 1"},
+    ]
+    histograms_defs = [
+    #    { "obs" : "invMass%%%", "minX" : 0, "maxX" : 13, "bins" : 6, "blind" : [4,None]},# "customBins"  : [0,2,4,6,10,12] },
+    #    { "obs" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 6, "blind" : [None,0.1]}
+    ]
+    
+    for iso in utils.leptonIsolationList:
+        for cat in utils.leptonIsolationCategories:
+            ptRanges = [""]
+            drCuts = [""]
+            if iso == "CorrJetIso":
+                ptRanges = utils.leptonCorrJetIsoPtRange
+                drCuts = utils.leptonCorrJetIsoDrCuts
+            else:
+                continue
+            for ptRange in ptRanges:
+                for drCut in drCuts:
+                    jetIso = ""
+                    if len(str(ptRange)) > 0:
+                        jetIso = iso + str(ptRange) + "Dr" + str(drCut) + cat
+                    else:
+                        continue
+                    #for obs in ["invMass", "dilepBDT"]:
+                    for obs in ["dilepBDT"]:
+                        hist_def = { "obs" : obs + "%%%", "minX" : 0 if obs == "invMass" else -1, "maxX" : 13 if obs == "invMass" else 1, "customBins"  : [-1,-0.6,-0.4,-0.2,0,0.1, 0.18, 0.22, 0.38, 0.42, 0.46,1], "blind" : [None, 0],  "condition" : "(MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0)", "baseline" : "isoCr%%% == 0", "sc" : "isoCr%%% >= 1"}
+                        #hist_def = { "obs" : obs + "%%%", "minX" : 0 if obs == "invMass" else -1, "maxX" : 13 if obs == "invMass" else 1, "bins"  : 6, "blind" : [None, 0],  "condition" : "(MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && !tautau%%%)", "baseline" : "isoCr%%% == 0", "sc" : "isoCr%%% >= 1"}
+                        #print(hist_def["obs"],jetIso)
+                        #print(hist_def["obs"].replace("%%%", jetIso))
+                        #print(hist_def["obs"])
+                        hist_def["obs"] = hist_def["obs"].replace("%%%", jetIso)
+                        #print(hist_def["obs"])
+                        #exit(0)
+                        hist_def["condition"] = hist_def["condition"].replace("%%%", jetIso)
+                        hist_def["baseline"] = hist_def["baseline"].replace("%%%", jetIso)
+                        hist_def["sc"] = hist_def["sc"].replace("%%%", jetIso)
+                        histograms_defs.append(hist_def)
+
+class dilepton_muons_bg_isocr_no_retag_scan_full_met_range_optimised_bins_full_no_norm(dilepton_muons_bg_isocr_no_retag_scan_full_met_range_optimised_bins_full):
+    normalise = False
+
+class dilepton_muons_bg_isocr_no_retag_scan_full_met_range_optimised_bins_tautau_no_norm(dilepton_muons_bg_isocr_no_retag_scan_full_met_range_optimised_bins_tautau):
+    normalise = False
+
+
+class dilepton_muons_bg_isocr_no_retag_scan_full_met_range_data_fine_no_norm(dilepton_muons_bg_isocr_no_retag_scan_full_met_range_data_fine):
+    normalise = False
+
+class dilepton_muons_bg_isocr_no_retag_scan_full_met_range_data_no_norm(dilepton_muons_bg_isocr_no_retag_scan_full_met_range_data):
     normalise = False
 
 class dilepton_muons_bg_isocr_no_retag_scan_met_140(dilepton_muons_bg_isocr_no_retag_scan_full_met_range):

@@ -80,7 +80,11 @@ should_transfer_files = IF_NEEDED
 executable = /bin/bash
 notification = Never
 priority = 0
+request_memory = 12 GB
++RequestRuntime = 43200
 EOM
+
+#FILES=(Run2016E-17Jul2018-v1.METAOD_17.root Run2016E-17Jul2018-v1.METAOD_18.root Run2016E-17Jul2018-v1.METAOD_20.root Run2016F-17Jul2018-v1.METAOD_21.root Run2016G-17Jul2018-v1.METAOD_28.root)
 
 for sim in $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
     echo $sim
@@ -117,6 +121,7 @@ cat << EOM >> $output_file
 arguments = $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -i $data_file -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename $@
 error = ${INPUT_DIR}/stderr/${data_file_name}_track_bdt.err
 output = ${INPUT_DIR}/stdout/${data_file_name}_track_bdt.output
+log = ${INPUT_DIR}/stdout/${data_file_name}_track_bdt.log
 Queue
 EOM
     done

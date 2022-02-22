@@ -24,12 +24,14 @@ gStyle.SetOptStat(0)
 parser = argparse.ArgumentParser(description='Slim skims for jet iso scan..')
 parser.add_argument('-s', '--signal', dest='signal', help='Signal', action='store_true')
 parser.add_argument('-bg', '--background', dest='bg', help='Background', action='store_true')
+parser.add_argument('-data', '--data', dest='data', help='Background', action='store_true')
 args = parser.parse_args()
 
 signal = args.signal
 bg = args.bg
+data = args.data
 
-if not signal and not bg:
+if not signal and not bg and not data:
     bg = True
 
 signal_dir = None
@@ -38,9 +40,15 @@ bg_dir = None
 if signal:
     input_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum"
     output_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim"
-else:
+elif bg:
     input_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum"
     output_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim"
+else:
+    input_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/sum"
+    output_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/slim"
+
+print "input_dir", input_dir
+print "output_dir", output_dir
 
 ######## END OF CMDLINE ARGUMENTS ########
 

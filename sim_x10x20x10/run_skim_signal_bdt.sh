@@ -88,6 +88,7 @@ should_transfer_files = IF_NEEDED
 executable = /bin/bash
 notification = Never
 request_memory = 16 GB
++RequestRuntime = 86400
 EOM
 
 # if [ -z "$SAM" ]; then
@@ -169,7 +170,7 @@ echo -e "\n\nRUNNING ALL GROUP\n\n"
 
 FILES=${INPUT_DIR}/sum/*
 
-#FILES=(mChipm200GeV_dm0p5GeV.root mChipm500GeV_dm0p43GeV.root mChipm200GeV_dm1p8GeV.root mChipm140GeV_dm0p78GeV.root)
+#FILES=(higgsino_mu115_dm9p82Chi20Chipm.root higgsino_mu115_dm7p44Chi20Chipm.root higgsino_mu130_dm7p49Chi20Chipm.root)
 
 for sim in ${FILES[@]}; do
     #sim=${INPUT_DIR}/sum/$sim

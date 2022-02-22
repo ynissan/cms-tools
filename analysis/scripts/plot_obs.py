@@ -33,17 +33,12 @@ parser.add_argument('-o', '--output_file', nargs=1, help='Output Filename', requ
 parser.add_argument('-s', '--single', dest='single', help='Single', action='store_true')
 parser.add_argument('-c', '--cut', nargs=1, help='Cut', required=False)
 parser.add_argument('-obs', '--obs', nargs=1, help='Obs', required=False)
-parser.add_argument('-lep', '--lep', dest='lep', help='Single', action='store_true')
-#parser.add_argument('-bt', '--bg_retag', dest='bg_retag', help='Background Retagging', action='store_true')
 parser.add_argument('-png', '--png', nargs=1, help='Png', required=False)
 parser.add_argument('-type', '--type', nargs=1, help='Type', required=False)
 parser.add_argument('-l', '--linear', dest='linear', help='Linear', action='store_true')
 args = parser.parse_args()
 
 output_file = None
-
-plot_2l = args.lep
-#bg_retag = args.bg_retag
 
 plot_par = plot_params.default_params
 
@@ -79,6 +74,8 @@ if plot_single:
         exit(0)
     req_cut = args.cut[0]
     req_obs = args.obs[0]
+
+print("req_cut", req_cut, "req_obs", req_obs)
 
 create_png = False
 if args.png is not None:
@@ -221,6 +218,21 @@ def createPlotsFast(rootfiles, types, histograms, weight, category, conditions, 
         i += 1
         print(f)
         c = rootFile.Get('tEvent')
+
+        if plot_par.turnOnOnlyUsedObsInTree:
+            c.SetBranchStatus("*",0);
+            for obs in plot_par.usedObs:
+                print("c.SetBranchStatus(" + obs + ")")
+                c.SetBranchStatus(obs,1)
+            for hist_def in plot_par.histograms_defs:
+                if hist_def.get("usedObs") is not None:
+                    for obs in hist_def["usedObs"]:
+                        print("c.SetBranchStatus(" + obs + ")")
+                        c.SetBranchStatus(obs,1)
+                elif hist_def.get("formula") is not None:
+                    c.SetBranchStatus(hist_def["formula"],1)
+                else:
+                    c.SetBranchStatus(hist_def["obs"],1)
         
         special_types = [""]
         if (plot_par.plot_sc and category != "signal") or (plot_par.subtract_same_charge and category != "signal"):
@@ -335,6 +347,7 @@ def createRandomHist(name):
     return h
     
 def createCRPads(pId, ratioPads, twoRations = False):
+    print("In createCRPads", pId, ratioPads, twoRations)
     print(("Creating pads for id", pId))
 
     histLowY = 0.25
@@ -376,6 +389,11 @@ def createCRPads(pId, ratioPads, twoRations = False):
 def plotRatio(c1, pad, memory, dataHist, newBgHist, hist_def, title = "Data / BG",setTitle = True, setStyle = False):
     print("Plotting ratio!")
     
+    crNum = newBgHist.Integral()
+    dataNum = dataHist.Integral()
+    
+    tf = dataNum/crNum
+    
     if dataHist is None:
         return
 
@@ -400,6 +418,8 @@ def plotRatio(c1, pad, memory, dataHist, newBgHist, hist_def, title = "Data / BG
     rdataHist.SetMaximum(1.5)
     #rdataHist.SetMaximum(5)
     if setTitle:
+        print("Setting title in ratio!")
+        #exit(0)
         rdataHist.GetXaxis().SetTitle(hist_def["units"] if hist_def.get("units") is not None else hist_def["obs"])
     else:
         rdataHist.GetXaxis().SetTitle("")
@@ -425,7 +445,12 @@ def plotRatio(c1, pad, memory, dataHist, newBgHist, hist_def, title = "Data / BG
     print((tl.GetTextSize()))
     #tl.SetTextSize(0.5)
     tl.SetTextFont(132)
+    
+    
     tl.DrawLatex(.5,.5,"p_value = " + "{:.2f}".format(chi2))
+    
+    #tl.DrawLatex(.2,.5,"tf = " + "{:.2f}".format(tf))
+    
     #tl.DrawLatex(.1,.01,"error = " + "{:.2f}".format(100 * fit_only_signal_integral_error[hist_def["obs"]] / fit_only_signal_integral[hist_def["obs"]]) + "%")
                 
     
@@ -465,11 +490,11 @@ def createSumTypes(sumTypes):
         print(sumTypes)
 
 def createAllHistograms(histograms, sumTypes):
-    
     foundReqObs = False
     foundReqCut = False
     
     if plot_single:
+        
         plot_par.plot_title = False
         for obs in plot_par.histograms_defs:
             if obs["obs"] == req_obs:
@@ -725,13 +750,17 @@ def loadAllHistograms(histograms):
     nFile.Close()
 
 def blindHistograms(plot_par, histograms):
-    if plot_par.plot_data and plot_par.blind_data and plot_par.plot_signal:
+    if plot_par.plot_data and plot_par.blind_data:
         print("BLINDING DATA")
         for cut in plot_par.cuts:
             for hist_def in plot_par.histograms_defs:
-                firstSignalName = os.path.basename(plot_par.signal_dir[0])
+            
+                firstSignalName, signal_hist = None, None
                 
-                signal_hist = histograms[cut["name"] + "_" + hist_def["obs"] + "_" + firstSignalName]
+                
+                if plot_par.plot_signal:
+                    firstSignalName = os.path.basename(plot_par.signal_dir[0])
+                    signal_hist = histograms[cut["name"] + "_" + hist_def["obs"] + "_" + firstSignalName]
                 
                 prefixes = [""]
                 if plot_par.plot_sc:
@@ -760,20 +789,19 @@ def blindHistograms(plot_par, histograms):
                                 bg_hist = histograms[hname].Clone()
                             else:
                                 bg_hist.Add(histograms[hname])
-
-                    for i in range(1,data_hist.GetNbinsX() + 1):
-                        data_num = data_hist.GetBinContent(i)
-                        signal_num = signal_hist.GetBinContent(i)
-                        bg_num = bg_hist.GetBinContent(i)
-                        if data_num == 0:
-                            continue
-                        if bg_num == 0:
-                            data_hist.SetBinContent(i, 0)
-                            continue
-                        if ((0.1 * signal_num / math.sqrt(bg_num)) > 0.1):
-                            print(("Blinding bin", i, "for", histName))
-                            exit(0)
-                            data_hist.SetBinContent(i, 0)
+                    if plot_par.plot_signal:
+                        for i in range(1,data_hist.GetNbinsX() + 1):
+                            data_num = data_hist.GetBinContent(i)
+                            signal_num = signal_hist.GetBinContent(i)
+                            bg_num = bg_hist.GetBinContent(i)
+                            if data_num == 0:
+                                continue
+                            if bg_num == 0:
+                                data_hist.SetBinContent(i, 0)
+                                continue
+                            if ((0.1 * signal_num / math.sqrt(bg_num)) > 0.1):
+                                print(("Blinding bin", i, "for", histName))
+                                data_hist.SetBinContent(i, 0)
                     if hist_def.get("blind") is not None:
                         
                         blindLow = hist_def["blind"][0]
@@ -781,9 +809,10 @@ def blindHistograms(plot_par, histograms):
                         blindLowBin = None if blindLow is None else data_hist.FindBin(blindLow)
                         blindHighBin = None if blindHigh is None else data_hist.FindBin(blindHigh)
                         print(("Got blind from hist_def", hist_def.get("obs"), blindLowBin, blindHighBin))
+                        #print(hist_def)
                         for i in range(1,data_hist.GetNbinsX() + 1):
                             if (blindLowBin is not None and i <= blindLowBin) or (blindHighBin is not None and i >= blindHighBin):
-                                #print "blinding bin", i
+                                print("blinding bin", i)
                                 #exit(0)
                                 data_hist.SetBinContent(i, 0)
                         
@@ -925,6 +954,9 @@ def main():
     
     for cut in plot_par.cuts:
         
+        if plot_single and cut["name"] != req_cut:
+            continue
+        
         sigNum = 0
         bgNum = 0
         
@@ -938,6 +970,9 @@ def main():
             titlePad.Update()
         pId = 1
         for hist_def in plot_par.histograms_defs:
+            
+            if plot_single and hist_def["obs"] != req_obs:
+                continue
             
             plotStr = "HIST"
             if plot_par.plot_point:
@@ -962,23 +997,33 @@ def main():
             histCPad = None
             histRPad = None
             histR2Pad = None
+            
             if plot_par.plot_ratio or plot_par.plot_custom_ratio > 0:
+
                 if large_version or ratioPads.get(pId) is None:
-                    if (plot_par.plot_sc and plot_par.plot_data) or plot_par.plot_custom_ratio > 1:
+                    
+                    if (plot_par.plot_sc and plot_par.plot_data and plot_par.plot_bg) or plot_par.plot_custom_ratio > 1:
                         histCPad, histRPad, histR2Pad = createCRPads(pId, ratioPads, True)
                     else:
                         histCPad, histRPad = createCRPads(pId, ratioPads)
+                        memory.append(histRPad)
+                        memory.append(histCPad)
+                        print("histRPad",histRPad)
+                        print("ratioPads",ratioPads)
+                        #exit(0)
                 else:
+
                     histCPad = ratioPads[pId][0]
                     histRPad = ratioPads[pId][1]
-                    if (plot_par.plot_sc and plot_par.plot_data) or plot_par.plot_custom_ratio > 1:
+
+                    if (plot_par.plot_sc and plot_par.plot_data and plot_par.plot_bg) or plot_par.plot_custom_ratio > 1:
                         histR2Pad = ratioPads[pId][2]
                 pad = histCPad
                 print((utils.bcolors.BOLD + utils.bcolors.OKGREEN + "pad.cd()" + utils.bcolors.ENDC))
                 pad.cd()
             
-            #print "*", ratioPads
-            #print histCPad, histRPad
+            #print("*", ratioPads)
+            #print(histCPad, histRPad)
             #exit(0)
             hs = THStack(str(plot_num),"")
             plot_num += 1
@@ -1072,6 +1117,9 @@ def main():
                             print(("Normalising", histName))
                             hist.Scale(1./histIntegral)
             
+            
+            
+            
             dataHist = None
             sigHists = []
             sigHistsBaseNames = []
@@ -1118,6 +1166,9 @@ def main():
                             utils.formatHist(sigHist, utils.signalCp[i], 0.8)
                         sigMax = max(sigHist.GetMaximum(), sigMax)
             maximum = sigMax
+        
+            
+            
             if foundBg:
                 bgMax = hs.GetMaximum()
                 print(("Bg max:", bgMax))
@@ -1137,6 +1188,7 @@ def main():
                     dataHist.SetMarkerSize(0.5)
                 dataMax = dataHist.GetMaximum()
                 maximum = max(dataMax, maximum)
+            
             if len(plot_par.plot_custom_types) > 0:
                 for i in range(len(plot_par.plot_custom_types)):
                     histName = cut["name"] + "_" + hist_def["obs"] + "_" + plot_par.plot_custom_types[i]
@@ -1161,13 +1213,14 @@ def main():
                     else:
                         maximum = max(scDataHist.GetMaximum(), maximum)
                 scBgHistName = "sc_" + cut["name"] + "_" + hist_def["obs"] + "_bg"
-                scBgHist = histograms[scBgHistName]
-                if plot_par.normalise and scBgHist.Integral() > 0: 
-                    scBgHistNorm = scBgHist.Clone()
-                    scBgHistNorm.Scale(1./scBgHistNorm.Integral())
-                    maximum = max(scBgHistNorm.GetMaximum(), maximum)
-                else:
-                    maximum = max(scBgHist.GetMaximum(), maximum)
+                if plot_par.plot_bg:
+                    scBgHist = histograms[scBgHistName]
+                    if plot_par.normalise and scBgHist.Integral() > 0: 
+                        scBgHistNorm = scBgHist.Clone()
+                        scBgHistNorm.Scale(1./scBgHistNorm.Integral())
+                        maximum = max(scBgHistNorm.GetMaximum(), maximum)
+                    else:
+                        maximum = max(scBgHist.GetMaximum(), maximum)
             
             if maximum == 0:
                 maximum == 10
@@ -1273,7 +1326,9 @@ def main():
                     print(" LINER!")
                     print("dataHist.SetMinimum(0)")
                     histToStyle.SetMinimum(0)
-
+            
+            
+            
             if plot_par.plot_signal:
                 for i in range(len(sigHists)):
                     if object_retaging:
@@ -1342,17 +1397,24 @@ def main():
                 pt.Draw()
                 
             
+            
+            
             if plot_par.plot_data:
                 if plot_par.plot_bg:
-                    print("dataHist.Draw(P e SAME)")
                     print((utils.bcolors.BOLD + utils.bcolors.RED + "dataHist.Draw(P e SAME)" + utils.bcolors.ENDC))
                     dataHist.Draw("P e SAME")
                 else:
-                    print("dataHist.Draw(P e)")
+                    
                     print((utils.bcolors.BOLD + utils.bcolors.RED + "dataHist.Draw(P e)" + utils.bcolors.ENDC))
-                    pad = histPad.cd(pId)
-                    pad.cd()
+                    #pad = histPad.cd(pId)
+                    #pad.cd()
+                    print("*", ratioPads)
+                    print(histCPad, histRPad)
+                    histRPadCopy = histRPad
                     dataHist.Draw("P e")
+                    #print("*", ratioPads)
+                    #print(histCPad, histRPad,histRPadCopy)
+                    #exit(0)
                 legend.AddEntry(dataHist, "data", 'p')
             
             #dataHist.Draw("P e")
@@ -1379,23 +1441,25 @@ def main():
                     scDataHist.Draw("P SAME")
                     legend.AddEntry(scDataHist, "same-sign data", 'p')
                 
-                scBgHistName = "sc_" + cut["name"] + "_" + hist_def["obs"] + "_bg"
-                #print "------------------------"
-                #print "looking for", scBgHistName
-                #print histograms
-                scBgHist = histograms[scBgHistName]
-                if plot_par.normalise and scBgHist.Integral() > 0:
-                    scBgHist.Scale(1./scBgHist.Integral())
-                if not (linear and plot_single):
-                    scBgHist.SetMinimum(0.0001)
-                else:
-                    scBgHist.SetMinimum(0)
-                scBgHist.SetLineWidth(2)
-                scBgHist.SetLineColor(6)
-                print((utils.bcolors.BOLD + utils.bcolors.RED + "scBgHist.Draw(HIST SAME " + errorStr + ")" + utils.bcolors.ENDC))
-                scBgHist.Draw("HIST SAME " + errorStr)
+                if plot_par.plot_bg:
+                    scBgHistName = "sc_" + cut["name"] + "_" + hist_def["obs"] + "_bg"
+                    #print "------------------------"
+                    #print "looking for", scBgHistName
+                    #print histograms
                 
-                legend.AddEntry(scBgHist, plot_par.sc_label, 'l')
+                    scBgHist = histograms[scBgHistName]
+                    if plot_par.normalise and scBgHist.Integral() > 0:
+                        scBgHist.Scale(1./scBgHist.Integral())
+                    if not (linear and plot_single):
+                        scBgHist.SetMinimum(0.0001)
+                    else:
+                        scBgHist.SetMinimum(0)
+                    scBgHist.SetLineWidth(2)
+                    scBgHist.SetLineColor(6)
+                    print((utils.bcolors.BOLD + utils.bcolors.RED + "scBgHist.Draw(HIST SAME " + errorStr + ")" + utils.bcolors.ENDC))
+                    scBgHist.Draw("HIST SAME " + errorStr)
+                
+                    legend.AddEntry(scBgHist, plot_par.sc_label, 'l')
             
             if len(plot_par.plot_custom_types) > 0:
                 for i in range(len(plot_par.plot_custom_types)):
@@ -1902,8 +1966,10 @@ def main():
             else:
                 pad.SetLogx(0)
                 if plot_par.plot_ratio or plot_par.plot_custom_ratio > 0:
+                    print("histRPad",histRPad)
+                    print("ratioPads", ratioPads)
                     histRPad.SetLogx(0)
-                    if (plot_par.plot_sc and plot_par.plot_data) or plot_par.plot_custom_ratio > 1:
+                    if (plot_par.plot_sc and plot_par.plot_data and plot_par.plot_bg) or plot_par.plot_custom_ratio > 1:
                         histR2Pad.SetLogx(0)
             
             c1.Update()
@@ -1916,20 +1982,24 @@ def main():
                     #print "Going to plot for ", histRPad, dataHist, scDataHist, hist_def
                     
                     #print "***********", pId, ratioPads
-                    stackSum = None
-                    if plot_par.solid_bg:
-                        stackSum = newBgHist
-                    else:
-                        #print newBgHist, newBgHist.GetNhists(), newBgHist.GetStack()
-                        if newBgHist.GetNhists() > 0:
-                            stackSum = newBgHist.GetStack().Last().Clone("stackSum")
+                    if plot_par.plot_bg:
+                        stackSum = None
+                        if plot_par.solid_bg:
+                            stackSum = newBgHist
+                        else:
+                            #print newBgHist, newBgHist.GetNhists(), newBgHist.GetStack()
+                            if newBgHist.GetNhists() > 0:
+                                stackSum = newBgHist.GetStack().Last().Clone("stackSum")
+                                memory.append(stackSum)
+                        #stackSum = utils.getStackSum(newBgHist)
+                        if stackSum is not None:
                             memory.append(stackSum)
-                    #stackSum = utils.getStackSum(newBgHist)
-                    if stackSum is not None:
-                        memory.append(stackSum)
-                    plotRatio(c1, histRPad, memory, stackSum, scBgHist, hist_def, "sim / " + plot_par.sc_ratio_label)
-                    if plot_par.plot_data:
-                        plotRatio(c1, histR2Pad, memory, dataHist, scDataHist, hist_def, "data / " + plot_par.sc_ratio_label, False)
+                        #plotRatio(c1, histRPad, memory, stackSum, scBgHist, hist_def, "sim / " + plot_par.sc_ratio_label)
+                        plotRatio(c1, histRPad, memory, stackSum, scBgHist, hist_def,  "sim / " + plot_par.sc_ratio_label)
+                        if plot_par.plot_data:
+                            plotRatio(c1, histR2Pad, memory, dataHist, scDataHist, hist_def, "data / " + plot_par.sc_ratio_label, False)
+                    elif plot_par.plot_data:
+                        plotRatio(c1, histRPad, memory, dataHist, scDataHist, hist_def, "data / " + plot_par.sc_ratio_label, True)
                     #print "-------", pId, ratioPads
                 else:
                     if plot_par.plot_custom_ratio > 0:
@@ -2080,7 +2150,7 @@ def main():
             histR2Pad = None
             if plot_par.plot_ratio or plot_par.plot_custom_ratio > 0:
                 if large_version or ratioPads.get(pId) is None:
-                    if (plot_par.plot_sc and plot_par.plot_data) or plot_par.plot_custom_ratio > 1:
+                    if (plot_par.plot_sc and plot_par.plot_data and plot_par.plot_bg) or plot_par.plot_custom_ratio > 1:
                         histCPad, histRPad, histR2Pad = createCRPads(pId, ratioPads, True)
                         #print "After:", histCPad, histRPad, histR2Pad
                     else:
@@ -2088,7 +2158,7 @@ def main():
                 else:
                     histCPad = ratioPads[pId][0]
                     histRPad = ratioPads[pId][1]
-                    if (plot_par.plot_sc and plot_par.plot_data) or plot_par.plot_custom_ratio > 1:
+                    if (plot_par.plot_sc and plot_par.plot_data and plot_par.plot_bg) or plot_par.plot_custom_ratio > 1:
                         histR2Pad = ratioPads[pId][2]
                     #print "Was trying to get Id", pId, ratioPads
                     #print "After in here", histCPad, histRPad, histR2Pad
@@ -2124,7 +2194,7 @@ def main():
                 
                 if plot_par.plot_ratio or plot_par.plot_custom_ratio > 0:
                     histRPad.SetLogx(0)
-                    if (plot_par.plot_sc and plot_par.plot_data) or plot_par.plot_custom_ratio > 1:
+                    if (plot_par.plot_sc and plot_par.plot_data and plot_par.plot_bg) or plot_par.plot_custom_ratio > 1:
                         histR2Pad.SetLogx(0)
             if plot_par.plot_bg:
                 print((utils.bcolors.BOLD + utils.bcolors.BLUE + "linBgHist.Draw(" + plotStr + errorStr + ")" + utils.bcolors.ENDC))
@@ -2151,12 +2221,13 @@ def main():
                 if plot_par.plot_data:
                     print((utils.bcolors.BOLD + utils.bcolors.BLUE + "scDataHist.Draw(P e SAME)" + utils.bcolors.ENDC))
                     scDataHist.Draw("P e SAME")
-                linScBgHist = scBgHist.Clone()
-                memory.append(linScBgHist)
-                linScBgHist.SetMaximum(maximum*1.1)
-                linScBgHist.SetMinimum(0)
-                print((utils.bcolors.BOLD + utils.bcolors.BLUE + "linScBgHist.Draw(HIST SAME " + errorStr + ")" + utils.bcolors.ENDC))
-                linScBgHist.Draw("HIST SAME " + errorStr)
+                if plot_par.plot_bg:
+                    linScBgHist = scBgHist.Clone()
+                    memory.append(linScBgHist)
+                    linScBgHist.SetMaximum(maximum*1.1)
+                    linScBgHist.SetMinimum(0)
+                    print((utils.bcolors.BOLD + utils.bcolors.BLUE + "linScBgHist.Draw(HIST SAME " + errorStr + ")" + utils.bcolors.ENDC))
+                    linScBgHist.Draw("HIST SAME " + errorStr)
             if len(plot_par.plot_custom_types) > 0:
                 for i in range(len(plot_par.plot_custom_types)):
                     histName = cut["name"] + "_" + hist_def["obs"] + "_" + plot_par.plot_custom_types[i]
@@ -2184,19 +2255,23 @@ def main():
             
             if plot_par.plot_ratio or plot_par.plot_custom_ratio > 0:
                 if plot_par.plot_sc:
-                    stackSum = None
-                    if plot_par.solid_bg:
-                        stackSum = newBgHist
-                    else:
-                        if newBgHist.GetNhists() > 0:
-                            stackSum = newBgHist.GetStack().Last().Clone("stackSum")
+                    if plot_par.plot_bg:
+                        stackSum = None
+                        if plot_par.solid_bg:
+                            stackSum = newBgHist
+                        else:
+                            if newBgHist.GetNhists() > 0:
+                                stackSum = newBgHist.GetStack().Last().Clone("stackSum")
+                                memory.append(stackSum)
+                        #stackSum = utils.getStackSum(newBgHist)
+                        if stackSum is not None:
                             memory.append(stackSum)
-                    #stackSum = utils.getStackSum(newBgHist)
-                    if stackSum is not None:
-                        memory.append(stackSum)
-                    plotRatio(c1, histRPad, memory, stackSum, scBgHist, hist_def, "sim / " + plot_par.sc_ratio_label)
-                    if plot_par.plot_data:
-                        plotRatio(c1, histR2Pad, memory, dataHist, scDataHist, hist_def, "data / " + plot_par.sc_ratio_label, False)
+                        #plotRatio(c1, histRPad, memory, stackSum, scBgHist, hist_def, "sim / " + plot_par.sc_ratio_label)
+                        plotRatio(c1, histRPad, memory, stackSum, scBgHist, hist_def, "sim / " + plot_par.sc_ratio_label)
+                        if plot_par.plot_data:
+                            plotRatio(c1, histR2Pad, memory, dataHist, scDataHist, hist_def, "data / " + plot_par.sc_ratio_label, False)
+                    elif plot_par.plot_data:
+                        plotRatio(c1, histRPad, memory, dataHist, scDataHist, hist_def, "data / " + plot_par.sc_ratio_label, True)
                 else:
                     if plot_par.plot_custom_ratio > 0:
                         bgHists = hs.GetHists()

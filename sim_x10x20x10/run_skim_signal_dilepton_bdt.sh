@@ -60,12 +60,14 @@ output_file="${WORK_DIR}/condor_submut.${timestamp}"
 echo "output file: $output_file"
 
 #request_memory = 16 GB
+#+RequestRuntime = 86400
 
 cat << EOM > $output_file
 universe = vanilla
 should_transfer_files = IF_NEEDED
 executable = /bin/bash
 notification = Never
++RequestRuntime = 43200
 EOM
 
 FILES=${INPUT_DIR}/sum/*
@@ -73,7 +75,9 @@ FILES=${INPUT_DIR}/sum/*
 #FILES=(mChipm160GeV_dm0p44GeV.root mChipm140GeV_dm4p28GeV.root)
 
 #FILES=(higgsino_mu100_dm0p18Chi20Chipm.root)
+#FILES=(higgsino_mu115_dm9p82Chi20Chipm.root higgsino_mu115_dm7p44Chi20Chipm.root higgsino_mu130_dm7p49Chi20Chipm.root higgsino_mu130_dm9p91Chi20Chipm.root)
 
+#FILES=(higgsino_mu115_dm4p31Chi20Chipm.root higgsino_mu100_dm4p30Chi20Chipm.root higgsino_mu130_dm5p68Chi20Chipm.root higgsino_mu130_dm4p32Chi20Chipm.root higgsino_mu100_dm12p84Chi20Chipm.root higgsino_mu115_dm13p01Chi20Chipm.root higgsino_mu100_dm7p39Chi20Chipm.root)
 
 for sim in ${FILES[@]}; do
     #sim=${INPUT_DIR}/sum/$sim

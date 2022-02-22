@@ -32,6 +32,25 @@ signalNames = [
     #"\Delta_{}M 9.7Gev",
 ]
 
+def injetcJetIsoToCuts(cuts, jetIso):
+    for cut in cuts:
+        cut["condition"] = cut["condition"].replace("%%%", jetIso)
+        cut["baseline"] = cut["baseline"].replace("%%%", jetIso)
+        cut["sc"] = cut["sc"].replace("%%%", jetIso)
+        
+def injetcJetIsoToHistograms(hists, jetIso):
+    for hist in hists:
+        hist["obs"] = hist["obs"].replace("%%%", jetIso)
+        if hist.get("formula") is not None:
+            hist["formula"] = hist["formula"].replace("%%%", jetIso)
+        if hist.get("usedObs") is not None:
+            for i in range(len(hist["usedObs"])):
+                hist["usedObs"][i] = hist["usedObs"][i].replace("%%%", jetIso)
+
+def injetcJetIsoToList(obsList, jetIso):
+    for i in range(len(obsList)):
+        obsList[i] = obsList[i].replace("%%%", jetIso)
+
 # histogram params:
 # 
 # object - for the purpose of retagging
@@ -56,6 +75,7 @@ signalNames = [
 # showLumi - bool
 # linearYspace - how much space to leave for legend
 # blind - blind a specific interval
+# usedObs - used to tell which observables were in order to turn them on in the tree
 
 class BaseParams:
     signal_dir = None
@@ -73,7 +93,7 @@ class BaseParams:
     }
     bgReTagging = {}
     bgReTaggingOrder = {}
-    bgReTaggingNames = {}
+    bgReTaggingNames = utils.bgReTaggingNames
     
     plot_kind = "MET"
     plot_bg = True
@@ -165,4 +185,9 @@ class BaseParams:
     
     cms_tools_base_dir = os.path.expandvars("$CMSSW_BASE/src/cms-tools")
     histograms_root_files_dir = cms_tools_base_dir + "/analysis/scripts/histograms_root_files"
+    
+    #used to turn on only wanted branches in the tree
+    turnOnOnlyUsedObsInTree = False
+    usedObs = []
+    
     

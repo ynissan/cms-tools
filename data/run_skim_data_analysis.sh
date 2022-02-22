@@ -116,13 +116,14 @@ universe = vanilla
 should_transfer_files = IF_NEEDED
 executable = /bin/bash
 notification = Never
++RequestRuntime = 86400
 EOM
 
 file_limit=0
 i=0
 count=0
 input_files=""
-files_per_job=4
+files_per_job=1
 
 #files_per_job=1
 
