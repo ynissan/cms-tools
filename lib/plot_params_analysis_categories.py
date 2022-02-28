@@ -228,11 +228,11 @@ signals = [
               ]
 
 signalNames = [
-    "\Delta_{}M 1.13Gev",
-    "\Delta_{}M 1.47Gev",
-    "\Delta_{}M 1.9Gev",
-    "\Delta_{}M 3.2Gev",
-    "\Delta_{}M 4.3Gev",
+    "\Delta_{}M 1.13 Gev",
+    "\Delta_{}M 1.47 Gev",
+    "\Delta_{}M 1.9 Gev",
+    "\Delta_{}M 3.2 Gev",
+    "\Delta_{}M 4.3 Gev",
 ]
 
 # For this SC we need baseline cuts and sc cuts
@@ -295,6 +295,8 @@ class dilepton_muons_CorrJetIso10_5Dr0_55(dilepton_muons):
     injetcJetIsoToList(usedObs, jetIsoStr)
     #print("after", usedObs)
     #exit(0)
+    sig_line_width = 3
+    plot_error = True
 
 class dilepton_electrons(dilepton_muons):
     cuts = [

@@ -34,6 +34,7 @@ drawLogo      = False
 
 def CMS_lumi(pad,  iPeriod,  iPosX ):
     outOfFrame    = False
+    print("iPosX",iPosX,"iPosX/10",iPosX/10)
     if(iPosX/10==0 ): outOfFrame = True
 
     alignY_=3
@@ -88,7 +89,7 @@ def CMS_lumi(pad,  iPeriod,  iPosX ):
     elif ( iPeriod==0 ):
         lumiText += lumi_sqrtS
             
-    print lumiText
+    print(lumiText)
 
     latex = rt.TLatex()
     latex.SetNDC()
@@ -104,6 +105,8 @@ def CMS_lumi(pad,  iPeriod,  iPosX ):
     latex.DrawLatex(1-r,1-t+lumiTextOffset*t,lumiText)
 
     if( outOfFrame ):
+        print("outOfFrame")
+        exit(0)
         latex.SetTextFont(cmsTextFont)
         latex.SetTextAlign(11) 
         latex.SetTextSize(cmsTextSize*t)    

@@ -353,7 +353,7 @@ class signal_muons(BaseParams):
     plot_data = False
     plot_overflow = False
     show_lumi = True
-    label_text = utils.StampStr.SIM
+    label_text = plotutils.StampStr.SIM
 
 class signal_muons_gen(BaseParams):
     signal_dir = signalsGen
@@ -380,4 +380,4 @@ class signal_muons_gen(BaseParams):
     plot_data = False
     plot_overflow = False
     show_lumi = True
-    label_text = utils.StampStr.SIM
+    label_text = plotutils.StampStr.SIM

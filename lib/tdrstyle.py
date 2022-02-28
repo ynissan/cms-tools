@@ -50,7 +50,8 @@ def setTDRStyle():
   #tdrStyle.SetErrorMarker(20)
   #tdrStyle.SetErrorX(0.)
   
-  tdrStyle.SetMarkerStyle(20)
+  #change by yuval
+  #tdrStyle.SetMarkerStyle(20)
   
 #For the fit/function:
   tdrStyle.SetOptFit(1)
@@ -150,3 +151,4 @@ def setTDRStyle():
   tdrStyle.SetHatchesSpacing(0.05)
 
   tdrStyle.cd()
+  return tdrStyle

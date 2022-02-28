@@ -155,26 +155,26 @@ bgReTaggingNamesFull = {
 }
 
 basic_histograms_defs = [
-        { "obs" : "invMass%%%", "minX" : 0, "maxX" : 13, "bins" : 6, "blind" : [4,None]},# "customBins"  : [0,2,4,6,10,12] },
-        { "obs" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 6, "blind" : [None,0.1]},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
-        { "obs" : "dilepBDT%%%_mid", "formula" : "dilepBDT%%%","minX" : -1, "maxX" : 1, "bins" : 12, "blind" : [None,0.1]},
-        { "obs" : "dilepBDT%%%_fine", "formula" : "dilepBDT%%%","minX" : -1, "maxX" : 1, "bins" : 24, "blind" : [None,0.1]},
+        { "obs" : "invMass%%%", "minX" : 0, "maxX" : 13, "bins" : 6, "blind" : [4,None], "units" : "M_{ll} [GeV]"},# "customBins"  : [0,2,4,6,10,12] },
+        { "obs" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 6, "blind" : [None,0.1], "units" : "BDT"},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
+        { "obs" : "dilepBDT%%%_mid", "formula" : "dilepBDT%%%","minX" : -1, "maxX" : 1, "bins" : 12, "blind" : [None,0.1], "units" : "BDT", "linearYspace" : 1.5},
+        { "obs" : "dilepBDT%%%_fine", "formula" : "dilepBDT%%%","minX" : -1, "maxX" : 1, "bins" : 24, "blind" : [None,0.1], "units" : "BDT"},
         #{ "obs" : "dilepBDT%%%_custom", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 6, "blind" : [None,0.1], "customBins"  : [-1,-0.6,-0.3,0,0.10,0.26,0.34,0.38,0.42,1] },
-        { "obs" : "deltaR%%%", "minX" : 0, "maxX" : 3.5, "bins" : 8},
+        { "obs" : "deltaR%%%", "minX" : 0, "maxX" : 3.5, "bins" : 8, "units" : "\Delta_{}R"},
         { "obs" : "dilepHt%%%", "minX" : 200, "maxX" : 800, "bins" : 8},
-        { "obs" : "dileptonPt%%%", "minX" : 0, "maxX" : 30, "bins" : 8},
+        { "obs" : "dileptonPt%%%", "minX" : 0, "maxX" : 30, "bins" : 8, "units" : "p_T(ll) [GeV]"},
         { "obs" : "MHT", "minX" : 220, "maxX" : 800, "bins" : 8},
         { "obs" : "MET", "minX" : 200, "maxX" : 800, "bins" : 8},
-        { "obs" : "MinDeltaPhiMhtJets", "minX" : 0, "maxX" : 3.5, "bins" : 8},
-        { "obs" : "leptons%%%[0].Pt()", "minX" : 0, "maxX" : 20, "bins" : 8},
-        { "obs" : "deltaPhiMetLepton1%%%", "minX" : 0, "maxX" : 3.5, "bins" : 8},
-        { "obs" : "mt1%%%", "minX" : 0, "maxX" : 200, "bins" : 8},
+        { "obs" : "MinDeltaPhiMhtJets", "minX" : 0, "maxX" : 3.5, "bins" : 8, "units" : "Min\Delta_{}\phi(H_{T}^{Miss}, Jets)"},
+        { "obs" : "leptons%%%[0].Pt()", "minX" : 0, "maxX" : 20, "bins" : 8, "units" : "p_{T}(l_{1}) [GeV]"},
+        { "obs" : "deltaPhiMetLepton1%%%", "minX" : 0, "maxX" : 3.5, "bins" : 8, "units" : "\Delta\phi(H_{T}^{Miss},l_{1})"},
+        { "obs" : "mt1%%%", "minX" : 0, "maxX" : 200, "bins" : 8, "units" : "m_{T}(l_{1}) [GeV]"},
         { "obs" : "leptons%%%[0].Eta()", "minX" : -2.4, "maxX" : 2.4, "bins" : 8},
         { "obs" : "NJets", "minX" : 0, "maxX" : 6, "bins" : 6},
-        { "obs" : "deltaPhiMetLepton2%%%", "minX" : 0, "maxX" : 3.5, "bins" : 8},
+        { "obs" : "deltaPhiMetLepton2%%%", "minX" : 0, "maxX" : 3.5, "bins" : 8, "units" : "\Delta\phi(H_{T}^{Miss},l_{2})"},
         { "obs" : "LeadingJetPt", "minX" : 0, "maxX" : 500, "bins" : 8},
         { "obs" : "LeadingJet.Eta()", "minX" : -2.4, "maxX" : 2.4, "bins" : 8},
-        { "obs" : "deltaEta%%%", "minX" : 0, "maxX" : 5, "bins" : 8},
+        { "obs" : "deltaEta%%%", "minX" : 0, "maxX" : 5, "bins" : 8, "units" : "\Delta_{}\eta"},
         { "obs" : "HT", "minX" : 0, "maxX" : 500, "bins" : 8},
         { "obs" : "leptons%%%[0].Phi()", "minX" : 0, "maxX" : 3.5, "bins" : 8},
      ]
@@ -202,7 +202,7 @@ class dilepton_muons_bg_isocr_no_retag(BaseParams):
     normalise_each_bg = False
     plot_error = True
     sc_label = "Jet Iso #Delta_{}R CR"
-    sc_ratio_label = "cr"
+    sc_ratio_label = "CR"
 
 class dilepton_muons_bg_isocr_no_retag_CorrJetIso10_06(dilepton_muons_bg_isocr_no_retag):
     bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum/type_sum"
@@ -233,6 +233,12 @@ class dilepton_muons_bg_isocr_no_retag_CorrJetIso10_5_55(dilepton_muons_bg_isocr
     }
     save_histrograms_to_file = True
     load_histrograms_from_file = True 
+    
+    
+class dilepton_muons_bg_isocr_no_retag_CorrJetIso10_5_55_closure(dilepton_muons_bg_isocr_no_retag_CorrJetIso10_5_55):
+    #transfer_factor = 0.87
+    transfer_factor = 0.812
+    normalise = False
     
 class dilepton_muons_bg_isocr_no_retag_CorrJetIso10_5_055_no_norm(dilepton_muons_bg_isocr_no_retag_CorrJetIso10_5_55):
     histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_no_retag_CorrJetIso10_5_55.root"
@@ -367,6 +373,9 @@ class dilepton_muons_bg_isocr_no_retag_scan_full_met_range_work_progress(dilepto
                         hist_def["baseline"] = hist_def["baseline"].replace("%%%", jetIso)
                         hist_def["sc"] = hist_def["sc"].replace("%%%", jetIso)
                         histograms_defs.append(hist_def)
+
+class dilepton_muons_bg_isocr_no_retag_scan_full_met_range_work_progress_no_norm(dilepton_muons_bg_isocr_no_retag_scan_full_met_range_work_progress):
+    normalise = False
 
 class dilepton_muons_bg_isocr_scan_full_met_range_tautau_vs_no_tautau(dilepton_muons_bg_isocr_no_retag_CorrJetIso15_05):
     histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_scan_full_met_range_tautau_vs_no_tautau.root"

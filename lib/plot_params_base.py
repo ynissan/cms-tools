@@ -5,6 +5,7 @@ sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
 
 import crystal_ball_params
 import utils
+import plotutils
 
 low_3_signals = [
               "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signal_bdt_all/single/higgsino_mu100_dm1p92Chi20Chipm.root",
@@ -158,15 +159,15 @@ class BaseParams:
     
     sig_line_width = 2
 
-    legend_coordinates = {"x1" : .20, "y1" : .60, "x2" : .89, "y2" : .89}
+    legend_coordinates = {"x1" : .35, "y1" : .60, "x2" : .89, "y2" : .89}
     legend_columns = 2
     legend_border = 0
     
-    y_title_offset = 1.5
+    y_title_offset = 1
     y_title = "Events"
     
-    label_text = utils.StampStr.WIP
-    cms_location = utils.StampCoor.ABOVE_PLOT
+    label_text = plotutils.StampStr.WIP
+    cms_location = plotutils.StampCoor.ABOVE_PLOT
     show_lumi = True
     
     use_calculated_lumi_weight = True
@@ -190,4 +191,5 @@ class BaseParams:
     turnOnOnlyUsedObsInTree = False
     usedObs = []
     
+    transfer_factor = -1
     
