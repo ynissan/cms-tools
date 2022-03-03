@@ -78,14 +78,20 @@ universe = vanilla
 should_transfer_files = IF_NEEDED
 executable = /bin/bash
 notification = Never
++RequestRuntime = 86400
 EOM
 
 FILES=$INPUT_DIR/sum/type_sum/*
 #FILES=(ZJetsToNuNu_HT-400To600_13TeV-madgraph_1.root TTJets_DiLept_TuneCUETP8M1_9.root TTJets_SingleLeptFromT_TuneCUETP8M1_1.root WJetsToLNu_HT-1200To2500_TuneCUETP8M1_2.root ZJetsToNuNu_HT-400To600_13TeV-madgraph_2.root)
 #FILES=(TTJets_SingleLeptFromT_TuneCUETP8M1_15.root ZJetsToNuNu_HT-400To600_13TeV-madgraph_4.root)
 
+
+
+FILES=(WJetsToLNu_HT-200To400_TuneCUETP8M1_14.root)
+
+
 for bg_file in ${FILES[@]}; do
-    #bg_file=$INPUT_DIR/sum/type_sum/$bg_file
+    bg_file=$INPUT_DIR/sum/type_sum/$bg_file
     cmd="$CONDOR_WRAPPER $COMMAND -i $bg_file -bdt $BDT_DIR -bg $@"
     bg_file_name=$(basename $bg_file .root)
     echo $cmd
@@ -95,6 +101,7 @@ for bg_file in ${FILES[@]}; do
 cat << EOM >> $output_file
 arguments = $cmd
 error = ${INPUT_DIR}/stderr/${bg_file_name}_dilepton.err
+log = ${INPUT_DIR}/stderr/${bg_file_name}_dilepton.log
 output = ${INPUT_DIR}/stdoutput/${bg_file_name}_dilepton.output
 Queue
 EOM

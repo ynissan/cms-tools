@@ -74,6 +74,7 @@ variablesUsed.append("passedMhtMet6pack")
 variablesUsed.append("tEffhMetMhtRealXMht2016")
 variablesUsed.append("CrossSection")
 variablesUsed.append("puWeight")
+#variablesUsed.append("gen_mtautau")
 
 
 # basic_histograms_defs = [
@@ -135,7 +136,7 @@ for iso in utils.leptonIsolationList:
                 variablesUsed.append("sameSign" + jetiso)
                 variablesUsed.append("isoCr" + jetiso)
                 variablesUsed.append("invMass" + jetiso)
-                
+                variablesUsed.append("mtautau" + jetiso)
                 
                 variablesUsed.append("tc" + jetiso)
                 variablesUsed.append("tautau" + jetiso)

@@ -58,9 +58,9 @@ signalCp = [
     { "name" : "blue", "fillColor" : kBlue+3, "lineColor" : kBlue+3, "fillStyle" : 0, "lineStyle" : 1 },
     { "name" : "cyan", "fillColor" : kCyan+3, "lineColor" : kCyan+3, "fillStyle" : 0, "lineStyle" : 2 },
     { "name" : "red", "fillColor" : kRed, "lineColor" : kRed, "fillStyle" : 0, "lineStyle" : 3 },
-    { "name" : "magenta", "fillColor" : kMagenta, "lineColor" : kMagenta, "fillStyle" : 0, "lineStyle" : 4 },
     { "name" : "orange", "fillColor" : kOrange, "lineColor" : kOrange, "fillStyle" : 0, "lineStyle" : 5 },
-    { "name" : "pink", "fillColor" : kPink, "lineColor" : kPink, "fillStyle" : 0, "lineStyle" : 6 },
+    { "name" : "pink", "fillColor" : kPink+3, "lineColor" : kPink+4, "fillStyle" : 0, "lineStyle" : 6 },
+    { "name" : "magenta", "fillColor" : kMagenta, "lineColor" : kMagenta, "fillStyle" : 0, "lineStyle" : 4 },
 ]
 
 
@@ -74,13 +74,13 @@ def setHistColorFillLine(hist, cP, alpha=0.35,noFillStyle=False, lineWidth = 1):
     hist.SetFillColorAlpha(fillC, alpha)
     print("SetLineColor(", lineC, ")")
     hist.SetLineColor(lineC)
-    if cP.get("lineStyle") is not None:
-        hist.SetLineStyle(cP["lineStyle"])
+    #if cP.get("lineStyle") is not None:
+    #    hist.SetLineStyle(cP["lineStyle"])
 
     hist.SetLineWidth(lineWidth)
     hist.SetOption("HIST")
 
-def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, noFillStyle=False, largeVersion = False, plotPoint = False, legendNames = {}, noStack=False):
+def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, noFillStyle=False, plotPoint = False, legendNames = {}, noStack=False):
     newStack = THStack(bgHist.GetName(), title)
     newStack.UseCurrentStyle()
     memory.append(newStack)
@@ -101,7 +101,7 @@ def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, n
         if colorInx is not None:
             colorI = colorInx[i]
         print(colorI, colorInx)
-        setHistColorFillLine(newHist, colorPalette[colorI], 0.75, noFillStyle, largeVersion)
+        setHistColorFillLine(newHist, colorPalette[colorI], 0.75, noFillStyle)
         if noStack:
             newHist.SetFillStyle(0)
         lineC = TColor.GetColor(colorPalette[colorI]["fillColor"])

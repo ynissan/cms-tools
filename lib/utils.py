@@ -532,7 +532,14 @@ def getHistogramFromTreeCutsomBinsX(name, tree, obs, customBinsX, condition, ove
     h.Sumw2()
     return getHistogramFromTree(name, tree, obs, None, None, None, condition, overflow, name + "_customx", True)
     
-    
+def foldOverflowBins(hist):
+    over = hist.GetBinContent(hist.GetXaxis().GetNbins() + 1)
+    if over:
+        hist.Fill(hist.GetXaxis().GetBinCenter(hist.GetXaxis().GetNbins()), over)
+    under = hist.GetBinContent(0)
+    if under:
+        hist.Fill(hist.GetXaxis().GetBinCenter(1), under)
+
 def getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=True, tmpName="hsqrt", predefBins = False, twoD = False, binsY = None, minBinsY = None, maxBinsY = None):
     if tree.GetEntries() == 0:
         return None
@@ -564,17 +571,11 @@ def getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=
     hist = tree.GetHistogram().Clone(name)
     hist.Sumw2()
     hist.SetDirectory(0)
-    if overflow:
-        useCond = condition
-        if not useCond:
-            useCond = "1"
-        over = hist.GetBinContent(hist.GetXaxis().GetNbins() + 1) #tree.Draw(obs, "(" + useCond + ") && " + obs + ">" + str(maxX))
-        if over:
-            hist.Fill(hist.GetXaxis().GetBinCenter(hist.GetXaxis().GetNbins()), over)
-        under = hist.GetBinContent(0)# tree.Draw(obs, "(" + useCond + ") && " + obs + "<" + str(minX))
-        if under:
-            hist.Fill(hist.GetXaxis().GetBinCenter(1), under)
+    #if overflow:
+    #    foldOverflowBins(hist)
     return hist
+
+
 
 def madHtCheck(current_file_name, madHT):
     if (madHT>0) and \

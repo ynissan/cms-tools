@@ -77,6 +77,8 @@ def injetcJetIsoToList(obsList, jetIso):
 # linearYspace - how much space to leave for legend
 # blind - blind a specific interval
 # usedObs - used to tell which observables were in order to turn them on in the tree
+# ratio1max - max value for ratio1
+# ratio1min - min value for ratio2
 
 class BaseParams:
     signal_dir = None
@@ -108,6 +110,7 @@ class BaseParams:
     plot_sc = False
     plot_data = False
     plot_ratio = False
+    plot_reverse_ratio = False
     plot_point = False
     plot_efficiency = False
     plot_grid_x = False
