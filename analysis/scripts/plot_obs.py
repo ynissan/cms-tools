@@ -1335,7 +1335,12 @@ def main():
                 if not (linear and plot_single):
                     newBgHist.SetMaximum(maximum*1000)
                 else:
-                    newBgHist.SetMaximum(maximum*1.1)
+                    
+                    linearYspace = maximum*1.1
+                    if hist_def.get("linearYspace") is not None:
+                        linearYspace = maximum * hist_def["linearYspace"]
+                    
+                    newBgHist.SetMaximum(linearYspace)
                 if not (linear and plot_single):
                     newBgHist.SetMinimum(0.0001)
                 else:
@@ -1382,7 +1387,10 @@ def main():
                     print(("Setting max", maximum*1000))
                     histToStyle.SetMaximum(maximum*1000)
                 else:
-                    histToStyle.SetMaximum(maximum*1.1)
+                    linearYspace = maximum*1.1
+                    if hist_def.get("linearYspace") is not None:
+                        linearYspace = maximum * hist_def["linearYspace"]
+                    histToStyle.SetMaximum(linearYspace)
                 if not (linear and plot_single):
                     print("NOT LINER!")
                     print("dataHist.SetMinimum(0.0001)")
@@ -1537,7 +1545,7 @@ def main():
                     else:
                         scBgHist.SetMinimum(0)
                     scBgHist.SetLineWidth(2)
-                    scBgHist.SetLineColor(6)
+                    scBgHist.SetLineColor(plot_par.sc_color)
                     print((utils.bcolors.BOLD + utils.bcolors.RED + "scBgHist.Draw(HIST SAME " + errorStr + ")" + utils.bcolors.ENDC))
                     scBgHist.Draw("HIST SAME " + errorStr)
                 
@@ -2215,7 +2223,9 @@ def main():
             
             
             linearYspace = maximum*1.1
+            print(hist_def)
             if hist_def.get("linearYspace") is not None:
+                print("HERE linearYspace", linearYspace)
                 linearYspace = maximum * hist_def["linearYspace"]
             
             if plot_par.plot_bg:

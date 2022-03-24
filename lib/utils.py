@@ -537,6 +537,7 @@ def foldOverflowBins(hist):
     if over:
         hist.Fill(hist.GetXaxis().GetBinCenter(hist.GetXaxis().GetNbins()), over)
     under = hist.GetBinContent(0)
+    print("under", under)
     if under:
         hist.Fill(hist.GetXaxis().GetBinCenter(1), under)
 

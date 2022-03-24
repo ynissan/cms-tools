@@ -39,10 +39,10 @@ if args.input_dir:
 if args.json_file:
     json_file = args.json_file[0].strip()
 
-#lumi = utils.get_lumi_from_bril('~/tmp_json_1613859532.json', 'ynissan')
+lumi = utils.get_lumi_from_bril('/tmp/tmp_json_1647460032.json', 'ynissan')
     #os.remove(tmpJsonFile)
-#print "Luminosity=", lumi
-#exit(0)
+print("Luminosity=", lumi)
+exit(0)
 
 if json_file is not None:
     print("tmpJsonFile", json_file)

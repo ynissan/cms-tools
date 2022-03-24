@@ -72,13 +72,13 @@ output_file="${WORK_DIR}/condor_submut.${timestamp}"
 echo "output file: $output_file"
 
 #request_memory = 16 GB
+#+RequestRuntime = 86400
 
 cat << EOM > $output_file
 universe = vanilla
 should_transfer_files = IF_NEEDED
 executable = /bin/bash
 notification = Never
-+RequestRuntime = 86400
 EOM
 
 FILES=$INPUT_DIR/sum/type_sum/*
@@ -87,8 +87,7 @@ FILES=$INPUT_DIR/sum/type_sum/*
 
 
 
-FILES=(WJetsToLNu_HT-200To400_TuneCUETP8M1_14.root)
-
+FILES=(QCD_HT300to500_TuneCUETP8M1_3.root ST_t-channel_antitop_1.root)
 
 for bg_file in ${FILES[@]}; do
     bg_file=$INPUT_DIR/sum/type_sum/$bg_file

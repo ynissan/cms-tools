@@ -8,6 +8,7 @@ sim_x10x20x10/simData*
 analysis/output/**
 *.pyc
 *.pdf
+*.bak
 analysis/scripts/latex/*.pdf
 analysis/scripts/latex/*.aux
 analysis/scripts/latex/*.log

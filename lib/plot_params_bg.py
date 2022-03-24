@@ -1,9 +1,11 @@
 import sys
 import os
+import ROOT
 
 sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
 
 from plot_params_base import *
+import plotutils
 
 bgReTaggingFull = {
     "tc" : "tc * (!tautau)",
@@ -711,3 +713,32 @@ class clean_dy_flat_obs(clean_dy_sim_bg):
     calculatedLumi = {
         'SingleMuon' : 36.00,
     }
+
+class track_muon_sc_comparison(BaseParams):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/track_muon_sc_comparison.root"
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum"
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True 
+    
+    cuts = [
+        {"name":"none", "title": "None", "condition" : "(MinDeltaPhiMetJets > 0.4 && MHT >= 220 &&  MET >= 140 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "exclusiveTrack%%% == 1 && trackBDT%%% > 0 && exTrack_invMass%%% < 12 && exclusiveTrackLeptonFlavour%%% == \"Muons\"", "sc" : "sc_exclusiveTrack%%% == 1 && sc_trackBDT%%% > 0 && sc_exTrack_invMass%%% < 12 && sc_exclusiveTrackLeptonFlavour%%% == \"Muons\"" },
+        #{"name":"sr", "title": "sr", "condition" : "(MHT >= 220 &&  MET >= 200 && BTagsDeepMedium == 0 )", "baseline" : "exclusiveTrack == 1 && trackBDT > 0 && exTrack_invMass < 30 && exclusiveTrackLeptonFlavour == \"Muons\" && exTrack_dilepBDT > 0.1", "sc" : "sc_exclusiveTrack == 1 && sc_trackBDT > 0 && sc_exTrack_invMass < 30 && sc_exclusiveTrackLeptonFlavour == \"Muons\"" }
+    ]
+    injectJetIsoToCuts(cuts, "CorrJetIso10.5Dr0.55")
+    
+    histograms_defs = [
+        { "obs" : "exTrack_dilepBDT%%%", "units" : "BDT", "minX" : -1, "maxX" : 1, "bins" : 30, "blind" : [None,0.1], "sc_obs" : "sc_exTrack_dilepBDT%%%", "linearYspace" : 1.5},
+    ]
+    
+    injectJetIsoToHistograms(histograms_defs, "CorrJetIso10.5Dr0.55")  
+    
+    weightString = {
+        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight * BranchingRatio",
+    }
+    
+    plot_data = False
+    plot_sc = True
+    plot_ratio = True
+    plot_signal = False
+    sc_color = ROOT.kOrange + 1
+    label_text = plotutils.StampStr.SIMWIP

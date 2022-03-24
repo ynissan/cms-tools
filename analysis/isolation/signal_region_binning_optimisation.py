@@ -15,6 +15,7 @@ sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/"))
 sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
 import utils
 import analysis_ntuples
+import plotutils
 
 gROOT.SetBatch(True)
 gStyle.SetOptStat(0)
@@ -62,7 +63,7 @@ output_dir = "./signal_region_plots"
 if not os.path.isdir(output_dir):
     os.mkdir(output_dir)
 
-jetiso = "CorrJetIso11Dr0.55"
+jetiso = "CorrJetIso10.5Dr0.55"
 
 ######## END OF CMDLINE ARGUMENTS ########
 
@@ -70,6 +71,10 @@ def main():
     print("Start: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S'))
     
     print("Opening histograms file " + histograms_file)
+    
+    plotting = plotutils.Plotting()
+    currStyle = plotting.setStyle()
+    
     histograms = TFile(histograms_file, 'read')
     
     for lepNum in [1, 2]:
@@ -105,7 +110,7 @@ def main():
             
                 bg_hist.SetMaximum(maximum)
             
-                c1 = TCanvas("c1", "c1", 800, 800)
+                c1 = plotting.createCanvas("c1")
                 c1.cd()
         
                 legend = TLegend(0.65, 0.70, 0.87, 0.875)
@@ -113,15 +118,19 @@ def main():
                 legend.SetTextFont(42)
                 legend.SetTextSize(0.02)
             
-                cpRed = utils.colorPalette[7]
-                utils.histoStyler(bg_hist)
+                cpRed = plotutils.colorPalette[1]
+                print(cpRed)
+                #utils.histoStyler(bg_hist)
+                bg_hist.UseCurrentStyle()
                 bg_hist.SetTitle("")
                 bg_hist.GetXaxis().SetTitle("BDT Output")
                 bg_hist.GetYaxis().SetTitle("Number of events")
                 #bg_hist.GetYaxis().SetTitleOffset(1.4)
                 #bg_hist.GetXaxis().SetLabelSize(0.055)
                 #trainBGHist.SetMaximum(maxY + 0.02)
-                utils.formatHist(bg_hist, cpRed, 0.35, True)
+                
+                plotutils.setHistColorFillLine(bg_hist, cpRed, 0.35, True)
+                #utils.formatHist(bg_hist, cpRed, 0.35, True)
                 # fillC = TColor.GetColor(cpRed["fillColor"])
     #             lineC = TColor.GetColor(cpRed["lineColor"])
     #             bg_hist.SetFillStyle(0)
@@ -141,7 +150,8 @@ def main():
                 legend.AddEntry(bg_hist, "Background", 'F')
             
                 for i in range(len(signals)):
-                    utils.formatHist(signal_histograms[i], utils.signalCp[i], 0.8)
+                    signal_histograms[i].UseCurrentStyle()
+                    plotutils.setHistColorFillLine(signal_histograms[i], plotutils.signalCp[i])
                     legend.AddEntry(signal_histograms[i], signals[i], 'l')
                     signal_histograms[i].Draw("hist same")
             
@@ -163,6 +173,7 @@ def main():
                     for i in range(len(signals)):
                         significance_histogram = signal_histograms[i].Clone()
                         significance_histogram.Reset()
+                        significance_histogram.UseCurrentStyle()
                         
                         endPoint = signal_histograms[i].GetNbinsX() if binMax == -1 else binMax
                         print("endPoint", endPoint)
@@ -173,26 +184,29 @@ def main():
                             significance_histogram.SetBinContent(ibin, sig)
                         significance_histograms.append(significance_histogram)
                 
-                    c1 = TCanvas("c1", "c1", 800, 800)
+                    c1 = plotting.createCanvas("c1")
                     c1.cd()
         
-                    legend = TLegend(0.15, 0.70, 0.55, 0.875)
+                    legend = TLegend(0.2, 0.70, 0.6, 0.875)
                     legend.SetBorderSize(0)
+                    legend.SetFillStyle(0)
                     legend.SetTextFont(42)
-                    legend.SetTextSize(0.02)
+                    #legend.SetTextSize(0.02)
                 
                     maximum = 0
                     for i in range(len(signals)):
                         maximum = max(significance_histograms[i].GetMaximum(), maximum)
                     significance_histograms[0].SetMaximum(maximum + 1)
-                    utils.histoStyler(significance_histograms[0])
+                    significance_histograms[0].UseCurrentStyle()
+                    #utils.histoStyler(significance_histograms[0])
                     significance_histograms[0].SetTitle("")
                     significance_histograms[0].GetXaxis().SetTitle("BDT Output")
                     significance_histograms[0].GetYaxis().SetTitle("Significance")
                 
             
                     for i in range(len(signals)):
-                        utils.formatHist(significance_histograms[i], utils.signalCp[i], 0.8)
+                        plotutils.setHistColorFillLine(significance_histograms[i], plotutils.signalCp[i], 1)
+                        #utils.formatHist(significance_histograms[i], utils.signalCp[i], 0.8)
                         legend.AddEntry(significance_histograms[i], signals[i], 'l')
                         if i == 0:
                             significance_histograms[i].Draw("hist")

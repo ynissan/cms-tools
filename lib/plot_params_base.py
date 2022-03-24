@@ -20,26 +20,28 @@ calculatedLumi = {
 }
 
 signals = [
-              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm0p86Chi20Chipm.root",
-              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm1p92Chi20Chipm.root",
-              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm3p28Chi20Chipm.root",
-              #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm9p73Chi20Chipm.root"
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim/higgsino_mu100_dm1p13Chi20Chipm.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim/higgsino_mu100_dm1p47Chi20Chipm.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim/higgsino_mu100_dm1p92Chi20Chipm.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim/higgsino_mu100_dm3p28Chi20Chipm.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim/higgsino_mu100_dm4p30Chi20Chipm.root"
               ]
 
 signalNames = [
-    "\Delta_{}M 0.8 Gev",
+    "\Delta_{}M 1.13 Gev",
+    "\Delta_{}M 1.47 Gev",
     "\Delta_{}M 1.9 Gev",
     "\Delta_{}M 3.2 Gev",
-    #"\Delta_{}M 9.7Gev",
+    "\Delta_{}M 4.3 Gev",
 ]
 
-def injetcJetIsoToCuts(cuts, jetIso):
+def injectJetIsoToCuts(cuts, jetIso):
     for cut in cuts:
         cut["condition"] = cut["condition"].replace("%%%", jetIso)
         cut["baseline"] = cut["baseline"].replace("%%%", jetIso)
         cut["sc"] = cut["sc"].replace("%%%", jetIso)
         
-def injetcJetIsoToHistograms(hists, jetIso):
+def injectJetIsoToHistograms(hists, jetIso):
     for hist in hists:
         hist["obs"] = hist["obs"].replace("%%%", jetIso)
         if hist.get("formula") is not None:
@@ -47,8 +49,12 @@ def injetcJetIsoToHistograms(hists, jetIso):
         if hist.get("usedObs") is not None:
             for i in range(len(hist["usedObs"])):
                 hist["usedObs"][i] = hist["usedObs"][i].replace("%%%", jetIso)
+        if hist.get("sc_obs") is not None:
+            hist["sc_obs"] = hist["sc_obs"].replace("%%%", jetIso)
+        if hist.get("condition") is not None:
+            hist["condition"] = hist["condition"].replace("%%%", jetIso)
 
-def injetcJetIsoToList(obsList, jetIso):
+def injectJetIsoToList(obsList, jetIso):
     for i in range(len(obsList)):
         obsList[i] = obsList[i].replace("%%%", jetIso)
 
@@ -81,8 +87,9 @@ def injetcJetIsoToList(obsList, jetIso):
 # ratio1min - min value for ratio2
 
 class BaseParams:
-    signal_dir = None
-    signal_names = None
+    signal_dir = signals
+    #signal_files = signals
+    signal_names = signalNames
     bg_dir = None
     data_dir = None
     sc_bg_dir = None
@@ -92,6 +99,7 @@ class BaseParams:
     calculatedLumi = {}
     weightString = {
         'MET' : "passedMhtMet6pack * tEffhMetMhtRealXMht2016",
+        #'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight * BranchingRatio",
         'SingleMuon' : "1"
     }
     bgReTagging = {}
@@ -169,7 +177,7 @@ class BaseParams:
     y_title_offset = 1
     y_title = "Events"
     
-    label_text = plotutils.StampStr.WIP
+    label_text = plotutils.StampStr.SIMWIP
     cms_location = plotutils.StampCoor.ABOVE_PLOT
     show_lumi = True
     
@@ -179,6 +187,7 @@ class BaseParams:
     
     sc_label = "same-sign simulation"
     sc_ratio_label = "sc"
+    sc_color = 6
     
     plot_custom_types = []
     # used for cleaned-z and cleaned-w. They have different files and conditions attached to them.

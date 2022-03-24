@@ -53,20 +53,20 @@ common_histograms = [
 two_leps_histograms = [
     
     { "obs" : "invMass%%%_coarse", "formula" : "invMass%%%","minX" : 0, "maxX" : 13, "bins" : 6, "blind" : [4,None],"units" : "M_{ll} [GeV]" },
-    { "obs" : "invMass%%%", "minX" : 0, "maxX" : 12, "bins" : 20, "blind" : [4,None],"units" : "M_{ll} [GeV]" },
+    { "obs" : "invMass%%%", "minX" : 0, "maxX" : 12, "bins" : 20, "blind" : [4,None],"units" : "M_{ll} [GeV]", "linearYspace" : 1.5 },
     { "obs" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 60, "blind" : [None,0.1],"units" : "BDT" },
     { "obs" : "dileptonPt%%%", "minX" : 0, "maxX" : 100, "bins" : 30, "units" : "p_T(ll) [GeV]" },
     #{ "obs" : "deltaPhi%%%", "minX" : 0, "maxX" : 3.2, "bins" : 30 },
     { "obs" : "deltaEta%%%", "minX" : 0, "maxX" : 4, "bins" : 30, "units" : "\Delta_{}\eta" },
-    { "obs" : "deltaR%%%", "minX" : 0, "maxX" : 4, "bins" : 30, "units" : "\Delta_{}R" },
+    { "obs" : "deltaR%%%", "minX" : 0, "maxX" : 4, "bins" : 30, "units" : "\Delta_{}R_{ll}", "linearYspace" : 1.5 },
     { "obs" : "dilepHt%%%", "minX" : 200, "maxX" : 400, "bins" : 30 },
     #{ "obs" : "pt3%%%", "minX" : 0, "maxX" : 1000, "bins" : 30 },
     #{ "obs" : "mtautau%%%", "minX" : 0, "maxX" : 200, "bins" : 30 },
     
-    { "obs" : "mt1%%%", "minX" : 0, "maxX" : 100, "bins" : 30, "units" : "m_{T}(l_{1}) [GeV]" },
+    { "obs" : "mt1%%%", "minX" : 0, "maxX" : 100, "bins" : 30, "units" : "m_{T}(l_{1}) [GeV]", "linearYspace" : 1.5 },
     #{ "obs" : "mt2%%%", "minX" : 0, "maxX" : 200, "bins" : 30 },
     
-    { "obs" : "leptons%%%[0].Pt()", "minX" : 2, "maxX" : 15, "bins" : 30, "usedObs" : ["leptons%%%"], "units" : "p_{T}(l_{1}) [GeV]" },
+    { "obs" : "leptons%%%[0].Pt()", "minX" : 2, "maxX" : 15, "bins" : 30, "usedObs" : ["leptons%%%"], "units" : "p_{T}(l_{1}) [GeV]", "linearYspace" : 1.5 },
     { "obs" : "leptons%%%[1].Pt()", "minX" : 2, "maxX" : 15, "bins" : 30, "usedObs" : ["leptons%%%"], "units" : "p_{T}(l_{2}) [GeV]" },
     { "obs" : "abs(leptons%%%[0].Eta())", "minX" : 0, "maxX" : 3, "bins" : 60, "usedObs" : ["leptons%%%"] },
     { "obs" : "abs(leptons%%%[1].Eta())", "minX" : 0, "maxX" : 3, "bins" : 60, "usedObs" : ["leptons%%%"] },
@@ -287,16 +287,16 @@ class dilepton_muons_CorrJetIso10_5Dr0_55(dilepton_muons):
     histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons" + jetIsoStr + ".root"
     #"/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools/analysis/scripts/dilepton_muons" + jetIsoStr + ".root"
     cuts = copy.deepcopy(dilepton_muons.cuts)
-    injetcJetIsoToCuts(cuts, jetIsoStr)
+    injectJetIsoToCuts(cuts, jetIsoStr)
     histograms_defs = copy.deepcopy(dilepton_muons.histograms_defs)
-    injetcJetIsoToHistograms(histograms_defs, jetIsoStr)
+    injectJetIsoToHistograms(histograms_defs, jetIsoStr)
     usedObs = copy.deepcopy(dilepton_muons.usedObs)
     #print("before", usedObs)
-    injetcJetIsoToList(usedObs, jetIsoStr)
+    injectJetIsoToList(usedObs, jetIsoStr)
     #print("after", usedObs)
     #exit(0)
     sig_line_width = 3
-    plot_error = True
+    plot_error = False
 
 class dilepton_electrons(dilepton_muons):
     cuts = [
@@ -332,4 +332,5 @@ class track_muon(track_electron):
     #    { "obs" : "exTrack_invMass", "minX" : 0, "maxX" : 13, "bins" : 30, "sc_obs" : "sc_exTrack_invMass"  },
     #]
     
-    
+
+

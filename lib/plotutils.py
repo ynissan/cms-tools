@@ -1,6 +1,12 @@
 from ROOT import *
 import CMS_lumi, tdrstyle
 
+class StampStr:
+    WIP = "Work in Progress"
+    SIM = "Simulation"
+    PRE = "Preliminary"
+    SIMWIP = "#splitline{Simulation}{Work in Progress}"
+
 class Plotting():
     
     def __init__(self, W_ref=800,H_ref=600):
@@ -54,15 +60,28 @@ colorPalette = [
 ]
 
 #For solid fill use fillStyle=1001
+# signalCp = [
+#     { "name" : "blue", "fillColor" : kBlue+3, "lineColor" : kBlue+3, "fillStyle" : 0, "lineStyle" : 1 },
+#     { "name" : "cyan", "fillColor" : kCyan+3, "lineColor" : kCyan+3, "fillStyle" : 0, "lineStyle" : 2 },
+#     { "name" : "orange", "fillColor" : kOrange, "lineColor" : kOrange, "fillStyle" : 0, "lineStyle" : 5 },
+#     { "name" : "pink", "fillColor" : kPink+3, "lineColor" : kPink+4, "fillStyle" : 0, "lineStyle" : 6 },
+#     { "name" : "grey", "fillColor" : kGray, "lineColor" : kGray, "fillStyle" : 0, "lineStyle" : 4 },
+#     { "name" : "red", "fillColor" : kRed, "lineColor" : kRed, "fillStyle" : 0, "lineStyle" : 3 },
+# ]
+
+
 signalCp = [
-    { "name" : "blue", "fillColor" : kBlue+3, "lineColor" : kBlue+3, "fillStyle" : 0, "lineStyle" : 1 },
-    { "name" : "cyan", "fillColor" : kCyan+3, "lineColor" : kCyan+3, "fillStyle" : 0, "lineStyle" : 2 },
-    { "name" : "red", "fillColor" : kRed, "lineColor" : kRed, "fillStyle" : 0, "lineStyle" : 3 },
-    { "name" : "orange", "fillColor" : kOrange, "lineColor" : kOrange, "fillStyle" : 0, "lineStyle" : 5 },
-    { "name" : "pink", "fillColor" : kPink+3, "lineColor" : kPink+4, "fillStyle" : 0, "lineStyle" : 6 },
-    { "name" : "magenta", "fillColor" : kMagenta, "lineColor" : kMagenta, "fillStyle" : 0, "lineStyle" : 4 },
+    { "name" : "blue", "fillColor" : kRed, "lineColor" : kRed, "fillStyle" : 0, "lineStyle" : 1 },
+    { "name" : "cyan", "fillColor" : kRed+1, "lineColor" : kRed+1, "fillStyle" : 0, "lineStyle" : 2 },
+    { "name" : "orange", "fillColor" : kRed+2, "lineColor" : kRed+2, "fillStyle" : 0, "lineStyle" : 5 },
+    { "name" : "pink", "fillColor" : kRed+3, "lineColor" : kRed+3, "fillStyle" : 0, "lineStyle" : 6 },
+    { "name" : "grey", "fillColor" : kRed+4, "lineColor" : kRed+4, "fillStyle" : 0, "lineStyle" : 4 },
+    { "name" : "red", "fillColor" : kRed-1, "lineColor" : kRed-1, "fillStyle" : 0, "lineStyle" : 3 },
 ]
 
+# For signal with only lines - only first two arguments relevant (alpha is only for the fill)
+# then the fill is set to 0 by "fillStyle" : 0  in the signalCp
+# For a filled histogram normally alpha is given and noFillStyle=True (so that 1001 is picked)
 
 def setHistColorFillLine(hist, cP, alpha=0.35,noFillStyle=False, lineWidth = 1):
     fillC = cP["fillColor"]
@@ -169,11 +188,6 @@ def deprecated_histoStyler(h, ratio = False):
 
 def deprecated_formatLegend(legend):
     legend.SetTextFont(132)
-
-class StampStr:
-    WIP = "Work in Progress"
-    SIM = "Simulation"
-    PRE = "Preliminary"
 
 class StampCoor:
     #ABOVE_PLOT = {"x" : 0.18, "y" : 0.915}

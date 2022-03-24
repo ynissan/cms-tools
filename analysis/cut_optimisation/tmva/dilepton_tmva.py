@@ -143,6 +143,8 @@ if lepNum == "reco":
     variablesUsed.append('deltaPhiMetLepton1' + iso + str(ptRange) + cat)
     variablesUsed.append('deltaPhiMetLepton2' + iso + str(ptRange) + cat)
     
+    variablesUsed.append('mtautau' + iso + str(ptRange) + cat)
+    
 else:
     # Before 
     #preselection = "exclusiveTrack" + iso + str(ptRange) + cat + ' == 1 && BTagsDeepMedium == 0 &&  trackBDT' + iso + str(ptRange) + cat  +    ' >= 0 && exclusiveTrackLeptonFlavour' + iso + str(ptRange) + cat  + " == \"" + lep + "\""
@@ -353,6 +355,7 @@ if lepNum == "reco":
     dataloader.AddVariable('leptons' + iso + str(ptRange) + cat + '[0].Phi()', 'F')
     dataloader.AddVariable('deltaPhiMetLepton1' + iso + str(ptRange) + cat, 'F')
     dataloader.AddVariable('deltaPhiMetLepton2' + iso + str(ptRange) + cat, 'F')
+    dataloader.AddVariable('mtautau' + iso + str(ptRange) + cat, 'F')
 else:
     
     #preselectionCut = TCut("exclusiveTrack" + iso + str(ptRange) + cat + ' == 1 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour' + iso + str(ptRange) + cat  + ' == "' + lep + '"')
