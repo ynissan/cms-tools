@@ -12,5 +12,6 @@ from plot_params_jet_isolation import *
 from plot_params_track_bdt import *
 from plot_params_dilepton_bdt import *
 from plot_params_isocr import *
+from plot_params_bg_validation import *
 
 default_params = track_selection

@@ -48,7 +48,7 @@ def Mtautau(met, l1, l2):
     xi1 = (met.Px() * l2.Py() - met.Py() * l2.Px()) / det
     xi2 = (met.Py() * l1.Px() - met.Px() * l1.Py()) / det
     
-    print "xi1", xi1, "xi2", xi2
+    #print "xi1", xi1, "xi2", xi2
     
     
     nu1v = xi1 * l1.Vect()
@@ -64,21 +64,21 @@ def Mtautau(met, l1, l2):
     nu1 = TLorentzVector(nu1v, nu1E)
     nu2 = TLorentzVector(nu2v, nu2E)
     
-    print "old (l1 + l2 + nu1 + nu2).M()", (l1 + l2 + nu1 + nu2).M()
+    #print "old (l1 + l2 + nu1 + nu2).M()", (l1 + l2 + nu1 + nu2).M()
     
-    nu1 = xi1 * l1
-    nu2 = xi2 * l2
-    
-    print "new (l1 + l2 + nu1 + nu2).M()", (l1 + l2 + nu1 + nu2).M()
-    
+    # nu1 = xi1 * l1
+#     nu2 = xi2 * l2
+#     
+#     print "new (l1 + l2 + nu1 + nu2).M()", (l1 + l2 + nu1 + nu2).M()
+#     
     #print "nu1.Px()", nu1.Px(),"nu1.Py()", nu1.Py(),"nu1.Pz()", nu1.Pz(),"nu1.E()", nu1.E()
     #print "nu2.Px()", nu2.Px(),"nu2.Py()", nu1.Py(),"nu2.Pz()", nu2.Pz(),"nu2.E()", nu2.E()
     
-    print "l1.Dot(l1)", l1.Dot(l1), "l2.Dot(l2)", l2.Dot(l2), "nu1.Dot(nu1)", nu1.Dot(nu1), "nu2.Dot(nu2)", nu2.Dot(nu2)
-    print "xi1 * 0.011172490237=",xi1 * 0.011172490237 
-    print "xi2 * 0.011172490237=",xi2 * 0.011172490237
-    print "l1.Dot(nu1)", l1.Dot(nu1), "l2.Dot(nu1)", l2.Dot(nu1), "l1.Dot(nu2)", l1.Dot(nu2), "l2.Dot(nu2)", l2.Dot(nu2)
-    
+    # print "l1.Dot(l1)", l1.Dot(l1), "l2.Dot(l2)", l2.Dot(l2), "nu1.Dot(nu1)", nu1.Dot(nu1), "nu2.Dot(nu2)", nu2.Dot(nu2)
+#     print "xi1 * 0.011172490237=",xi1 * 0.011172490237 
+#     print "xi2 * 0.011172490237=",xi2 * 0.011172490237
+#     print "l1.Dot(nu1)", l1.Dot(nu1), "l2.Dot(nu1)", l2.Dot(nu1), "l1.Dot(nu2)", l1.Dot(nu2), "l2.Dot(nu2)", l2.Dot(nu2)
+#     
     
     return (l1 + l2 + nu1 + nu2).M()
 
@@ -94,7 +94,7 @@ def Mtautau2(met, l1, l2):
     xi1 = (met.Px() * l2.Py() - met.Py() * l2.Px()) / det
     xi2 = (met.Py() * l1.Px() - met.Px() * l1.Py()) / det
     
-    print "(1+xi1)", (1+xi1), "(1+xi2)", (1+xi2), "l1.Dot(l2)", l1.Dot(l2)
+    #print "(1+xi1)", (1+xi1), "(1+xi2)", (1+xi2), "l1.Dot(l2)", l1.Dot(l2)
     
     MSqTauTau = (1+xi1)*(1+xi2)*2*(l1.Dot(l2))
     MTauTau = -99999.;

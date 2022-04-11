@@ -401,6 +401,9 @@ def plotRatio(c1, pad, memory, numHist, denHist, hist_def, numLabel = "Data", de
     if styleRefHist is None:
         styleRefHist = denHist
     
+    if numHist is None:
+        return
+    
     #crNum = newBgHist.Integral()
     #dataNum = dataHist.Integral()
     

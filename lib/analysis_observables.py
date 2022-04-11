@@ -285,6 +285,7 @@ commonObservablesDTypesList = {
     "deltaR" : "float",
     "pt3" : "float",
     "mtautau" : "float",
+    "nmtautau" : "float",
     "mt1" : "float",
     "mt2" : "float",
     "deltaEtaLeadingJetDilepton" : "float",

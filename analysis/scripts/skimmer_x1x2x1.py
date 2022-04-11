@@ -1234,6 +1234,7 @@ def main():
                                 #print postfix
                                 #print ientry
                                 dileptonVars["mtautau" + postfix][0] = analysis_tools.Mtautau(pt, leptons[0], leptons[1])
+                                dileptonVars["nmtautau" + postfix][0] = analysis_tools.Mtautau2(pt, leptons[0], leptons[1])
                                 dileptonVars["deltaEtaLeadingJetDilepton" + postfix][0] = abs((leptons[0] + leptons[1]).Eta() - var_LeadingJet.Eta())
                                 dileptonVars["deltaPhiLeadingJetDilepton" + postfix][0] = abs((leptons[0] + leptons[1]).DeltaPhi(var_LeadingJet))
                                 dileptonVars["dilepHt" + postfix][0] = analysis_ntuples.htJet30Leps(jetsObs["Jets"], leptons)
@@ -1465,6 +1466,7 @@ def main():
                 genCalcObs["mt1"][0] = analysis_tools.MT2(MET, METPhi, g1)
                 genCalcObs["mt2"][0] = analysis_tools.MT2(MET, METPhi, g2)
                 genCalcObs["mtautau"][0] = analysis_tools.Mtautau(pt, g1, g2)
+                genCalcObs["nmtautau"][0] = analysis_tools.Mtautau(pt, g1, g2)
                 genCalcObs["deltaEtaLeadingJetDilepton"][0] = abs((g1 + g2).Eta() - var_LeadingJet.Eta())
                 genCalcObs["deltaPhiLeadingJetDilepton"][0] = abs((g1 + g2).DeltaPhi(var_LeadingJet))
                 genCalcObs["dilepHt"][0] = analysis_ntuples.htJet30Leps(jetsObs["Jets"], [g1,g2])

@@ -27,8 +27,8 @@ from ROOT import LumiSectMap
 
 ####### CMDLINE ARGUMENTS #########
 
-parser = argparse.ArgumentParser(description='Creates root files for limits and significance.')
-parser.add_argument('-o', '--output_file', nargs=1, help='Output Filename', required=False)
+parser = argparse.ArgumentParser(description='Calculate scale and normalisation factors.')
+#parser.add_argument('-o', '--output_file', nargs=1, help='Output Filename', required=False)
 #parser.add_argument('-s', '--single', dest='single', help='Single', action='store_true')
 #parser.add_argument('-c', '--cut', nargs=1, help='Cut', required=False)
 #parser.add_argument('-obs', '--obs', nargs=1, help='Obs', required=False)
@@ -36,112 +36,32 @@ args = parser.parse_args()
 
 output_file = None
 
-sam = False
-
 signal_dir = None
 bg_dir = None
 
-if sam:
-    signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_sam/sum"
-    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum"
-else:
-    signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim"
-    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum/type_sum"
-
-
 bg_slim_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum.root"
+data_slim_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/slim_sum/slim_sum.root"
 
-if args.output_file:
-    output_file = args.output_file[0]
-else:
-    output_file = "sig_bg_histograms_for_jet_iso_scan.root"
-
-jetiso = None
-
-bins = 40
-
-signals = [
-    "mu100_dm4p30",
-    "mu100_dm3p28",
-    "mu100_dm2p51",
-    "mu100_dm1p47",
-    "mu100_dm1p13"
-]
+luminosity = 35.712736198
+lumi_weight = luminosity * 1000.
 
 ######## END OF CMDLINE ARGUMENTS ########
 
 def main():
     print "Start: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S')
     
-    fnew = TFile(output_file,'recreate')
+    jetiso = "CorrJetIso10.5Dr0.55"
+    
     c1 = TCanvas("c1", "c1", 800, 800)
     c1.cd()
-    
-    i = 0
-    
-    print "Getting signals..."
-    
-    for signal_file in signals:
-        filename = signal_dir + "/higgsino_" + signal_file + "Chi20Chipm.root"
-        print "=====================================\n\n\n\n\n\n\n\n\n\n\n"
-        print "Opening", filename  
-        if sam:
-            deltaM = utils.getPointFromSamFileName(filename)
-        else:
-            print filename
-            deltaM = utils.getPointFromFileName(filename)  
-        
-        print "deltaM=" + deltaM
-        f = TFile(filename)
-        c = f.Get('tEvent')
-
-        for lep in ["Muons", "Electrons"]:
-            
-            if lep == "Electrons":
-                continue
-            
-            for iso in utils.leptonIsolationList:
-                for cat in utils.leptonIsolationCategories:
-                    ptRanges = [""]
-                    drCuts = [""]
-                    if iso == "CorrJetIso":
-                        ptRanges = utils.leptonCorrJetIsoPtRange
-                        drCuts = utils.leptonCorrJetIsoDrCuts
-                    for ptRange in ptRanges:
-                        for drCut in drCuts:
-                            cuts = ""
-                            if len(str(ptRange)) > 0:
-                                cuts = str(ptRange) + "Dr" + str(drCut)
-                            jetiso = iso + cuts + cat
-                            
-                            if jetiso != "CorrJetIso10.5Dr0.55":
-                                continue
-                            
-                            c1.cd()
-                            
-                            #1t category
-                            #hist = utils.getHistogramFromTree(deltaM + "_1t_" + lep + "_" + jetiso, c, "exTrack_dilepBDT" + jetiso, bins, -1, 1, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 *  Weight * BranchingRatio * (exclusiveTrack" + jetiso + " == 1 && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && exTrack_invMass" + jetiso + " < 12 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour" + jetiso + " == \"" + lep + "\")", True)
-                            
-                            # hist.Sumw2()
-#                             fnew.cd()
-#                             hist.Write()
-                            
-                            orth_cond = " && (leptons" + jetiso + "[1].Pt() <= 3.5 || deltaR" + jetiso + " <= 0.3)"
-                            orthOpt = [True, False] if lep == "Muons" else [False]
-                            isoCrs = [True, False] if iso == "CorrJetIso" else [False]
-                            for orth in orthOpt:
-                                for isoCr in isoCrs:
-                                    c1.cd()
-                                    hist = utils.getHistogramFromTree(deltaM + "_2l_" + ("orth_" if orth else "") + lep + "_" + jetiso + ("_isoCr" if isoCr else ""), c, "dilepBDT" + jetiso, bins, -1, 1, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (twoLeptons" + jetiso + " == 1 " + (orth_cond if orth else "") + " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " < 12  && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && sameSign" + jetiso + " == 0 " + (("&& isoCr" + jetiso + (" >= 1" if isoCr else " == 0")) if len(cuts) > 0 else "") + ")", True)
-                                    hist.Sumw2()
-                                    fnew.cd()
-                                    hist.Write()
-                                    
-                            
-        f.Close()
-    
+       
     bg_1t_hist = {}
+    
     bg_2l_hist = {}
+    data_2l_hist = {}
+    
+    mtautau_min = 0
+    mtautau_max = 160
     
     print "Getting BG..."
     bg_files = [bg_slim_file]
@@ -155,83 +75,243 @@ def main():
             
             if lep == "Electrons":
                 continue
-            
-            for iso in utils.leptonIsolationList:
-                for cat in utils.leptonIsolationCategories:
-                    ptRanges = [""]
-                    drCuts = [""]
-                    if iso == "CorrJetIso":
-                        ptRanges = utils.leptonCorrJetIsoPtRange
-                        drCuts = utils.leptonCorrJetIsoDrCuts
-                    for ptRange in ptRanges:
-                        for drCut in drCuts:
-                            cuts = ""
-                            if len(str(ptRange)) > 0:
-                                cuts = str(ptRange) + "Dr" + str(drCut)
-                            jetiso = iso + cuts + cat
-                            
-                            if jetiso != "CorrJetIso10.5Dr0.55":
-                                continue
 
-                            c1.cd()
-                            basename = os.path.basename(filename).split(".")[0]
-                            # prev
-                            #hist = utils.getHistogramFromTree(basename, c, "exTrack_dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * (exclusiveTrack == 1 && MHT >= 220 && MET >= 200 && exTrack_invMass < 30 && BTagsDeepMedium == 0  && exTrack_dilepBDT >= 0 && exclusiveTrackLeptonFlavour == \"" + lep + "\")", True)
-                            # Making new version without trackBDT precut
-                            # 1t category
-                            # hist = utils.getHistogramFromTree("bg_1t_" + lep + "_" + jetiso, c, "exTrack_dilepBDT" + jetiso, bins, -1, 1, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 *  Weight * BranchingRatio * (exclusiveTrack" + jetiso + " == 1 && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && exTrack_invMass" + jetiso + " < 12 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour" + jetiso + " == \"" + lep + "\")", True)
-#                             
-#                             hist.Sumw2()
-#                             if bg_1t_hist.get(lep) is None:
-#                                 bg_1t_hist[lep + "_" + jetiso] = hist
-#                             else:
-#                                 bg_1t_hist[lep + "_" + jetiso].Add(hist)
-#             
-                            orthOpt = [True, False] if lep == "Muons" else [False]
-                            orth_cond = " && (leptons" + jetiso + "[1].Pt() <= 3.5 || deltaR" + jetiso + " <= 0.3)"
-                            isoCrs = [True, False] if iso == "CorrJetIso" else [False]
-                            print "isoCrs", isoCrs
-                            for orth in orthOpt:
-                                for isoCr in isoCrs:
-                                    c1.cd()
-                                    
-                                    print("2l",lep,orth,jetiso,isoCr)
-                                    hist = utils.getHistogramFromTree("bg_2l_" + lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else ""), c, "dilepBDT" + jetiso, bins, -1, 1, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " < 12  && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && sameSign" + jetiso + " == 0 " + (("&& isoCr" + jetiso + (" >= 1" if isoCr else " == 0")) if len(cuts) > 0 else "") + ")", True)
-                                    hist.Sumw2()
-                                    if bg_2l_hist.get(lep + ("_orth" if orth else "")) is None:
-                                        bg_2l_hist[lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else "")] = hist
-                                    else:
-                                        bg_2l_hist[lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else "")].Add(hist)
+            c1.cd()
+
+            orthOpt = [True, False] if lep == "Muons" else [False]
+            orth_cond = " && (leptons" + jetiso + "[1].Pt() <= 3.5 || deltaR" + jetiso + " <= 0.3)"
+            
+            orthOpt = [False]
+            
+            for orth in orthOpt:
+                
+                isoCr = False
+                
+                c1.cd()
+                # Get M-tau-tau count
+                #(name, tree, obs, bins, minX, maxX, condition, overflow=True, tmpName="hsqrt"
+                condition = str(lumi_weight) + " * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * puWeight * (twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " < 12  && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && sameSign" + jetiso + " == 0 && isoCr" + jetiso + (" >= 1" if isoCr else " == 0") + " && mtautau" + jetiso + " > 60 && mtautau"  + jetiso + " < 120 && dilepBDT" + jetiso + " < 0)"
+                
+                 # Tau-Tau BG inside M-tau-tau Window
+                #condition = str(lumi_weight) + " * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * puWeight * (twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign" + jetiso + " == 0 && isoCr" + jetiso + (" >= 1" if isoCr else " == 0") + " && mtautau" + jetiso + " > 60 && mtautau"  + jetiso + " < 120 && dilepBDT" + jetiso + " < 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && tautau" + jetiso + " == 1)"
+                condition = str(lumi_weight) + " * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * puWeight * (twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign" + jetiso + " == 0 && isoCr" + jetiso + (" >= 1" if isoCr else " == 0") + " && nmtautau" + jetiso + " > " + str(mtautau_min) + " && nmtautau"  + jetiso + " < " + str(mtautau_max) + " && dilepBDT" + jetiso + " < 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && tautau" + jetiso + " == 1)"
+                print "condition=" + condition
+                hist = utils.getHistogramFromTree("bg_2l_" + lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else ""), c, "dilepBDT" + jetiso, 1, -1, 1, condition, False)
+                hist.Sumw2()
+                histName = "inside_mtautau_tautau_" + lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else "")
+                if bg_2l_hist.get(histName) is None:
+                    bg_2l_hist[histName] = hist
+                else:
+                    bg_2l_hist[histName].Add(hist)
+                
+                for isoCr in [True, False]:
+                    
+                    
+                    # Non-Tau-Tau BG inside M-tau-tau Window
+                    #condition = str(lumi_weight) + " * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * puWeight * (twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign" + jetiso + " == 0 && isoCr" + jetiso + (" >= 1" if isoCr else " == 0") + " && mtautau" + jetiso + " > 60 && mtautau"  + jetiso + " < 120 && dilepBDT" + jetiso + " < 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && tautau" + jetiso + " == 0)"
+                    condition = str(lumi_weight) + " * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * puWeight * (twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign" + jetiso + " == 0 && isoCr" + jetiso + (" >= 1" if isoCr else " == 0") + " && nmtautau" + jetiso + " > " + str(mtautau_min) + " && nmtautau"  + jetiso + " < " + str(mtautau_max) + " && dilepBDT" + jetiso + " < 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && tautau" + jetiso + " == 0)"
+                    print "condition=" + condition
+                    hist = utils.getHistogramFromTree("bg_2l_" + lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else ""), c, "dilepBDT" + jetiso, 1, -1, 1, condition, False)
+                    hist.Sumw2()
+                    histName = "inside_mtautau_nontautau_" + lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else "")
+                    if bg_2l_hist.get(histName) is None:
+                        bg_2l_hist[histName] = hist
+                    else:
+                        bg_2l_hist[histName].Add(hist)
+                
+                    # Non-Tau-Tau BG outside nM-tau-tau Window (two versions for iso-cr and non-isocr)
+                    condition = str(lumi_weight) + " * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * puWeight * (twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign" + jetiso + " == 0 && isoCr" + jetiso + (" >= 1" if isoCr else " == 0") + " && ( nmtautau" + jetiso + " < " + str(mtautau_min) + " || nmtautau"  + jetiso + " > " + str(mtautau_max) + " ) && dilepBDT" + jetiso + " < 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && tautau" + jetiso + " == 0)"
+                    
+                    
+                    #condition = str(lumi_weight) + " * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * puWeight * (twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " < 12  && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign" + jetiso + " == 0 && isoCr" + jetiso + (" >= 1" if isoCr else " == 0") + " && ( nmtautau" + jetiso + " < 0 || nmtautau"  + jetiso + " > 160 ) && dilepBDT" + jetiso + " < 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && tautau" + jetiso + " == 0)"
+                    
+                    #condition = str(lumi_weight) + " * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * puWeight * (twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign" + jetiso + " == 0 && isoCr" + jetiso + (" >= 1" if isoCr else " == 0") + " && dilepBDT" + jetiso + " < 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && tautau" + jetiso + " == 0)"
+                    histName = "outside_nmtautau_nontautau_" + lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else "")
+                    
+                    print "\n\n\n\n\n\n\nname=" + histName + " condition=" + condition
+                    hist = utils.getHistogramFromTree("bg_2l_" + lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else ""), c, "dilepBDT" + jetiso, 1, -1, 1, condition, False)
+                    hist.Sumw2()
+                    
+                    if bg_2l_hist.get(histName) is None:
+                        bg_2l_hist[histName] = hist
+                    else:
+                        bg_2l_hist[histName].Add(hist)
+                
+                
         f.Close()
+    print bg_2l_hist
+    
+    print "\n\n\n\n\n\n"
+    for bgHistName in bg_2l_hist:
+        bgHist = bg_2l_hist[bgHistName]
+        bgNum = bgHist.GetBinContent(1)
+        bgError = bgHist.GetBinError(1)
+        print bgHistName, "bgNum", bgNum, "bgError", bgError
     
     
-    fnew.cd()
-    for lep in ["Muons", "Electrons"]:
-        if lep == "Electrons":
+    print "\n\n\niso-cr MC scale factor - Non-Tau-Tau BG outside nM-tau-tau Window, BDT sideband"
+    numHist = bg_2l_hist["outside_nmtautau_nontautau_Muons_CorrJetIso10.5Dr0.55"].Clone()
+    denHist = bg_2l_hist["outside_nmtautau_nontautau_Muons_CorrJetIso10.5Dr0.55_isoCr"]
+    print "num", numHist.GetBinContent(1), "den", denHist.GetBinContent(1)
+    numHist.Divide(denHist)
+    print "nf", numHist.GetBinContent(1), "err", numHist.GetBinError(1), "rel-err", numHist.GetBinError(1)/numHist.GetBinContent(1)
+    
+    numHist = bg_2l_hist["inside_mtautau_tautau_Muons_CorrJetIso10.5Dr0.55"].Clone()
+    denHist = bg_2l_hist["inside_mtautau_nontautau_Muons_CorrJetIso10.5Dr0.55"].Clone()
+    
+    denHist.Add(numHist)
+    numHist.Divide(denHist)
+    
+    print "\n\n\ntau-tau MC purity inside nM-tau-tau Window, BDT sideband, [" + str(mtautau_min) + "," + str(mtautau_max) + "]"
+    print "tautau MC", bg_2l_hist["inside_mtautau_tautau_Muons_CorrJetIso10.5Dr0.55"].GetBinContent(1), "err", bg_2l_hist["inside_mtautau_tautau_Muons_CorrJetIso10.5Dr0.55"].GetBinError(1)
+    print "non-tautau MC", bg_2l_hist["inside_mtautau_nontautau_Muons_CorrJetIso10.5Dr0.55"].GetBinContent(1), "err", bg_2l_hist["inside_mtautau_nontautau_Muons_CorrJetIso10.5Dr0.55"].GetBinError(1)
+    print "tautau MC purity", numHist.GetBinContent(1), "err", numHist.GetBinError(1), "rel-err", numHist.GetBinError(1)/numHist.GetBinContent(1)
+    
+
+    print "\n\n\n\n\n\n\n\n\n\n\nGetting Data..."
+    data_files = [data_slim_file]
+    for filename in data_files:#glob(bg_dir + "/*"):
+        print "====================================="
+        print "Opening", filename
+        f = TFile(filename)
+        c = f.Get('tEvent')
+        
+        for lep in ["Muons", "Electrons"]:
+            
+            if lep == "Electrons":
                 continue
-        for iso in utils.leptonIsolationList:
-                for cat in utils.leptonIsolationCategories:
-                    ptRanges = [""]
-                    drCuts = [""]
-                    if iso == "CorrJetIso":
-                        ptRanges = utils.leptonCorrJetIsoPtRange
-                        drCuts = utils.leptonCorrJetIsoDrCuts
-                    for ptRange in ptRanges:
-                        for drCut in drCuts:
-                            cuts = ""
-                            if len(str(ptRange)) > 0:
-                                cuts = str(ptRange) + "Dr" + str(drCut)
-                            jetiso = iso + cuts + cat
-                            if jetiso != "CorrJetIso10.5Dr0.55":
-                                continue
-                            
-                            #bg_1t_hist[lep + "_" + jetiso].Write("bg_1t_" + lep + "_" + jetiso)
-                            orthOpt = [True, False] if lep == "Muons" else [False]
-                            isoCrs = [True, False] if iso == "CorrJetIso" else [False]
-                            for orth in orthOpt:
-                                for isoCr in isoCrs:
-                                    bg_2l_hist[lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else "")].Write("bg_2l_" + ("orth_" if orth else "") + lep + "_" + jetiso + ("_isoCr" if isoCr else ""))
-    fnew.Close()
+
+            c1.cd()
+
+            orthOpt = [True, False] if lep == "Muons" else [False]
+            orth_cond = " && (leptons" + jetiso + "[1].Pt() <= 3.5 || deltaR" + jetiso + " <= 0.3)"
+            #orthOpt = [False,True]
+            print "orthOpt", orthOpt
+            for orth in orthOpt:
+                
+                isoCr = False
+                
+                c1.cd()
+                # Get M-tau-tau count
+                #(name, tree, obs, bins, minX, maxX, condition, overflow=True, tmpName="hsqrt"
+                condition = "(twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " < 12  && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && sameSign" + jetiso + " == 0 && isoCr" + jetiso + (" >= 1" if isoCr else " == 0") + " && mtautau" + jetiso + " > 60 && mtautau"  + jetiso + " < 120 && dilepBDT" + jetiso + " < 0)"
+                
+                condition = "(twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign" + jetiso + " == 0 && isoCr" + jetiso + (" >= 1" if isoCr else " == 0") + " && mtautau" + jetiso + " > 60 && mtautau"  + jetiso + " < 120 && dilepBDT" + jetiso + " < 0)"
+                
+                condition = "(twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign" + jetiso + " == 0 && isoCr" + jetiso + (" >= 1" if isoCr else " == 0") + " && mtautau" + jetiso + " > 60 && mtautau"  + jetiso + " < 120 && dilepBDT" + jetiso + " < 0 && leptonFlavour" + jetiso + " == \"" + lep + "\")"
+                
+                condition = "(twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign" + jetiso + " == 0 && isoCr" + jetiso + (" >= 1" if isoCr else " == 0") + " && nmtautau" + jetiso + " > " + str(mtautau_min) + " && nmtautau"  + jetiso + " < " + str(mtautau_max) + " && dilepBDT" + jetiso + " < 0 && leptonFlavour" + jetiso + " == \"" + lep + "\")"
+                
+                #print "condition=" + condition
+                histName = "inside_mtautau_" + lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else "")
+                hist = utils.getHistogramFromTree("data_2l_" + lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else ""), c, "dilepBDT" + jetiso, 1, -1, 1, condition, False)
+                hist.Sumw2()
+                
+                print "-----orth", orth, "histName", histName
+                if data_2l_hist.get(histName) is None:
+                    data_2l_hist[histName] = hist
+                else:
+                    data_2l_hist[histName].Add(hist)
+                
+                isoCr = True
+                
+                histName = "inside_mtautau_nontautau_" + lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else "")
+                condition = "(twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign" + jetiso + " == 0 && isoCr" + jetiso + (" >= 1" if isoCr else " == 0") + " && mtautau" + jetiso + " > 60 && mtautau"  + jetiso + " < 120 && dilepBDT" + jetiso + " < 0 && leptonFlavour" + jetiso + " == \"" + lep + "\")"
+                condition = "(twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign" + jetiso + " == 0 && isoCr" + jetiso + (" >= 1" if isoCr else " == 0") + " && nmtautau" + jetiso + " > " + str(mtautau_min) + " && nmtautau"  + jetiso + " < " + str(mtautau_max) + "  && dilepBDT" + jetiso + " < 0 && leptonFlavour" + jetiso + " == \"" + lep + "\")"
+                hist = utils.getHistogramFromTree("inside_mtautau_nontautau_data_2l_" + lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else ""), c, "dilepBDT" + jetiso, 1, -1, 1, condition, False)
+                hist.Sumw2()
+                #hist.Scale(0.996039628983)
+                tmpHist = TH1F("nf", "nf", 1, 0, 1)
+                tmpHist.Sumw2()
+                tmpHist.SetBinContent(1, 0.876146793365)
+                tmpHist.SetBinError(1, 0.0868347577866)
+                hist.Multiply(tmpHist)
+                if data_2l_hist.get(histName) is None:
+                    data_2l_hist[histName] = hist
+                else:
+                    data_2l_hist[histName].Add(hist)
+                
+
+                # Get iso-cr count
+                for isoCr in [True, False]:
+                    #condition = "(twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " < 12  && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && sameSign" + jetiso + " == 0 && isoCr" + jetiso + (" >= 1" if isoCr else " == 0") + " && mtautau" + jetiso + " > 200 && dilepBDT" + jetiso + " < 0)"
+                    #condition = "(twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && sameSign" + jetiso + " == 0 && isoCr" + jetiso + (" >= 1" if isoCr else " == 0") + " && ( nmtautau" + jetiso + " < " + str(mtautau_min) + " || nmtautau"  + jetiso + " > " + str(mtautau_max) + " ) && dilepBDT" + jetiso + " < 0)"
+                    
+                    condition = "(twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " < 12  && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && sameSign" + jetiso + " == 0 && isoCr" + jetiso + (" >= 1" if isoCr else " == 0") + " && ( nmtautau" + jetiso + " < " + str(mtautau_min) + " || nmtautau"  + jetiso + " > " + str(mtautau_max) + " ) && dilepBDT" + jetiso + " < 0)"
+                    
+                    
+                    #print "condition=" + condition
+                    hist = utils.getHistogramFromTree("data_2l_" + lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else ""), c, "dilepBDT" + jetiso, 1, -1, 1, condition, False)
+                    hist.Sumw2()
+                    histName = "iso_cr_" + lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr == True else "")
+                    if data_2l_hist.get(histName) is None:
+                        data_2l_hist[histName] = hist
+                    else:
+                        data_2l_hist[histName].Add(hist)
+                
+        f.Close()
+    print "\n\n\n\n\n"
+    print data_2l_hist
+    print "\n\n\n\n\n"
+    for dataHistName in data_2l_hist:
+        dataHist = data_2l_hist[dataHistName]
+        dataNum = dataHist.GetBinContent(1)
+        dataError = dataHist.GetBinError(1)
+        print dataHistName, "dataNum", dataNum, "dataError", dataError
+    
+    print "=====================================\n\n\n\n\n\n\n\n\n\n\n"
+        
+    print "\n\n\niso-cr scale factor"
+    numHist = data_2l_hist["iso_cr_Muons_CorrJetIso10.5Dr0.55"]
+    denHist = data_2l_hist["iso_cr_Muons_CorrJetIso10.5Dr0.55_isoCr"]
+    print "num", numHist.GetBinContent(1), "den", denHist.GetBinContent(1)
+    numHist.Divide(denHist)
+    print "sf", numHist.GetBinContent(1), "err", numHist.GetBinError(1), "rel-err", numHist.GetBinError(1)/numHist.GetBinContent(1)
+ 
+ 
+    print "\n\n\niso-cr scale factor - ANALYSIS ORTH"
+    numHist = data_2l_hist["iso_cr_Muons_orth_CorrJetIso10.5Dr0.55"]
+    denHist = data_2l_hist["iso_cr_Muons_orth_CorrJetIso10.5Dr0.55_isoCr"]
+    print "num", numHist.GetBinContent(1), "den", denHist.GetBinContent(1)
+    numHist.Divide(denHist)
+    print "sf", numHist.GetBinContent(1), "err", numHist.GetBinError(1), "rel-err", numHist.GetBinError(1)/numHist.GetBinContent(1)
+    
+    
+#     print "\n\n\nmtautau normalisation factor - Orth"
+#     numHist = data_2l_hist["Muons_orth_CorrJetIso10.5Dr0.55"]
+#     denHist = bg_2l_hist["Muons_orth_CorrJetIso10.5Dr0.55"]
+#     print "num", numHist.GetBinContent(1), "den", denHist.GetBinContent(1)
+#     numHist.Divide(denHist)
+#     print "sf", numHist.GetBinContent(1), "err", numHist.GetBinError(1), "rel-err", numHist.GetBinError(1)/numHist.GetBinContent(1)
+    
+    # print "\n\n\nmtautau normalisation factor"
+#     numHist = data_2l_hist["Muons_CorrJetIso10.5Dr0.55"]
+#     denHist = bg_2l_hist["Muons_CorrJetIso10.5Dr0.55"]
+#     print "num", numHist.GetBinContent(1), "den", denHist.GetBinContent(1)
+#     numHist.Divide(denHist)
+#     print "sf", numHist.GetBinContent(1), "err", numHist.GetBinError(1), "rel-err", numHist.GetBinError(1)/numHist.GetBinContent(1)
+#    
+    
+    print "\n\n\nmtautau normalisation factor - non-tautau removed"
+    numHist = data_2l_hist["inside_mtautau_Muons_CorrJetIso10.5Dr0.55"]
+    print "num", numHist.GetBinContent(1), "err", numHist.GetBinError(1), "rel-err", numHist.GetBinError(1)/numHist.GetBinContent(1)
+    nonTautauHist = data_2l_hist["inside_mtautau_nontautau_Muons_CorrJetIso10.5Dr0.55_isoCr"]
+    print "nonTautauHist", nonTautauHist.GetBinContent(1), "err", nonTautauHist.GetBinError(1), "rel-err", nonTautauHist.GetBinError(1)/nonTautauHist.GetBinContent(1)
+
+    nonTautauHistMC = bg_2l_hist["inside_mtautau_nontautau_Muons_CorrJetIso10.5Dr0.55"]
+    print "nonTautauHistMC", nonTautauHistMC.GetBinContent(1), "err", nonTautauHistMC.GetBinError(1), "rel-err", nonTautauHistMC.GetBinError(1)/nonTautauHistMC.GetBinContent(1)
+    
+    
+    denHist = bg_2l_hist["inside_mtautau_tautau_Muons_CorrJetIso10.5Dr0.55"]
+    print "num", numHist.GetBinContent(1), "den", denHist.GetBinContent(1)
+    
+    print "After Subtraction"
+    numHist.Add(nonTautauHist, -1)
+    print "num", numHist.GetBinContent(1), "den", denHist.GetBinContent(1)
+    
+    numHist.Divide(denHist)
+    print "sf", numHist.GetBinContent(1), "err", numHist.GetBinError(1), "rel-err", numHist.GetBinError(1)/numHist.GetBinContent(1)
+   
     
     exit(0)
     
