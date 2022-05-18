@@ -66,7 +66,7 @@ for lep in ["Electrons", "Muons"]:
         for cat in utils.leptonIsolationCategories:
             ptRanges = [""]
             drCuts = [""]
-            if iso == "CorrJetIso":
+            if iso in ["CorrJetIso", "CorrJetNoMultIso"]:
                 ptRanges = utils.leptonCorrJetIsoPtRange
                 drCuts = utils.leptonCorrJetIsoDrCuts
             for ptRange in ptRanges:
@@ -90,7 +90,7 @@ for input_file in input_files:
             for cat in utils.leptonIsolationCategories:
                 ptRanges = [""]
                 drCuts = [""]
-                if iso == "CorrJetIso":
+                if iso in ["CorrJetIso", "CorrJetNoMultIso"]:
                     ptRanges = utils.leptonCorrJetIsoPtRange
                     drCuts = utils.leptonCorrJetIsoDrCuts
                 for ptRange in ptRanges:
@@ -116,7 +116,7 @@ for bg_file in bg_files:
         for cat in utils.leptonIsolationCategories:
             ptRanges = [""]
             drCuts = [""]
-            if iso == "CorrJetIso":
+            if iso in ["CorrJetIso", "CorrJetNoMultIso"]:
                 ptRanges = utils.leptonCorrJetIsoPtRange
                 drCuts = utils.leptonCorrJetIsoDrCuts
             for ptRange in ptRanges:
@@ -141,7 +141,7 @@ for lep in ["Electrons", "Muons"]:
         for cat in utils.leptonIsolationCategories:
             ptRanges = [""]
             drCuts = [""]
-            if iso == "CorrJetIso":
+            if iso in ["CorrJetIso", "CorrJetNoMultIso"]:
                 ptRanges = utils.leptonCorrJetIsoPtRange
                 drCuts = utils.leptonCorrJetIsoDrCuts
             

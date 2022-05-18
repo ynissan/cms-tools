@@ -24,6 +24,8 @@ bgFlatObs = {
 }
 
 filtersObs = {
+    "JetID" : "bool",
+    "NVtx" : "int",
     "globalSuperTightHalo2016Filter" : "int",
     "globalTightHalo2016Filter" : "int",
     "HBHENoiseFilter" : "int",    
@@ -100,7 +102,8 @@ jetsObs = {
     "Jets_multiplicity" : "int",
     "Jets_electronMultiplicity" : "int",
     "Jets_partonFlavor" : "int",
-    "Jets_qgLikelihood" : "double"
+    "Jets_qgLikelihood" : "double",
+    "Jets_neutralEmEnergyFraction" : "double"
 }
 
 jetsCalcObs = {

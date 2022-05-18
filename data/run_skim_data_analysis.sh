@@ -123,7 +123,7 @@ file_limit=0
 i=0
 count=0
 input_files=""
-files_per_job=1
+files_per_job=3
 
 #files_per_job=1
 

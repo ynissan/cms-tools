@@ -561,6 +561,45 @@ def getTwoLeptonsAfterSelection(Electrons, Electrons_passJetIso, Electrons_delta
     
     return leps, lepIdx, lepCharges, lepFlavour, same_sign, jetIsoCr, minDrJetIsoCr
 
+################## FILTERS ##################
+
+def mkmet(metPt, metPhi):
+    met = TLorentzVector()
+    met.SetPtEtaPhiE(metPt, 0, metPhi, metPt)
+    return met
+
+def passQCDHighMETFilter(t, MET, METPhi):
+    metvec = mkmet(MET, METPhi)
+    for ijet, jet in enumerate(t.Jets):
+        if not (jet.Pt() > 200): continue
+        if not (t.Jets_muonEnergyFraction[ijet]>0.5):continue 
+        if (abs(jet.DeltaPhi(metvec)) > (3.14159 - 0.4)): return False
+    return True
+
+
+def passQCDHighMETFilter2(t, MET, METPhi):
+    if len(t.Jets)>0:
+        metvec = TLorentzVector()
+        metvec.SetPtEtaPhiE(MET, 0, METPhi,0)
+        if abs(t.Jets[0].DeltaPhi(metvec))>(3.14159-0.4) and t.Jets_neutralEmEnergyFraction[0]<0.03:
+            return False
+    return True
+
+def passesUniversalSelection(t, MET, METPhi):
+    if not bool(t.JetID): return False
+    if not t.NVtx>0: return False
+    if not passQCDHighMETFilter(t, MET, METPhi): return False
+    if not passQCDHighMETFilter2(t, MET, METPhi): return False
+    if not t.HBHENoiseFilter: return False    
+    if not t.HBHEIsoNoiseFilter: return False
+    if not t.eeBadScFilter: return False      
+    if not t.BadChargedCandidateFilter: return False
+    if not t.BadPFMuonFilter: return False
+    if not t.CSCTightHaloFilter: return False
+    if not t.EcalDeadCellTriggerPrimitiveFilter: return False      ##I think this one makes a sizeable difference    
+    return True
+
+##############################################
 
 #[36,37,39,40]
 '''

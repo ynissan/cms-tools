@@ -51,8 +51,6 @@ if plot_par.normalise and plot_par.normalise_each_bg:
     print("Don't use both normalise and normalise_each_bg")
     exit(1)
 
-bg_retag = plot_par.bg_retag
-
 if args.output_file:
     output_file = args.output_file[0]
 else:
@@ -303,9 +301,10 @@ def createPlotsFast(rootfiles, types, histograms, weight, category, conditions, 
                             if no_weights:
                                 drawString = " ( " + conditionStr + " )"
                             else:
-                                drawString = plot_par.weightString[plot_par.plot_kind] + " * " + ((str(weight) + " * ") if (type != "data" and plot_par.use_calculated_lumi_weight)  else "") + " ( " + conditionStr + " )"
+                                print("category=",category)
+                                drawString = ((plot_par.weightString[plot_par.plot_kind] + " * ") if "data" not in category else "") + ((str(weight) + " * ") if ("data" not in category and plot_par.use_calculated_lumi_weight)  else "") + " ( " + conditionStr + " )"
             
-                            print(("drawString", drawString))
+                            #print(("drawString", drawString))
 
                             #print "conditionStr", conditionStr
             
@@ -502,7 +501,7 @@ def createSumTypes(sumTypes):
         if plot_par.choose_bg_categories and len(plot_par.choose_bg_categories_list) > 0:
             for type in plot_par.choose_bg_categories_list:
                 sumTypes[type] = {}
-        elif bg_retag:
+        elif plot_par.bg_retag:
             for type in plot_par.bgReTagging:
                 sumTypes[type] = {}
         else:
@@ -619,17 +618,19 @@ def createAllHistograms(histograms, sumTypes):
                     createPlotsFast(typeFiles, [plot_par.plot_custom_types[i]], histograms, weight, plot_par.plot_custom_types[i], [plot_par.custom_types_conditions[i]], plot_par)
 
         
-        if plot_par.plot_bg:
+        if plot_par.plot_bg or plot_par.plot_data_for_bg_estimation:
             
             allBgFiles = glob(plot_par.bg_dir + "/*.root")
-            
+            #dataFiles = None
+            #if plot_par.plot_data_for_bg_estimation:
+            #    dataFiles = glob(plot_par.data_dir + "/*")
             print(sumTypes)
             
-            if bg_retag:
+            if plot_par.bg_retag:
                 print("GOT BG RETAG")
                 bgFilesToPlot = []
                 if plot_par.choose_bg_files:
-                    print("yes")
+                    #print("yes")
                     #exit(0)
                     print("In plot_par.choose_bg_files")
                     for bgChooseType in plot_par.choose_bg_files_list:
@@ -641,18 +642,37 @@ def createAllHistograms(histograms, sumTypes):
                             print(("Not in compound", bgChooseType))
                             bgFilesToPlot.extend(glob(plot_par.bg_dir + "/*" + bgChooseType + "_*.root"))
                 else:
-                    print("no")
+                    #print("no")
                     #exit(0)
                     bgFilesToPlot = allBgFiles
-        
-                typesArr = [type for type in sumTypes]
-                condArr = [plot_par.bgReTagging[type] for type in typesArr]
-
+                
+                typesArr = None
+                
+                if plot_par.bgReTaggingUseSources:
+                    typesArr = [t for t in sumTypes if  plot_par.bgReTaggingSources[t] == "bg"]
+                    print("After bgReTaggingUseSources typesArr=", typesArr)
+                else:
+                    typesArr = [t for t in sumTypes]
+                    
+                condArr = [plot_par.bgReTagging[t] for t in typesArr]
+                
                 if plot_par.plot_fast:
                     createPlotsFast(bgFilesToPlot, typesArr, histograms, str(weight), "bg", condArr, plot_par)
                 else:
                     createPlots(bgFilesToPlot, typesArr, histograms, str(weight), "bg", condArr, plot_par)
+                
+                if plot_par.plot_data_for_bg_estimation and plot_par.bgReTaggingUseSources:
+                    dataFiles = glob(plot_par.data_dir + "/*")
+                    typesArr = [t for t in sumTypes if  plot_par.bgReTaggingSources[t] == "data"]
+                    condArr = [plot_par.bgReTagging[t] for t in typesArr]
                     
+                    if plot_par.plot_fast:
+                        #print("*****")
+                        #exit(0)
+                        createPlotsFast(dataFiles, typesArr, histograms, 1, "data-bg", condArr, plot_par)
+                    else:
+                        createPlots(dataFiles, typesArr, histograms, 1, "data-bg", condArr, plot_par)
+                
             else:
                 #print "*****"
                 #exit(0)
@@ -712,7 +732,7 @@ def subtracSameCharge(histograms):
                 print("Subtracting same charge")
                 #cut["name"] + "_" + hist_def["obs"] + "_" + type + ("" if len(object_retag_name) == 0 else ("_" + object_retag_name))
                 types = []
-                if bg_retag:
+                if plot_par.bg_retag:
                     types = [k for k in plot_par.bgReTagging]
                     types = sorted(types, key=lambda a: plot_par.bgReTaggingOrder[a])
                 else:
@@ -739,7 +759,7 @@ def normaliseBgTypes(histograms):
         if plot_par.plot_bg:
             if plot_par.normalise_each_bg:
                 types = []
-                if bg_retag:
+                if plot_par.bg_retag:
                     types = [k for k in plot_par.bgReTagging]
                     types = sorted(types, key=lambda a: plot_par.bgReTaggingOrder[a])
                 else:
@@ -789,6 +809,15 @@ def loadAllHistograms(histograms):
         histograms[name] = h
     nFile.Close()
 
+def applyFactors(plot_par, histograms):
+    for cut in plot_par.cuts:
+        for hist_def in plot_par.histograms_defs:
+            for bgType in plot_par.bgReTaggingNames:
+                histname = cut["name"] + "_" + hist_def["obs"] + "_" + bgType
+                if histograms.get(histname) is not None and plot_par.bgReTaggingFactors.get(bgType) is not None and len(plot_par.bgReTaggingFactors[bgType]) > 0:
+                    print("Rescaling", histname, "factor", plot_par.bgReTaggingFactors[bgType][0], "err", plot_par.bgReTaggingFactors[bgType][1])
+                    utils.scaleHistogram(histograms[histname], plot_par.bgReTaggingFactors[bgType][0], plot_par.bgReTaggingFactors[bgType][1])
+
 def blindHistograms(plot_par, histograms):
     if plot_par.plot_data and plot_par.blind_data:
         print("BLINDING DATA")
@@ -816,7 +845,7 @@ def blindHistograms(plot_par, histograms):
                     bg_hist = None
                     
                     types = []
-                    if bg_retag:
+                    if plot_par.bg_retag:
                         types = [k for k in plot_par.bgReTagging]
                         types = sorted(types, key=lambda a: plot_par.bgReTaggingOrder[a])
                     else:
@@ -927,9 +956,12 @@ def main():
     
     createSumTypes(sumTypes)
     
+    loaded_from_file = False
+    
     if plot_par.load_histrograms_from_file and os.path.isfile(plot_par.histrograms_file):
         print(("Loading histogram from file", plot_par.histrograms_file))
         loadAllHistograms(histograms)
+        loaded_from_file = True
     else:
         print("Creating histogram from scratch")
         createAllHistograms(histograms, sumTypes)
@@ -940,21 +972,25 @@ def main():
     print(sumTypes)
     print("---------------------\n\n\n\n")
     
-    if plot_par.save_histrograms_to_file and not os.path.isfile(plot_par.histrograms_file):
+    if plot_par.save_histrograms_to_file and not loaded_from_file:#os.path.isfile(plot_par.histrograms_file):
         saveHistogramsToFile(histograms)
     
     global subtracSameCharge
     global normaliseBgTypes
+    global applyFactors
     #global scaleHistograms
     
     if plot_par.subtract_same_charge:
         subtracSameCharge(histograms)
     
-    if plot_par.normalise_each_bg:
-        normaliseBgTypes(histograms)
-    
     if plot_par.plot_overflow:
         foldHistogramsOverflow(histograms)
+    
+    if len(plot_par.bgReTaggingFactors) > 0:
+        applyFactors(plot_par, histograms)
+    
+    if plot_par.normalise_each_bg:
+        normaliseBgTypes(histograms)
     
     blindHistograms(plot_par, histograms)
     #scaleHistograms(plot_par, histograms)
@@ -1082,7 +1118,7 @@ def main():
             if plot_par.choose_bg_categories and len(plot_par.choose_bg_categories_list) > 0:
                     for type in plot_par.choose_bg_categories_list:
                         types.append(type)
-            if bg_retag:
+            if plot_par.bg_retag:
                 if len(types) == 0:
                     types = [k for k in plot_par.bgReTagging]
                 types = sorted(types, key=lambda a: plot_par.bgReTaggingOrder[a])
@@ -1127,7 +1163,7 @@ def main():
             
             efficiencies = {}
             
-            if plot_par.plot_efficiency and bg_retag:
+            if plot_par.plot_efficiency and plot_par.bg_retag:
                 for efficiency in plot_par.efficiencies:
                     #print efficiency
                     numerator = 0
@@ -1304,19 +1340,20 @@ def main():
                 newBgHist = None
                 if plot_par.solid_bg:
                     newBgHist = hs.GetStack().Last().Clone("newBgHist")
+                    newBgHist.UseCurrentStyle() 
                     memory.append(newBgHist)
-                    plotutils.setHistColorFillLine(newBgHist, utils.colorPalette[6], 0.35, True)
-                    lineC = TColor.GetColor(utils.colorPalette[6]["fillColor"])
+                    #plotutils.setHistColorFillLine(newBgHist, utils.colorPalette[6], 0.35, True)
+                    #lineC = TColor.GetColor(utils.colorPalette[6]["fillColor"])
         
                     #newHist.SetMarkerColorAlpha(colorPalette[colorI]["markerColor"], 0.9)
         
-                    if plot_par.plot_point:
-                        newBgHist.SetMarkerColorAlpha(lineC, 1)
-                        newBgHist.SetMarkerStyle(colorPalette[colorI]["markerStyle"])
-                        newBgHist.SetLineColor(lineC)
-                    else:
-                        newBgHist.SetMarkerColorAlpha(lineC, 0.9)
-        
+                    # if plot_par.plot_point:
+#                         newBgHist.SetMarkerColorAlpha(lineC, 1)
+#                         newBgHist.SetMarkerStyle(colorPalette[colorI]["markerStyle"])
+#                         newBgHist.SetLineColor(lineC)
+#                     else:
+#                         newBgHist.SetMarkerColorAlpha(lineC, 0.9)
+#         
                     if legend is not None:
                         #print "Adding to legend " + hist.GetName().split("_")[-1]
                         if plot_par.plot_point:
@@ -1324,7 +1361,8 @@ def main():
                         else:
                             legend.AddEntry(newBgHist, "SM Background", 'F')
                 else:
-                    newBgHist = plotutils.styledStackFromStack(hs, memory, legend, "", typesInx, True, plot_par.plot_point, plot_par.bgReTaggingNames, plot_par.nostack)
+                    newBgHist = plotutils.styledStackFromStack(hs, memory, legend, "", typesInx, True, plot_par.plot_point, plot_par.bgReTaggingNames, plot_par.nostack, plot_par.colorPalette)
+
                     #Will hang otherwise!
                     SetOwnership(newBgHist, False)
                     #newBgHist.SetFillColorAlpha(fillC, 0.35)
@@ -1348,9 +1386,7 @@ def main():
                     newBgHist.SetMinimum(0.0001)
                 else:
                     newBgHist.SetMinimum(0)
-                print((utils.bcolors.BOLD + utils.bcolors.RED + "newBgHist.Draw(" + plotStr + errorStr + ")" + utils.bcolors.ENDC))
                 
-                newBgHist.Draw(plotStr + errorStr)
                 # h = newBgHist.GetStack().Last()
 #                 h.SetMarkerColorAlpha(kBlack, 1)
 #                 h.SetMarkerStyle(kOpenCross)
@@ -1361,14 +1397,19 @@ def main():
                 #if (foundBg and plot_par.solid_bg) or newBgHist.GetNhists() > 0:
                 #    utils.histoStyler(newBgHist)
                 
+                print((utils.bcolors.BOLD + utils.bcolors.RED + "newBgHist.Draw(" + plotStr + errorStr + ")" + utils.bcolors.ENDC))
+                newBgHist.Draw(plotStr + errorStr)
+                
                 if newBgHist is not None and (plot_par.solid_bg or newBgHist.GetNhists() > 0):
                     if not plot_par.plot_ratio:
                         newBgHist.GetXaxis().SetTitle(hist_def["units"] if hist_def.get("units") is not None else hist_def["obs"])
                     else:
+                        print("name", cut["name"] + "_" + hist_def["obs"], "newBgHist", newBgHist, "newBgHist.GetXaxis()", newBgHist.GetXaxis())
                         newBgHist.GetXaxis().SetLabelSize(0)
+
                     newBgHist.GetYaxis().SetTitle(plot_par.y_title)
                     newBgHist.GetYaxis().SetTitleOffset(plot_par.y_title_offset)
-                
+
                 #newBgHist.GetXaxis().SetLabelSize(0.055)
                 c1.Modified()
             else:
@@ -1460,7 +1501,7 @@ def main():
                     print((utils.bcolors.BOLD + utils.bcolors.RED + "pt.Draw()" + utils.bcolors.ENDC))
                     pt.Draw()
             
-            if plot_par.plot_efficiency and bg_retag:
+            if plot_par.plot_efficiency and plot_par.bg_retag:
                 pt = TPaveText(.50,.55,.85,.65, "NDC")
                 pt.SetFillColor(0)
                 pt.SetTextAlign(11)
@@ -1487,7 +1528,12 @@ def main():
                     print("*", ratioPads)
                     print(histCPad, histRPad)
                     histRPadCopy = histRPad
-                    dataHist.Draw("P e")
+                    
+                    plotStr = "P e"
+                    if hist_def.get("plotStr") is not None and len(hist_def["plotStr"]) > 0:
+                        plotStr = hist_def["plotStr"]
+                    
+                    dataHist.Draw(plotStr)
                     #print("*", ratioPads)
                     #print(histCPad, histRPad,histRPadCopy)
                     #exit(0)
@@ -2161,7 +2207,8 @@ def main():
                             memory.append(stackSum)
                         #stackSum = utils.getStackSum(newBgHist)
                         memory.append(stackSum)
-                        plotRatio(c1, histRPad, memory, dataHist, stackSum, hist_def, "Data / BG", True)
+                        #plotRatio(c1, pad, memory, numHist, denHist, hist_def, numLabel = "Data", denLabel = "BG",setXtitle = True, revRatio = False, styleRefHist = None):
+                        plotRatio(c1, histRPad, memory, dataHist, stackSum, hist_def)
             
             #print "***", ratioPads
             print(calculated_lumi)
@@ -2310,11 +2357,17 @@ def main():
             if plot_par.plot_data:
                 print("LINEAR")
                 if not plot_par.plot_bg:
-                    print((utils.bcolors.BOLD + utils.bcolors.BLUE + "dataHist.Draw(P e)" + utils.bcolors.ENDC))
-                    print("dataHist.Draw(P e)")
-                    dataHist.Draw("P e")
+                    plotStr = "P e"
+                    if hist_def.get("plotStr") is not None and len(hist_def["plotStr"]) > 0:
+                        plotStr = hist_def["plotStr"]
+                    
+                    print((utils.bcolors.BOLD + utils.bcolors.BLUE + "dataHist.Draw("+plotStr+")" + utils.bcolors.ENDC))
+                    #if hist_def.get("2D") and hist_def["2D"]:
+                    #    print((utils.bcolors.BOLD + utils.bcolors.BLUE + "pad.SetRightMargin(0.15)" + utils.bcolors.ENDC))
+                    #    pad.SetRightMargin(0.18)
+                    #dataHist.GetZaxis().SetTitleOffset(1.3)
+                    dataHist.Draw(plotStr)
                 else:
-                    print("dataHist.Draw(P e SAME)")
                     print((utils.bcolors.BOLD + utils.bcolors.BLUE + "dataHist.Draw(P e SAME)" + utils.bcolors.ENDC))
                     dataHist.Draw("P e SAME")
             if plot_par.plot_sc:
@@ -2434,7 +2487,7 @@ def main():
                             memory.append(stackSum)
                         #stackSum = utils.getStackSum(newBgHist)
                         memory.append(stackSum)
-                        plotRatio(c1, histRPad, memory, dataHist, stackSum, hist_def, "Data / BG", True)
+                        plotRatio(c1, histRPad, memory, dataHist, stackSum, hist_def)
             
             print(calculated_lumi)
             lumiStr = "{:.1f}".format(calculated_lumi)

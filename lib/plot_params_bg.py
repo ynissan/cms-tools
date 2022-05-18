@@ -1,6 +1,6 @@
 import sys
 import os
-import ROOT
+from ROOT import *
 
 sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
 
@@ -271,5 +271,79 @@ class track_muon_sc_comparison(BaseParams):
     plot_sc = True
     plot_ratio = True
     plot_signal = False
-    sc_color = ROOT.kOrange + 1
+    sc_color = kOrange + 1
     label_text = plotutils.StampStr.SIMWIP
+
+
+class dimuon_background_estimation_non_isolated_and_tautau(BaseParams):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dimuon_background_estimation_non_isolated_and_tautau.root"
+    save_histrograms_to_file = True
+    load_histrograms_from_file = False
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/"
+    data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/slim_sum/"
+    
+    plot_error = True
+    plot_data = False
+    plot_data_for_bg_estimation = True
+    
+    plot_signal = True
+    blind_data = False
+    bg_retag = True
+    
+    jetIsoStr = ""
+    
+    jetIso = "CorrJetIso10.5Dr0.55"
+    
+    cuts = [
+        {"name":"none", "title": "None", "condition" : "(MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 140 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0)"},
+        {"name":"orth", "title": "orth", "condition" : "(MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 140 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && (leptons%%%[1].Pt() <= 3.5 || deltaR%%% <= 0.3))"},
+    ]
+    injectJetIsoToCuts(cuts, jetIso)
+
+    histograms_defs = [     
+        { "obs" : "dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
+        { "obs" : "fine_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 40, "units" : "BDT", "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}}
+    ]
+    injectJetIsoToHistograms(histograms_defs, jetIso)
+    
+    weightString = {
+        #'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight * BranchingRatio",
+        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * BranchingRatio",
+    }
+    
+    calculatedLumi = {
+        'MET' : 35.712736198,
+    }
+    
+    bgReTagging = {
+        "tautau" : "tautau%%% && isoCr%%% == 0",
+        "non-iso" : "isoCr%%% >= 1"
+    }
+    
+    injectJetIsoToMapValues(bgReTagging, jetIso)
+    
+    bgReTaggingUseSources = True
+    
+    bgReTaggingOrder = {
+        "tautau" : 1,
+        "non-iso" : 2
+    }
+    bgReTaggingNames = {
+        "tautau" : "#tau#tau",
+        "non-iso" : "non-isolated"
+    }
+    bgReTaggingSources = {
+        "tautau" : "bg",
+        "non-iso" : "data"
+    }
+    
+    bgReTaggingFactors = {
+        "tautau" : [0.792, 0.631],
+        "non-iso" : [0.876, 0.0868]
+    }
+    
+    colorPalette = [
+        { "name" : "yellow", "fillColor" : TColor.GetColor("#ffd700"), "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 5,  "markerStyle" : kOpenCircle},
+        { "name" : "blue", "fillColor" : TColor.GetColor("#0057b7"), "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    ]
+    

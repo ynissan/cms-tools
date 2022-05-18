@@ -37,9 +37,12 @@ signalNames = [
 
 def injectJetIsoToCuts(cuts, jetIso):
     for cut in cuts:
-        cut["condition"] = cut["condition"].replace("%%%", jetIso)
-        cut["baseline"] = cut["baseline"].replace("%%%", jetIso)
-        cut["sc"] = cut["sc"].replace("%%%", jetIso)
+        if cut.get("condition") is not None:
+            cut["condition"] = cut["condition"].replace("%%%", jetIso)
+        if cut.get("baseline") is not None:
+            cut["baseline"] = cut["baseline"].replace("%%%", jetIso)
+        if cut.get("sc") is not None:
+            cut["sc"] = cut["sc"].replace("%%%", jetIso)
         
 def injectJetIsoToHistograms(hists, jetIso):
     for hist in hists:
@@ -57,6 +60,10 @@ def injectJetIsoToHistograms(hists, jetIso):
 def injectJetIsoToList(obsList, jetIso):
     for i in range(len(obsList)):
         obsList[i] = obsList[i].replace("%%%", jetIso)
+
+def injectJetIsoToMapValues(obsMap, jetIso):
+    for k in obsMap:
+        obsMap[k] = obsMap[k].replace("%%%", jetIso)
 
 # histogram params:
 # 
@@ -105,9 +112,17 @@ class BaseParams:
     bgReTagging = {}
     bgReTaggingOrder = {}
     bgReTaggingNames = utils.bgReTaggingNames
+    # turn on when some of the BG are coming from data
+    bgReTaggingUseSources = False
+    # sources should have keys taken from the retagging, and each value is a list with the sources which are either "bg" or "data"
+    bgReTaggingSources = {}
+    # for normalisation and transfer factors
+    bgReTaggingFactors = {}
     
     plot_kind = "MET"
     plot_bg = True
+    plot_data = False
+    plot_data_for_bg_estimation = False
     plot_signal = True
     plot_rand = False
     plot_fast = True
@@ -116,7 +131,6 @@ class BaseParams:
     plot_significance = False
     plot_error = False
     plot_sc = False
-    plot_data = False
     plot_ratio = False
     plot_reverse_ratio = False
     plot_point = False
@@ -204,4 +218,6 @@ class BaseParams:
     usedObs = []
     
     transfer_factor = -1
+    
+    colorPalette = plotutils.defaultColorPalette
     

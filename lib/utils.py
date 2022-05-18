@@ -150,12 +150,18 @@ leptonsCorrJetVecList = {
     "CorrJetIso" : "bool",
     "CorrJetD3Iso" : "bool",
     #"NonJetIso" : "bool",
+    
+    
+    "CorrJetNoMultIso" : "bool",
+    "CorrJetNoMultD3Iso" : "bool",
+    
     "JetIso" : "bool",
     "JetD3Iso" : "bool",
+    
     "NoIso" : "bool",
 }
 
-leptonCorrJetIsoPtRange = [0, 1, 5, 10, 10.5, 11, 11.5, 12, 12.5, 13, 15, 20]
+leptonCorrJetIsoPtRange = [0, 1, 5, 6, 7, 8, 9, 10, 10.5, 11, 11.5, 12, 12.5, 13, 15, 20]
 leptonCorrJetIsoDrCuts = [0.4,0.45,0.5,0.55,0.6]
 
 #leptonCorrJetIsoPtRange = [0, 10]
@@ -165,8 +171,8 @@ defaultJetIsoSetting = "CorrJetIso10Dr0.5"
 #leptonIsolationList = [ "JetIso", "CorrJetIso", "NonJetIso" ]
 #leptonIsolationList = [ "CorrJetIso", "NonJetIso", "NoIso" ]
 #leptonIsolationList = [ "CorrJetIso", "NoIso" ]
-leptonIsolationList = [ "NoIso", "CorrJetIso", "JetIso" ]
-leptonIsolationCrList = [ "CorrJetD3Iso", "JetD3Iso" ]
+leptonIsolationList = [ "NoIso", "CorrJetIso", "CorrJetNoMultIso", "JetIso" ]
+leptonIsolationCrList = [ "CorrJetD3Iso", "CorrJetNoMultD3Iso","JetD3Iso" ]
 leptonIsolationIncList = leptonIsolationList + leptonIsolationCrList
 # leptonIsolationCategories = {
 #     "" : { "lowPtTightMuons" : False, "muonPt" : 2},
@@ -537,7 +543,7 @@ def foldOverflowBins(hist):
     if over:
         hist.Fill(hist.GetXaxis().GetBinCenter(hist.GetXaxis().GetNbins()), over)
     under = hist.GetBinContent(0)
-    print("under", under)
+    #print("under", under)
     if under:
         hist.Fill(hist.GetXaxis().GetBinCenter(1), under)
 
@@ -857,5 +863,13 @@ def calcSignificanceLlhdSingleCount(sigHist, bgHist):
         
     return calcZ(lhdH1, lhdH0)
 
-
+def scaleHistogram(hist, factor, factorErr):
+    tmpHist = hist.Clone()
+    tmpHist.Sumw2()
+    binsNumber = tmpHist.GetNbinsX()
+    for binIdx in range(1, binsNumber + 1):
+        tmpHist.SetBinContent(binIdx, factor)
+        tmpHist.SetBinError(binIdx, factorErr)
+    hist.Multiply(tmpHist)
+    
 

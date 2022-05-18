@@ -666,3 +666,76 @@ class track_selection_bg(track_selection):
     plot_data = False
     plot_overflow = True
     object_retag = False
+
+class data_jets_multiplicity_muons(BaseParams):
+    save_histrograms_to_file = True
+    load_histrograms_from_file = False    
+    histrograms_file = "/afs/desy.de/user/n/nissanuv/CMSSW_11_3_1/src/cms-tools/analysis/scripts/data_jets_multiplicity_muons.root" 
+    
+    data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/sum"
+    plot_bg = False
+    plot_data = True
+    plot_signal = False
+    cuts = [
+        {"name":"none", "title": "None", "condition" : "(MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 140 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && isoCr%%% == 0 && sameSign%%% == 0 && dilepBDT%%% < 0)", "baseline" : "", "sc" : ""},
+        #{"name":"njets", "title": "NJets > 1", "condition" : "(MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 140 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && isoCr%%% == 0 && sameSign%%% == 0 && dilepBDT%%% < 0 && && NJets > 1)", "baseline" : "", "sc" : ""},
+        #{"name":"non-orth", "title": "Non Orth", "condition" : "(MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && dilepBDT%%% > 0.3 && isoCr%%% == 0)", "baseline" : "sameSign%%% == 0", "sc" : "sameSign%%% == 1"},
+        #{"name":"orth", "title": "Orth", "condition" : "(MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && dilepBDT%%% > 0.1 && (leptons%%%[1].Pt() <= 3.5 || deltaR%%% <= 0.3) && isoCr%%% == 0)", "baseline" : "sameSign%%% == 0", "sc" : "sameSign%%% == 1"},
+    ]
+    histograms_defs = [                                                                                                                                                                                                                                                                                                                                                                         #{"x1" : .35, "y1" : .60, "x2" : .89, "y2" : .89}
+        { "obs" : "Jets_multiplicity[Muons_closestJet]:Muons_minDeltaRJets", "units" : "Muons_minDeltaRJets", "minX" : 0, "maxX" : 0.5, "bins" : 20, "minY" : 0, "maxY" : 40, "binsY" : 20, "2D" : True, "plotStr" : "colz", "condition" : "Muons_mediumID == 1 && Muons_deltaRLJ > 0.4 && Muons_minDeltaRJets < 0.4 && Muons.Pt() > 2 && Muons.Pt() < 15", "legendCol" : 1, "legendCoor" : {"x1" : .7, "y1" : .70, "x2" : .89, "y2" : .89}},
+    ]
+    y_title = "Jets_multiplicity[Muons_closestJet]"
+    #jetIsoStr = "CorrJetIso10.5Dr0.55"
+    jetIsoStr = "NoIso"
+    injectJetIsoToCuts(cuts, jetIsoStr)
+    #histograms_defs = copy.deepcopy(dilepton_muons.histograms_defs)
+    injectJetIsoToHistograms(histograms_defs, jetIsoStr)
+    calculatedLumi = {
+        'MET' : 35.712736198,
+    }
+    
+
+class bg_jets_multiplicity_muons(data_jets_multiplicity_muons):
+    histrograms_file = "/afs/desy.de/user/n/nissanuv/CMSSW_11_3_1/src/cms-tools/analysis/scripts/bg_jets_multiplicity_muons.root" 
+    save_histrograms_to_file = True
+    load_histrograms_from_file = False 
+    plot_bg = True
+    plot_data = False
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum"
+    
+    weightString = {
+        #'MET' : "BranchingRatio * Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight",
+        'MET' : "BranchingRatio * Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016",
+        #'MET' : "BranchingRatio * Weight",
+    }
+    #nostack = True
+    solid_bg = True
+
+signals = [
+              #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim/higgsino_mu100_dm1p13Chi20Chipm.root",
+              #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim/higgsino_mu100_dm1p47Chi20Chipm.root",
+              #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim/higgsino_mu100_dm1p92Chi20Chipm.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm3p28Chi20Chipm.root",
+              #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim/higgsino_mu100_dm4p30Chi20Chipm.root"
+              ]
+
+signalNames = [
+    #"\Delta_{}M 1.13 Gev",
+    #"\Delta_{}M 1.47 Gev",
+    #"\Delta_{}M 1.9 Gev",
+    "\Delta_{}M 3.2 Gev",
+    #"\Delta_{}M 4.3 Gev",
+]
+
+class signal_jets_multiplicity_muons(bg_jets_multiplicity_muons):
+    histrograms_file = "/afs/desy.de/user/n/nissanuv/CMSSW_11_3_1/src/cms-tools/analysis/scripts/histograms_root_files/signal_jets_multiplicity_muons.root" 
+    save_histrograms_to_file = True
+    load_histrograms_from_file = False 
+    plot_bg = False
+    plot_data = False
+    plot_signal = True
+   
+    signal_dir = signals
+    signal_names = signalNames
+   

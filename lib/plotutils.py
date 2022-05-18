@@ -37,7 +37,7 @@ class Plotting():
         CMS_lumi.CMS_lumi(canvas, iPeriod, iPos)
 
 
-colorPalette = [
+defaultColorPalette = [
     { "name" : "yellow", "fillColor" : kYellow-4, "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 5,  "markerStyle" : kOpenCircle},
     { "name" : "red", "fillColor" : kRed-4, "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
     { "name" : "azure", "fillColor" : kAzure-4, "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 4,  "markerStyle" : kOpenTriangleUp },
@@ -99,11 +99,11 @@ def setHistColorFillLine(hist, cP, alpha=0.35,noFillStyle=False, lineWidth = 1):
     hist.SetLineWidth(lineWidth)
     hist.SetOption("HIST")
 
-def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, noFillStyle=False, plotPoint = False, legendNames = {}, noStack=False):
+def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, noFillStyle=False, plotPoint = False, legendNames = {}, noStack=False, colorPalette=defaultColorPalette):
     newStack = THStack(bgHist.GetName(), title)
     newStack.UseCurrentStyle()
     memory.append(newStack)
-
+    
     if bgHist is None or bgHist.GetNhists() == 0:
         return newStack
     #print "Num of hists: " + str(bgHist.GetNhists())
@@ -133,8 +133,9 @@ def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, n
             newHist.SetLineColor(lineC)
         else:
             newHist.SetMarkerColorAlpha(lineC, 0.9)
-        
+
         newStack.Add(newHist)
+
         if legend is not None:
             legendName = hist.GetName().split("_")[-1]
             print("Adding to legend " + legendName, legendNames)

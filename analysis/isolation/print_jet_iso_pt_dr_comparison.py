@@ -27,6 +27,8 @@ signals = [
     #"mu100_dm1p13"
 ]
 
+wanted_lepton = "Electrons"
+
 def main():
     print "Start: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S')
     
@@ -45,7 +47,7 @@ def main():
     
     for lep in ["Muons", "Electrons"]:
         
-        if lep == "Electrons":
+        if lep != wanted_lepton:
             continue
         
         if significance.get(lep) is None:
@@ -165,7 +167,7 @@ def main():
     print "Significance"
     print "pt/dr," + ",".join([str(dr) for dr in utils.leptonCorrJetIsoDrCuts])
     for lep in ["Muons", "Electrons"]:
-        if lep == "Electrons":
+        if lep != wanted_lepton:
             continue
         for iso in utils.leptonIsolationList:
             if iso != "CorrJetIso":
@@ -189,7 +191,7 @@ def main():
     print "Signal Efficiency"
     print "pt/dr," + ",".join([str(dr) for dr in utils.leptonCorrJetIsoDrCuts])
     for lep in ["Muons", "Electrons"]:
-        if lep == "Electrons":
+        if lep != wanted_lepton:
             continue
         for iso in utils.leptonIsolationList:
             if iso != "CorrJetIso":
@@ -214,7 +216,7 @@ def main():
     print "Background Efficiency"
     print "pt/dr," + ",".join([str(dr) for dr in utils.leptonCorrJetIsoDrCuts])
     for lep in ["Muons", "Electrons"]:
-        if lep == "Electrons":
+        if lep != wanted_lepton:
             continue
         for iso in utils.leptonIsolationList:
             if iso != "CorrJetIso":
@@ -240,7 +242,7 @@ def main():
     print "Background CR Ratio"
     print "pt/dr," + ",".join([str(dr) for dr in utils.leptonCorrJetIsoDrCuts])
     for lep in ["Muons", "Electrons"]:
-        if lep == "Electrons":
+        if lep != wanted_lepton:
             continue
         for iso in utils.leptonIsolationList:
             if iso != "CorrJetIso":
@@ -265,7 +267,7 @@ def main():
     print "Signal Contamination"
     print "pt/dr," + ",".join([str(dr) for dr in utils.leptonCorrJetIsoDrCuts])
     for lep in ["Muons", "Electrons"]:
-        if lep == "Electrons":
+        if lep != wanted_lepton:
             continue
         for iso in utils.leptonIsolationList:
             if iso != "CorrJetIso":
@@ -290,7 +292,7 @@ def main():
     print "Signal CR to SR ratio"
     print "pt/dr," + ",".join([str(dr) for dr in utils.leptonCorrJetIsoDrCuts])
     for lep in ["Muons", "Electrons"]:
-        if lep == "Electrons":
+        if lep != wanted_lepton:
             continue
         for iso in utils.leptonIsolationList:
             if iso != "CorrJetIso":
@@ -316,7 +318,7 @@ def main():
     print "Transfer Factor"
     print "pt/dr," + ",".join([str(dr) for dr in utils.leptonCorrJetIsoDrCuts])
     for lep in ["Muons", "Electrons"]:
-        if lep == "Electrons":
+        if lep != wanted_lepton:
             continue
         for iso in utils.leptonIsolationList:
             if iso != "CorrJetIso":
@@ -342,7 +344,7 @@ def main():
     print "Transfer Factor Error"
     print "pt/dr," + ",".join([str(dr) for dr in utils.leptonCorrJetIsoDrCuts])
     for lep in ["Muons", "Electrons"]:
-        if lep == "Electrons":
+        if lep != wanted_lepton:
             continue
         for iso in utils.leptonIsolationList:
             if iso != "CorrJetIso":

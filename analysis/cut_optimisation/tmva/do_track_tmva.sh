@@ -16,7 +16,7 @@ executable = /bin/bash
 notification = Never
 priority = 0
 +RequestRuntime = 86400
-request_memory = 8 GB
+request_memory = 16 GB
 EOM
 
 if [ ! -d "$LEPTON_TRACK_SPLIT_DIR/cut_optimisation" ]; then

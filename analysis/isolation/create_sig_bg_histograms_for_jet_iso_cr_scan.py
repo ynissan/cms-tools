@@ -97,8 +97,8 @@ def main():
 
         for lep in ["Muons", "Electrons"]:
             
-            if lep == "Electrons":
-                continue
+            #if lep == "Electrons":
+            #    continue
             
             for iso in utils.leptonIsolationList:
                 for cat in utils.leptonIsolationCategories:
@@ -114,8 +114,8 @@ def main():
                                 cuts = str(ptRange) + "Dr" + str(drCut)
                             jetiso = iso + cuts + cat
                             
-                            if jetiso != "CorrJetIso10.5Dr0.55":
-                                continue
+                            #if jetiso != "CorrJetIso10.5Dr0.55":
+                            #    continue
                             
                             c1.cd()
                             
@@ -132,7 +132,8 @@ def main():
                             for orth in orthOpt:
                                 for isoCr in isoCrs:
                                     c1.cd()
-                                    hist = utils.getHistogramFromTree(deltaM + "_2l_" + ("orth_" if orth else "") + lep + "_" + jetiso + ("_isoCr" if isoCr else ""), c, "dilepBDT" + jetiso, bins, -1, 1, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (twoLeptons" + jetiso + " == 1 " + (orth_cond if orth else "") + " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " < 12  && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && sameSign" + jetiso + " == 0 " + (("&& isoCr" + jetiso + (" >= 1" if isoCr else " == 0")) if len(cuts) > 0 else "") + ")", True)
+                                    cond = str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (twoLeptons" + jetiso + " == 1 " + (orth_cond if orth else "") + " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " < 12  && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && sameSign" + jetiso + " == 0 " + (("&& isoCr" + jetiso + (" >= 1" if isoCr else " == 0")) if len(cuts) > 0 else "") + ")"
+                                    hist = utils.getHistogramFromTree(deltaM + "_2l_" + ("orth_" if orth else "") + lep + "_" + jetiso + ("_isoCr" if isoCr else ""), c, "dilepBDT" + jetiso, bins, -1, 1, cond, True)
                                     hist.Sumw2()
                                     fnew.cd()
                                     hist.Write()
@@ -153,8 +154,8 @@ def main():
         
         for lep in ["Muons", "Electrons"]:
             
-            if lep == "Electrons":
-                continue
+            #if lep == "Electrons":
+            #    continue
             
             for iso in utils.leptonIsolationList:
                 for cat in utils.leptonIsolationCategories:
@@ -170,8 +171,8 @@ def main():
                                 cuts = str(ptRange) + "Dr" + str(drCut)
                             jetiso = iso + cuts + cat
                             
-                            if jetiso != "CorrJetIso10.5Dr0.55":
-                                continue
+                            #if jetiso != "CorrJetIso10.5Dr0.55":
+                            #    continue
 
                             c1.cd()
                             basename = os.path.basename(filename).split(".")[0]
@@ -207,8 +208,8 @@ def main():
     
     fnew.cd()
     for lep in ["Muons", "Electrons"]:
-        if lep == "Electrons":
-                continue
+        #if lep == "Electrons":
+        #        continue
         for iso in utils.leptonIsolationList:
                 for cat in utils.leptonIsolationCategories:
                     ptRanges = [""]
@@ -222,8 +223,8 @@ def main():
                             if len(str(ptRange)) > 0:
                                 cuts = str(ptRange) + "Dr" + str(drCut)
                             jetiso = iso + cuts + cat
-                            if jetiso != "CorrJetIso10.5Dr0.55":
-                                continue
+                            #if jetiso != "CorrJetIso10.5Dr0.55":
+                            #    continue
                             
                             #bg_1t_hist[lep + "_" + jetiso].Write("bg_1t_" + lep + "_" + jetiso)
                             orthOpt = [True, False] if lep == "Muons" else [False]

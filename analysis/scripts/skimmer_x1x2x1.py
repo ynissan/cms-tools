@@ -89,6 +89,8 @@ commonBranches = {
         "passedSingleMuPack" :  "bool",
         
         "passed2016BFilter" : "bool",
+        
+        "passesUniversalSelection" : "bool",
 }
 
 def main():
@@ -127,6 +129,9 @@ def main():
             print("MUONS")
         else:
             print("ELECTRONS")
+
+    if not signal:
+        analysis_observables.commonFlatObs.update(analysis_observables.filtersObs)
 
     input_file = None
     if args.input_file:
@@ -272,7 +277,7 @@ def main():
         for CorrJetObs in utils.leptonIsolationIncList:
             ptRanges = [""]
             drCuts = [""]
-            if CorrJetObs in ["CorrJetIso", "CorrJetD3Iso"]:
+            if CorrJetObs in ["CorrJetIso", "CorrJetD3Iso", "CorrJetNoMultIso", "CorrJetNoMultD3Iso"]:
                 ptRanges = utils.leptonCorrJetIsoPtRange
                 drCuts = utils.leptonCorrJetIsoDrCuts
             for ptRange in ptRanges:
@@ -292,7 +297,7 @@ def main():
         for cat in utils.leptonIsolationCategories:
             ptRanges = [""]
             drCuts = [""]
-            if iso == "CorrJetIso":
+            if iso in ["CorrJetIso", "CorrJetNoMultIso"]:
                 ptRanges = utils.leptonCorrJetIsoPtRange
                 drCuts = utils.leptonCorrJetIsoDrCuts
             for ptRange in ptRanges:
@@ -367,7 +372,7 @@ def main():
         for CorrJetObs in utils.leptonIsolationIncList:
             ptRanges = [""]
             drCuts = [""]
-            if CorrJetObs in ["CorrJetIso", "CorrJetD3Iso"]:
+            if CorrJetObs in ["CorrJetIso", "CorrJetD3Iso", "CorrJetNoMultIso", "CorrJetNoMultD3Iso"]:
                 ptRanges = utils.leptonCorrJetIsoPtRange
                 drCuts = utils.leptonCorrJetIsoDrCuts
             for ptRange in ptRanges:
@@ -422,7 +427,7 @@ def main():
         for cat in utils.leptonIsolationCategories:
             ptRanges = [""]
             drCuts = [""]
-            if iso == "CorrJetIso":
+            if iso in ["CorrJetIso", "CorrJetNoMultIso"]:
                 ptRanges = utils.leptonCorrJetIsoPtRange
                 drCuts = utils.leptonCorrJetIsoDrCuts
             for ptRange in ptRanges:
@@ -933,7 +938,7 @@ def main():
             for CorrJetObs in utils.leptonIsolationIncList:
                 ptRanges = [""]
                 drCuts = [""]
-                if CorrJetObs in ["CorrJetIso", "CorrJetD3Iso"]:
+                if CorrJetObs in ["CorrJetIso", "CorrJetD3Iso", "CorrJetNoMultIso", "CorrJetNoMultD3Iso"]:
                     ptRanges = utils.leptonCorrJetIsoPtRange
                     drCuts = utils.leptonCorrJetIsoDrCuts
                 for ptRange in ptRanges:
@@ -949,7 +954,7 @@ def main():
         isoJetsIdx = {"electron" : {"obs" : "Electrons"}, "muon" : {"obs" : "Muons"}, "track" : {"obs" : "tracks"}}
         for lepIso in utils.leptonIsolationList:
             for lep in isoJets:
-                if lepIso == "CorrJetIso":
+                if lepIso in ["CorrJetIso", "CorrJetNoMultIso"]:
                     continue
                 elif lepIso == "JetIso":
                     #isoJets[lep][lepIso] =  [var_Jets[j] for j in range(len(var_Jets)) if var_Jets[j].Pt() > 25 and (var_Jets_multiplicity[j] >=10 or eval("var_Jets_" + lep + "EnergyFraction")[j] <= (0.3 if lep == "electron" else 0.1))]
@@ -1020,12 +1025,16 @@ def main():
         
         for lepIso in utils.leptonIsolationList:
             for lep in isoJets:
-                if lepIso != "CorrJetIso":
+                if lepIso not in ["CorrJetIso", "CorrJetNoMultIso"]:
                     continue
                 for ptRange in utils.leptonCorrJetIsoPtRange:
-                    isoJets[lep][str(ptRange)] = [jetsCalcObs["Jets_" + lep + "Corrected"][j] for j in range(len(jetsCalcObs["Jets_" + lep + "Corrected"])) if jetsObs["Jets_multiplicity"][j] >=10 or (jetsCalcObs["Jets_" + lep + "Corrected"][j].E() > 0 and jetsCalcObs["Jets_" + lep + "Corrected"][j].Pt() > ptRange)]
-                    isoJetsIdx[lep][str(ptRange)] = [j for j in range(len(jetsCalcObs["Jets_" + lep + "Corrected"])) if jetsObs["Jets_multiplicity"][j] >=10 or (jetsCalcObs["Jets_" + lep + "Corrected"][j].E() > 0 and jetsCalcObs["Jets_" + lep + "Corrected"][j].Pt() > ptRange)]
-          
+                    if lepIso == "CorrJetIso":
+                        isoJets[lep][lepIso+str(ptRange)] = [jetsCalcObs["Jets_" + lep + "Corrected"][j] for j in range(len(jetsCalcObs["Jets_" + lep + "Corrected"])) if jetsObs["Jets_multiplicity"][j] >=10 or (jetsCalcObs["Jets_" + lep + "Corrected"][j].E() > 0 and jetsCalcObs["Jets_" + lep + "Corrected"][j].Pt() > ptRange)]
+                        isoJetsIdx[lep][lepIso+str(ptRange)] = [j for j in range(len(jetsCalcObs["Jets_" + lep + "Corrected"])) if jetsObs["Jets_multiplicity"][j] >=10 or (jetsCalcObs["Jets_" + lep + "Corrected"][j].E() > 0 and jetsCalcObs["Jets_" + lep + "Corrected"][j].Pt() > ptRange)]
+                    elif lepIso == "CorrJetNoMultIso":
+                        isoJets[lep][lepIso+str(ptRange)] = [jetsCalcObs["Jets_" + lep + "Corrected"][j] for j in range(len(jetsCalcObs["Jets_" + lep + "Corrected"])) if (jetsCalcObs["Jets_" + lep + "Corrected"][j].E() > 0 and jetsCalcObs["Jets_" + lep + "Corrected"][j].Pt() > ptRange)]
+                        isoJetsIdx[lep][lepIso+str(ptRange)] = [j for j in range(len(jetsCalcObs["Jets_" + lep + "Corrected"])) if (jetsCalcObs["Jets_" + lep + "Corrected"][j].E() > 0 and jetsCalcObs["Jets_" + lep + "Corrected"][j].Pt() > ptRange)]
+                        
         for lep in isoJets:
              
             leptonsVecName = isoJets[lep]["obs"]
@@ -1039,34 +1048,40 @@ def main():
                     for ptRange in utils.leptonCorrJetIsoPtRange:
                         for drCut in utils.leptonCorrJetIsoDrCuts:
                             cuts = str(ptRange) + "Dr" + str(drCut)
+                            print("***We don't have any JET?")
                             leptonsCorrJetVars[isoJets[lep]["obs"] + "_passCorrJetIso" + cuts].push_back(True)
+                            leptonsCorrJetVars[isoJets[lep]["obs"] + "_passCorrJetNoMultIso" + cuts].push_back(True)
+                            leptonsCorrJetVars[isoJets[lep]["obs"] + "_passCorrJetD3Iso" + cuts].push_back(False)
+                            leptonsCorrJetVars[isoJets[lep]["obs"] + "_passCorrJetNoMultD3Iso" + cuts].push_back(False)
                 else:
                     eval(leptonsVecName.lower() + "CalcObs")[leptonsVecName  +  "_correctedMinDeltaRJets"].push_back(min)
                     eval(leptonsVecName.lower() + "CalcObs")[leptonsVecName  +  "_correctedClosestJet"].push_back(minCan)
                     
-                    for ptRange in utils.leptonCorrJetIsoPtRange:
+                    for lepIso in ["CorrJetIso", "CorrJetNoMultIso"]:
+                        d3Iso = "CorrJetD3Iso" if lepIso == "CorrJetIso" else "CorrJetNoMultD3Iso"
+                        for ptRange in utils.leptonCorrJetIsoPtRange:
                         
-                        min, minCan = analysis_ntuples.minDeltaLepLeps(leptonsVec[i], isoJets[lep][str(ptRange)])
+                            min, minCan = analysis_ntuples.minDeltaLepLeps(leptonsVec[i], isoJets[lep][lepIso+str(ptRange)])
                         
-                        for drCut in utils.leptonCorrJetIsoDrCuts:
+                            for drCut in utils.leptonCorrJetIsoDrCuts:
                             
-                            cuts = str(ptRange) + "Dr" + str(drCut)
+                                cuts = str(ptRange) + "Dr" + str(drCut)
                             
-                            if min is None or min > drCut:
-                                leptonsCorrJetVars[isoJets[lep]["obs"] + "_passCorrJetIso" + cuts].push_back(True)
-                            else:
-                                leptonsCorrJetVars[isoJets[lep]["obs"] + "_passCorrJetIso" + cuts].push_back(False)
-                            ### REVIEW CR
-                            if min is not None and min < drCut and jetsObs["Jets"][isoJetsIdx[lep][str(ptRange)][minCan]].Pt() < 30: #and min >= 0.2
-                                leptonsCorrJetVars[isoJets[lep]["obs"] + "_passCorrJetD3Iso" + cuts].push_back(True)
-                                leptonsCorrJetVars[isoJets[lep]["obs"] + "_minDrCorrJetD3Iso" + cuts].push_back(min)
-                            else:
-                                leptonsCorrJetVars[isoJets[lep]["obs"] + "_passCorrJetD3Iso" + cuts].push_back(False)
-                                leptonsCorrJetVars[isoJets[lep]["obs"] + "_minDrCorrJetD3Iso" + cuts].push_back(-1)
+                                if min is None or min > drCut:
+                                    leptonsCorrJetVars[isoJets[lep]["obs"] + "_pass" + lepIso + cuts].push_back(True)
+                                else:
+                                    leptonsCorrJetVars[isoJets[lep]["obs"] + "_pass" + lepIso + cuts].push_back(False)
+                                ### REVIEW CR
+                                if min is not None and min < drCut and jetsObs["Jets"][isoJetsIdx[lep][lepIso+str(ptRange)][minCan]].Pt() < 30: #and min >= 0.2
+                                    leptonsCorrJetVars[isoJets[lep]["obs"] + "_pass"+ d3Iso + cuts].push_back(True)
+                                    leptonsCorrJetVars[isoJets[lep]["obs"] + "_minDr" + d3Iso + cuts].push_back(min)
+                                else:
+                                    leptonsCorrJetVars[isoJets[lep]["obs"] + "_pass"+ d3Iso + cuts].push_back(False)
+                                    leptonsCorrJetVars[isoJets[lep]["obs"] + "_minDr"+ d3Iso + cuts].push_back(-1)
         
         for lep in ["Muons", "Electrons", "tracks"]:
             for CorrJetObs in utils.leptonIsolationIncList:
-                if CorrJetObs in ["CorrJetIso", "CorrJetD3Iso"]:
+                if CorrJetObs in ["CorrJetIso", "CorrJetD3Iso", "CorrJetNoMultIso", "CorrJetNoMultD3Iso"]:
                     for ptRange in utils.leptonCorrJetIsoPtRange:
                         for drCut in utils.leptonCorrJetIsoDrCuts:
                             cuts = str(ptRange) + "Dr" + str(drCut)
@@ -1095,7 +1110,7 @@ def main():
                 for cat in utils.leptonIsolationCategories:
                     ptRanges = [""]
                     drCuts = [""]
-                    if iso == "CorrJetIso":
+                    if iso in ["CorrJetIso", "CorrJetNoMultIso"]:
                         ptRanges = utils.leptonCorrJetIsoPtRange
                         drCuts = utils.leptonCorrJetIsoDrCuts
                     for ptRange in ptRanges:
@@ -1120,7 +1135,7 @@ def main():
             for cat in utils.leptonIsolationCategories:
                 ptRanges = [""]
                 drCuts = [""]
-                if iso == "CorrJetIso":
+                if iso in ["CorrJetIso", "CorrJetNoMultIso"]:
                     ptRanges = utils.leptonCorrJetIsoPtRange
                     drCuts = utils.leptonCorrJetIsoDrCuts
                 for ptRange in ptRanges:
@@ -1162,6 +1177,8 @@ def main():
                             #print(leptonsCorrJetVars)
                             if iso == "CorrJetIso":
                                 leptons, leptonsIdx, leptonsCharge, leptonFlavour, same_sign, isoCr, isoCrMinDr = analysis_ntuples.getTwoLeptonsAfterSelection(electronsObs["Electrons"], leptonsCorrJetVars["Electrons_pass" + iso + cuts], electronsCalcObs["Electrons_deltaRLJ"], electronsObs["Electrons_charge"], muonsObs["Muons"], leptonsCorrJetVars["Muons_pass" + iso + cuts], muonsObs["Muons_mediumID"], muonsCalcObs["Muons_deltaRLJ"], muonsObs["Muons_charge"], utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], muonsObs["Muons_tightID"], True, leptonsCorrJetVars["Electrons_passCorrJetD3Iso" + cuts], leptonsCorrJetVars["Muons_passCorrJetD3Iso" + cuts], leptonsCorrJetVars["Electrons_minDrCorrJetD3Iso" + cuts], leptonsCorrJetVars["Muons_minDrCorrJetD3Iso" + cuts])
+                            elif iso == "CorrJetNoMultIso":
+                                leptons, leptonsIdx, leptonsCharge, leptonFlavour, same_sign, isoCr, isoCrMinDr = analysis_ntuples.getTwoLeptonsAfterSelection(electronsObs["Electrons"], leptonsCorrJetVars["Electrons_pass" + iso + cuts], electronsCalcObs["Electrons_deltaRLJ"], electronsObs["Electrons_charge"], muonsObs["Muons"], leptonsCorrJetVars["Muons_pass" + iso + cuts], muonsObs["Muons_mediumID"], muonsCalcObs["Muons_deltaRLJ"], muonsObs["Muons_charge"], utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], muonsObs["Muons_tightID"], True, leptonsCorrJetVars["Electrons_passCorrJetNoMultD3Iso" + cuts], leptonsCorrJetVars["Muons_passCorrJetNoMultD3Iso" + cuts], leptonsCorrJetVars["Electrons_minDrCorrJetNoMultD3Iso" + cuts], leptonsCorrJetVars["Muons_minDrCorrJetNoMultD3Iso" + cuts])
                             elif iso == "JetIso":
                                 leptons, leptonsIdx, leptonsCharge, leptonFlavour, same_sign, isoCr, isoCrMinDr = analysis_ntuples.getTwoLeptonsAfterSelection(electronsObs["Electrons"], leptonsCorrJetVars["Electrons_pass" + iso + cuts], electronsCalcObs["Electrons_deltaRLJ"], electronsObs["Electrons_charge"], muonsObs["Muons"], leptonsCorrJetVars["Muons_pass" + iso + cuts], muonsObs["Muons_mediumID"], muonsCalcObs["Muons_deltaRLJ"], muonsObs["Muons_charge"], utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], muonsObs["Muons_tightID"], True, leptonsCorrJetVars["Electrons_passJetD3Iso"], leptonsCorrJetVars["Muons_passJetD3Iso"], leptonsCorrJetVars["Electrons_minDrJetD3Iso"], leptonsCorrJetVars["Muons_minDrJetD3Iso"])
                             else:
@@ -1525,7 +1542,7 @@ def main():
             vars["passedMhtMet6pack"][0] = True
             vars["passedSingleMuPack"][0] = True
             
-            
+            vars["passesUniversalSelection"][0] = True
             
             #if tree.Met < 200:
             #    print "HERE:", var_tEffhMetMhtRealXMet2016[0]
@@ -1540,6 +1557,9 @@ def main():
             
             vars["passedMhtMet6pack"][0] = analysis_ntuples.passTrig(c, "MhtMet6pack")
             vars["passedSingleMuPack"][0] = analysis_ntuples.passTrig(c, "SingleMuon")
+            
+            vars["passesUniversalSelection"][0] = analysis_ntuples.passesUniversalSelection(c, MET, METPhi)
+            
         #print("tEvent.Fill()")
         #print("c.RunNum,", c.RunNum,"c.LumiBlockNum,", c.LumiBlockNum, "c.EvtNum", c.EvtNum)
         tEvent.Fill()

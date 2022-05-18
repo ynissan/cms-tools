@@ -45,6 +45,13 @@ data_slim_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/slim_sum/sli
 luminosity = 35.712736198
 lumi_weight = luminosity * 1000.
 
+non_iso_factors = {
+    "Muons" : [0.876146793365,0.0868347577866],
+    "Electrons" : [0.352941185236,0.167596969388]
+}
+
+required_lepton = "Muons"
+
 ######## END OF CMDLINE ARGUMENTS ########
 
 def main():
@@ -73,7 +80,7 @@ def main():
         
         for lep in ["Muons", "Electrons"]:
             
-            if lep == "Electrons":
+            if lep != required_lepton:
                 continue
 
             c1.cd()
@@ -99,6 +106,16 @@ def main():
                 hist = utils.getHistogramFromTree("bg_2l_" + lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else ""), c, "dilepBDT" + jetiso, 1, -1, 1, condition, False)
                 hist.Sumw2()
                 histName = "inside_mtautau_tautau_" + lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else "")
+                if bg_2l_hist.get(histName) is None:
+                    bg_2l_hist[histName] = hist
+                else:
+                    bg_2l_hist[histName].Add(hist)
+                
+                # GET SR MC COUNT
+                histName = "SR_" + lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else "")
+                condition = str(lumi_weight) + " * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * puWeight * (twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " < 12  && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && sameSign" + jetiso + " == 0 && isoCr" + jetiso + (" >= 1" if isoCr else " == 0") + " && dilepBDT" + jetiso + " < 0 && tautau" + jetiso + " == 0)"
+                hist = utils.getHistogramFromTree(histName, c, "dilepBDT" + jetiso, 1, -1, 1, condition, False)
+                hist.Sumw2()
                 if bg_2l_hist.get(histName) is None:
                     bg_2l_hist[histName] = hist
                 else:
@@ -150,21 +167,21 @@ def main():
     
     
     print "\n\n\niso-cr MC scale factor - Non-Tau-Tau BG outside nM-tau-tau Window, BDT sideband"
-    numHist = bg_2l_hist["outside_nmtautau_nontautau_Muons_CorrJetIso10.5Dr0.55"].Clone()
-    denHist = bg_2l_hist["outside_nmtautau_nontautau_Muons_CorrJetIso10.5Dr0.55_isoCr"]
+    numHist = bg_2l_hist["outside_nmtautau_nontautau_" + required_lepton + "_CorrJetIso10.5Dr0.55"].Clone()
+    denHist = bg_2l_hist["outside_nmtautau_nontautau_" + required_lepton + "_CorrJetIso10.5Dr0.55_isoCr"]
     print "num", numHist.GetBinContent(1), "den", denHist.GetBinContent(1)
     numHist.Divide(denHist)
     print "nf", numHist.GetBinContent(1), "err", numHist.GetBinError(1), "rel-err", numHist.GetBinError(1)/numHist.GetBinContent(1)
     
-    numHist = bg_2l_hist["inside_mtautau_tautau_Muons_CorrJetIso10.5Dr0.55"].Clone()
-    denHist = bg_2l_hist["inside_mtautau_nontautau_Muons_CorrJetIso10.5Dr0.55"].Clone()
+    numHist = bg_2l_hist["inside_mtautau_tautau_" + required_lepton + "_CorrJetIso10.5Dr0.55"].Clone()
+    denHist = bg_2l_hist["inside_mtautau_nontautau_" + required_lepton + "_CorrJetIso10.5Dr0.55"].Clone()
     
     denHist.Add(numHist)
     numHist.Divide(denHist)
     
     print "\n\n\ntau-tau MC purity inside nM-tau-tau Window, BDT sideband, [" + str(mtautau_min) + "," + str(mtautau_max) + "]"
-    print "tautau MC", bg_2l_hist["inside_mtautau_tautau_Muons_CorrJetIso10.5Dr0.55"].GetBinContent(1), "err", bg_2l_hist["inside_mtautau_tautau_Muons_CorrJetIso10.5Dr0.55"].GetBinError(1)
-    print "non-tautau MC", bg_2l_hist["inside_mtautau_nontautau_Muons_CorrJetIso10.5Dr0.55"].GetBinContent(1), "err", bg_2l_hist["inside_mtautau_nontautau_Muons_CorrJetIso10.5Dr0.55"].GetBinError(1)
+    print "tautau MC", bg_2l_hist["inside_mtautau_tautau_" + required_lepton + "_CorrJetIso10.5Dr0.55"].GetBinContent(1), "err", bg_2l_hist["inside_mtautau_tautau_" + required_lepton + "_CorrJetIso10.5Dr0.55"].GetBinError(1)
+    print "non-tautau MC", bg_2l_hist["inside_mtautau_nontautau_" + required_lepton + "_CorrJetIso10.5Dr0.55"].GetBinContent(1), "err", bg_2l_hist["inside_mtautau_nontautau_" + required_lepton + "_CorrJetIso10.5Dr0.55"].GetBinError(1)
     print "tautau MC purity", numHist.GetBinContent(1), "err", numHist.GetBinError(1), "rel-err", numHist.GetBinError(1)/numHist.GetBinContent(1)
     
 
@@ -178,7 +195,7 @@ def main():
         
         for lep in ["Muons", "Electrons"]:
             
-            if lep == "Electrons":
+            if lep != required_lepton:
                 continue
 
             c1.cd()
@@ -223,8 +240,9 @@ def main():
                 #hist.Scale(0.996039628983)
                 tmpHist = TH1F("nf", "nf", 1, 0, 1)
                 tmpHist.Sumw2()
-                tmpHist.SetBinContent(1, 0.876146793365)
-                tmpHist.SetBinError(1, 0.0868347577866)
+                
+                tmpHist.SetBinContent(1, non_iso_factors[required_lepton][0])
+                tmpHist.SetBinError(1, non_iso_factors[required_lepton][1])
                 hist.Multiply(tmpHist)
                 if data_2l_hist.get(histName) is None:
                     data_2l_hist[histName] = hist
@@ -248,6 +266,21 @@ def main():
                         data_2l_hist[histName] = hist
                     else:
                         data_2l_hist[histName].Add(hist)
+                    
+                    if not isoCr:
+                        continue
+                    # GET SR ISO-CR COUNT
+                    histName = "SR_" + lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else "")
+                    condition = "(twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " < 12  && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && sameSign" + jetiso + " == 0 && isoCr" + jetiso + (" >= 1" if isoCr else " == 0") + " && dilepBDT" + jetiso + " < 0)"
+                    hist = utils.getHistogramFromTree(histName, c, "dilepBDT" + jetiso, 1, -1, 1, condition, False)
+                    hist.Sumw2()
+                    tmpHist.SetBinContent(1, non_iso_factors[required_lepton][0])
+                    tmpHist.SetBinError(1, non_iso_factors[required_lepton][1])
+                    hist.Multiply(tmpHist)
+                    if bg_2l_hist.get(histName) is None:
+                        data_2l_hist[histName] = hist
+                    else:
+                        data_2l_hist[histName].Add(hist)
                 
         f.Close()
     print "\n\n\n\n\n"
@@ -262,19 +295,19 @@ def main():
     print "=====================================\n\n\n\n\n\n\n\n\n\n\n"
         
     print "\n\n\niso-cr scale factor"
-    numHist = data_2l_hist["iso_cr_Muons_CorrJetIso10.5Dr0.55"]
-    denHist = data_2l_hist["iso_cr_Muons_CorrJetIso10.5Dr0.55_isoCr"]
+    numHist = data_2l_hist["iso_cr_" + required_lepton + "_CorrJetIso10.5Dr0.55"]
+    denHist = data_2l_hist["iso_cr_" + required_lepton + "_CorrJetIso10.5Dr0.55_isoCr"]
     print "num", numHist.GetBinContent(1), "den", denHist.GetBinContent(1)
     numHist.Divide(denHist)
     print "sf", numHist.GetBinContent(1), "err", numHist.GetBinError(1), "rel-err", numHist.GetBinError(1)/numHist.GetBinContent(1)
  
- 
-    print "\n\n\niso-cr scale factor - ANALYSIS ORTH"
-    numHist = data_2l_hist["iso_cr_Muons_orth_CorrJetIso10.5Dr0.55"]
-    denHist = data_2l_hist["iso_cr_Muons_orth_CorrJetIso10.5Dr0.55_isoCr"]
-    print "num", numHist.GetBinContent(1), "den", denHist.GetBinContent(1)
-    numHist.Divide(denHist)
-    print "sf", numHist.GetBinContent(1), "err", numHist.GetBinError(1), "rel-err", numHist.GetBinError(1)/numHist.GetBinContent(1)
+    if required_lepton == "Muons":
+        print "\n\n\niso-cr scale factor - ANALYSIS ORTH"
+        numHist = data_2l_hist["iso_cr_" + required_lepton + "_orth_CorrJetIso10.5Dr0.55"]
+        denHist = data_2l_hist["iso_cr_" + required_lepton + "_orth_CorrJetIso10.5Dr0.55_isoCr"]
+        print "num", numHist.GetBinContent(1), "den", denHist.GetBinContent(1)
+        numHist.Divide(denHist)
+        print "sf", numHist.GetBinContent(1), "err", numHist.GetBinError(1), "rel-err", numHist.GetBinError(1)/numHist.GetBinContent(1)
     
     
 #     print "\n\n\nmtautau normalisation factor - Orth"
@@ -293,16 +326,16 @@ def main():
 #    
     
     print "\n\n\nmtautau normalisation factor - non-tautau removed"
-    numHist = data_2l_hist["inside_mtautau_Muons_CorrJetIso10.5Dr0.55"]
+    numHist = data_2l_hist["inside_mtautau_" + required_lepton + "_CorrJetIso10.5Dr0.55"]
     print "num", numHist.GetBinContent(1), "err", numHist.GetBinError(1), "rel-err", numHist.GetBinError(1)/numHist.GetBinContent(1)
-    nonTautauHist = data_2l_hist["inside_mtautau_nontautau_Muons_CorrJetIso10.5Dr0.55_isoCr"]
+    nonTautauHist = data_2l_hist["inside_mtautau_nontautau_" + required_lepton + "_CorrJetIso10.5Dr0.55_isoCr"]
     print "nonTautauHist", nonTautauHist.GetBinContent(1), "err", nonTautauHist.GetBinError(1), "rel-err", nonTautauHist.GetBinError(1)/nonTautauHist.GetBinContent(1)
 
-    nonTautauHistMC = bg_2l_hist["inside_mtautau_nontautau_Muons_CorrJetIso10.5Dr0.55"]
+    nonTautauHistMC = bg_2l_hist["inside_mtautau_nontautau_" + required_lepton + "_CorrJetIso10.5Dr0.55"]
     print "nonTautauHistMC", nonTautauHistMC.GetBinContent(1), "err", nonTautauHistMC.GetBinError(1), "rel-err", nonTautauHistMC.GetBinError(1)/nonTautauHistMC.GetBinContent(1)
     
     
-    denHist = bg_2l_hist["inside_mtautau_tautau_Muons_CorrJetIso10.5Dr0.55"]
+    denHist = bg_2l_hist["inside_mtautau_tautau_" + required_lepton + "_CorrJetIso10.5Dr0.55"]
     print "num", numHist.GetBinContent(1), "den", denHist.GetBinContent(1)
     
     print "After Subtraction"
@@ -312,6 +345,19 @@ def main():
     numHist.Divide(denHist)
     print "sf", numHist.GetBinContent(1), "err", numHist.GetBinError(1), "rel-err", numHist.GetBinError(1)/numHist.GetBinContent(1)
    
+    
+    # GET SR ISO-CR COUNT
+    print "\n\n\nMethod to MC ratio in SR"
+    
+    srMcHist = bg_2l_hist["SR_" + required_lepton +  "_" + jetiso]
+    dataSrMethodHist = data_2l_hist["SR_" + required_lepton + "_" + jetiso + "_isoCr" ]
+    print "srMcHist", srMcHist.GetBinContent(1), "err", srMcHist.GetBinError(1), "rel-err", srMcHist.GetBinError(1)/srMcHist.GetBinContent(1)
+    print "dataSrMethodHist", dataSrMethodHist.GetBinContent(1), "err", dataSrMethodHist.GetBinError(1), "rel-err", dataSrMethodHist.GetBinError(1)/dataSrMethodHist.GetBinContent(1)
+    
+    dataSrMethodHist.Divide(srMcHist)
+    
+    print "Method/MC in SR factor", dataSrMethodHist.GetBinContent(1), "err", dataSrMethodHist.GetBinError(1), "rel-err", dataSrMethodHist.GetBinError(1)/dataSrMethodHist.GetBinContent(1)
+    
     
     exit(0)
     
