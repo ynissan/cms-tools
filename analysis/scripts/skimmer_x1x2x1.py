@@ -495,8 +495,10 @@ def main():
             crossSection = utils.samCrossSections.get(chiM)
             print("Cross Section is", crossSection)
         else:
-            filename = (os.path.basename(input_file).split("Chi20Chipm")[0]).replace("p", ".")
-            crossSection = utils.getCrossSection(filename)
+            stopMass = baseFileName.split("_")[3]
+            #filename = (os.path.basename(input_file).split("Chi20Chipm")[0]).replace("p", ".")
+            crossSection = utils.stopsCrossSection[stopMass]
+            
         if crossSection is None:
             if utils.crossSections.get(filename) is not None:
                 crossSection = utils.crossSections.get(filename)
@@ -549,43 +551,40 @@ def main():
         nX20 = 0
         branching_ratio = 1
         if signal:
-            if sam:
-                partSize = c.GenParticles.size()
-                for ipart in range(partSize):
-                    if c.GenParticles_Status[ipart] == 1 and (abs(c.GenParticles_PdgId[ipart]) == 11 or abs(c.GenParticles_PdgId[ipart]) == 13):
-                        nLGen += 1
-                        if c.GenParticles_ParentId[ipart] == 1000023 or c.GenParticles_ParentId[ipart] == 23:
-                            nLGenZ += 1
-                    if abs(c.GenParticles_PdgId[ipart]) == 1000023:
-                        nX20 += 1
-                
+            partSize = c.GenParticles.size()
+            for ipart in range(partSize):
+                if c.GenParticles_Status[ipart] == 1 and (abs(c.GenParticles_PdgId[ipart]) == 11 or abs(c.GenParticles_PdgId[ipart]) == 13):
+                    nLGen += 1
+                    if c.GenParticles_ParentId[ipart] == 1000023 or c.GenParticles_ParentId[ipart] == 23:
+                        nLGenZ += 1
+                if abs(c.GenParticles_PdgId[ipart]) == 1000023:
+                    nX20 += 1
             
-                if nLMap.get(nL) is not None:
-                    nLMap[nL] += 1
-                else:
-                    nLMap[nL] = 1
-                if nLGenMap.get(nLGen) is not None:
-                    nLGenMap[nLGen] += 1
-                else:
-                    nLGenMap[nLGen] = 1
-                if nLGenMapZ.get(nLGenZ) is not None:
-                    nLGenMapZ[nLGenZ] += 1
-                else:
-                    nLGenMapZ[nLGenZ] = 1
-            
-                if nX20 > 0:
-                    #print "nX20", nX20, "nLGenZ", nLGenZ
-                    if nX20 == 1 and nLGenZ == 2:
-                        branching_ratio *= 0.2
-                    elif nX20 == 2 and nLGenZ == 4:
-                        branching_ratio *= 0.04
-                    elif nX20 == 1 and nLGenZ == 0:
-                        branching_ratio *= 1.8
-                        #print "******", branching_ratio
-                    elif nX20 == 2 and nLGenZ == 0:
-                        branching_ratio *= 3.24
+        
+            if nLMap.get(nL) is not None:
+                nLMap[nL] += 1
             else:
-                branching_ratio = 0.1
+                nLMap[nL] = 1
+            if nLGenMap.get(nLGen) is not None:
+                nLGenMap[nLGen] += 1
+            else:
+                nLGenMap[nLGen] = 1
+            if nLGenMapZ.get(nLGenZ) is not None:
+                nLGenMapZ[nLGenZ] += 1
+            else:
+                nLGenMapZ[nLGenZ] = 1
+        
+            if nX20 > 0:
+                #print "nX20", nX20, "nLGenZ", nLGenZ
+                if nX20 == 1 and nLGenZ == 2:
+                    branching_ratio *= 0.2
+                elif nX20 == 2 and nLGenZ == 4:
+                    branching_ratio *= 0.04
+                elif nX20 == 1 and nLGenZ == 0:
+                    branching_ratio *= 1.8
+                    #print "******", branching_ratio
+                elif nX20 == 2 and nLGenZ == 0:
+                    branching_ratio *= 3.24
                     
         #### END OF GEN LEVEL STUFF ####
         
@@ -705,7 +704,7 @@ def main():
             #if MHT < 140: continue
             #if MET < 140: continue
             
-            if MHT < 100: continue
+            if MHT < 200: continue
             #if MET < 140: continue
             
         #Keep 2 b-tags for two-leptons
@@ -1188,7 +1187,8 @@ def main():
                             if jpsi_muons:
                                 ll, leptonIdx, t, ti = analysis_ntuples.getSingleJPsiLeptonAfterSelection(24, 24, muonsObs["Muons"], leptonsCorrJetVars["Muons_pass" + iso + cuts], muonsObs["Muons_mediumID"], muonsObs["Muons_charge"], tracksObs["tracks"], tracksObs["tracks_charge"], utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], muonsObs["Muons_tightID"], muonsObs["Muons_passIso"])
                             else:
-                                ll, leptonIdx, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(electronsObs["Electrons"], leptonsCorrJetVars["Electrons_pass" + iso + cuts], electronsCalcObs["Electrons_deltaRLJ"], electronsObs["Electrons_charge"], muonsObs["Muons"], leptonsCorrJetVars["Muons_pass" + iso + cuts], muonsObs["Muons_mediumID"], muonsCalcObs["Muons_deltaRLJ"], muonsObs["Muons_charge"], utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], muonsObs["Muons_tightID"])
+                                #ll, leptonIdx, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(electronsObs["Electrons"], leptonsCorrJetVars["Electrons_pass" + iso + cuts], electronsCalcObs["Electrons_deltaRLJ"], electronsObs["Electrons_charge"], muonsObs["Muons"], leptonsCorrJetVars["Muons_pass" + iso + cuts], muonsObs["Muons_mediumID"], muonsCalcObs["Muons_deltaRLJ"], muonsObs["Muons_charge"], utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], muonsObs["Muons_tightID"])
+                                continue
             
                             if ll is not None:
                                 if nT > 0 and (jpsi_muons or commonCalcFlatObs["BTagsLoose"][0] == 0 or commonCalcFlatObs["BTagsMedium"][0] == 0 or commonCalcFlatObs["BTagsDeepLoose"][0] == 0 or commonCalcFlatObs["BTagsDeepMedium"][0] == 0):

@@ -58,6 +58,13 @@ samCrossSections = {
     'mChipm500GeV' : 0.0338387
 }
 
+stopsCrossSection = {
+    '500GeV' : 0.609,
+    '600GeV' : 0.205,
+    '700GeV' : 0.0783,
+    '800GeV' : 0.0326
+}
+
 dyCrossSections = {
     "DYJetsToLL_M-5to50_HT-70to100" : 301.2,
     "DYJetsToLL_M-5to50_HT-100to200" : 224.2,
@@ -166,13 +173,14 @@ leptonCorrJetIsoDrCuts = [0.4,0.45,0.5,0.55,0.6]
 
 #leptonCorrJetIsoPtRange = [0, 10]
 
-defaultJetIsoSetting = "CorrJetIso10Dr0.5"
+defaultJetIsoSetting = "NoIso"
 
 #leptonIsolationList = [ "JetIso", "CorrJetIso", "NonJetIso" ]
 #leptonIsolationList = [ "CorrJetIso", "NonJetIso", "NoIso" ]
 #leptonIsolationList = [ "CorrJetIso", "NoIso" ]
-leptonIsolationList = [ "NoIso", "CorrJetIso", "CorrJetNoMultIso", "JetIso" ]
-leptonIsolationCrList = [ "CorrJetD3Iso", "CorrJetNoMultD3Iso","JetD3Iso" ]
+#leptonIsolationList = [ "NoIso", "CorrJetIso", "CorrJetNoMultIso", "JetIso" ]
+leptonIsolationList = [ "NoIso", "CorrJetIso" ]
+leptonIsolationCrList = [ "CorrJetD3Iso" ]
 leptonIsolationIncList = leptonIsolationList + leptonIsolationCrList
 # leptonIsolationCategories = {
 #     "" : { "lowPtTightMuons" : False, "muonPt" : 2},
