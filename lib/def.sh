@@ -27,7 +27,7 @@ NEW_SIM_DIR="/pnfs/desy.de/cms/tier2/store/user/sbein/CommonNtuples"
 NEWEST_SIM_DIR="/pnfs/desy.de/cms/tier2/store/user/sbein/NtupleHub/Production2016v2"
 BG_NTUPLES="/pnfs/desy.de/cms/tier2/store/user/*/NtupleHub/ProductionRun2v3*"
 NEWESTEST_SIM_DIR="/nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggsino/M1M2Scan/ntuple_sidecar/"
-SIM_NTUPLES_DIR="/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/SignalNtuplesSplit"
+SIM_NTUPLES_DIR="/nfs/dust/cms/user/beinsam/CommonSamples/MC_BSM/CompressedHiggsino/RadiativeMu_2016Fast/ntuple_sidecarv3"
 #SAM_SIM_NTUPLES_DIR="/pnfs/desy.de/cms/tier2/store/user/sbein/CommonSamples/RadiativeMu_2016Fast/ntuple_sidecar"
 SAM_SIM_NTUPLES_DIR="/nfs/dust/cms/user/beinsam/CommonSamples/MC_BSM/CompressedHiggsino/RadiativeMu_2016Fast/ntuple_sidecar/"
 SAM_NEW_SIM_NTUPLES_DIR="/pnfs/desy.de/cms/tier2/store/user/sbein/CommonSamples/RadiativeMu_2016Fast/ntuple_sidecar/"
@@ -90,7 +90,7 @@ CLONE_SCRIPT="$SCRIPTS_WD/clone_tree_split.py"
 CLONE_SINGLE="$SIM_DIR/clone_sim_file_single.sh"
 CS_SINGLE="$SIM_DIR/calculate_cross_section_single.sh"
 
-OUTPUT_WD="/nfs/dust/cms/user/nissanuv/x1x2x1"
+OUTPUT_WD="/nfs/dust/cms/user/diepholq/x1x2x1"
 TWO_LEPTONS_OUTPUT_WD="/nfs/dust/cms/user/nissanuv/2lx1x2x1"
 DY_OUTPUT_WD="/nfs/dust/cms/user/nissanuv/dy_x1x2x1"
 
@@ -166,7 +166,7 @@ if [[ `hostname` == *".desy.de"* ]]; then
     COPY_CMD=cp
     LS_CMD=ls
     COPY_DEST_PREFIX=""
-    OUTPUT_WD="/nfs/dust/cms/user/nissanuv/x1x2x1"
+    OUTPUT_WD="/nfs/dust/cms/user/diepholq/x1x2x1"
     SIG_CONFIG_OUTPUT_DIR="$OUTPUT_WD/signal/config"
     SIG_AOD_OUTPUT_DIR="$OUTPUT_WD/signal/aod"
     SIG_MINIAOD_OUTPUT_DIR="$OUTPUT_WD/signal/miniaod"
