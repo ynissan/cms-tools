@@ -8,7 +8,7 @@ import sys
 import os
 import re
 
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib")
+# sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib")
 import utils
 
 gROOT.SetBatch(True)

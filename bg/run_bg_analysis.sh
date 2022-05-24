@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. "$CMSSW_BASE/src/cms-tools/lib/def.sh"
+. "$CMSSW_BASE/src/stops/lib/def.sh"
 
 shopt -s nullglob 
 
@@ -179,7 +179,7 @@ priority = 0
 EOM
 
 file_limit=0
-files_per_job=2
+files_per_job=8
 
 for type in reg madHtFilesGt600 madHtFilesLt600; do
 

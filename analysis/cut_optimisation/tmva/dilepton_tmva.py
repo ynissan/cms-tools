@@ -10,7 +10,7 @@ import os
 from tempfile import mkdtemp
 import shutil
 
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops"))
 from lib import utils
 from lib import analysis_observables
 

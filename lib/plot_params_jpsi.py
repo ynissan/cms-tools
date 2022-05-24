@@ -1,7 +1,7 @@
 import sys
 import os
 
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/lib"))
 
 import crystal_ball_params
 import utils

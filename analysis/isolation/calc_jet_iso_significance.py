@@ -11,9 +11,9 @@ from datetime import datetime
 import math
 #import numpy
 
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/"))
-#sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/lib"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/"))
+#sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/lib/classes"))
 import utils
 import analysis_ntuples
 
@@ -21,7 +21,7 @@ gROOT.SetBatch(True)
 gStyle.SetOptStat(0)
 TH1D.SetDefaultSumw2()
 
-#gROOT.ProcessLine(open(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes/calcLlhdSingleCount.cc")).read())
+#gROOT.ProcessLine(open(os.path.expandvars("$CMSSW_BASE/src/stops/lib/classes/calcLlhdSingleCount.cc")).read())
 #exec('from ROOT import *')
 
 ####### CMDLINE ARGUMENTS #########

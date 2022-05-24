@@ -65,11 +65,11 @@ if [[ ( "$CMSSITE" == "T1_US_FNAL" && "$USER" == "cmsgli" && "${OUTDIR}" == *"ro
 fi
 
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CMSSW_BASE/src/cms-tools/lib/classes
-cd $CMSSW_BASE/src/cms-tools/lib/classes
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CMSSW_BASE/src/stops/lib/classes
+cd $CMSSW_BASE/src/stops/lib/classes
 rm LumiSectMap_C.so
 echo .L LumiSectMap.C+ | root.exe -b
-cd $CMSSW_BASE/src/cms-tools/analysis/scripts/
+cd $CMSSW_BASE/src/stops/analysis/scripts/
 
 FILE="Summer16.QCD_HT200to300_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext1AOD_60000-A8B482FE-C9B0-E611-9FD1-A0000420FE80_RA2AnalysisTree.root"
 
@@ -77,13 +77,13 @@ echo ${CMDSTR} -n 1 srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/use
 ${CMDSTR} -n 1 srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/ProductionRun2v3/$FILE .
 
 echo "Running locally"
-echo $CMSSW_BASE/src/cms-tools/analysis/scripts/skimmer_x1x2x1.py -i $FILE -o tmp.root -bg
-$CMSSW_BASE/src/cms-tools/analysis/scripts/skimmer_x1x2x1.py -i $FILE -o tmp.root -bg
+echo $CMSSW_BASE/src/stops/analysis/scripts/skimmer_x1x2x1.py -i $FILE -o tmp.root -bg
+$CMSSW_BASE/src/stops/analysis/scripts/skimmer_x1x2x1.py -i $FILE -o tmp.root -bg
 echo "EXIT STATUS: $?"
 
 echo "Running remotely"
-echo $CMSSW_BASE/src/cms-tools/analysis/scripts/skimmer_x1x2x1.py -i root://dcache-cms-xrootd.desy.de//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/ProductionRun2v3/$FILE -o tmp.root -bg
-$CMSSW_BASE/src/cms-tools/analysis/scripts/skimmer_x1x2x1.py -i root://dcache-cms-xrootd.desy.de//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/ProductionRun2v3/$FILE -o tmp.root -bg
+echo $CMSSW_BASE/src/stops/analysis/scripts/skimmer_x1x2x1.py -i root://dcache-cms-xrootd.desy.de//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/ProductionRun2v3/$FILE -o tmp.root -bg
+$CMSSW_BASE/src/stops/analysis/scripts/skimmer_x1x2x1.py -i root://dcache-cms-xrootd.desy.de//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/ProductionRun2v3/$FILE -o tmp.root -bg
 echo "EXIT STATUS: $?"
 
 

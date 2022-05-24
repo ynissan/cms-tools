@@ -8,11 +8,11 @@ import sys
 import numpy as np
 import os
 
-os.path.expandvars("$CMSSW_BASE/src/cms-tools")
-os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes")
+os.path.expandvars("$CMSSW_BASE/src/stops")
+os.path.expandvars("$CMSSW_BASE/src/stops/lib/classes")
 
-sys.path.append("/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools")
-sys.path.append("/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools/lib/classes")
+# sys.path.append("/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools")
+# sys.path.append("/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools/lib/classes")
 
 gSystem.Load('LeptonCollectionMap_C')
 from ROOT import LeptonCollectionMap

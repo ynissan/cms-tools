@@ -71,15 +71,15 @@ fi
 export CMDSTR="gfal-copy"
 export GFLAG=""
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CMSSW_BASE/src/cms-tools/lib/classes
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CMSSW_BASE/src/stops/lib/classes
 
-cd $CMSSW_BASE/src/cms-tools/lib/classes
+cd $CMSSW_BASE/src/stops/lib/classes
 rm LeptonCollectionMapDict.cxx
 rootcling -f LeptonCollectionMapDict.cxx -c LeptonCollectionMap.h LinkDef.h
 rm LeptonCollectionMap_C.so
 echo .L LeptonCollectionMap.C+ | root.exe -b
 
-cd $CMSSW_BASE/src/cms-tools/analysis/scripts/
+cd $CMSSW_BASE/src/stops/analysis/scripts/
 
 if [[ ( "$CMSSITE" == "T1_US_FNAL" && "$USER" == "cmsgli" && "${OUTDIR}" == *"root://cmseos.fnal.gov/"* ) ]]; then
     export CMDSTR="gfal-copy"

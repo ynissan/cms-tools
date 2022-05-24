@@ -13,8 +13,8 @@ source $VO_CMS_SW_DIR/cmsset_default.sh
 
 cmsenv
 
-. "$CMSSW_BASE/src/cms-tools/lib/def.sh"
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$CMSSW_BASE/src/cms-tools/lib/classes"
+. "$CMSSW_BASE/src/stops/lib/def.sh"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$CMSSW_BASE/src/stops/lib/classes"
 
 #for f in ZJetsToNuNu_HT-100To200.root ZJetsToNuNu_HT-200To400.root WJetsToLNu_HT-200To400.root ZJetsToNuNu_HT-600To800.root ZJetsToNuNu_HT-400To600.root WJetsToLNu_HT-100To200.root WJetsToLNu_HT-1200To2500.root; do 
 #for f in WJetsToLNu_HT-200To400.root; do 

@@ -10,9 +10,9 @@ import math
 import pickle
 import os
 
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/"))
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/lib"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/lib/classes"))
 
 import cut_optimisation
 

@@ -21,7 +21,7 @@ declare -A SIM_GROUP=(
            ["all"]="dm1p dm2p dm3p dm4p" \
            )
 
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$CMSSW_BASE/src/cms-tools/lib/classes"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$CMSSW_BASE/src/stops/lib/classes"
 
 NEW_SIM_DIR="/pnfs/desy.de/cms/tier2/store/user/sbein/CommonNtuples"
 NEWEST_SIM_DIR="/pnfs/desy.de/cms/tier2/store/user/sbein/NtupleHub/Production2016v2"
@@ -32,15 +32,15 @@ SIM_NTUPLES_DIR="/nfs/dust/cms/user/beinsam/CommonSamples/MC_BSM/CompressedHiggs
 SAM_SIM_NTUPLES_DIR="/nfs/dust/cms/user/beinsam/CommonSamples/MC_BSM/CompressedHiggsino/RadiativeMu_2016Fast/ntuple_sidecar/"
 SAM_NEW_SIM_NTUPLES_DIR="/pnfs/desy.de/cms/tier2/store/user/sbein/CommonSamples/RadiativeMu_2016Fast/ntuple_sidecar/"
 DATA_NTUPLES_DIR="/pnfs/desy.de/cms/tier2/store/user/*/NtupleHub/ProductionRun2v3*"
-
+#2 jobs for this list (the full list)
 BG_TYPES=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays DYJetsToLL WJetsToLNu ZJetsToNuNu WZZ WWZ WW WZ ZZZ ZZ)
 
 #BG_TYPES=(QCD)
 
 # 10 jobs per file for this list
-#BG_TYPES=(QCD TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays)
+BG_TYPES=(QCD TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays)
 #continue with 8 of these
-#BG_TYPES=(DYJetsToLL WJetsToLNu ZJetsToNuNu WZZ WWZ WW WZ ZZZ ZZ)
+BG_TYPES=(DYJetsToLL WJetsToLNu ZJetsToNuNu WZZ WWZ WW WZ ZZZ ZZ)
 
 #BG_TYPES=(ST_s-channel_4f_leptonDecays ST_tW_antitop_5f_inclusiveDecays ST_tW_top_5f_inclusiveDecays WGToLNuG ZGTo2LG)
 #BG_TYPES=(ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays DYJetsToLL  WZZ WWZ WW WZ ZZZ ZZ)
@@ -72,13 +72,13 @@ LEPTON_CORR_JET_ISO_DR_CUTS=(0.4 0.45 0.5 0.55 0.6)
 FILE_EXCLUDE_LIST=(-100to20_ -10to200_ -200to40_ -20to400_ -40to600_ -600to80_ -20To400_ -400To60_ -40To600_ HT100to1500_ HT1500to200_ HT200toInf_ -200toInf_ -80to1200_ -200To40_ -250toInf_ -1200to250_ -800to120_ -120to2500_ 1000to150_ -60ToInf_ 400to60_ 100To20_ HT150to2000_ HT200to30_ HT1000to150_ Run218 Run217 Run216 genMET)
 WORK_DIR="/tmp"
 CMS_WD="$CMSSW_BASE/src"
-CMS_TOOLS="$CMS_WD/cms-tools"
-SIM_DIR="$CMS_TOOLS/sim_x10x20x10"
-SCRIPTS_WD="$CMS_TOOLS/analysis/scripts"
-CUT_OPTIMISATION_SCRIPTS="$CMS_TOOLS/analysis/cut_optimisation/tmva"
+stops="$CMS_WD/stops"
+SIM_DIR="$stops/sim_x10x20x10"
+SCRIPTS_WD="$stops/analysis/scripts"
+CUT_OPTIMISATION_SCRIPTS="$stops/analysis/cut_optimisation/tmva"
 CONDOR_WRAPPER="$SCRIPTS_WD/condor_wrapper.sh"
-LEPTON_TRACK_DIR="$CMS_TOOLS/analysis/lepton_track"
-BG_SCRIPTS="$CMS_TOOLS/bg/scripts"
+LEPTON_TRACK_DIR="$stops/analysis/lepton_track"
+BG_SCRIPTS="$stops/bg/scripts"
 ANALYZER_PATH="$SCRIPTS_WD/analyzer_x1x2x1.py"
 #SKIMMER_PATH="$SCRIPTS_WD/skimmer_x1x2x1.py"
 SKIMMER_PATH="$SCRIPTS_WD/skimmer_x1x2x1.py"
@@ -94,8 +94,8 @@ OUTPUT_WD="/nfs/dust/cms/user/diepholq/x1x2x1"
 TWO_LEPTONS_OUTPUT_WD="/nfs/dust/cms/user/nissanuv/2lx1x2x1"
 DY_OUTPUT_WD="/nfs/dust/cms/user/nissanuv/dy_x1x2x1"
 
-DATA_DIR="$CMS_TOOLS/data"
-BG_DIR="$CMS_TOOLS/bg"
+DATA_DIR="$stops/data"
+BG_DIR="$stops/bg"
 BG_HIST_DIR="$OUTPUT_WD/bg/hist"
 SKIM_OUTPUT_DIR="$OUTPUT_WD/bg/skim"
 SKIM_MASTER_OUTPUT_DIR="$OUTPUT_WD/bg/skim_master"
@@ -155,7 +155,7 @@ LEPTON_TRACK_SPLIT_DIR="$OUTPUT_WD/signal/lepton_track"
 
 SPLIT_JPSI_MASTER_OUTPUT_DIR="$SKIM_MASTER_OUTPUT_DIR/split"
 
-RGS_DIR="/afs/desy.de/user/n/nissanuv/cms-tools/analysis/cut_optimisation/rgs"
+RGS_DIR="/afs/desy.de/user/n/nissanuv/stops/analysis/cut_optimisation/rgs"
 RESUMMINO_BIN="/afs/desy.de/user/n/nissanuv/local/bin/resummino"
 DILEPTON_BDT_DIR="$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt"
 DILEPTON_TWO_LEPTONS_BDT_DIR="$TWO_LEPTONS_OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt"

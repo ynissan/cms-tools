@@ -8,7 +8,7 @@ import sys
 import numpy as np
 import os
 
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
+
 from lib import analysis_ntuples
 from lib import analysis_tools
 from lib import utils

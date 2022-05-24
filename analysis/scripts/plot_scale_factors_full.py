@@ -11,9 +11,9 @@ from datetime import datetime
 import math
 import numpy as np
 
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/"))
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/lib"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/lib/classes"))
 import utils
 import analysis_ntuples
 import plot_params

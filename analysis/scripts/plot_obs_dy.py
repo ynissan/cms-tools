@@ -9,8 +9,8 @@ import os
 import re
 from datetime import datetime
 
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib")
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib/classes")
+# sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib")
+# sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib/classes")
 import utils
 
 gROOT.SetBatch(True)

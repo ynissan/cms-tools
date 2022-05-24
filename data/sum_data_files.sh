@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. "$CMSSW_BASE/src/cms-tools/lib/def.sh"
+. "$CMSSW_BASE/src/stops/lib/def.sh"
 
 shopt -s nullglob
 shopt -s expand_aliases

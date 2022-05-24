@@ -8,8 +8,8 @@ import sys
 import numpy as np
 import os
 
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib/classes")
+# sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
+# sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools/lib/classes")
 
 gSystem.Load('LeptonCollectionMap_C')
 from ROOT import LeptonCollectionMap

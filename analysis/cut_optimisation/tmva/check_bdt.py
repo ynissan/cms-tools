@@ -9,9 +9,9 @@ import numpy as np
 import os
 import xml.etree.ElementTree as ET
 
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/"))
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/lib"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/lib/classes"))
 
 from lib import analysis_ntuples
 from lib import analysis_tools

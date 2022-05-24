@@ -1,7 +1,7 @@
 import sys
 import os
 
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/lib"))
 
 import crystal_ball_params
 import utils
@@ -670,7 +670,7 @@ class track_selection_bg(track_selection):
 class data_jets_multiplicity_muons(BaseParams):
     save_histrograms_to_file = True
     load_histrograms_from_file = False    
-    histrograms_file = "/afs/desy.de/user/n/nissanuv/CMSSW_11_3_1/src/cms-tools/analysis/scripts/data_jets_multiplicity_muons.root" 
+    histrograms_file = "/afs/desy.de/user/n/nissanuv/CMSSW_11_3_1/src/stops/analysis/scripts/data_jets_multiplicity_muons.root" 
     
     data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/sum"
     plot_bg = False
@@ -697,7 +697,7 @@ class data_jets_multiplicity_muons(BaseParams):
     
 
 class bg_jets_multiplicity_muons(data_jets_multiplicity_muons):
-    histrograms_file = "/afs/desy.de/user/n/nissanuv/CMSSW_11_3_1/src/cms-tools/analysis/scripts/bg_jets_multiplicity_muons.root" 
+    histrograms_file = "/afs/desy.de/user/n/nissanuv/CMSSW_11_3_1/src/stops/analysis/scripts/bg_jets_multiplicity_muons.root" 
     save_histrograms_to_file = True
     load_histrograms_from_file = False 
     plot_bg = True
@@ -729,7 +729,7 @@ signalNames = [
 ]
 
 class signal_jets_multiplicity_muons(bg_jets_multiplicity_muons):
-    histrograms_file = "/afs/desy.de/user/n/nissanuv/CMSSW_11_3_1/src/cms-tools/analysis/scripts/histograms_root_files/signal_jets_multiplicity_muons.root" 
+    histrograms_file = "/afs/desy.de/user/n/nissanuv/CMSSW_11_3_1/src/stops/analysis/scripts/histograms_root_files/signal_jets_multiplicity_muons.root" 
     save_histrograms_to_file = True
     load_histrograms_from_file = False 
     plot_bg = False

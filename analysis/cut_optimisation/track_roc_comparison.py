@@ -8,9 +8,9 @@ import sys
 import math
 import os
 
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools"))
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/lib/classes"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/lib"))
 import cut_optimisation
 
 gROOT.SetBatch(True)

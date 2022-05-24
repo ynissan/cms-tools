@@ -10,8 +10,8 @@ import argparse
 import os
 import sys
 
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools"))
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/lib/classes"))
 from lib import utils
 
 parser = argparse.ArgumentParser(description='Sum histograms and trees.')
@@ -253,7 +253,7 @@ if hadd or all:
                         files = SINGLE_OUTPUT + "/" + type + "_*" + typeRange + "*.root"
                         command = "hadd -f " + file + " " + files
                     elif "M-5to50" in typeRange:
-                        #command = "/afs/desy.de/user/n/nissanuv/cms-tools/analysis/scripts/ahadd.py -f " + OUTPOUT_TYPE_SUM + "/" + type + "_" + typeRange + ".root " + SINGLE_OUTPUT + "/RunIISummer16MiniAODv3." + type + "_*" + typeRange + "*.root"
+                        #command = "/afs/desy.de/user/n/nissanuv/stops/analysis/scripts/ahadd.py -f " + OUTPOUT_TYPE_SUM + "/" + type + "_" + typeRange + ".root " + SINGLE_OUTPUT + "/RunIISummer16MiniAODv3." + type + "_*" + typeRange + "*.root"
                         file = OUTPOUT_TYPE_SUM + "/" + type + "_" + typeRange + ".root"
                         if lepton_collection:
                             files = SINGLE_OUTPUT + "/Summer16*." + type + "_*" + typeRange + "*.root"

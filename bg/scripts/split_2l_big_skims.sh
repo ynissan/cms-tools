@@ -13,8 +13,8 @@ source $VO_CMS_SW_DIR/cmsset_default.sh
 
 cmsenv
 
-. "$CMSSW_BASE/src/cms-tools/lib/def.sh"
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$CMSSW_BASE/src/cms-tools/lib/classes"
+. "$CMSSW_BASE/src/stops/lib/def.sh"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$CMSSW_BASE/src/stops/lib/classes"
 
 
 for f in TTJets_SingleLeptFromT_TuneCUETP8M1.root TTJets_DiLept_TuneCUETP8M1.root TTJets_SingleLeptFromTbar_TuneCUETP8M1.root; do

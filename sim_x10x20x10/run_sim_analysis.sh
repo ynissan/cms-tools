@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. "$CMSSW_BASE/src/cms-tools/lib/def.sh"
+. "$CMSSW_BASE/src/stops/lib/def.sh"
 
 shopt -s nullglob
 shopt -s expand_aliases
@@ -98,11 +98,10 @@ universe = vanilla
 should_transfer_files = IF_NEEDED
 executable = /bin/bash
 notification = Never
-request_memory = 16 GB
 EOM
 
 #for sim in ${SIG_DUP_OUTPUT_DIR}/single/*; do
-for sim in ${INPUT_DIR}/*higgsino*; do
+for sim in ${INPUT_DIR}/*; do
     filename=$(basename $sim .root)
     if [ -f "${OUTPUT_DIR}/single/${filename}.root" ]; then
         echo "${OUTPUT_DIR}/single/${filename}.root exist. Skipping..."

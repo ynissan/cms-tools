@@ -1,7 +1,7 @@
 import sys
 import os
 
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/lib"))
 
 import crystal_ball_params
 import utils
@@ -210,7 +210,7 @@ class BaseParams:
     custom_types_conditions = []
     custom_types_common_files = False
     
-    cms_tools_base_dir = os.path.expandvars("$CMSSW_BASE/src/cms-tools")
+    cms_tools_base_dir = os.path.expandvars("$CMSSW_BASE/src/stops")
     histograms_root_files_dir = cms_tools_base_dir + "/analysis/scripts/histograms_root_files"
     
     #used to turn on only wanted branches in the tree
