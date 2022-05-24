@@ -523,7 +523,8 @@ def main():
         rightProcess = True
     
         if signal and not sam:
-            rightProcess = analysis_ntuples.isX1X2X1Process(c)
+            #rightProcess = analysis_ntuples.isX1X2X1Process(c)
+            rightProcess = True
         elif bg:
             if "DYJetsToLL_M-5to50_" not in input_file:
                 crossSection = c.CrossSection
@@ -977,25 +978,25 @@ def main():
                     eval(leptonsVecName.lower() + "CalcObs")[leptonsVecName  + "_minDeltaRJets"].push_back(min)
                     eval(leptonsVecName.lower() + "CalcObs")[leptonsVecName  + "_closestJet"].push_back(minCan)
                 
-                min, minCan = analysis_ntuples.minDeltaLepLeps(leptonsVec[i], isoJets[lep]["JetIso"])
-                if min is None or min > 0.4:
-                    leptonsCorrJetVars[isoJets[lep]["obs"] + "_passJetIso"].push_back(True)
-                    leptonsCorrJetVars[isoJets[lep]["obs"] + "_passJetD3Iso"].push_back(False)
-                    leptonsCorrJetVars[isoJets[lep]["obs"] + "_minDrJetD3Iso"].push_back(-1)
-                else:
-                    leptonsCorrJetVars[isoJets[lep]["obs"] + "_passJetIso"].push_back(False)
-                    if min is not None and isoJets[lep]["JetIso"][minCan].Pt() < 30:
-                        min, minCan = analysis_ntuples.minDeltaLepLeps(leptonsVec[i], isoJets[lep]["JetD3Iso"])
-                        if min is not None and min < 0.4:# and min >= 0.2:
-                            leptonsCorrJetVars[isoJets[lep]["obs"] + "_passJetD3Iso"].push_back(True)
-                            leptonsCorrJetVars[isoJets[lep]["obs"] + "_minDrJetD3Iso"].push_back(min)
-                        else:
-                            leptonsCorrJetVars[isoJets[lep]["obs"] + "_passJetD3Iso"].push_back(False)
-                            leptonsCorrJetVars[isoJets[lep]["obs"] + "_minDrJetD3Iso"].push_back(-1)
-                    else:
-                        leptonsCorrJetVars[isoJets[lep]["obs"] + "_passJetD3Iso"].push_back(False)
-                        leptonsCorrJetVars[isoJets[lep]["obs"] + "_minDrJetD3Iso"].push_back(-1)
-        
+                # min, minCan = analysis_ntuples.minDeltaLepLeps(leptonsVec[i], isoJets[lep]["JetIso"])
+#                 if min is None or min > 0.4:
+#                     leptonsCorrJetVars[isoJets[lep]["obs"] + "_passJetIso"].push_back(True)
+#                     leptonsCorrJetVars[isoJets[lep]["obs"] + "_passJetD3Iso"].push_back(False)
+#                     leptonsCorrJetVars[isoJets[lep]["obs"] + "_minDrJetD3Iso"].push_back(-1)
+#                 else:
+#                     leptonsCorrJetVars[isoJets[lep]["obs"] + "_passJetIso"].push_back(False)
+#                     if min is not None and isoJets[lep]["JetIso"][minCan].Pt() < 30:
+#                         min, minCan = analysis_ntuples.minDeltaLepLeps(leptonsVec[i], isoJets[lep]["JetD3Iso"])
+#                         if min is not None and min < 0.4:# and min >= 0.2:
+#                             leptonsCorrJetVars[isoJets[lep]["obs"] + "_passJetD3Iso"].push_back(True)
+#                             leptonsCorrJetVars[isoJets[lep]["obs"] + "_minDrJetD3Iso"].push_back(min)
+#                         else:
+#                             leptonsCorrJetVars[isoJets[lep]["obs"] + "_passJetD3Iso"].push_back(False)
+#                             leptonsCorrJetVars[isoJets[lep]["obs"] + "_minDrJetD3Iso"].push_back(-1)
+#                     else:
+#                         leptonsCorrJetVars[isoJets[lep]["obs"] + "_passJetD3Iso"].push_back(False)
+#                         leptonsCorrJetVars[isoJets[lep]["obs"] + "_minDrJetD3Iso"].push_back(-1)
+#         
         jetsCalcObs["Jets_muonCorrected"] = cppyy.gbl.std.vector(TLorentzVector)(jetsObs["Jets"])
         jetsCalcObs["Jets_electronCorrected"] = cppyy.gbl.std.vector(TLorentzVector)(jetsObs["Jets"])
         jetsCalcObs["Jets_trackCorrected"] = cppyy.gbl.std.vector(TLorentzVector)(jetsObs["Jets"])
@@ -1056,7 +1057,7 @@ def main():
                     eval(leptonsVecName.lower() + "CalcObs")[leptonsVecName  +  "_correctedMinDeltaRJets"].push_back(min)
                     eval(leptonsVecName.lower() + "CalcObs")[leptonsVecName  +  "_correctedClosestJet"].push_back(minCan)
                     
-                    for lepIso in ["CorrJetIso", "CorrJetNoMultIso"]:
+                    for lepIso in ["CorrJetIso"]:#, "CorrJetNoMultIso"]:
                         d3Iso = "CorrJetD3Iso" if lepIso == "CorrJetIso" else "CorrJetNoMultD3Iso"
                         for ptRange in utils.leptonCorrJetIsoPtRange:
                         
@@ -1188,7 +1189,7 @@ def main():
                                 ll, leptonIdx, t, ti = analysis_ntuples.getSingleJPsiLeptonAfterSelection(24, 24, muonsObs["Muons"], leptonsCorrJetVars["Muons_pass" + iso + cuts], muonsObs["Muons_mediumID"], muonsObs["Muons_charge"], tracksObs["tracks"], tracksObs["tracks_charge"], utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], muonsObs["Muons_tightID"], muonsObs["Muons_passIso"])
                             else:
                                 #ll, leptonIdx, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(electronsObs["Electrons"], leptonsCorrJetVars["Electrons_pass" + iso + cuts], electronsCalcObs["Electrons_deltaRLJ"], electronsObs["Electrons_charge"], muonsObs["Muons"], leptonsCorrJetVars["Muons_pass" + iso + cuts], muonsObs["Muons_mediumID"], muonsCalcObs["Muons_deltaRLJ"], muonsObs["Muons_charge"], utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], muonsObs["Muons_tightID"])
-                                continue
+                                ll, leptonIdx, t, ti = None, None, None, None
             
                             if ll is not None:
                                 if nT > 0 and (jpsi_muons or commonCalcFlatObs["BTagsLoose"][0] == 0 or commonCalcFlatObs["BTagsMedium"][0] == 0 or commonCalcFlatObs["BTagsDeepLoose"][0] == 0 or commonCalcFlatObs["BTagsDeepMedium"][0] == 0):

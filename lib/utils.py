@@ -156,7 +156,7 @@ tracksVars = (
 leptonsCorrJetVecList = {
     "CorrJetIso" : "bool",
     "CorrJetD3Iso" : "bool",
-    #"NonJetIso" : "bool",
+    "NonJetIso" : "bool",
     
     
     "CorrJetNoMultIso" : "bool",
@@ -180,7 +180,12 @@ defaultJetIsoSetting = "NoIso"
 #leptonIsolationList = [ "CorrJetIso", "NoIso" ]
 #leptonIsolationList = [ "NoIso", "CorrJetIso", "CorrJetNoMultIso", "JetIso" ]
 leptonIsolationList = [ "NoIso", "CorrJetIso" ]
-leptonIsolationCrList = [ "CorrJetD3Iso" ]
+leptonIsolationCrList = [ "CorrJetD3Iso"]
+
+#leptonIsolationList = [ "NoIso", "CorrJetIso", "CorrJetNoMultIso", "JetIso" ]
+#leptonIsolationCrList = [ "CorrJetD3Iso", "CorrJetNoMultD3Iso","JetD3Iso" ]
+
+
 leptonIsolationIncList = leptonIsolationList + leptonIsolationCrList
 # leptonIsolationCategories = {
 #     "" : { "lowPtTightMuons" : False, "muonPt" : 2},
