@@ -84,7 +84,7 @@ fi
 
 count=0
 input_files=""
-files_per_job=35
+files_per_job=20
 output_count=1
 lastfile=""
 

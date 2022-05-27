@@ -216,6 +216,8 @@ def createPlotsFast(rootfiles, types, histograms, weight, category, conditions, 
         if not_full and i > 0:
             break
         i += 1
+        #if i > 300:
+        #    break
         print(f)
         c = rootFile.Get('tEvent')
 
@@ -1561,7 +1563,7 @@ def main():
                     scDataHist.SetMarkerColor(kRed)
                     print((utils.bcolors.BOLD + utils.bcolors.RED + "scDataHist.Draw(P SAME)" + utils.bcolors.ENDC))
                     scDataHist.Draw("P SAME")
-                    legend.AddEntry(scDataHist, "same-sign data", 'p')
+                    legend.AddEntry(scDataHist, plot_par.sc_label  + " data", 'p')
                 
                 if plot_par.plot_bg:
                     scBgHistName = "sc_" + cut["name"] + "_" + hist_def["obs"] + "_bg"
