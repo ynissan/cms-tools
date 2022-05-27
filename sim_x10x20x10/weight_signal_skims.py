@@ -26,7 +26,7 @@ args = parser.parse_args()
 force = args.force
 sam = args.sam
 
-signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/single"
+signal_dir = "/nfs/dust/cms/user/diepholq/x1x2x1/signal/skim/single"
 
 def main():
     points = {}
@@ -38,19 +38,24 @@ def main():
         if sam:
             point = "_".join(os.path.basename(fileName).split("_")[2:4])
         else:
-            point = "_".join(os.path.basename(fileName).split("_")[0:3])
+            #Example: higgsino_Summer16_stopstop_600GeV_mChipm200GeV_dm1p0GeV_pu35_part6of25_RA2AnalysisTree.root
+            point = "_".join(os.path.basename(fileName).split("_")[3:6])
         if points.get(point) is None:
+            print("New Point", point)
             points[point] = 0
         
         f = TFile(fileName, "read")
         print("Summing", os.path.basename(fileName))
         h = f.Get("hHt")
-        points[point] += h.Integral(-1,99999999)
+        numOfEvents = h.Integral(-1,99999999)
+        #print(os.path.basename(fileName), "numOfEvents", numOfEvents)
+        points[point] += numOfEvents
         f.Close()
         
     print("\n\n\n")
     print(points)
     print("\n\n\n")
+    #exit(0)
     
     for fileName in fileList:
         print("Weighting", os.path.basename(fileName))
@@ -58,7 +63,7 @@ def main():
         if sam:
             point = "_".join(os.path.basename(fileName).split("_")[2:4])
         else:
-            point = "_".join(os.path.basename(fileName).split("_")[0:3])
+            point = "_".join(os.path.basename(fileName).split("_")[3:6])
         f = TFile(fileName, "update")
         t = f.Get("tEvent")
         t.GetEntry(0)
