@@ -67,10 +67,10 @@ universe = vanilla
 should_transfer_files = IF_NEEDED
 executable = /bin/bash
 notification = Never
-+RequestRuntime = 43200
++RequestRuntime = 86400
 EOM
 
-FILES=${INPUT_DIR}/sum/*
+FILES=${INPUT_DIR}/single/*
 
 #FILES=(mChipm160GeV_dm0p44GeV.root mChipm140GeV_dm4p28GeV.root)
 

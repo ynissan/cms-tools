@@ -17,7 +17,6 @@ import sys
 # from DataFormats.FWLite import Handle, Events
 # import FWCore.ParameterSet.Config as cms
 
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
 from lib import histograms
 from lib import utils
 from lib import cuts

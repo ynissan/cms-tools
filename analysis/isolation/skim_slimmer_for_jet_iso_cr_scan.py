@@ -37,185 +37,84 @@ if not signal and not bg and not data:
 signal_dir = None
 bg_dir = None
 
+base_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1"
+
 if signal:
-    input_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum"
-    output_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim"
+    input_dir = base_dir + "/signal/skim/single"
+    output_dir = base_dir + "/signal/skim/slim"
+    output_dir_stdout = base_dir + "/signal/skim/stdout"
+    output_dir_stderr = base_dir + "/signal/skim/stderr"
 elif bg:
-    input_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum"
-    output_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim"
+    input_dir = base_dir + "/bg/skim/sum/type_sum"
+    output_dir = base_dir + "/bg/skim/sum/slim"
+    output_dir_stdout = base_dir + "/bg/skim/stdout"
+    output_dir_stderr = base_dir + "/bg/skim/stderr"
 else:
-    input_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/sum"
-    output_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/slim"
+    input_dir = base_dir + "/data/skim/sum"
+    output_dir = base_dir + "/data/skim/slim"
+    output_dir_stdout = base_dir + "/data/skim/stdout"
+    output_dir_stderr = base_dir + "/data/skim/stderr"
 
 print "input_dir", input_dir
 print "output_dir", output_dir
+print "output_dir_stdout", output_dir_stdout
+print "output_dir_stderr", output_dir_stderr
+
+if not os.path.isdir(output_dir):
+    os.mkdir(output_dir)
+
+if not os.path.isdir(output_dir_stdout):
+    os.mkdir(output_dir_stdout)
+
+if not os.path.isdir(output_dir_stdout):
+    os.mkdir(output_dir_stdout)
+
 
 ######## END OF CMDLINE ARGUMENTS ########
 
-variablesUsed = []
-
-variablesUsed.append("BTagsDeepMedium")
-variablesUsed.append("MinDeltaPhiMetJets")
-variablesUsed.append("MinDeltaPhiMhtJets")
-variablesUsed.append("passedMhtMet6pack")
-variablesUsed.append("tEffhMetMhtRealXMht2016")
-variablesUsed.append("Weight")
-variablesUsed.append("BranchingRatio")
-variablesUsed.append("MET")
-variablesUsed.append("METPhi")
-variablesUsed.append("MHT")
-variablesUsed.append("vetoElectronsPassIso")
-variablesUsed.append("vetoMuonsPassIso")
-variablesUsed.append("NJets")
-variablesUsed.append("LeadingJetPt")
-variablesUsed.append("LeadingJet")
-variablesUsed.append("HT")
-variablesUsed.append("Weight")
-variablesUsed.append("passedMhtMet6pack")
-variablesUsed.append("tEffhMetMhtRealXMht2016")
-variablesUsed.append("CrossSection")
-variablesUsed.append("puWeight")
-#variablesUsed.append("gen_mtautau")
-
-
-# basic_histograms_defs = [
-#         { "obs" : "invMass%%%", "minX" : 0, "maxX" : 13, "bins" : 6, "blind" : [4,None]},# "customBins"  : [0,2,4,6,10,12] },
-#         { "obs" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 6, "blind" : [None,0.1]},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
-#         { "obs" : "dilepBDT%%%_fine", "formula" : "dilepBDT%%%","minX" : -1, "maxX" : 1, "bins" : 15, "blind" : [None,0.1]},
-#         { "obs" : "dilepBDT%%%_custom", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 6, "blind" : [None,0.1], "customBins"  : [-1,-0.6,-0.3,0,0.10,0.26,0.34,0.38,0.42,1] },
-#         { "obs" : "deltaR%%%", "minX" : 0, "maxX" : 3.5, "bins" : 8},
-#         { "obs" : "dilepHt%%%", "minX" : 200, "maxX" : 800, "bins" : 8},
-#         { "obs" : "dileptonPt%%%", "minX" : 0, "maxX" : 30, "bins" : 8},
-#         { "obs" : "MHT", "minX" : 220, "maxX" : 800, "bins" : 8},
-#         { "obs" : "MET", "minX" : 200, "maxX" : 800, "bins" : 8},
-#         { "obs" : "MinDeltaPhiMhtJets", "minX" : 0, "maxX" : 3.5, "bins" : 8},
-#         { "obs" : "leptons%%%[0].Pt()", "minX" : 0, "maxX" : 20, "bins" : 8},
-#         { "obs" : "deltaPhiMetLepton1%%%", "minX" : 0, "maxX" : 3.5, "bins" : 8},
-#         { "obs" : "mt1%%%", "minX" : 0, "maxX" : 200, "bins" : 8},
-#         { "obs" : "leptons%%%[0].Eta()", "minX" : -2.4, "maxX" : 2.4, "bins" : 8},
-#         { "obs" : "NJets", "minX" : 0, "maxX" : 6, "bins" : 6},
-#         { "obs" : "deltaPhiMetLepton2%%%", "minX" : 0, "maxX" : 3.5, "bins" : 8},
-#         { "obs" : "LeadingJetPt", "minX" : 0, "maxX" : 500, "bins" : 8},
-#         { "obs" : "LeadingJet.Eta()", "minX" : -2.4, "maxX" : 2.4, "bins" : 8},
-#         { "obs" : "deltaEta%%%", "minX" : 0, "maxX" : 5, "bins" : 8},
-#         { "obs" : "HT", "minX" : 0, "maxX" : 500, "bins" : 8},
-#         { "obs" : "leptons%%%[0].Phi()", "minX" : 0, "maxX" : 3.5, "bins" : 8},
-#      ]
-#     
-# notautau_cuts = [
-#         {"name":"none", "title": "None", "condition" : "(MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && !tautau%%%)", "baseline" : "isoCr%%% == 0", "sc" : "isoCr%%% >= 1"},
-#         {"name":"bdt", "title": "BDT > 0.35", "condition" : "(dilepBDT%%% > 0.35 &&  MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && !tautau%%%)", "baseline" : "isoCr%%% == 0", "sc" : "isoCr%%% >= 1"},
-#     ]
-
-preselection = "MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && "
-twoLeptonsConds = []
-
-for iso in utils.leptonIsolationList:
-    for cat in utils.leptonIsolationCategories:
-        ptRanges = [""]
-        drCuts = [""]
-        if iso == "CorrJetIso":
-            ptRanges = utils.leptonCorrJetIsoPtRange
-            drCuts = utils.leptonCorrJetIsoDrCuts
-        for ptRange in ptRanges:
-            for drCut in drCuts:
-                cuts = ""
-                if len(str(ptRange)) > 0:
-                    cuts = str(ptRange) + "Dr" + str(drCut)
-                jetiso = iso + cuts + cat
-                variablesUsed.append("leptons" + jetiso)
-                variablesUsed.append("deltaR" + jetiso)
-                variablesUsed.append("dilepHt" + jetiso)
-                variablesUsed.append("dileptonPt" + jetiso)
-                variablesUsed.append("deltaPhiMetLepton1" + jetiso)
-                variablesUsed.append("deltaPhiMetLepton2" + jetiso)
-                variablesUsed.append("mt1" + jetiso)
-                variablesUsed.append("deltaEta" + jetiso)
-                variablesUsed.append("twoLeptons" + jetiso)
-                variablesUsed.append("dilepBDT" + jetiso)
-                variablesUsed.append("leptonFlavour" + jetiso)
-                variablesUsed.append("sameSign" + jetiso)
-                variablesUsed.append("isoCr" + jetiso)
-                variablesUsed.append("invMass" + jetiso)
-                variablesUsed.append("mtautau" + jetiso)
-                
-                variablesUsed.append("tc" + jetiso)
-                variablesUsed.append("tautau" + jetiso)
-                variablesUsed.append("other" + jetiso)
-                variablesUsed.append("omega" + jetiso)
-                variablesUsed.append("rho_0" + jetiso)
-                variablesUsed.append("eta" + jetiso)
-                variablesUsed.append("eta_prime" + jetiso)
-                variablesUsed.append("j_psi" + jetiso)
-                variablesUsed.append("upsilon_1" + jetiso)
-                variablesUsed.append("upsilon_2" + jetiso)
-                variablesUsed.append("phi" + jetiso)
-                variablesUsed.append("n_body" + jetiso)
-                variablesUsed.append("sc" + jetiso)
-                variablesUsed.append("rf" + jetiso)
-                variablesUsed.append("ff" + jetiso)
-                                
-                twoLeptonsConds.append("twoLeptons" + jetiso + " == 1")
-                
-
-preselection += "(" + " || ".join(twoLeptonsConds) + ")"
-
-print "Preselection:"
-print preselection
+condor_wrapper = os.path.expandvars("$CMSSW_BASE/src/cms-tools/analysis/scripts/condor_wrapper.sh")
+slimmer_script = os.path.expandvars("$CMSSW_BASE/src/cms-tools/analysis/isolation/skim_slimmer_for_jet_iso_cr_scan_job.py")
 
 def main():
     print "Start: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S')
     
-    if not os.path.isdir(output_dir):
-        os.mkdir(output_dir)
+    condor_file="/tmp/condor_submut." + datetime.now().strftime('%d-%m-%Y_%H:%M:%S')
+    print("condor submit file:", condor_file)
+    
+    condor_f = open(condor_file,'w')
+    condor_f.write('''
+universe = vanilla
+should_transfer_files = IF_NEEDED
+executable = /bin/bash
+notification = Never
+''')
     
     files = glob(input_dir + "/*")
+    #files= [input_dir+"/QCD_HT1500to2000_TuneCUETP8M1_16.root"]
+
     
     for filename in files:
         print "Opening", filename
         baseFileName = os.path.basename(filename)
+        baseFileNameNoStem = '.'.join(os.path.basename(filename).split('.')[:-1])
         output_file = output_dir + "/" + baseFileName
         print "output_file", output_file
         
         if os.path.isfile(output_file):
             print "File exits. Skipping", output_file
             continue
-
-        f = TFile(filename)
-        c = f.Get('tEvent')
-        if c.GetEntries() == 0:
-            print "Emtpy. Skipping"
-            f.Close()
-            continue
-
-        print "old tree has", c.GetEntries()
-        c.SetBranchStatus("*",0);
-        for branch in variablesUsed:
-            #print "Setting branch on", branch
-            c.SetBranchStatus(branch,1)
-        newfile = TFile(output_file,'recreate')
-        newTree = c.CopyTree(preselection)
-        print "new tree has", newTree.GetEntries()
         
-        if newTree.GetEntries() == 0:
-            print "Resulting tree is empty. Skipping."
-            f.Close()
-            newTree.Delete()
-            newfile.Close()
-            os.remove(output_file)
-            continue
+        command = slimmer_script + " -i " + filename + " -o " + output_file
+        print("Perorming:", command)
         
-        
-        
-        newfile.cd()
-        newTree.Write("tEvent");
-        newfile.Close();
+        #system(command)
+        condor_f.write("arguments = " + condor_wrapper + " " + command + "\n")
+        condor_f.write("error = " + output_dir_stderr + "/" + baseFileNameNoStem + "_slimmer.err\n")
+        condor_f.write("output = " + output_dir_stdout + "/" + baseFileNameNoStem + "_slimmer.out\n")
+        condor_f.write("Queue\n")
     
-        print "Done copying."
-
-        c.Delete()
-        f.Close() 
-    
+    condor_f.close()
+    system("condor_submit " + condor_file)
     print "End: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S')
     
 main()

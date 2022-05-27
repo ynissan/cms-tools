@@ -81,7 +81,7 @@ executable = /bin/bash
 notification = Never
 priority = 0
 request_memory = 12 GB
-+RequestRuntime = 43200
++RequestRuntime = 86400
 EOM
 
 #FILES=(Run2016E-17Jul2018-v1.METAOD_17.root Run2016E-17Jul2018-v1.METAOD_18.root Run2016E-17Jul2018-v1.METAOD_20.root Run2016F-17Jul2018-v1.METAOD_21.root Run2016G-17Jul2018-v1.METAOD_28.root)

@@ -87,9 +87,10 @@ universe = vanilla
 should_transfer_files = IF_NEEDED
 executable = /bin/bash
 notification = Never
-request_memory = 16 GB
 +RequestRuntime = 86400
+request_memory = 16 GB
 EOM
+
 
 # if [ -z "$SAM" ]; then
 #     for sim in ${INPUT_DIR}/sum/*; do
@@ -168,7 +169,7 @@ echo -e "\n\nRUNNING ALL GROUP\n\n"
 #     mkdir "$OUTPUT_DIR/stderr"
 # fi
 
-FILES=${INPUT_DIR}/sum/*
+FILES=${INPUT_DIR}/single/*
 
 #FILES=(higgsino_mu115_dm9p82Chi20Chipm.root higgsino_mu115_dm7p44Chi20Chipm.root higgsino_mu130_dm7p49Chi20Chipm.root)
 
@@ -177,7 +178,8 @@ for sim in ${FILES[@]}; do
     if [ -n "$SAM" ]; then
         filename=`echo $(basename $sim .root)`
     else
-        filename=`echo $(basename $sim .root) | awk -F"_" '{print $1"_"$2"_"$3}'`
+        #filename=`echo $(basename $sim .root) | awk -F"_" '{print $1"_"$2"_"$3}'`
+        filename=`echo $(basename $sim .root)`
     fi
     echo $filename
     tb=all
@@ -193,5 +195,6 @@ Queue
 EOM
 done
 
-condor_submit $output_file
+#condor_submit $output_file
+echo "log file: $output_file"
 rm $output_file
