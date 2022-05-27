@@ -199,7 +199,7 @@ class BaseParams:
     
     subtract_same_charge = False
     
-    sc_label = "same-sign simulation"
+    sc_label = "same-sign"
     sc_ratio_label = "sc"
     sc_color = 6
     

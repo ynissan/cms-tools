@@ -4,7 +4,6 @@ from ROOT import *
 from math import *
 import sys
 
-sys.path.append("/afs/desy.de/user/n/nissanuv/cms-tools")
 from lib import utils
 
 def minDeltaR(v, vs):

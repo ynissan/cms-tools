@@ -135,7 +135,7 @@ def main():
             ptRanges = [""]
             drCuts  = [""]
 
-            if iso == "CorrJetIso":
+            if iso in ["CorrJetIso", "CorrJetNoMultIso"]:
                 ptRanges = utils.leptonCorrJetIsoPtRange
                 drCuts = utils.leptonCorrJetIsoDrCuts
             for ptRange in ptRanges:
@@ -240,7 +240,7 @@ def main():
                 ptRanges = [""]
                 drCuts  = [""]
 
-                if iso == "CorrJetIso":
+                if iso in ["CorrJetIso", "CorrJetNoMultIso"]:
                     ptRanges = utils.leptonCorrJetIsoPtRange
                     drCuts = utils.leptonCorrJetIsoDrCuts
                 for ptRange in ptRanges:

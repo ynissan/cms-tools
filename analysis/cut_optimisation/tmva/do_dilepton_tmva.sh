@@ -41,11 +41,11 @@ echo "output file: $output_file"
 #     BG_INPUT=$SKIM_BG_SIG_BDT_OUTPUT_DIR
 # fi
 
-INPUT_DIR=$SKIM_SIG_OUTPUT_DIR/sum
+INPUT_DIR=$SKIM_SIG_OUTPUT_DIR/single
 OUTPUT_DIR=$DILEPTON_BDT_DIR
 BG_INPUT=$SKIM_OUTPUT_DIR/sum/type_sum
 
-echo INPUT_DIR=$SKIM_SIG_OUTPUT_DIR/sum
+echo INPUT_DIR=$SKIM_SIG_OUTPUT_DIR/single
 echo OUTPUT_DIR=$DILEPTON_BDT_DIR
 echo BG_INPUT=$SKIM_OUTPUT_DIR/sum/type_sum
 
@@ -63,6 +63,7 @@ universe = vanilla
 should_transfer_files = IF_NEEDED
 executable = /bin/bash
 notification = Never
++RequestRuntime = 86400
 EOM
 
 for group in "${!SIM_GROUP[@]}"; do
@@ -96,7 +97,7 @@ for group in "${!SIM_GROUP[@]}"; do
                     ptRanges=("")
                     drCuts=("")
                     #ptRanges[0]=""
-                    if [[ $iso == "CorrJetIso" ]]; then
+                    if [[ $iso == "CorrJetIso" || $iso == "CorrJetNoMultIso" ]]; then
                         ptRanges=("${LEPTON_CORR_JET_ISO_RANGE[@]}")
                         drCuts=("${LEPTON_CORR_JET_ISO_DR_CUTS[@]}")
                     fi
@@ -179,5 +180,5 @@ done
 # fi
 
 condor_submit $output_file
-#echo $output_file
+echo $output_file
 rm $output_file
