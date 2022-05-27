@@ -24,8 +24,8 @@ sam = args.sam
 no_lepton_selection = args.no_lepton_selection
 slim = args.slim
 
-skim_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/single/"
-output_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum"
+skim_dir = "/nfs/dust/cms/user/diepholq/x1x2x1/signal/skim/single"
+output_dir = "/nfs/dust/cms/user/diepholq/x1x2x1/signal/skim/sum"
 
 if slim:
     skim_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim/"
@@ -48,7 +48,7 @@ elif no_lepton_selection:
 if not os.path.exists(output_dir):
     os.mkdir(output_dir)
 
-files = glob(skim_dir + "/*higgsino*");
+files = glob(skim_dir + "/*");
 
 points = {}
 
@@ -60,7 +60,7 @@ for f in files:
     if sam:
         point = "_".join(os.path.basename(f).split("_")[2:4])
     else:
-        point = "_".join(os.path.basename(f).split("_")[0:3])
+        point = "_".join(os.path.basename(fileName).split("_")[3:6])
     if points.get(point) is None:
         points[point] = 1
     else:
@@ -68,7 +68,7 @@ for f in files:
 
 print(points)
 
-default_file_num = 2
+default_file_num = 1000000
 
 chunk_size = default_file_num
 
