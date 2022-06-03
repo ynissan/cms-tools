@@ -11,8 +11,8 @@ import cppyy
 import itertools
 from datetime import datetime
 
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools"))
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/lib/classes"))
 from lib import analysis_ntuples
 from lib import analysis_tools
 from lib import utils
@@ -24,7 +24,7 @@ args = parser.parse_args()
 
 force = args.force
 
-bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum"
+bg_dir = "/afs/desy.de/user/d/diepholq/nfs/x1x2x1/bg/skim/sum/type_sum"
 
 def main():
     sumTypes = {}

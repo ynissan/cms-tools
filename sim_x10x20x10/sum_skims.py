@@ -60,7 +60,7 @@ for f in files:
     if sam:
         point = "_".join(os.path.basename(f).split("_")[2:4])
     else:
-        point = "_".join(os.path.basename(fileName).split("_")[3:6])
+        point = "_".join(os.path.basename(f).split("_")[3:6])
     if points.get(point) is None:
         points[point] = 1
     else:
@@ -80,7 +80,7 @@ for point in points:
     i = 1
     
     for chunk in chunker_longest(point_files, chunk_size):
-        output_file = output_dir + "/" + point + "_" + str(i) + ".root"
+        output_file = output_dir + "/higgsino_Summer16_stopstop_" + point + "_" + str(i) + ".root"
     
         if os.path.exists(output_file):
             print("File", output_file, " exists. Skipping")

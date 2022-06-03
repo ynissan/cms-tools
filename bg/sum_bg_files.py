@@ -33,6 +33,7 @@ from lib import analysis_observables
 def chunker_longest(iterable, chunksize):
     return itertools.zip_longest(*[iter(iterable)] * chunksize)
 
+
 #for chunk in chunker_longest(range(101), 11):
 #    print(chunk)
     
@@ -50,8 +51,9 @@ def chunker_longest(iterable, chunksize):
 parser = argparse.ArgumentParser(description='Sum histograms and trees.')
 args = parser.parse_args()
 
-WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim"
+WORK_DIR = "/afs/desy.de/user/d/diepholq/nfs/x1x2x1/bg/skim"
 SINGLE_OUTPUT = WORK_DIR + "/single"
+INPUT_SUM = WORK_DIR + "/sum/input"
 OUTPUT_SUM = WORK_DIR + "/sum"
 
 OUTPOUT_TYPE_SUM = OUTPUT_SUM + "/type_sum"
@@ -61,6 +63,9 @@ OUTPUT_SUM_ERROR = OUTPUT_SUM + "/stderr"
 
 if not os.path.isdir(OUTPUT_SUM):
     os.mkdir(OUTPUT_SUM)
+
+if not os.path.isdir(INPUT_SUM):
+    os.mkdir(INPUT_SUM)
 
 if not os.path.isdir(OUTPOUT_TYPE_SUM):
     os.mkdir(OUTPOUT_TYPE_SUM)
@@ -87,50 +92,50 @@ print(("Start: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S')))
 condor_file="/tmp/condor_submut." + datetime.now().strftime('%d-%m-%Y_%H:%M:%S')
 print("condor submit file:", condor_file)
 
-default_file_num = 90
+default_file_num = 10000
 
 file_num_per_type = {
-"DYJetsToLL_M-50_TuneCUETP8M1" : 400,
-"DYJetsToLL_M-50_HT-1200to2500" : 20,
-"DYJetsToLL_M-50_HT-200to400" : 20,
-"DYJetsToLL_M-50_HT-2500toInf" : 10,
-"DYJetsToLL_M-50_HT-400to600" : 10,
-"DYJetsToLL_M-50_HT-600to800" : 30,
-"DYJetsToLL_M-50_HT-800to1200" : 20,
-"DYJetsToLL_M-50_HT-100to200" : 20,
-"DYJetsToLL_M-5to50_HT-100to200" : 100000,
-"DYJetsToLL_M-5to50_HT-400to600" : 100000,
-"DYJetsToLL_M-5to50_HT-600toInf" : 20,
-"DYJetsToLL_M-5to50_HT-70to100" : 100000,
-"QCD_HT1000to1500_TuneCUETP8M1" : 50,
-"QCD_HT1500to2000_TuneCUETP8M1" : 50,
-"QCD_HT2000toInf_TuneCUETP8M1" : 20,
-"QCD_HT200to300_TuneCUETP8M1" : 200,
-"QCD_HT500to700_TuneCUETP8M1" : 200,
-"QCD_HT700to1000_TuneCUETP8M1" : 100,
-"ST_t-channel_antitop" : 80,
-"ST_t-channel_top" : 80,
-"TTJets_DiLept_TuneCUETP8M1" : 5,
-"TTJets_SingleLeptFromT_TuneCUETP8M1" : 10,
-"TTJets_SingleLeptFromTbar_TuneCUETP8M1" : 10,
-"WJetsToLNu_HT-1200To2500_TuneCUETP8M1" : 10,
-"WJetsToLNu_HT-200To400_TuneCUETP8M1" : 10,
-"WJetsToLNu_HT-2500ToInf_TuneCUETP8M1" : 5,
-"WJetsToLNu_HT-400To600_TuneCUETP8M1" : 10,
-"WJetsToLNu_HT-600To800_TuneCUETP8M1" : 10,
-"WJetsToLNu_HT-800To1200_TuneCUETP8M1" : 10,
-"WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8" : 200,
-"ZJetsToNuNu_HT-100To200_13TeV-madgraph" : 20,
-"ZJetsToNuNu_HT-200To400_13TeV-madgraph" : 10,
-"ZJetsToNuNu_HT-2500ToInf_13TeV-madgraph" : 20,
-"ZJetsToNuNu_HT-400To600_13TeV-madgraph" : 10,
-"ZJetsToNuNu_HT-600To800_13TeV-madgraph" : 20,
-"ZJetsToNuNu_HT-800To1200_13TeV-madgraph" : 10,
-"ZJetsToNuNu_HT-1200To2500_13TeV-madgraph" : 20,
-"ZZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8" : 90,
-"ZZ_TuneCUETP8M1_13TeV-pythia8" : 1000,
-"ZZ_TuneCUETP8M1_13TeV-pythia8" : 1000,
-"WW_TuneCUETP8M1_13TeV-pythia8" : 50,
+"DYJetsToLL_M-50_TuneCUETP8M1" : 10000,
+"DYJetsToLL_M-50_HT-1200to2500" : 10000,
+"DYJetsToLL_M-50_HT-200to400" : 10000,
+"DYJetsToLL_M-50_HT-2500toInf" : 10000,
+"DYJetsToLL_M-50_HT-400to600" : 10000,
+"DYJetsToLL_M-50_HT-600to800" : 700,
+"DYJetsToLL_M-50_HT-800to1200" : 10000,
+"DYJetsToLL_M-50_HT-100to200" : 10000,
+"DYJetsToLL_M-5to50_HT-100to200" : 10000,
+"DYJetsToLL_M-5to50_HT-400to600" : 10000,
+"DYJetsToLL_M-5to50_HT-600toInf" : 10000,
+"DYJetsToLL_M-5to50_HT-70to100" : 10000,
+"QCD_HT1000to1500_TuneCUETP8M1" : 10000,
+"QCD_HT1500to2000_TuneCUETP8M1" : 2000,
+"QCD_HT2000toInf_TuneCUETP8M1" : 10000,
+"QCD_HT200to300_TuneCUETP8M1" : 10000,
+"QCD_HT500to700_TuneCUETP8M1" : 10000,
+"QCD_HT700to1000_TuneCUETP8M1" : 10000,
+"ST_t-channel_antitop" : 10000,
+"ST_t-channel_top" : 3800,
+"TTJets_DiLept_TuneCUETP8M1" : 900,
+"TTJets_SingleLeptFromT_TuneCUETP8M1" : 930,
+"TTJets_SingleLeptFromTbar_TuneCUETP8M1" : 910,#10
+"WJetsToLNu_HT-1200To2500_TuneCUETP8M1" : 500, #10
+"WJetsToLNu_HT-200To400_TuneCUETP8M1" : 1170, #10
+"WJetsToLNu_HT-2500ToInf_TuneCUETP8M1" : 10000,#10
+"WJetsToLNu_HT-400To600_TuneCUETP8M1" : 500, #10
+"WJetsToLNu_HT-600To800_TuneCUETP8M1" : 600, #10
+"WJetsToLNu_HT-800To1200_TuneCUETP8M1" : 500, #10
+"WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8" : 10000, #200
+"ZJetsToNuNu_HT-100To200_13TeV-madgraph" : 10000, #20
+"ZJetsToNuNu_HT-200To400_13TeV-madgraph" : 10000,#20?
+"ZJetsToNuNu_HT-2500ToInf_13TeV-madgraph" : 10000, #20
+"ZJetsToNuNu_HT-400To600_13TeV-madgraph" :500, #10
+"ZJetsToNuNu_HT-600To800_13TeV-madgraph" : 10000, #20
+"ZJetsToNuNu_HT-800To1200_13TeV-madgraph" : 10000, #10
+"ZJetsToNuNu_HT-1200To2500_13TeV-madgraph" : 10000, #20
+"ZZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8" : 10000,
+"ZZ_TuneCUETP8M1_13TeV-pythia8" : 10000,
+"ZZ_TuneCUETP8M1_13TeV-pythia8" : 10000,
+"WW_TuneCUETP8M1_13TeV-pythia8" : 10000, #50
 }
 
 def main():
@@ -167,7 +172,7 @@ notification = Never
             sumTypes[type][types[1] + "_" + types[2]] += 1
 
     print(sumTypes)
-
+    #exit(0)   
     for type in sumTypes:
         for typeRange in sumTypes[type]:
             print("\n\n\n\n\n-----")
@@ -202,9 +207,9 @@ notification = Never
             if os.path.exists(first_file):
                 print("File", first_file, " exists. Skipping")
                 continue
-            
+                
             i = 1
-            
+
             chunk_size = default_file_num
             if base_file in file_num_per_type:
                 chunk_size = file_num_per_type[base_file]
@@ -213,17 +218,24 @@ notification = Never
             
             for chunk in chunker_longest(files, chunk_size):
                 output_file = OUTPOUT_TYPE_SUM + "/" + base_file + "_" + str(i) + ".root"
-                
                 if os.path.exists(output_file):
                     print("File", output_file, " exists. Skipping")
                     break
                 else:
                     files_list = " ".join([f for f in chunk if f is not None])
                     command = "hadd -f " + output_file + " " + files_list
-                    print("Perorming:", command)
+                    input_file = open(INPUT_SUM+"/"+type+"_"+typeRange+"_"+str(i)+".sh",'w')
+                    input_file.write("#!/bin/sh" + "\n")
+                    input_file.write(command + "\n")
+
+                    input_file.close()
+                    input_file_path = INPUT_SUM+"/"+type+"_"+typeRange+"_"+str(i)+".sh"
+                    os.chmod(input_file_path, 0o755)
+                    #print("Performing:", command)
                     
                     #system(command)
-                    condor_f.write("arguments = " + condor_wrapper + " " + command + "\n")
+                    #condor_f.write("arguments = " + condor_wrapper + " " + command + "\n")
+                    condor_f.write("arguments = " + condor_wrapper + " " + input_file_path +"\n")
                     condor_f.write("error = " + OUTPUT_SUM_ERROR + "/" + base_file + "_" + str(i) + ".err" + "\n")
                     condor_f.write("output = " + OUTPUT_SUM_OUTPUT + "/" + base_file + "_" + str(i) + ".out" + "\n")
                     condor_f.write("Queue\n")
