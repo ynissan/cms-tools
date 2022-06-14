@@ -78,8 +78,8 @@ two_leps_histograms = [
    
     { "obs" : "nmtautau%%%", "minX" : 0, "maxX" : 200, "bins" : 30 },
     
-    #{ "obs" : "mt1%%%", "minX" : 0, "maxX" : 100, "bins" : 30, "units" : "m_{T}(l_{1}) [GeV]", "linearYspace" : 1.5 },
-    #{ "obs" : "mt2%%%", "minX" : 0, "maxX" : 200, "bins" : 30 },
+    #{ "obs" : "mth1%%%", "minX" : 0, "maxX" : 100, "bins" : 30, "units" : "m_{T}(l_{1}) [GeV]", "linearYspace" : 1.5 },
+    #{ "obs" : "mth2%%%", "minX" : 0, "maxX" : 200, "bins" : 30, "units" : "m_{T}(l_{2}) [GeV]", "linearYspace" : 1.5},
     
     { "obs" : "leptons%%%[0].Pt()", "minX" : 2, "maxX" : 15, "bins" : 30, "usedObs" : ["leptons%%%"], "units" : "p_{T}(l_{1}) [GeV]", "linearYspace" : 1.5 },
     { "obs" : "leptons%%%[1].Pt()", "minX" : 2, "maxX" : 15, "bins" : 30, "usedObs" : ["leptons%%%"], "units" : "p_{T}(l_{2}) [GeV]" },
@@ -154,7 +154,11 @@ class stops_bg_vs_signal(BaseParams):
     
     cuts = [
         {"name":"none", "title": "None", "condition" : "1", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
-        #{"name":"met", "title": "MET > 300", "condition" : "MET > 300", "baseline" : "twoLeptons%%% == 1", "sc" : "1"},
+        
+        {"name":"step1", "title": "invMass < 5", "condition" : "invMass%%% < 5", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+        
+        {"name":"step2", "title": "invMass < 5 && NJets >= 1", "condition" : "invMass%%% < 5 && NJets >= 1", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+        
     ]
     
     legend_coordinates = {"x1" : .35, "y1" : .40, "x2" : .95, "y2" : .89}
