@@ -1196,7 +1196,7 @@ def main():
                                     commonCalcFlatObs["category"][0] = 1
                                     foundSingleLepton = True
                         #if leptons is not None and (jpsi_muons or commonCalcFlatObs["BTagsLoose"][0] < 3 or commonCalcFlatObs["BTagsMedium"][0] < 3 or commonCalcFlatObs["BTagsDeepLoose"][0] < 3 or commonCalcFlatObs["BTagsDeepMedium"][0] < 3):
-                        if leptons is not None and (jpsi_muons or commonCalcFlatObs["BTagsLoose"][0] == 0 or commonCalcFlatObs["BTagsMedium"][0] == 0 or commonCalcFlatObs["BTagsDeepLoose"][0] == 0 or commonCalcFlatObs["BTagsDeepMedium"][0] == 0):
+                        if leptons is not None:#and (jpsi_muons or commonCalcFlatObs["BTagsLoose"][0] == 0 or commonCalcFlatObs["BTagsMedium"][0] == 0 or commonCalcFlatObs["BTagsDeepLoose"][0] == 0 or commonCalcFlatObs["BTagsDeepMedium"][0] == 0):
                 
                             #print var_BTagsLoose[0], var_BTagsMedium[0], var_BTagsDeepLoose[0], var_BTagsDeepMedium[0]
                 
@@ -1244,6 +1244,8 @@ def main():
                                 dileptonVars["pt3" + postfix][0] = analysis_tools.pt3(leptons[0].Pt(),leptons[0].Phi(),leptons[1].Pt(),leptons[1].Phi(),MET,METPhi)
                                 dileptonVars["mt1" + postfix][0] = analysis_tools.MT2(MET, METPhi, leptons[0])
                                 dileptonVars["mt2" + postfix][0] = analysis_tools.MT2(MET, METPhi, leptons[1])
+                                dileptonVars["mth1" + postfix][0] = analysis_tools.MT2(MHT, MHTPhi, leptons[0])
+                                dileptonVars["mth2" + postfix][0] = analysis_tools.MT2(MHT, MHTPhi, leptons[1])
                         
                                 #if leptons[0].Pt() < 1 or leptons[1].Pt() < 1:
                                 #    print "FUCK!"
@@ -1483,6 +1485,8 @@ def main():
                 genCalcObs["pt3"][0] = analysis_tools.pt3(g1.Pt(),g1.Phi(),g2.Pt(),g2.Phi(),MET,METPhi)
                 genCalcObs["mt1"][0] = analysis_tools.MT2(MET, METPhi, g1)
                 genCalcObs["mt2"][0] = analysis_tools.MT2(MET, METPhi, g2)
+                genCalcObs["mth1"][0] = analysis_tools.MT2(MHT, MHTPhi, g1)
+                genCalcObs["mth2"][0] = analysis_tools.MT2(MHT, MHTPhi, g2)
                 genCalcObs["mtautau"][0] = analysis_tools.Mtautau(pt, g1, g2)
                 genCalcObs["nmtautau"][0] = analysis_tools.Mtautau(pt, g1, g2)
                 genCalcObs["deltaEtaLeadingJetDilepton"][0] = abs((g1 + g2).Eta() - var_LeadingJet.Eta())

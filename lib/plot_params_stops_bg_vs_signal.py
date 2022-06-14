@@ -26,20 +26,20 @@ signalNames = [
 
 common_histograms = [
     
-    { "obs" : "MET", "minX" : 0, "maxX" : 800, "bins" : 30 },
+    { "obs" : "MET", "minX" : 0, "maxX" : 800, "bins" : 30, "legendCoor" : {"x1" : .35, "y1" : .7, "x2" : .98, "y2" : .95}, "legendCol" : 3 },
     #{ "obs" : "MT2", "minX" : 0, "maxX" : 100, "bins" : 30 },
-    { "obs" : "MHT", "minX" : 220, "maxX" : 500, "bins" : 30, "units" : "H_{T}^{Miss} [GeV]" },
+    { "obs" : "MHT", "minX" : 220, "maxX" : 500, "bins" : 30, "units" : "H_{T}^{Miss} [GeV]" , "legendCoor" : {"x1" : .35, "y1" : .65, "x2" : .98, "y2" : .95}, "legendCol" : 3  },
     { "obs" : "HT", "minX" : 0, "maxX" : 700, "bins" : 30 },
     #{ "obs" : "MetDHt", "minX" : 0, "maxX" : 700, "bins" : 30 },
     { "obs" : "leptonFlavour%%%", "minX" : 0, "maxX" : 2, "bins" : 2 },
     #{ "obs" : "int(genFlavour == \"Muons\")", "minX" : 0, "maxX" : 2, "bins" : 2, "usedObs" : ["genFlavour"] },
     #{ "obs" : "int(genFlavour == \"Electrons\")", "minX" : 0, "maxX" : 2, "bins" : 2, "usedObs" : ["genFlavour"] },
     
-    { "obs" : "NJets", "minX" : 0, "maxX" : 7, "bins" : 7 },
+    { "obs" : "NJets", "minX" : 0, "maxX" : 7, "bins" : 7 , "legendCoor" : {"x1" : .35, "y1" : .75, "x2" : .98, "y2" : .95}},
     #{ "obs" : "BTagsLoose", "minX" : 0, "maxX" : 7, "bins" : 7 },
     #{ "obs" : "BTagsMedium", "minX" : 0, "maxX" : 7, "bins" : 7 },
     #{ "obs" : "BTagsDeepLoose", "minX" : 0, "maxX" : 7, "bins" : 7 },
-    { "obs" : "BTagsDeepMedium", "minX" : 0, "maxX" : 7, "bins" : 7 },
+    { "obs" : "BTagsDeepMedium", "minX" : 0, "maxX" : 7, "bins" : 7, "legendCoor" : {"x1" : 0.65, "y1" : .2, "x2" : .95, "y2" : .89}, "legendCol" : 1 },
     
     #{ "obs" : "LeadingJetQgLikelihood", "minX" : 0, "maxX" : 1, "bins" : 30 },
     { "obs" : "MinDeltaPhiMhtJets", "minX" : 0, "maxX" : 6.3, "bins" : 20, "units" : "Min\Delta_{}\phi(H_{T}^{Miss}, Jets)" },
@@ -67,7 +67,7 @@ common_histograms = [
 two_leps_histograms = [
     
     
-    { "obs" : "invMass%%%", "minX" : 0, "maxX" : 12, "bins" : 20, "blind" : [4,None],"units" : "M_{ll} [GeV]", "linearYspace" : 1.5 },
+    { "obs" : "invMass%%%", "minX" : 0, "maxX" : 12, "bins" : 20, "blind" : [4,None],"units" : "M_{ll} [GeV]", "linearYspace" : 1.5, "legendCoor" : {"x1" : .35, "y1" : .65, "x2" : .98, "y2" : .95}, "legendCol" : 3  },
     
     
     
@@ -78,7 +78,7 @@ two_leps_histograms = [
    
     { "obs" : "nmtautau%%%", "minX" : 0, "maxX" : 200, "bins" : 30 },
     
-    { "obs" : "mth1%%%", "minX" : 0, "maxX" : 100, "bins" : 30, "units" : "m_{T}(l_{1}) [GeV]", "linearYspace" : 1.5 },
+    #{ "obs" : "mt1%%%", "minX" : 0, "maxX" : 100, "bins" : 30, "units" : "m_{T}(l_{1}) [GeV]", "linearYspace" : 1.5 },
     #{ "obs" : "mt2%%%", "minX" : 0, "maxX" : 200, "bins" : 30 },
     
     { "obs" : "leptons%%%[0].Pt()", "minX" : 2, "maxX" : 15, "bins" : 30, "usedObs" : ["leptons%%%"], "units" : "p_{T}(l_{1}) [GeV]", "linearYspace" : 1.5 },
@@ -127,7 +127,7 @@ class stops_bg_vs_signal(BaseParams):
         'MET' : utils.LUMINOSITY/1000.0,
     }
     
-    plot_bg = True
+    plot_bg = False
     plot_data = False
     plot_signal = True
     
@@ -140,7 +140,7 @@ class stops_bg_vs_signal(BaseParams):
     
     histrograms_file = BaseParams.histograms_root_files_dir + "/stops_bg_vs_signal.root"
     save_histrograms_to_file = True
-    load_histrograms_from_file = True
+    load_histrograms_from_file = False
     
    #  histograms_defs = [
 #         { "obs" : "MET", "minX" : 0, "maxX" : 800, "bins" : 30 },
@@ -153,13 +153,17 @@ class stops_bg_vs_signal(BaseParams):
     histograms_defs = common_histograms + two_leps_histograms
     
     cuts = [
-        {"name":"none", "title": "None", "condition" : "1", "baseline" : "twoLeptons%%% == 1", "sc" : "1"},
+        {"name":"none", "title": "None", "condition" : "1", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
         #{"name":"met", "title": "MET > 300", "condition" : "MET > 300", "baseline" : "twoLeptons%%% == 1", "sc" : "1"},
     ]
     
     legend_coordinates = {"x1" : .35, "y1" : .40, "x2" : .95, "y2" : .89}
+    #legend_coordinates = {"x1" : 0.65, "y1" : .2, "x2" : .95, "y2" : .89}
     legend_columns = 2
     legend_border = 0
+    
+    y_title_offset = 1.3
+    y_title = "Events"
     
     jetIsoStr = "NoIso"
     injectJetIsoToCuts(cuts, jetIsoStr)
