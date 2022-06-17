@@ -1484,7 +1484,7 @@ def main():
                         accBgHist = bgHist.Clone()
                     else:
                         accBgHist.Add(bgHist)
-                significance = utils.calcSignificance(sigHists[0], accBgHist)
+                significance = utils.calcSignificance(sigHists[0], accBgHist, True)
                 # sigNum = sigHist.Integral(1, sigHist.FindBin(8))
 #                 bgNum = 0
 #                 for bgHist in newBgHist.GetHists():

@@ -114,10 +114,10 @@ file_num_per_type = {
 "QCD_HT500to700_TuneCUETP8M1" : 10000,
 "QCD_HT700to1000_TuneCUETP8M1" : 10000,
 "ST_t-channel_antitop" : 10000,
-"ST_t-channel_top" : 3800,
-"TTJets_DiLept_TuneCUETP8M1" : 900,
-"TTJets_SingleLeptFromT_TuneCUETP8M1" : 930,
-"TTJets_SingleLeptFromTbar_TuneCUETP8M1" : 910,#10
+"ST_t-channel_top" : 1900,
+"TTJets_DiLept_TuneCUETP8M1" : 514,
+"TTJets_SingleLeptFromT_TuneCUETP8M1" : 620,#620
+"TTJets_SingleLeptFromTbar_TuneCUETP8M1" : 530,#910
 "WJetsToLNu_HT-1200To2500_TuneCUETP8M1" : 500, #10
 "WJetsToLNu_HT-200To400_TuneCUETP8M1" : 1170, #10
 "WJetsToLNu_HT-2500ToInf_TuneCUETP8M1" : 10000,#10
