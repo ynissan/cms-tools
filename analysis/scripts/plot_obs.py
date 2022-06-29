@@ -1476,8 +1476,7 @@ def main():
                     else:
                         print((utils.bcolors.BOLD + utils.bcolors.RED + "sigHists[i].Draw(HIST SAME " + errorStr + ")" + utils.bcolors.ENDC))
                         sigHists[i].Draw("HIST SAME " + errorStr)
-            
-            if plot_par.plot_significance and hist_def["obs"] == "invMass":
+            if plot_par.plot_significance and hist_def["obs"] == "invMassNoIso":  #was invMass
                 accBgHist = None
                 for bgHist in newBgHist.GetHists():
                     if accBgHist is None:
@@ -1490,7 +1489,7 @@ def main():
 #                 for bgHist in newBgHist.GetHists():
 #                     bgNum += bgHist.Integral(1, bgHist.FindBin(8))
 #                 significance = 0.1*sigNum/math.sqrt(bgNum)
-                print(("cutName ", cutName, "sig", significance))
+                print(("cutName ", cutName, "significance", significance))  #changed sig to significance
                 if not large_version and plot_par.plot_significance:
                     pt = TPaveText(.60,.1,.95,.2, "NDC")
                     pt.SetFillColor(0)

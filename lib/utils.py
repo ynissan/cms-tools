@@ -257,6 +257,8 @@ def getFilesForCompoundType(cType, directory):
         #    bgFiles.extend(glob(directory + "/" + miniType + ".root"))
         #else:
             #print "Globing " + directory + "/" + miniType + "_*.root"
+            #This line is to solve the ST problem that sometimes it comes without an underscore
+        bgFiles.extend(glob(directory + "/" + miniType + ".root"))
         bgFiles.extend(glob(directory + "/" + miniType + "_*.root"))
     #print(bgFiles)
     return bgFiles

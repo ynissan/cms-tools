@@ -28,7 +28,7 @@ common_histograms = [
     
     { "obs" : "MET", "minX" : 0, "maxX" : 800, "bins" : 30, "legendCoor" : {"x1" : .35, "y1" : .7, "x2" : .98, "y2" : .95}, "legendCol" : 3 },
     #{ "obs" : "MT2", "minX" : 0, "maxX" : 100, "bins" : 30 },
-    { "obs" : "MHT", "minX" : 220, "maxX" : 500, "bins" : 30, "units" : "H_{T}^{Miss} [GeV]" , "legendCoor" : {"x1" : .35, "y1" : .65, "x2" : .98, "y2" : .95}, "legendCol" : 3  },
+    { "obs" : "MHT", "minX" : 200, "maxX" : 500, "bins" : 30, "units" : "H_{T}^{Miss} [GeV]" , "legendCoor" : {"x1" : .35, "y1" : .65, "x2" : .98, "y2" : .95}, "legendCol" : 3  },
     { "obs" : "HT", "minX" : 0, "maxX" : 700, "bins" : 30 },
     #{ "obs" : "MetDHt", "minX" : 0, "maxX" : 700, "bins" : 30 },
     { "obs" : "leptonFlavour%%%", "minX" : 0, "maxX" : 2, "bins" : 2 },
@@ -42,11 +42,12 @@ common_histograms = [
     { "obs" : "BTagsDeepMedium", "minX" : 0, "maxX" : 7, "bins" : 7, "legendCoor" : {"x1" : 0.65, "y1" : .2, "x2" : .95, "y2" : .89}, "legendCol" : 1 },
     
     #{ "obs" : "LeadingJetQgLikelihood", "minX" : 0, "maxX" : 1, "bins" : 30 },
-    { "obs" : "MinDeltaPhiMhtJets", "minX" : 0, "maxX" : 6.3, "bins" : 20, "units" : "Min\Delta_{}\phi(H_{T}^{Miss}, Jets)" },
-    { "obs" : "MinDeltaPhiMetJets", "minX" : 0, "maxX" : 6.3, "bins" : 20, "units" : "Min\Delta_{}\phi(E_{T}^{Miss}, Jets)" },
+    { "obs" : "MinDeltaPhiMhtJets", "minX" : 0, "maxX" : 1.5, "bins" : 20, "units" : "Min\Delta_{}\phi(H_{T}^{Miss}, Jets)" },
+    { "obs" : "MinDeltaPhiMetJets", "minX" : 0, "maxX" : 1.5, "bins" : 20, "units" : "Min\Delta_{}\phi(E_{T}^{Miss}, Jets)" },
     
     { "obs" : "LeadingJetPt", "minX" : 0, "maxX" : 800, "bins" : 30, "units" : "p_{T}(j_{1})" },
     { "obs" : "abs(LeadingJet.Eta())", "minX" : 0, "maxX" : 2.5, "bins" : 30, "usedObs" : ["LeadingJet"], "units" : "|\eta_{j_{1}}|" },
+    { "obs" : "abs(LeadingJet.Eta())_2","formula" : "abs(LeadingJet.Eta())", "minX" : 0, "maxX" : 0.5, "bins" : 60, "usedObs" : ["LeadingJet"], "units" : "|\eta_{j_{1}}|" },
     #{ "obs" : "MaxCsv25", "minX" : 0, "maxX" : 1, "bins" : 30 },
     #{ "obs" : "MaxDeepCsv25", "minX" : 0, "maxX" : 1, "bins" : 30 },
     #{ "obs" : "LeadingJetMinDeltaRElectrons", "minX" : 0, "maxX" : 5, "bins" : 30 },
@@ -78,8 +79,8 @@ two_leps_histograms = [
    
     { "obs" : "nmtautau%%%", "minX" : 0, "maxX" : 200, "bins" : 30 },
     
-    #{ "obs" : "mth1%%%", "minX" : 0, "maxX" : 100, "bins" : 30, "units" : "m_{T}(l_{1}) [GeV]", "linearYspace" : 1.5 },
-    #{ "obs" : "mth2%%%", "minX" : 0, "maxX" : 200, "bins" : 30, "units" : "m_{T}(l_{2}) [GeV]", "linearYspace" : 1.5},
+    { "obs" : "mth1%%%", "minX" : 0, "maxX" : 100, "bins" : 30, "units" : "m_{T}(l_{1}) [GeV]", "linearYspace" : 1.5 },
+    { "obs" : "mth2%%%", "minX" : 0, "maxX" : 200, "bins" : 30, "units" : "m_{T}(l_{2}) [GeV]", "linearYspace" : 1.5},
     
     { "obs" : "leptons%%%[0].Pt()", "minX" : 2, "maxX" : 15, "bins" : 30, "usedObs" : ["leptons%%%"], "units" : "p_{T}(l_{1}) [GeV]", "linearYspace" : 1.5 },
     { "obs" : "leptons%%%[1].Pt()", "minX" : 2, "maxX" : 15, "bins" : 30, "usedObs" : ["leptons%%%"], "units" : "p_{T}(l_{2}) [GeV]" },
@@ -127,13 +128,14 @@ class stops_bg_vs_signal(BaseParams):
         'MET' : utils.LUMINOSITY/1000.0,
     }
     
-    plot_bg = False
+    plot_bg = True
     plot_data = False
     plot_signal = True
     
     
     plot_overflow = True
     plot_error = True
+    plot_significance = True
     
     histograms_defs = []
     cuts = []
@@ -153,11 +155,39 @@ class stops_bg_vs_signal(BaseParams):
     histograms_defs = common_histograms + two_leps_histograms
     
     cuts = [
-        {"name":"none", "title": "None", "condition" : "1", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+        {"name":"none", "title": "MET > 140", "condition" : "MET > 140", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
         
-        {"name":"step1", "title": "invMass < 5", "condition" : "invMass%%% < 5", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+        # {"name":"step1", "title": "Delta_R_{ll} < 3.7", "condition" : "deltaR%%% < 3.7", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+#         
+#         {"name":"step2", "title": "Delta_R_{ll} < 3.7 && pT(l1) > 4", "condition" : "deltaR%%% < 3.7 && leptons%%%[0].Pt() > 4", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+#         
+#         {"name":"step3", "title": "Delta_R < 3.7 && pT(l1) > 4 && BTagsDeepMedium > 0", "condition" : "deltaR%%% < 3.7 && leptons%%%[0].Pt() > 4 && BTagsDeepMedium > 0", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+#         
+#         {"name":"step4", "title": "Delta_R < 3.7 && pT(l1) > 4 && BTagsDeepMedium > 0 && mth(l1) > 15", "condition" : "deltaR%%% < 3.7 && leptons%%%[0].Pt() > 4 && BTagsDeepMedium > 0 && mth1%%% > 15", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+#         
+#         {"name":"step5", "title": "Delta_R < 3.7 && pT(l1) > 4 && BTagsDeepMedium > 0 && mth(l1) > 15 && mth(l2) > 15 ", "condition" : "deltaR%%% < 3.7 && leptons%%%[0].Pt() > 4 && BTagsDeepMedium > 0 && mth1%%% > 15 && mth2%%% > 15", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+#         
+#         {"name":"step6", "title": "Delta_R < 3.7 && pT(l1) > 4 && BTagsDeepMedium > 0 && mth(l1) > 15 && mth(l2) > 15 && HT > 400", "condition" : "deltaR%%% < 3.7 && leptons%%%[0].Pt() > 4 && BTagsDeepMedium > 0 && mth1%%% > 15 && mth2%%% > 15 && HT > 400", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+#         
+#         {"name":"step7", "title": "Delta_R < 3.7 && pT(l1) > 4 && BTagsDeepMedium > 1 && mth(l1) > 15 && mth(l2) > 15 && HT > 400", "condition" : "deltaR%%% < 3.7 && leptons%%%[0].Pt() > 4 && BTagsDeepMedium > 1 && mth1%%% > 15 && mth2%%% > 15 && HT > 400", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+#         
+#         {"name":"step8", "title": "Delta_R < 2 && pT(l1) > 4 && BTagsDeepMedium > 0 && mth(l1) > 15 && mth(l2) > 15 && HT > 400", "condition" : "deltaR%%% < 3.7 && leptons%%%[0].Pt() > 4 && BTagsDeepMedium > 0 && mth1%%% > 15 && mth2%%% > 15 && HT > 400", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
         
-        {"name":"step2", "title": "invMass < 5 && NJets >= 1", "condition" : "invMass%%% < 5 && NJets >= 1", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+#         {"name":"step1", "title": "MET > 140", "condition" : "MET > 140", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+#         
+#         {"name":"step2", "title": "MET > 140 && BTagsDeepMedium > 0", "condition" : "MET > 140 && BTagsDeepMedium > 0", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+#         
+	{"name":"step2.5", "title": "MET > 140 && BTagsDeepMedium > 0 && MinDeltaPhiMhtJets > 0.4", "condition" : "MET > 140 && BTagsDeepMedium > 0 && MinDeltaPhiMhtJets > 0.4", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+        
+	{"name":"step3", "title": "MET > 140 && BTagsDeepMedium > 1 && MinDeltaPhiMhtJets > 0.4", "condition" : "MET > 140 && BTagsDeepMedium > 1 && MinDeltaPhiMhtJets > 0.4", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+#         
+#         {"name":"step4", "title": "MET > 140 && BTagsDeepMedium > 0 && invMass%%% < 5", "condition" : "MET > 140 && BTagsDeepMedium > 0 && invMass%%% < 5", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+#         
+#         {"name":"step5", "title": "MET > 140 && BTagsDeepMedium > 1 && invMass%%% < 5", "condition" : "MET > 140 && BTagsDeepMedium > 1 && invMass%%% < 5", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+#         
+#         {"name":"step6", "title": "MET > 140 && BTagsDeepMedium > 0 && invMass%%% < 5 && MinDeltaPhiMhtJets > 0.5", "condition" : "MET > 140 && BTagsDeepMedium > 0 && invMass%%% < 5 && MinDeltaPhiMhtJets > 0.5", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+#         
+#         {"name":"step7", "title": "MET > 140 && BTagsDeepMedium > 1 && invMass%%% < 5 && MinDeltaPhiMhtJets > 0.5", "condition" : "MET > 140 && BTagsDeepMedium > 1 && invMass%%% < 5 && MinDeltaPhiMhtJets > 0.5", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
         
     ]
     
