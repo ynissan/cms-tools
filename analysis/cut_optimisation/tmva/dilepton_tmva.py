@@ -109,7 +109,7 @@ if lepNum == "exTrack":
 variablesUsed = []
 
 variablesUsed.append("BTagsDeepMedium")
-variablesUsed.append("MinDeltaPhiMetJets")
+variablesUsed.append("MinDeltaPhiMhtJets")
 variablesUsed.append("Weight")
 
 variablesUsed.append(prefix + 'deltaPhi' + iso + str(ptRange) + cat)
@@ -127,8 +127,10 @@ for obs in analysis_observables.dileptonBDTeventObservables:
 preselection = None
 
 if lepNum == "reco":
-    #preselection = "twoLeptons" + iso + str(ptRange) + cat + " == 1 && BTagsDeepMedium == 0 && MinDeltaPhiMetJets > 0.4 && @leptons" + iso + str(ptRange) + cat + ".size() == 2 && leptonFlavour" + iso + str(ptRange) + cat  + " == \"" + lep + "\"" + " && sameSign" + iso + str(ptRange) + cat + " == 0" + " && isoCr" + iso + str(ptRange) + cat + " == 0"
-    preselection = "twoLeptons" + iso + str(ptRange) + cat + " == 1 && BTagsDeepMedium == 0 && MinDeltaPhiMetJets > 0.4 && leptonFlavour" + iso + str(ptRange) + cat  + " == \"" + lep + "\"" + " && sameSign" + iso + str(ptRange) + cat + " == 0" + " && isoCr" + iso + str(ptRange) + cat + " == 0"
+    #preselection = "twoLeptons" + iso + str(ptRange) + cat + " == 1 && BTagsDeepMedium == 0 && MinDeltaPhiMhtJets > 0.4 && @leptons" + iso + str(ptRange) + cat + ".size() == 2 && leptonFlavour" + iso + str(ptRange) + cat  + " == \"" + lep + "\"" + " && sameSign" + iso + str(ptRange) + cat + " == 0" + " && isoCr" + iso + str(ptRange) + cat + " == 0"
+    #preselection = "twoLeptons" + iso + str(ptRange) + cat + " == 1 && BTagsDeepMedium == 0 && MinDeltaPhiMhtJets > 0.4 && leptonFlavour" + iso + str(ptRange) + cat  + " == \"" + lep + "\"" + " && sameSign" + iso + str(ptRange) + cat + " == 0" + " && isoCr" + iso + str(ptRange) + cat + " == 0"
+    #Inclusive isocr
+    preselection = "twoLeptons" + iso + str(ptRange) + cat + " == 1 && BTagsDeepMedium == 0 && MinDeltaPhiMhtJets > 0.4 && leptonFlavour" + iso + str(ptRange) + cat  + " == \"" + lep + "\"" + " && sameSign" + iso + str(ptRange) + cat + " == 0"
     
     variablesUsed.append("twoLeptons" + iso + str(ptRange) + cat)
     variablesUsed.append("leptonFlavour" + iso + str(ptRange) + cat)
@@ -136,20 +138,20 @@ if lepNum == "reco":
     variablesUsed.append("isoCr" + iso + str(ptRange) + cat)
     
     variablesUsed.append('dileptonPt' + iso + str(ptRange) + cat)
-    variablesUsed.append('mt1' + iso + str(ptRange) + cat)
+    variablesUsed.append('mth1' + iso + str(ptRange) + cat)
     
     variablesUsed.append('leptons' + iso + str(ptRange) + cat)
 
-    variablesUsed.append('deltaPhiMetLepton1' + iso + str(ptRange) + cat)
-    variablesUsed.append('deltaPhiMetLepton2' + iso + str(ptRange) + cat)
+    variablesUsed.append('deltaPhiMhtLepton1' + iso + str(ptRange) + cat)
+    variablesUsed.append('deltaPhiMhtLepton2' + iso + str(ptRange) + cat)
     
-    variablesUsed.append('mtautau' + iso + str(ptRange) + cat)
+    variablesUsed.append('nmtautau' + iso + str(ptRange) + cat)
     
 else:
     # Before 
     #preselection = "exclusiveTrack" + iso + str(ptRange) + cat + ' == 1 && BTagsDeepMedium == 0 &&  trackBDT' + iso + str(ptRange) + cat  +    ' >= 0 && exclusiveTrackLeptonFlavour' + iso + str(ptRange) + cat  + " == \"" + lep + "\""
     # Making new version without trackBDT precut
-    preselection = "exclusiveTrack" + iso + str(ptRange) + cat + ' == 1 && BTagsDeepMedium == 0 && MinDeltaPhiMetJets > 0.4 && exclusiveTrackLeptonFlavour' + iso + str(ptRange) + cat  + " == \"" + lep + "\""
+    preselection = "exclusiveTrack" + iso + str(ptRange) + cat + ' == 1 && BTagsDeepMedium == 0 && MinDeltaPhiMhtJets > 0.4 && exclusiveTrackLeptonFlavour' + iso + str(ptRange) + cat  + " == \"" + lep + "\""
     variablesUsed.append("exclusiveTrack" + iso + str(ptRange) + cat)
     variablesUsed.append("exclusiveTrackLeptonFlavour" + iso + str(ptRange) + cat)
     variablesUsed.append('mtl' + iso + str(ptRange) + cat)
@@ -319,7 +321,7 @@ dataloader.AddVariable(prefix + 'deltaR' + iso + str(ptRange) + cat, 'F')
 #dataloader.AddVariable(prefix + 'deltaEtaLeadingJetDilepton' + iso + str(ptRange) + cat, 'F')
 #dataloader.AddVariable(prefix + 'deltaPhiLeadingJetDilepton' + iso + str(ptRange) + cat, 'F')
 # ------------
-dataloader.AddVariable(prefix + 'dilepHt' + iso + str(ptRange) + cat, 'F')
+#dataloader.AddVariable(prefix + 'dilepHt' + iso + str(ptRange) + cat, 'F')
 dataloader.AddVariable(prefix + 'invMass' + iso + str(ptRange) + cat, 'F')
 
 # moved to dileptonBDTeventObservables
@@ -344,18 +346,20 @@ if lepNum == "reco":
     preselections[lepNum + lep + iso + str(ptRange) + cat] = preselectionCut
     dataloader.AddCut(preselection)
     dataloader.AddVariable('dileptonPt' + iso + str(ptRange) + cat, 'F')
-    dataloader.AddVariable('mt1' + iso + str(ptRange) + cat, 'F')
+    dataloader.AddVariable('mth1' + iso + str(ptRange) + cat, 'F')
     
 #                             dataloader.AddVariable('Alt$(leptons' + iso + str(ptRange) + cat + '[1].Pt(),-1)', 'F')
 #                             dataloader.AddVariable('Alt$(leptons' + iso + str(ptRange) + cat + '[0].Eta(),-1)', 'F')
 #                             dataloader.AddVariable('Alt$(leptons' + iso + str(ptRange) + cat + '[0].Phi(),-1)', 'F')
 #                             
     dataloader.AddVariable('leptons' + iso + str(ptRange) + cat + '[0].Pt()', 'F')
+    dataloader.AddVariable('leptons' + iso + str(ptRange) + cat + '[1].Pt()', 'F')
     dataloader.AddVariable('leptons' + iso + str(ptRange) + cat + '[0].Eta()', 'F')
-    dataloader.AddVariable('leptons' + iso + str(ptRange) + cat + '[0].Phi()', 'F')
-    dataloader.AddVariable('deltaPhiMetLepton1' + iso + str(ptRange) + cat, 'F')
-    dataloader.AddVariable('deltaPhiMetLepton2' + iso + str(ptRange) + cat, 'F')
-    dataloader.AddVariable('mtautau' + iso + str(ptRange) + cat, 'F')
+    #dataloader.AddVariable('leptons' + iso + str(ptRange) + cat + '[0].Phi()', 'F')
+    dataloader.AddVariable('deltaPhiMhtLepton1' + iso + str(ptRange) + cat, 'F')
+    dataloader.AddVariable('deltaPhiMhtLepton2' + iso + str(ptRange) + cat, 'F')
+    dataloader.AddVariable('nmtautau' + iso + str(ptRange) + cat, 'F')
+        
 else:
     
     #preselectionCut = TCut("exclusiveTrack" + iso + str(ptRange) + cat + ' == 1 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour' + iso + str(ptRange) + cat  + ' == "' + lep + '"')

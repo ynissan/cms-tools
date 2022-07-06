@@ -98,9 +98,9 @@ for iso in utils.leptonIsolationList:
     for cat in utils.leptonIsolationCategories:
         ptRanges = [""]
         drCuts = [""]
-        if iso == "CorrJetNoMultIso":
-            continue
-        if iso == "CorrJetIso":
+        #if iso == "CorrJetNoMultIso":
+        #    continue
+        if iso in ["CorrJetIso", "CorrJetNoMultIso"]:
             ptRanges = utils.leptonCorrJetIsoPtRange
             drCuts = utils.leptonCorrJetIsoDrCuts
         for ptRange in ptRanges:

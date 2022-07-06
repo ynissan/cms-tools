@@ -291,6 +291,8 @@ commonObservablesDTypesList = {
     "nmtautau" : "float",
     "mt1" : "float",
     "mt2" : "float",
+    "mth1" : "float",
+    "mth2" : "float",
     "deltaEtaLeadingJetDilepton" : "float",
     "deltaPhiLeadingJetDilepton" : "float",
     "dilepHt" : "float",
@@ -379,6 +381,7 @@ dileptonBDTeventObservables = {
     'MinDeltaPhiMhtJets' :'F',
     'MHT' : 'F',
     'LeadingJetPt' : 'F',
+    # it's not in absolute sign because the lepton is not either 
     'LeadingJet.Eta()' : 'F',
     'NJets' : 'I',
 }

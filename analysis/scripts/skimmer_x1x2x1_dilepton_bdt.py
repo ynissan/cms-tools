@@ -30,6 +30,7 @@ parser.add_argument('-i', '--input_file', nargs=1, help='Input Filename', requir
 parser.add_argument('-bdt', '--bdt', nargs=1, help='Dilepton BDT Folder', required=True)
 
 parser.add_argument('-s', '--signal', dest='signal', help='Signal', action='store_true')
+parser.add_argument('-tl', '--tl', dest='two_leptons', help='Two Leptons only', action='store_true')
 parser.add_argument('-bg', '--background', dest='bg', help='Background', action='store_true')
 parser.add_argument('-data', '--data', dest='data', help='Data', action='store_true')
 parser.add_argument('-dy', '--dy', dest='dy', help='Drell-Yan', action='store_true')
@@ -43,6 +44,7 @@ print args
 signal = args.signal
 bg = args.bg
 data = args.data
+two_leptons = args.two_leptons
 
 input_file = None
 if args.input_file:
@@ -106,7 +108,8 @@ def main():
                     for postfix in postfixi:
                 
                         for DTypeObs in analysis_observables.commonPostBdtObservablesDTypesList:
-                            for prefix in ["", "exTrack_"]:
+                            analysis_categories = [""] if two_leptons else ["", "exTrack_"]
+                            for prefix in analysis_categories:
                                 sameChargeOptions = [False, True] if prefix == "exTrack_" else [False]
                             
                                 for sameCharge in sameChargeOptions:
@@ -123,25 +126,27 @@ def main():
                                         print "Branching", sc_prefix + prefix + DTypeObs + postfix
                                         branches[sc_prefix + prefix + DTypeObs + postfix] = tree.Branch(sc_prefix + prefix + DTypeObs + postfix, vars[sc_prefix + prefix + DTypeObs + postfix], sc_prefix + prefix + DTypeObs + postfix + "/" + utils.typeTranslation[analysis_observables.commonPostBdtObservablesDTypesList[DTypeObs]])
                                         tree.SetBranchAddress(sc_prefix + prefix + DTypeObs + postfix, vars[sc_prefix + prefix + DTypeObs + postfix])
-                                
-                        for DTypeObs in analysis_observables.exclusiveTrackPostBdtObservablesDTypesList:
                         
-                            for sameCharge in [False, True]:
-                                sc_prefix = "sc_" if sameCharge else ""
+                        if not two_leptons:
+                            for DTypeObs in analysis_observables.exclusiveTrackPostBdtObservablesDTypesList:
+                        
+                                for sameCharge in [False, True]:
+                                    sc_prefix = "sc_" if sameCharge else ""
                             
-                                vars[sc_prefix + DTypeObs + postfix] = np.zeros(1,dtype=analysis_observables.exclusiveTrackPostBdtObservablesDTypesList[DTypeObs])
-                                if tree.GetBranchStatus(sc_prefix + DTypeObs + postfix):
-                                    print "Reseting branch", sc_prefix + DTypeObs + postfix
-                                    branches[sc_prefix + DTypeObs + postfix] = tree.GetBranch(sc_prefix + DTypeObs + postfix)
-                                    branches[sc_prefix + DTypeObs + postfix].Reset()
-                                    tree.SetBranchAddress(sc_prefix + DTypeObs + postfix, vars[sc_prefix + DTypeObs + postfix])
-                                else:
-                                    print "Branching", sc_prefix + DTypeObs + postfix
-                                    branches[sc_prefix + DTypeObs + postfix] = tree.Branch(sc_prefix + DTypeObs + postfix, vars[sc_prefix + DTypeObs + postfix], sc_prefix + DTypeObs + postfix + "/" + utils.typeTranslation[analysis_observables.exclusiveTrackPostBdtObservablesDTypesList[DTypeObs]])
-                                    tree.SetBranchAddress(sc_prefix + DTypeObs + postfix, vars[sc_prefix + DTypeObs + postfix])
+                                    vars[sc_prefix + DTypeObs + postfix] = np.zeros(1,dtype=analysis_observables.exclusiveTrackPostBdtObservablesDTypesList[DTypeObs])
+                                    if tree.GetBranchStatus(sc_prefix + DTypeObs + postfix):
+                                        print "Reseting branch", sc_prefix + DTypeObs + postfix
+                                        branches[sc_prefix + DTypeObs + postfix] = tree.GetBranch(sc_prefix + DTypeObs + postfix)
+                                        branches[sc_prefix + DTypeObs + postfix].Reset()
+                                        tree.SetBranchAddress(sc_prefix + DTypeObs + postfix, vars[sc_prefix + DTypeObs + postfix])
+                                    else:
+                                        print "Branching", sc_prefix + DTypeObs + postfix
+                                        branches[sc_prefix + DTypeObs + postfix] = tree.Branch(sc_prefix + DTypeObs + postfix, vars[sc_prefix + DTypeObs + postfix], sc_prefix + DTypeObs + postfix + "/" + utils.typeTranslation[analysis_observables.exclusiveTrackPostBdtObservablesDTypesList[DTypeObs]])
+                                        tree.SetBranchAddress(sc_prefix + DTypeObs + postfix, vars[sc_prefix + DTypeObs + postfix])
                 
-                    if not jpsi:    
-                        for prefix in ["reco", "exTrack"]:
+                    if not jpsi:
+                        prefixes = ["reco"] if two_leptons else ["reco", "exTrack"]
+                        for prefix in prefixes:
                             for lep in ["Muons", "Electrons"]:
                                 dirname = prefix + lep + iso + cat + cuts
                                 name = prefix + lep + iso + cuts + cat
@@ -184,7 +189,8 @@ def main():
                             postfixi = [iso + cuts + cat, ""]
                 
                         for postfix in postfixi:
-                            for prefix in ["reco", "exTrack"]:
+                            prefixes = ["reco"] if two_leptons else ["reco", "exTrack"]
+                            for prefix in prefixes:
                                 prefixVars = ""
                             
                                 if prefix == "exTrack":
@@ -207,7 +213,7 @@ def main():
                                     # Before
                                     #elif eval("tree." + sc_prefix + "exclusiveTrack"  + postfix) == 1 and tree.BTagsDeepMedium == 0 and eval("tree." + sc_prefix + "trackBDT"  + postfix) >= 0:
                                     # Making new version without trackBDT precut
-                                    elif getattr(tree, sc_prefix + "exclusiveTrack"  + postfix) == 1 and tree.BTagsDeepMedium == 0:
+                                    elif prefix == "exTrack" and getattr(tree, sc_prefix + "exclusiveTrack"  + postfix) == 1 and tree.BTagsDeepMedium == 0:
                                         eventPassed = True
                                         leptonFlavour = getattr(tree, sc_prefix + "exclusiveTrackLeptonFlavour"  + postfix)
                                     if not jpsi and eventPassed:
@@ -247,6 +253,8 @@ def main():
                                                         v[0] = eval("branch." + postfixK)
                                                         #print "After", v[0]
                                                     else:
+                                                        #print "*****"
+                                                        #print "getattr(tree," + sc_prefix + k + ")"
                                                         v[0] = getattr(tree, sc_prefix + k)
                                                 
                                             except Exception as e:
@@ -266,42 +274,44 @@ def main():
                                             #print bdt_vars_maps
                                     else:
                                         vars[sc_prefix + prefixVars + "dilepBDT" + postfix][0] = -1
-
-                                    if signal and getattr(tree, sc_prefix + "exclusiveTrack"  + postfix) == 1:
-                                        gens = [i for i in range(tree.GenParticles.size())]
-                                        min, minCan = analysis_ntuples.minDeltaRGenParticles(getattr(tree, sc_prefix + "lepton" + postfix), gens, tree.GenParticles)
-                                        #print min, minCan
-                                        pdgId = tree.GenParticles_ParentId[minCan]
-                                        if minCan is None or min > 0.05:
-                                         #   print "BAD GEN LEPTON!!!"
-                                            pdgId = 0
-                                        #else:
-                                        #    print "GOOD LEPTON ", pdgId
-                                        vars[sc_prefix + "leptonParentPdgId" + postfix][0] = pdgId
-                                        min, minCan = analysis_ntuples.minDeltaRGenParticles(getattr(tree, sc_prefix + "track"+ postfix), gens, tree.GenParticles)
-                                        pdgId = tree.GenParticles_ParentId[minCan]
-                                        if min > 0.05:
-                                            #print "BAD GEN TRACK!!!"
-                                            pdgId = 0
-                                        #else:
-                                        #    print "GOOD TRACK ", pdgId
-                                        vars[sc_prefix + "trackParentPdgId" + postfix][0] = pdgId
-                                    else:
-                                        vars[sc_prefix + "leptonParentPdgId" + postfix][0] = -1
-                                        vars[sc_prefix + "trackParentPdgId" + postfix][0] = -1
+                                    if not two_leptons:
+                                        if signal and getattr(tree, sc_prefix + "exclusiveTrack"  + postfix) == 1:
+                                            gens = [i for i in range(tree.GenParticles.size())]
+                                            min, minCan = analysis_ntuples.minDeltaRGenParticles(getattr(tree, sc_prefix + "lepton" + postfix), gens, tree.GenParticles)
+                                            #print min, minCan
+                                            pdgId = tree.GenParticles_ParentId[minCan]
+                                            if minCan is None or min > 0.05:
+                                             #   print "BAD GEN LEPTON!!!"
+                                                pdgId = 0
+                                            #else:
+                                            #    print "GOOD LEPTON ", pdgId
+                                            vars[sc_prefix + "leptonParentPdgId" + postfix][0] = pdgId
+                                            min, minCan = analysis_ntuples.minDeltaRGenParticles(getattr(tree, sc_prefix + "track"+ postfix), gens, tree.GenParticles)
+                                            pdgId = tree.GenParticles_ParentId[minCan]
+                                            if min > 0.05:
+                                                #print "BAD GEN TRACK!!!"
+                                                pdgId = 0
+                                            #else:
+                                            #    print "GOOD TRACK ", pdgId
+                                            vars[sc_prefix + "trackParentPdgId" + postfix][0] = pdgId
+                                        else:
+                                            vars[sc_prefix + "leptonParentPdgId" + postfix][0] = -1
+                                            vars[sc_prefix + "trackParentPdgId" + postfix][0] = -1
                             
                             for DTypeObs in analysis_observables.commonPostBdtObservablesDTypesList:
-                                for prefix in ["", "exTrack_"]:
+                                analysis_categories = [""] if two_leptons else ["", "exTrack_"]
+                                for prefix in analysis_categories:
                                     sameChargeOptions = [False, True] if prefix == "exTrack_" else [False]
                             
                                     for sameCharge in sameChargeOptions:
                                         sc_prefix = "sc_" if sameCharge else ""
                                         branches[sc_prefix + prefix + DTypeObs + postfix].Fill()
-                        
-                            for DTypeObs in analysis_observables.exclusiveTrackPostBdtObservablesDTypesList:
-                                for sameCharge in [False, True]:
-                                    sc_prefix = "sc_" if sameCharge else ""
-                                    branches[sc_prefix + DTypeObs + postfix].Fill()
+                            
+                            if not two_leptons:
+                                for DTypeObs in analysis_observables.exclusiveTrackPostBdtObservablesDTypesList:
+                                    for sameCharge in [False, True]:
+                                        sc_prefix = "sc_" if sameCharge else ""
+                                        branches[sc_prefix + DTypeObs + postfix].Fill()
             
     tree.Write("tEvent",TObject.kOverwrite)
         

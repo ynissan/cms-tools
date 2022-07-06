@@ -54,14 +54,14 @@ if [ -n "$SKIM" ]; then
     if [ -n "$TWO_LEPTONS" ]; then
         if [ -n "$SAM" ]; then
             OUTPUT_DIR=$TWO_LEPTONS_SAM_SKIM_SIG_OUTPUT_DIR
-            INPUT_DIR=$SAM_SIM_NTUPLES_DIR
+            INPUT_DIR=$SAM_NEW_SIM_NTUPLES_DIR
         else
             OUTPUT_DIR=$TWO_LEPTONS_SKIM_SIG_OUTPUT_DIR
         fi
     else
         if [ -n "$SAM" ]; then
             OUTPUT_DIR=$SKIM_SIG_SAM_OUTPUT_DIR
-            INPUT_DIR=$SAM_SIM_NTUPLES_DIR
+            INPUT_DIR=$SAM_NEW_SIM_NTUPLES_DIR
         else
             OUTPUT_DIR=$SKIM_SIG_OUTPUT_DIR
         fi

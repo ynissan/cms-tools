@@ -28,21 +28,40 @@ signals = [
 ]
 
 wanted_lepton = "Electrons"
+wanted_lepton = "Muons"
+
+
+wanted_iso = "CorrJetNoMultIso"
+unwanted_iso = "CorrJetIso"
+
+# wanted_iso = "CorrJetIso"
+# unwanted_iso = "CorrJetNoMultIso"
 
 def main():
     print "Start: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S')
     
-    histogram_file = TFile("sig_bg_histograms_for_jet_iso_scan.root", "read")
+    #histogram_file = TFile("sig_bg_histograms_for_jet_iso_scanCorrJetNoMultIso.root", "read")
+    #histogram_file = TFile("sig_bg_histograms_for_jet_iso_scanCorrJetNoMultIso_no_tautau.root", "read")
+    #histogram_file = TFile("sig_bg_histograms_for_jet_iso_scanCorrJetNoMultIso_no_tautau_after_mht.root", "read")
+    histogram_file = TFile("sig_bg_histograms_for_jet_iso_scanCorrJetNoMultIso_no_tautau_after_mht_with_data.root", "read")
+    
     
     significance = {}
     signal_count = {}
     signal_count_cr = {}
     bg_count = {}
     bg_count_cr = {}
+    data_count = {}
+    data_count_cr = {}
     bg_transfer_factor_histogram = {}
     bg_sc_transfer_factor_histogram = {}
+    data_transfer_factor_histogram = {}
+    data_sc_transfer_factor_histogram = {}
     transfer_factor = {}
     transfer_factor_error = {}
+    transfer_factor_data = {}
+    transfer_factor_data_error = {}
+    p_value = {}
     
     
     for lep in ["Muons", "Electrons"]:
@@ -56,16 +75,25 @@ def main():
             signal_count_cr[lep] = {}
             bg_count[lep] = {}
             bg_count_cr[lep] = {}
+            data_count[lep] = {}
+            data_count_cr[lep] = {}
             bg_transfer_factor_histogram[lep] = {}
             bg_sc_transfer_factor_histogram[lep] = {}
+            data_transfer_factor_histogram[lep] = {}
+            data_sc_transfer_factor_histogram[lep] = {}
             transfer_factor[lep] = {}
             transfer_factor_error[lep] = {}
+            transfer_factor_data[lep] = {}
+            transfer_factor_data_error[lep] = {}
+            p_value[lep] = {}
         
         for iso in utils.leptonIsolationList:
+            if iso in [unwanted_iso, "JetIso"]:
+                continue
             for cat in utils.leptonIsolationCategories:
                 ptRanges = [""]
                 drCuts = [""]
-                if iso == "CorrJetIso":
+                if iso in ["CorrJetIso", "CorrJetNoMultIso"]:
                     ptRanges = utils.leptonCorrJetIsoPtRange
                     drCuts = utils.leptonCorrJetIsoDrCuts
                 for ptRange in ptRanges:
@@ -81,13 +109,20 @@ def main():
                             signal_count_cr[lep][jetiso] = {}
                             bg_count[lep][jetiso] = {}
                             bg_count_cr[lep][jetiso] = {}
+                            data_count[lep][jetiso] = {}
+                            data_count_cr[lep][jetiso] = {}
                             bg_transfer_factor_histogram[lep][jetiso] = {}
                             bg_sc_transfer_factor_histogram[lep][jetiso] = {}
+                            data_transfer_factor_histogram[lep][jetiso] = {}
+                            data_sc_transfer_factor_histogram[lep][jetiso] = {}
                             transfer_factor[lep][jetiso] = {}
                             transfer_factor_error[lep][jetiso] = {}
+                            transfer_factor_data[lep][jetiso] = {}
+                            transfer_factor_data_error[lep][jetiso] = {}
+                            p_value[lep][jetiso] = {}
                         
                         orthOpt = [True, False] if lep == "Muons" else [False]
-                        isoCrs = [True, False] if iso == "CorrJetIso" else [False]
+                        isoCrs = [True, False] if iso == wanted_iso else [False]
                         isoCr = False
                         
                         for orth in orthOpt:
@@ -98,15 +133,20 @@ def main():
                                 signal_count_cr[lep][jetiso][orthStr] = {}
                                 bg_transfer_factor_histogram[lep][jetiso][orthStr] = {}
                                 bg_sc_transfer_factor_histogram[lep][jetiso][orthStr] = {}
+                                data_transfer_factor_histogram[lep][jetiso][orthStr] = {}
+                                data_sc_transfer_factor_histogram[lep][jetiso][orthStr] = {}
                                 transfer_factor[lep][jetiso][orthStr] = {}
                                 transfer_factor_error[lep][jetiso][orthStr] = {}
+                                transfer_factor_data[lep][jetiso][orthStr] = {}
+                                transfer_factor_data_error[lep][jetiso][orthStr] = {}
+                                p_value[lep][jetiso][orthStr] = 0
                                 #bg_count[lep][jetiso][orthStr] = {}
                             
                             bg_hist_name = "bg_2l_" + ("orth_" if orth else "") + lep + "_" + jetiso
                             bg_hist_name_cr = "bg_2l_" + ("orth_" if orth else "") + lep + "_" + jetiso + "_isoCr"
                             print "Getting", bg_hist_name
                             bg_hist = histogram_file.Get(bg_hist_name)#.Rebin(5)
-                            if iso == "CorrJetIso":
+                            if iso == wanted_iso:
                                 print "Getting", bg_hist_name_cr
                                 bg_hist_cr = histogram_file.Get(bg_hist_name_cr)
                                 intError  = c_double()
@@ -115,6 +155,16 @@ def main():
                                 bg_sc_transfer_factor_histogram[lep][jetiso][orthStr].Sumw2()
                                 bg_sc_transfer_factor_histogram[lep][jetiso][orthStr].SetBinContent(1,bg_count_cr[lep][jetiso][orthStr])
                                 bg_sc_transfer_factor_histogram[lep][jetiso][orthStr].SetBinError(1,intError)
+                                
+                                integral = bg_hist.Integral()
+                                bg_hist_copy = bg_hist.Clone()
+                                bg_hist_copy.Scale(1./integral)
+                                
+                                integral = bg_hist_cr.Integral()
+                                bg_hist_cr_copy = bg_hist_cr.Clone()
+                                bg_hist_cr_copy.Scale(1./integral)
+                                
+                                p_value[lep][jetiso][orthStr] = bg_hist_copy.Chi2Test(bg_hist_cr_copy, "WW")
                             else:
                                 print("What?")
                             intError  = c_double()
@@ -123,9 +173,39 @@ def main():
                             bg_transfer_factor_histogram[lep][jetiso][orthStr].Sumw2()
                             bg_transfer_factor_histogram[lep][jetiso][orthStr].SetBinContent(1,bg_count[lep][jetiso][orthStr])
                             bg_transfer_factor_histogram[lep][jetiso][orthStr].SetBinError(1,intError)
-                            if iso == "CorrJetIso":
+                            if iso == wanted_iso:
                                 print("Going to divide",bg_sc_transfer_factor_histogram[lep][jetiso][orthStr])
                                 bg_transfer_factor_histogram[lep][jetiso][orthStr].Divide(bg_sc_transfer_factor_histogram[lep][jetiso][orthStr])
+                            
+                            # DATA SCALE FACTORS
+                            data_hist_name = "data_2l_" + lep + "_" + ("orth_" if orth else "") + jetiso
+                            data_hist_name_cr = "data_2l_" + lep + "_" + ("orth_" if orth else "") + jetiso + "_isoCr"
+                            print "Getting", data_hist_name
+                            data_hist = histogram_file.Get(data_hist_name)#.Rebin(5)
+                            if iso == wanted_iso:
+                                print "Getting", data_hist_name_cr
+                                data_hist_cr = histogram_file.Get(data_hist_name_cr)
+                                intError  = c_double()
+                                data_count_cr[lep][jetiso][orthStr] = data_hist_cr.IntegralAndError(data_hist_cr.FindBin(-1), data_hist_cr.FindBin(0),intError)
+                                data_sc_transfer_factor_histogram[lep][jetiso][orthStr] = TH1F(data_hist_name_cr + "_data_transfer_factor_histogram", "", 1, 0, 1)
+                                data_sc_transfer_factor_histogram[lep][jetiso][orthStr].Sumw2()
+                                data_sc_transfer_factor_histogram[lep][jetiso][orthStr].SetBinContent(1,data_count_cr[lep][jetiso][orthStr])
+                                data_sc_transfer_factor_histogram[lep][jetiso][orthStr].SetBinError(1,intError)
+                            else:
+                                print("What?")
+                            intError  = c_double()
+                            data_count[lep][jetiso][orthStr] = data_hist.IntegralAndError(data_hist.FindBin(-1), data_hist.FindBin(0), intError)
+                            data_transfer_factor_histogram[lep][jetiso][orthStr] = TH1F(data_hist_name + "_data_transfer_factor_histogram", "", 1, 0, 1)
+                            data_transfer_factor_histogram[lep][jetiso][orthStr].Sumw2()
+                            data_transfer_factor_histogram[lep][jetiso][orthStr].SetBinContent(1,data_count[lep][jetiso][orthStr])
+                            data_transfer_factor_histogram[lep][jetiso][orthStr].SetBinError(1,intError)
+                            if iso == wanted_iso:
+                                print("Going to divide",data_sc_transfer_factor_histogram[lep][jetiso][orthStr])
+                                data_transfer_factor_histogram[lep][jetiso][orthStr].Divide(data_sc_transfer_factor_histogram[lep][jetiso][orthStr])
+                           
+                           
+                           
+                           
                            
                             for signal in signals:
                                 sig_hist_name = signal + "_2l_" + ("orth_" if orth else "") + lep + "_" + jetiso
@@ -136,13 +216,13 @@ def main():
                                 print "Getting", sig_hist_cr
                                 
                                 signal_count[lep][jetiso][orthStr][signal] = sig_hist.Integral(sig_hist.FindBin(0), sig_hist.FindBin(1))
-                                if iso == "CorrJetIso":
+                                if iso == wanted_iso:
                                     signal_count_cr[lep][jetiso][orthStr][signal] = sig_hist_cr.Integral(sig_hist_cr.FindBin(0), sig_hist_cr.FindBin(1))
                                
                                 #significance[lep][jetiso][orthStr][signal] = utils.calcSignificanceNoAcc(sig_hist, bg_hist, True)
                                 
                                 
-                                if iso != "CorrJetIso":
+                                if iso != wanted_iso:
                                     continue
                                 
                                 newSigHist = sig_hist.Rebin(5,"newSigHist")
@@ -170,12 +250,12 @@ def main():
         if lep != wanted_lepton:
             continue
         for iso in utils.leptonIsolationList:
-            if iso != "CorrJetIso":
+            if iso != wanted_iso:
                 continue
             for cat in utils.leptonIsolationCategories:
                 ptRanges = [""]
                 drCuts = [""]
-                if iso == "CorrJetIso":
+                if iso in ["CorrJetIso", "CorrJetNoMultIso"]:
                     ptRanges = utils.leptonCorrJetIsoPtRange
                     drCuts = utils.leptonCorrJetIsoDrCuts
                 for ptRange in ptRanges:
@@ -194,12 +274,12 @@ def main():
         if lep != wanted_lepton:
             continue
         for iso in utils.leptonIsolationList:
-            if iso != "CorrJetIso":
+            if iso != wanted_iso:
                 continue
             for cat in utils.leptonIsolationCategories:
                 ptRanges = [""]
                 drCuts = [""]
-                if iso == "CorrJetIso":
+                if iso in ["CorrJetIso", "CorrJetNoMultIso"]:
                     ptRanges = utils.leptonCorrJetIsoPtRange
                     drCuts = utils.leptonCorrJetIsoDrCuts
                 for ptRange in ptRanges:
@@ -219,12 +299,12 @@ def main():
         if lep != wanted_lepton:
             continue
         for iso in utils.leptonIsolationList:
-            if iso != "CorrJetIso":
+            if iso != wanted_iso:
                 continue
             for cat in utils.leptonIsolationCategories:
                 ptRanges = [""]
                 drCuts = [""]
-                if iso == "CorrJetIso":
+                if iso in ["CorrJetIso", "CorrJetNoMultIso"]:
                     ptRanges = utils.leptonCorrJetIsoPtRange
                     drCuts = utils.leptonCorrJetIsoDrCuts
                 for ptRange in ptRanges:
@@ -245,12 +325,12 @@ def main():
         if lep != wanted_lepton:
             continue
         for iso in utils.leptonIsolationList:
-            if iso != "CorrJetIso":
+            if iso != wanted_iso:
                 continue
             for cat in utils.leptonIsolationCategories:
                 ptRanges = [""]
                 drCuts = [""]
-                if iso == "CorrJetIso":
+                if iso in ["CorrJetIso", "CorrJetNoMultIso"]:
                     ptRanges = utils.leptonCorrJetIsoPtRange
                     drCuts = utils.leptonCorrJetIsoDrCuts
                 for ptRange in ptRanges:
@@ -270,12 +350,12 @@ def main():
         if lep != wanted_lepton:
             continue
         for iso in utils.leptonIsolationList:
-            if iso != "CorrJetIso":
+            if iso != wanted_iso:
                 continue
             for cat in utils.leptonIsolationCategories:
                 ptRanges = [""]
                 drCuts = [""]
-                if iso == "CorrJetIso":
+                if iso in ["CorrJetIso", "CorrJetNoMultIso"]:
                     ptRanges = utils.leptonCorrJetIsoPtRange
                     drCuts = utils.leptonCorrJetIsoDrCuts
                 for ptRange in ptRanges:
@@ -295,12 +375,12 @@ def main():
         if lep != wanted_lepton:
             continue
         for iso in utils.leptonIsolationList:
-            if iso != "CorrJetIso":
+            if iso != wanted_iso:
                 continue
             for cat in utils.leptonIsolationCategories:
                 ptRanges = [""]
                 drCuts = [""]
-                if iso == "CorrJetIso":
+                if iso in ["CorrJetIso", "CorrJetNoMultIso"]:
                     ptRanges = utils.leptonCorrJetIsoPtRange
                     drCuts = utils.leptonCorrJetIsoDrCuts
                 for ptRange in ptRanges:
@@ -321,12 +401,12 @@ def main():
         if lep != wanted_lepton:
             continue
         for iso in utils.leptonIsolationList:
-            if iso != "CorrJetIso":
+            if iso != wanted_iso:
                 continue
             for cat in utils.leptonIsolationCategories:
                 ptRanges = [""]
                 drCuts = [""]
-                if iso == "CorrJetIso":
+                if iso in ["CorrJetIso", "CorrJetNoMultIso"]:
                     ptRanges = utils.leptonCorrJetIsoPtRange
                     drCuts = utils.leptonCorrJetIsoDrCuts
                 for ptRange in ptRanges:
@@ -347,12 +427,12 @@ def main():
         if lep != wanted_lepton:
             continue
         for iso in utils.leptonIsolationList:
-            if iso != "CorrJetIso":
+            if iso != wanted_iso:
                 continue
             for cat in utils.leptonIsolationCategories:
                 ptRanges = [""]
                 drCuts = [""]
-                if iso == "CorrJetIso":
+                if iso in ["CorrJetIso", "CorrJetNoMultIso"]:
                     ptRanges = utils.leptonCorrJetIsoPtRange
                     drCuts = utils.leptonCorrJetIsoDrCuts
                 for ptRange in ptRanges:
@@ -367,6 +447,57 @@ def main():
                     print ",".join(pt_dr_sig)
     print "\n\n\n\n"
     
+    print "DATA Transfer Factor"
+    print "pt/dr," + ",".join([str(dr) for dr in utils.leptonCorrJetIsoDrCuts])
+    for lep in ["Muons", "Electrons"]:
+        if lep != wanted_lepton:
+            continue
+        for iso in utils.leptonIsolationList:
+            if iso != wanted_iso:
+                continue
+            for cat in utils.leptonIsolationCategories:
+                ptRanges = [""]
+                drCuts = [""]
+                if iso in ["CorrJetIso", "CorrJetNoMultIso"]:
+                    ptRanges = utils.leptonCorrJetIsoPtRange
+                    drCuts = utils.leptonCorrJetIsoDrCuts
+                for ptRange in ptRanges:
+                    pt_dr_sig = [str(ptRange)]
+                    for drCut in drCuts:
+                        cuts = ""
+                        if len(str(ptRange)) > 0:
+                            cuts = str(ptRange) + "Dr" + str(drCut)
+                        jetiso = iso + cuts + cat
+                        
+                        pt_dr_sig.append("{:.2f}".format(data_transfer_factor_histogram[lep][jetiso][orthStr].GetBinContent(1)))
+                    print ",".join(pt_dr_sig)
+    print "\n\n\n\n"
+    
+    print "P Value"
+    print "pt/dr," + ",".join([str(dr) for dr in utils.leptonCorrJetIsoDrCuts])
+    for lep in ["Muons", "Electrons"]:
+        if lep != wanted_lepton:
+            continue
+        for iso in utils.leptonIsolationList:
+            if iso != wanted_iso:
+                continue
+            for cat in utils.leptonIsolationCategories:
+                ptRanges = [""]
+                drCuts = [""]
+                if iso in ["CorrJetIso", "CorrJetNoMultIso"]:
+                    ptRanges = utils.leptonCorrJetIsoPtRange
+                    drCuts = utils.leptonCorrJetIsoDrCuts
+                for ptRange in ptRanges:
+                    pt_dr_sig = [str(ptRange)]
+                    for drCut in drCuts:
+                        cuts = ""
+                        if len(str(ptRange)) > 0:
+                            cuts = str(ptRange) + "Dr" + str(drCut)
+                        jetiso = iso + cuts + cat
+                        
+                        pt_dr_sig.append("{:.2f}".format(p_value[lep][jetiso][orthStr]))
+                    print ",".join(pt_dr_sig)
+    print "\n\n\n\n"
     
     histogram_file.Close()
     

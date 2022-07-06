@@ -255,13 +255,13 @@ class track_muon_sc_comparison(BaseParams):
         {"name":"none", "title": "None", "condition" : "(MinDeltaPhiMetJets > 0.4 && MHT >= 220 &&  MET >= 140 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "exclusiveTrack%%% == 1 && trackBDT%%% > 0 && exTrack_invMass%%% < 12 && exclusiveTrackLeptonFlavour%%% == \"Muons\"", "sc" : "sc_exclusiveTrack%%% == 1 && sc_trackBDT%%% > 0 && sc_exTrack_invMass%%% < 12 && sc_exclusiveTrackLeptonFlavour%%% == \"Muons\"" },
         #{"name":"sr", "title": "sr", "condition" : "(MHT >= 220 &&  MET >= 200 && BTagsDeepMedium == 0 )", "baseline" : "exclusiveTrack == 1 && trackBDT > 0 && exTrack_invMass < 30 && exclusiveTrackLeptonFlavour == \"Muons\" && exTrack_dilepBDT > 0.1", "sc" : "sc_exclusiveTrack == 1 && sc_trackBDT > 0 && sc_exTrack_invMass < 30 && sc_exclusiveTrackLeptonFlavour == \"Muons\"" }
     ]
-    injectJetIsoToCuts(cuts, "CorrJetIso10.5Dr0.55")
+    injectJetIsoToCuts(cuts, "CorrJetIso10Dr0.6")
     
     histograms_defs = [
         { "obs" : "exTrack_dilepBDT%%%", "units" : "BDT", "minX" : -1, "maxX" : 1, "bins" : 30, "blind" : [None,0.1], "sc_obs" : "sc_exTrack_dilepBDT%%%", "linearYspace" : 1.5},
     ]
     
-    injectJetIsoToHistograms(histograms_defs, "CorrJetIso10.5Dr0.55")  
+    injectJetIsoToHistograms(histograms_defs, "CorrJetIso10Dr0.6")  
     
     weightString = {
         'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight * BranchingRatio",
@@ -273,6 +273,79 @@ class track_muon_sc_comparison(BaseParams):
     plot_signal = False
     sc_color = kOrange + 1
     label_text = plotutils.StampStr.SIMWIP
+
+# We don't really need to scan this category - because we use the 2 Muons category to decide this one out.
+class track_muon_sc_comparison_scan_muons(BaseParams):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/track_muon_sc_comparison_scan_muons.root"
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum"
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True 
+    
+    # cuts = [
+#         {"name":"none", "title": "None", "condition" : "(MinDeltaPhiMetJets > 0.4 && MHT >= 220 &&  MET >= 140 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "exclusiveTrack%%% == 1 && trackBDT%%% > 0 && exTrack_invMass%%% < 12 && exclusiveTrackLeptonFlavour%%% == \"Muons\"", "sc" : "sc_exclusiveTrack%%% == 1 && sc_trackBDT%%% > 0 && sc_exTrack_invMass%%% < 12 && sc_exclusiveTrackLeptonFlavour%%% == \"Muons\"" },
+#         #{"name":"sr", "title": "sr", "condition" : "(MHT >= 220 &&  MET >= 200 && BTagsDeepMedium == 0 )", "baseline" : "exclusiveTrack == 1 && trackBDT > 0 && exTrack_invMass < 30 && exclusiveTrackLeptonFlavour == \"Muons\" && exTrack_dilepBDT > 0.1", "sc" : "sc_exclusiveTrack == 1 && sc_trackBDT > 0 && sc_exTrack_invMass < 30 && sc_exclusiveTrackLeptonFlavour == \"Muons\"" }
+#     ]
+#     injectJetIsoToCuts(cuts, "CorrJetIso10.5Dr0.55")
+#     
+#     histograms_defs = [
+#         { "obs" : "exTrack_dilepBDT%%%", "units" : "BDT", "minX" : -1, "maxX" : 1, "bins" : 30, "blind" : [None,0.1], "sc_obs" : "sc_exTrack_dilepBDT%%%", "linearYspace" : 1.5},
+#     ]
+#     
+#     injectJetIsoToHistograms(histograms_defs, "CorrJetIso10.5Dr0.55")  
+    
+    weightString = {
+        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * BranchingRatio",
+    }
+    
+    plot_data = False
+    plot_sc = True
+    plot_ratio = True
+    plot_signal = False
+    sc_color = kOrange + 1
+    label_text = plotutils.StampStr.SIMWIP
+    
+    
+    cuts = [
+        {"name":"none", "title": "None", "condition" : "1", "baseline" : "1", "sc" : "1"},
+        #{"name":"bdt", "title": "BDT > 0.35", "condition" : "(dilepBDT%%% > 0.35 &&  MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && !tautau%%%)", "baseline" : "isoCr%%% == 0", "sc" : "isoCr%%% >= 1"},
+    ]
+    histograms_defs = [
+    
+    ]
+    
+    for iso in utils.leptonIsolationList:
+        for cat in utils.leptonIsolationCategories:
+            ptRanges = [""]
+            drCuts = [""]
+            #if iso == "CorrJetIso":
+            if iso == "CorrJetNoMultIso":
+                ptRanges = utils.leptonCorrJetIsoPtRange
+                drCuts = utils.leptonCorrJetIsoDrCuts
+            else:
+                continue
+            for ptRange in ptRanges:
+                for drCut in drCuts:
+                    jetIso = ""
+                    if len(str(ptRange)) > 0:
+                        jetIso = iso + str(ptRange) + "Dr" + str(drCut) + cat
+                    else:
+                        continue
+                    #for obs in ["invMass", "dilepBDT"]:
+                    for obs in ["dilepBDT", "dilepBDT_fine", "dilepBDT_custom"]:
+                    #for obs in ["dilepBDT_fine"]:
+                        #{ "obs" : "invMassCorrJetIso15Dr0.4", "minX" : 0, "maxX" : 13, "bins" : 6, "blind" : [4,None]}
+                        hist_def = { "obs" : obs + "%%%", "formula" : "exTrack_dilepBDT%%%" if "dilepBDT" in obs else (obs + "%%%"), "sc_obs" : "sc_exTrack_dilepBDT%%%", "linearYspace" : 1.5, "minX" : 0 if obs == "invMass" else -1, "maxX" : 13 if obs == "invMass" else 1, "bins" : 40 if obs == "dilepBDT_fine" else 20, "blind" : [None, 0], "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,1] if obs == "dilepBDT_custom" else None,  "condition" : "(MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium == 0 && MHT >= 220 &&  MET >= 140 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "exclusiveTrack%%% == 1 && trackBDT%%% > 0 && exTrack_invMass%%% < 12 && exclusiveTrackLeptonFlavour%%% == \"Muons\"", "sc" : "sc_exclusiveTrack%%% == 1 && sc_trackBDT%%% > 0 && sc_exTrack_invMass%%% < 12 && sc_exclusiveTrackLeptonFlavour%%% == \"Muons\""}
+                        #print(hist_def["obs"],jetIso)
+                        #print(hist_def["obs"].replace("%%%", jetIso))
+                        #print(hist_def["obs"])
+                        hist_def["obs"] = hist_def["obs"].replace("%%%", jetIso)
+                        hist_def["formula"] = hist_def["formula"].replace("%%%", jetIso)
+                        #print(hist_def["obs"])
+                        #exit(0)
+                        hist_def["condition"] = hist_def["condition"].replace("%%%", jetIso)
+                        hist_def["baseline"] = hist_def["baseline"].replace("%%%", jetIso)
+                        hist_def["sc"] = hist_def["sc"].replace("%%%", jetIso)
+                        histograms_defs.append(hist_def)
 
 
 class dimuon_background_estimation_non_isolated_and_tautau(BaseParams):

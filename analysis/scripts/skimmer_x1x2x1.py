@@ -115,7 +115,7 @@ def main():
     jpsi_electrons = args.jpsi_electrons
     jpsi = False
     testing = args.testing
-
+    
     if dy:
         print("Got Drell-Yan")
         #exit(0)
@@ -153,6 +153,14 @@ def main():
     
     if jpsi:
         utils.defaultJetIsoSetting = "NoIso"
+    
+    # if no_lepton_selection:
+#         utils.defaultJetIsoSetting = "NoIso"
+# 
+#         utils.leptonIsolationList = [ "NoIso" ]
+#         utils.leptonIsolationCrList = [  ]
+#         utils.leptonIsolationIncList = utils.leptonIsolationList + utils.leptonIsolationCrList
+#     
     
     triggerFileName = os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/susy-trig-plots.root")
     print("Opening trigger file: " + triggerFileName)
@@ -692,15 +700,15 @@ def main():
             #print "No ljet:",ljet 
             continue
             
-        if no_lepton_selection and btagsDeepMedium > 0:
-            continue
+        #if no_lepton_selection and btagsDeepMedium > 0:
+        #    continue
         
         afterNj += 1
         
         #if not duoLepton: continue
         commonCalcFlatObs["MinDeltaPhiMetJets"][0] = analysis_ntuples.eventMinDeltaPhiMetJets30Pt2_4Eta(jetsObs["Jets"], MET, METPhi)
         commonCalcFlatObs["MinDeltaPhiMhtJets"][0] = analysis_ntuples.eventMinDeltaPhiMhtJets30Pt2_4Eta(jetsObs["Jets"], MHT, MHTPhi)
-        if not dy and not jpsi:
+        if not dy and not jpsi and not no_lepton_selection:
             #if commonCalcFlatObs["MinDeltaPhiMetJets"][0] < 0.4: continue
             #if MHT < 140: continue
             #if MET < 140: continue
@@ -1243,6 +1251,8 @@ def main():
                                 dileptonVars["pt3" + postfix][0] = analysis_tools.pt3(leptons[0].Pt(),leptons[0].Phi(),leptons[1].Pt(),leptons[1].Phi(),MET,METPhi)
                                 dileptonVars["mt1" + postfix][0] = analysis_tools.MT2(MET, METPhi, leptons[0])
                                 dileptonVars["mt2" + postfix][0] = analysis_tools.MT2(MET, METPhi, leptons[1])
+                                dileptonVars["mth1" + postfix][0] = analysis_tools.MT2(MHT, MHTPhi, leptons[0])
+                                dileptonVars["mth2" + postfix][0] = analysis_tools.MT2(MHT, MHTPhi, leptons[1])
                         
                                 #if leptons[0].Pt() < 1 or leptons[1].Pt() < 1:
                                 #    print "FUCK!"
@@ -1482,6 +1492,8 @@ def main():
                 genCalcObs["pt3"][0] = analysis_tools.pt3(g1.Pt(),g1.Phi(),g2.Pt(),g2.Phi(),MET,METPhi)
                 genCalcObs["mt1"][0] = analysis_tools.MT2(MET, METPhi, g1)
                 genCalcObs["mt2"][0] = analysis_tools.MT2(MET, METPhi, g2)
+                genCalcObs["mth1"][0] = analysis_tools.MT2(MHT, MHTPhi, g1)
+                genCalcObs["mth2"][0] = analysis_tools.MT2(MHT, MHTPhi, g2)
                 genCalcObs["mtautau"][0] = analysis_tools.Mtautau(pt, g1, g2)
                 genCalcObs["nmtautau"][0] = analysis_tools.Mtautau(pt, g1, g2)
                 genCalcObs["deltaEtaLeadingJetDilepton"][0] = abs((g1 + g2).Eta() - var_LeadingJet.Eta())

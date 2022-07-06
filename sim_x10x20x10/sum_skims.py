@@ -72,6 +72,9 @@ default_file_num = 2
 
 chunk_size = default_file_num
 
+if slim:
+    chunk_size = 10000
+
 for point in points:
     point_files = sorted(glob(skim_dir + "/*" + point + "*"))
     print("\n\n\n\npoint=" + point)

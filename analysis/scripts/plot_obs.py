@@ -419,8 +419,11 @@ def plotRatio(c1, pad, memory, numHist, denHist, hist_def, numLabel = "Data", de
     if plot_par.plot_grid_y:
         pad.SetGridy()
     
-    #chi2 = dataHist.Chi2Test(newBgHist, "WW")
-    #print(chi2)
+    chi2 = numHist.Chi2Test(denHist, "WW")
+    chi2_rev = denHist.Chi2Test(numHist, "WW")
+    print("chi2", chi2)
+    if chi2_rev != chi2:
+        print("WTF chi2_rev", chi2_rev)
     #exit(0)
     
     factor = 7. / 3.
@@ -478,16 +481,16 @@ def plotRatio(c1, pad, memory, numHist, denHist, hist_def, numLabel = "Data", de
     line.SetLineColor(kRed);
     line.Draw("SAME");
     
-    # tl = TLatex()
-#     tl.SetNDC()
-#     print((tl.GetTextSize()))
-#     tl.SetTextSize(0.2) 
-#     print((tl.GetTextSize()))
-#     #tl.SetTextSize(0.5)
-#     tl.SetTextFont(132)
-#     
-#     
-#     tl.DrawLatex(.5,.5,"p_value = " + "{:.2f}".format(chi2))
+    tl = TLatex()
+    tl.SetNDC()
+    print((tl.GetTextSize()))
+    tl.SetTextSize(0.15) 
+    print((tl.GetTextSize()))
+    #tl.SetTextSize(0.5)
+    tl.SetTextFont(42)
+    
+    
+    tl.DrawLatex(.2,.4,"p-value = " + "{:.2f}".format(chi2))
     
     #tl.DrawLatex(.2,.5,"tf = " + "{:.2f}".format(tf))
     
@@ -917,7 +920,6 @@ def main():
     #gROOT.ForceStyle()
     
     histograms = {}
-    histograms_def_link = {}
     sumTypes = {}
     fit_funcs = {}
     fit_hist_integral = {}
@@ -2205,12 +2207,14 @@ def main():
                         if plot_par.solid_bg:
                             stackSum = newBgHist
                         else:
-                            stackSum = newBgHist.GetStack().Last().Clone("stackSum")
-                            memory.append(stackSum)
+                            if newBgHist.GetNhists() > 0:
+                            #if newBgHist is not None and newBgHist.GetStack() is not None and newBgHist.GetStack().Last() is not None:
+                                stackSum = newBgHist.GetStack().Last().Clone("stackSum")
                         #stackSum = utils.getStackSum(newBgHist)
-                        memory.append(stackSum)
-                        #plotRatio(c1, pad, memory, numHist, denHist, hist_def, numLabel = "Data", denLabel = "BG",setXtitle = True, revRatio = False, styleRefHist = None):
-                        plotRatio(c1, histRPad, memory, dataHist, stackSum, hist_def)
+                        if stackSum is not None:
+                            memory.append(stackSum)
+                            #plotRatio(c1, pad, memory, numHist, denHist, hist_def, numLabel = "Data", denLabel = "BG",setXtitle = True, revRatio = False, styleRefHist = None):
+                            plotRatio(c1, histRPad, memory, dataHist, stackSum, hist_def)
             
             #print "***", ratioPads
             print(calculated_lumi)
@@ -2485,11 +2489,14 @@ def main():
                         if plot_par.solid_bg:
                             stackSum = newBgHist
                         else:
-                            stackSum = newBgHist.GetStack().Last().Clone("stackSum")
-                            memory.append(stackSum)
+                            #stackSum = None
+                            if newBgHist.GetNhists() > 0:
+                                stackSum = newBgHist.GetStack().Last().Clone("stackSum")
+                                memory.append(stackSum)
                         #stackSum = utils.getStackSum(newBgHist)
-                        memory.append(stackSum)
-                        plotRatio(c1, histRPad, memory, dataHist, stackSum, hist_def)
+                        if stackSum is not None:
+                            memory.append(stackSum)
+                            plotRatio(c1, histRPad, memory, dataHist, stackSum, hist_def)
             
             print(calculated_lumi)
             lumiStr = "{:.1f}".format(calculated_lumi)

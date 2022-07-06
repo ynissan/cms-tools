@@ -81,11 +81,13 @@ FILES=${INPUT_DIR}/single/*
 
 for sim in ${FILES[@]}; do
     #sim=${INPUT_DIR}/sum/$sim
-    if [ -n "$SAM" ]; then
-        filename=`echo $(basename $sim .root)`
-    else
-        filename=`echo $(basename $sim .root) | awk -F"_" '{print $1"_"$2"_"$3}'`
-    fi
+    # if [ -n "$SAM" ]; then
+#         filename=`echo $(basename $sim .root)`
+#     else
+#         filename=`echo $(basename $sim .root) | awk -F"_" '{print $1"_"$2"_"$3}'`
+#     fi
+    
+    filename=`echo $(basename $sim .root)`
     echo $filename
     tb=all
     echo "Will run:"

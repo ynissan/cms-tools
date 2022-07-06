@@ -83,6 +83,8 @@ LEPTON_COLLECTION_FILES_MAP_DIR="/pnfs/desy.de/cms/tier2/store/user/ynissan/Ntup
 
 epsilon = 0.0000000001
 
+TOOLS_BASE_PATH = os.path.expandvars("$CMSSW_BASE/src/cms-tools")#/analysis/scripts/condor_wrapper.sh")
+
 compoundTypes = {
     "Rare" : ["WZZ", "WWZ", "ZZZ"],
     "DiBoson" : ["WZ", "WW", "ZZ"],
@@ -162,6 +164,8 @@ leptonsCorrJetVecList = {
 }
 
 leptonCorrJetIsoPtRange = [0, 1, 5, 6, 7, 8, 9, 10, 10.5, 11, 11.5, 12, 12.5, 13, 15, 20]
+# Old list
+#leptonCorrJetIsoPtRange = [0, 1, 5, 10, 10.5, 11, 11.5, 12, 12.5, 13, 15, 20]
 leptonCorrJetIsoDrCuts = [0.4,0.45,0.5,0.55,0.6]
 
 #leptonCorrJetIsoPtRange = [0, 10]
@@ -170,7 +174,9 @@ defaultJetIsoSetting = "CorrJetIso10Dr0.5"
 
 #leptonIsolationList = [ "JetIso", "CorrJetIso", "NonJetIso" ]
 #leptonIsolationList = [ "CorrJetIso", "NonJetIso", "NoIso" ]
+#Old list
 #leptonIsolationList = [ "CorrJetIso", "NoIso" ]
+#New List
 leptonIsolationList = [ "NoIso", "CorrJetIso", "CorrJetNoMultIso", "JetIso" ]
 leptonIsolationCrList = [ "CorrJetD3Iso", "CorrJetNoMultD3Iso","JetD3Iso" ]
 leptonIsolationIncList = leptonIsolationList + leptonIsolationCrList
@@ -244,6 +250,8 @@ def getFilesForCompoundType(cType, directory):
         #    bgFiles.extend(glob(directory + "/" + miniType + ".root"))
         #else:
             #print "Globing " + directory + "/" + miniType + "_*.root"
+        #This line is to solve the ST problem that sometimes it comes without an underscore
+        bgFiles.extend(glob(directory + "/" + miniType + ".root"))
         bgFiles.extend(glob(directory + "/" + miniType + "_*.root"))
     #print(bgFiles)
     return bgFiles
@@ -552,7 +560,7 @@ def getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=
         return None
     binsStr = None
     
-    print("Getting", name, "obs:", obs, "cond:", condition, "minX", minX, "maxX", maxX, "overflow", overflow)
+    print("Getting", name, "obs:", obs, "cond:", condition, "bins", bins, "minX", minX, "maxX", maxX, "overflow", overflow)
     
     # if tmpName == "hsqrt":
 #         letters = string.ascii_lowercase
