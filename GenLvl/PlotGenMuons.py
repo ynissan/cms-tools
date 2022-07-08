@@ -27,22 +27,23 @@ chain = TChain("TreeMaker2/PreSelection")
 for signal_file in signal_files:
 	for file in signal_file:
 		chain.Add(file)
-		#break
-	#break
+# 		break
+# 	break
 	
 		
 number_of_entries = chain.GetEntries()
 print("number_of_entries",number_of_entries)
 
-histMuon = TH1F("MuonMultiplicity","MuonMultiplicity",10,0,10)
+histMuon = TH1F("MuonMultiplicity"," ; \\mu - multiplicity ; ",10,0,10)
 histAllMuons = TH1F("AllMuons","AllMuons",10,0,10)
-histDeltaR = TH1F("min_DeltaR_muon_jet","min_DeltaR_muon_jet",50,0,5)
+histDeltaR = TH1F("min_DeltaR_muon_jet"," ; \Delta R ; ",50,0,5)
 histDeltaRljet = TH1F("min_DeltaR_muon_l_jet","min_DeltaR_muon_l_jet",50,0,5)
 histMuonsElectrons = TH1F("MuonsElectrons","MuonsElectrons",10,0,10)
-histMuonParent = TH1F("MuonParents","MuonParents",12,0,12)
-histMuonParentInsideJet = TH1F("MuonParentsInsideJet","MuonParentsInsideJet",12,0,12)
-histMuonParentInsideBJet = TH1F("MuonParentsInsideBJet","MuonParentsInsideBJet",12,0,12)
-histMuonTopPt = TH1F("PtMuonsFromTop","PtMuonsFromTop",90,0,30)
+histMuonParent = TH1F("MuonParents"," ; Parent ; ",12,0,12)
+histMuonParentInsideJet = TH1F("MuonParentsInsideJet"," ; Parent ; ",12,0,12)
+histMuonParentInsideBJet = TH1F("MuonParentsInsideBJet"," ; Parent ; ",12,0,12)
+histMuonStopPt = TH1F("PtMuonsfromStop"," ; p_{T} ; ",90,0,30)
+histMuonTopPt = TH1F("PtMuonsFromTop"," ; p_{T} ; ",60,0,30)
 
 MesonList = [511, 411, 521, 431, 421, 443, 531, 221, 113, 541, 333, 223, 331, 100443, 553]
 BaryonList = [5232,5122, 4122, 5132, 4132, 4232, 2212, 4332, 5332]
@@ -110,6 +111,7 @@ for ientry in range(number_of_entries):
 	allMuons = 0
 	MuonsElectrons = 0
 	for idx in range(partSize):
+		counter = 0
 		if abs(chain.GenParticles_PdgId[idx]) == 13:
 			allMuons += 1
 		if abs(chain.GenParticles_PdgId[idx]) == 13 or abs(chain.GenParticles_PdgId[idx]) == 11:
@@ -134,6 +136,9 @@ for ientry in range(number_of_entries):
 						DeltaRljet = chain.GenParticles[idx].DeltaR(chain.Jets[ljet])
 						if minDeltaRljet is None or DeltaRljet < minDeltaRljet:
 							minDeltaRljet = DeltaRljet
+							counter += 1
+							if counter > 1:
+								print("DeltaR corrected ")
 			if minDeltaR is not None:
 				histDeltaR.Fill(minDeltaR)
 				histDeltaRljet.Fill(minDeltaRljet)
@@ -144,7 +149,13 @@ for ientry in range(number_of_entries):
 							WhatsTheParent(idx, histMuonParentInsideBJet)
 					else:
 						print("The muon is not inside a bjet")
-				
+			if chain.GenParticles_PdgId[idx] == 13 and chain.GenParticles_ParentId[idx] == 1000023 and chain.GenParticles_ParentId[chain.GenParticles_ParentIdx[idx]] == 1000006:
+				MuonIdx = idx
+				Chi02idx = chain.GenParticles_ParentIdx[idx]
+				for idx2 in range(partSize):
+					if chain.GenParticles_PdgId[idx2] == -13 and chain.GenParticles_ParentIdx[idx2] == Chi02idx:
+						histMuonStopPt.Fill(chain.GenParticles[MuonIdx].Pt())
+						histMuonStopPt.Fill(chain.GenParticles[idx2].Pt())
 
 	histMuon.Fill(MuonMultiplicity)
 	histAllMuons.Fill(allMuons)
@@ -178,9 +189,9 @@ histDeltaRljet.SetLineStyle(2)
 histDeltaRljet.SetLineColor(kRed-4)
 histDeltaR.Draw("hist4")
 histDeltaRljet.Draw("hist4 same")
-legend = TLegend(0.7,0.7,0.9,0.9)
-legend.AddEntry(histDeltaR,"min \Delta R to Jet")
-legend.AddEntry(histDeltaRljet,"min \Delta R to leading Jet")
+legend = TLegend(0.6,0.7,0.9,0.9)
+legend.AddEntry(histDeltaR," to nearest Jet")
+legend.AddEntry(histDeltaRljet," to leading Jet")
 legend.Draw()
 canvas2.Update()
 canvas2.Print("minDeltaRMuonJet.pdf")
@@ -219,10 +230,20 @@ canvas3.Print("MuonParent.pdf")
 
 canvas4 = TCanvas("canvas4", "PtMuonsFromTop")
 canvas4.SetCanvasSize(800,600)
-histMuonTopPt.SetLineStyle(1)
+histMuonTopPt.SetLineWidth(2)
+histMuonStopPt.SetLineWidth(2)
+histMuonStopPt.SetLineStyle(2)
+histMuonStopPt.SetLineColor(kRed-4)
 histMuonTopPt.Draw("hist3")
+histMuonStopPt.Draw("hist3same")
+legend4 = TLegend(0.7,0.1,0.9,0.3)
+legend4.AddEntry(histMuonTopPt," \mu from t")
+legend4.AddEntry(histMuonStopPt," \mu from \\tilde t")
+legend4.Draw()
 canvas4.Update()
 canvas4.Print("PtMuonsFromTop.pdf")
+
+
 
 
 print(f"List of W-parents: {WParentList}")
