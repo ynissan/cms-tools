@@ -169,7 +169,11 @@ echo -e "\n\nRUNNING ALL GROUP\n\n"
 #     mkdir "$OUTPUT_DIR/stderr"
 # fi
 
-FILES=${INPUT_DIR}/single/*
+if [ -n "$SAM" ]; then
+    FILES=${INPUT_DIR}/sum/*
+else
+    FILES=${INPUT_DIR}/single/*
+fi
 
 #FILES=(higgsino_mu115_dm9p82Chi20Chipm.root higgsino_mu115_dm7p44Chi20Chipm.root higgsino_mu130_dm7p49Chi20Chipm.root)
 
@@ -195,6 +199,6 @@ Queue
 EOM
 done
 
-#condor_submit $output_file
+condor_submit $output_file
 echo "log file: $output_file"
 rm $output_file

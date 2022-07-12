@@ -70,8 +70,11 @@ notification = Never
 +RequestRuntime = 86400
 EOM
 
-FILES=${INPUT_DIR}/single/*
-
+if [ -n "$SAM" ]; then
+    FILES=${INPUT_DIR}/sum/*
+else
+    FILES=${INPUT_DIR}/single/*
+fi
 #FILES=(mChipm160GeV_dm0p44GeV.root mChipm140GeV_dm4p28GeV.root)
 
 #FILES=(higgsino_mu100_dm0p18Chi20Chipm.root)

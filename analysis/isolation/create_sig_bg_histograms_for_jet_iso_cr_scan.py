@@ -63,7 +63,7 @@ unwanted_iso = "CorrJetIso"
 if args.output_file:
     output_file = args.output_file[0]
 else:
-    output_file = "sig_bg_histograms_for_jet_iso_scan" + wanted_iso + "_no_tautau_after_mht_with_data2.root"
+    output_file = "sig_bg_histograms_for_jet_iso_scan" + wanted_iso + "_no_tautau_after_mht_with_data.root"
 
 bins = 40
 
