@@ -1,6 +1,7 @@
 import sys
 import os
 from ROOT import *
+import copy 
 
 sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/lib"))
 
@@ -152,43 +153,15 @@ class stops_bg_vs_signal(BaseParams):
 #         { "obs" : "invMass%%%", "minX" : 0, "maxX" : 12, "bins" : 20 ,"units" : "M_{ll} [GeV]", "linearYspace" : 1.5 },
 #     ]
     
-    histograms_defs = common_histograms + two_leps_histograms
+    histograms_defs = copy.deepcopy(common_histograms + two_leps_histograms)
     
     cuts = [
-        {"name":"none", "title": "MET > 140", "condition" : "MET > 140", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
-        
-        # {"name":"step1", "title": "Delta_R_{ll} < 3.7", "condition" : "deltaR%%% < 3.7", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
-#         
-#         {"name":"step2", "title": "Delta_R_{ll} < 3.7 && pT(l1) > 4", "condition" : "deltaR%%% < 3.7 && leptons%%%[0].Pt() > 4", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
-#         
-#         {"name":"step3", "title": "Delta_R < 3.7 && pT(l1) > 4 && BTagsDeepMedium > 0", "condition" : "deltaR%%% < 3.7 && leptons%%%[0].Pt() > 4 && BTagsDeepMedium > 0", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
-#         
-#         {"name":"step4", "title": "Delta_R < 3.7 && pT(l1) > 4 && BTagsDeepMedium > 0 && mth(l1) > 15", "condition" : "deltaR%%% < 3.7 && leptons%%%[0].Pt() > 4 && BTagsDeepMedium > 0 && mth1%%% > 15", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
-#         
-#         {"name":"step5", "title": "Delta_R < 3.7 && pT(l1) > 4 && BTagsDeepMedium > 0 && mth(l1) > 15 && mth(l2) > 15 ", "condition" : "deltaR%%% < 3.7 && leptons%%%[0].Pt() > 4 && BTagsDeepMedium > 0 && mth1%%% > 15 && mth2%%% > 15", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
-#         
-#         {"name":"step6", "title": "Delta_R < 3.7 && pT(l1) > 4 && BTagsDeepMedium > 0 && mth(l1) > 15 && mth(l2) > 15 && HT > 400", "condition" : "deltaR%%% < 3.7 && leptons%%%[0].Pt() > 4 && BTagsDeepMedium > 0 && mth1%%% > 15 && mth2%%% > 15 && HT > 400", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
-#         
-#         {"name":"step7", "title": "Delta_R < 3.7 && pT(l1) > 4 && BTagsDeepMedium > 1 && mth(l1) > 15 && mth(l2) > 15 && HT > 400", "condition" : "deltaR%%% < 3.7 && leptons%%%[0].Pt() > 4 && BTagsDeepMedium > 1 && mth1%%% > 15 && mth2%%% > 15 && HT > 400", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
-#         
-#         {"name":"step8", "title": "Delta_R < 2 && pT(l1) > 4 && BTagsDeepMedium > 0 && mth(l1) > 15 && mth(l2) > 15 && HT > 400", "condition" : "deltaR%%% < 3.7 && leptons%%%[0].Pt() > 4 && BTagsDeepMedium > 0 && mth1%%% > 15 && mth2%%% > 15 && HT > 400", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
-        
-#         {"name":"step1", "title": "MET > 140", "condition" : "MET > 140", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
-#         
-#         {"name":"step2", "title": "MET > 140 && BTagsDeepMedium > 0", "condition" : "MET > 140 && BTagsDeepMedium > 0", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
-#         
-	{"name":"step2.5", "title": "MET > 140 && BTagsDeepMedium > 0 && MinDeltaPhiMhtJets > 0.4", "condition" : "MET > 140 && BTagsDeepMedium > 0 && MinDeltaPhiMhtJets > 0.4", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+        {"name":"none", "title": "MET > 140 && MinDeltaPhiMhtJets > 0.4", "condition" : "MET > 140 && MinDeltaPhiMhtJets > 0.4", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+
+	{"name":"step1", "title": "MET > 140 && MinDeltaPhiMhtJets > 0.4 && leptons%%%[0].Pt() < 7 && leptons%%%[1].Pt() < 7", "condition" : "MET > 140 && BTagsDeepMedium > 0 && MinDeltaPhiMhtJets > 0.4", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
         
 	{"name":"step3", "title": "MET > 140 && BTagsDeepMedium > 1 && MinDeltaPhiMhtJets > 0.4", "condition" : "MET > 140 && BTagsDeepMedium > 1 && MinDeltaPhiMhtJets > 0.4", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
-#         
-#         {"name":"step4", "title": "MET > 140 && BTagsDeepMedium > 0 && invMass%%% < 5", "condition" : "MET > 140 && BTagsDeepMedium > 0 && invMass%%% < 5", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
-#         
-#         {"name":"step5", "title": "MET > 140 && BTagsDeepMedium > 1 && invMass%%% < 5", "condition" : "MET > 140 && BTagsDeepMedium > 1 && invMass%%% < 5", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
-#         
-#         {"name":"step6", "title": "MET > 140 && BTagsDeepMedium > 0 && invMass%%% < 5 && MinDeltaPhiMhtJets > 0.5", "condition" : "MET > 140 && BTagsDeepMedium > 0 && invMass%%% < 5 && MinDeltaPhiMhtJets > 0.5", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
-#         
-#         {"name":"step7", "title": "MET > 140 && BTagsDeepMedium > 1 && invMass%%% < 5 && MinDeltaPhiMhtJets > 0.5", "condition" : "MET > 140 && BTagsDeepMedium > 1 && invMass%%% < 5 && MinDeltaPhiMhtJets > 0.5", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
-        
+
     ]
     
     legend_coordinates = {"x1" : .35, "y1" : .40, "x2" : .95, "y2" : .89}
@@ -203,3 +176,74 @@ class stops_bg_vs_signal(BaseParams):
     injectJetIsoToCuts(cuts, jetIsoStr)
     injectJetIsoToHistograms(histograms_defs, jetIsoStr)
     
+
+
+
+
+
+class stops_bg_vs_signal_Iso(BaseParams):
+	signal_dir = signals
+	signal_names = signalNames
+	bg_dir = "/nfs/dust/cms/user/diepholq/x1x2x1/bg/skim/sum/type_sum"
+
+	weightString = {
+	'MET' : "passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio",
+	}
+
+	calculatedLumi = {
+	'MET' : utils.LUMINOSITY/1000.0,
+	}
+
+	plot_bg = True
+	plot_data = False
+	plot_signal = True
+
+
+	plot_overflow = True
+	plot_error = True
+	plot_significance = True
+
+	histograms_defs = []
+	cuts = []
+
+	histrograms_file = BaseParams.histograms_root_files_dir + "/stops_bg_vs_signal_Iso.root"
+	save_histrograms_to_file = True
+	load_histrograms_from_file = False
+
+	#  histograms_defs = [
+	#         { "obs" : "MET", "minX" : 0, "maxX" : 800, "bins" : 30 },
+	#         #{ "obs" : "MET2", "formula" : "MET", "minX" : 0, "maxX" : 600, "bins" : 80, "condition" : "HT < 600" },
+	#         { "obs" : "MHT", "minX" : 200, "maxX" : 500, "bins" : 30, "units" : "H_{T}^{Miss} [GeV]" },
+	#         { "obs" : "HT", "minX" : 0, "maxX" : 700, "bins" : 30 },
+	#         { "obs" : "invMass%%%", "minX" : 0, "maxX" : 12, "bins" : 20 ,"units" : "M_{ll} [GeV]", "linearYspace" : 1.5 },
+	#     ]
+
+	histograms_defs = copy.deepcopy(common_histograms + two_leps_histograms)
+
+	cuts = [
+	{"name":"none", "title": "MET > 140 && MinDeltaPhiMhtJets > 0.4", "condition" : "MET > 140 && MinDeltaPhiMhtJets > 0.4", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+
+	{"name":"step1", "title": "MET > 140 && MinDeltaPhiMhtJets > 0.4 && leptons%%%[0].Pt() < 7 && leptons%%%[1].Pt() < 7", "condition" : "MET > 140 && BTagsDeepMedium > 0 && MinDeltaPhiMhtJets > 0.4", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+
+	{"name":"step3", "title": "MET > 140 && BTagsDeepMedium > 1 && MinDeltaPhiMhtJets > 0.4", "condition" : "MET > 140 && BTagsDeepMedium > 1 && MinDeltaPhiMhtJets > 0.4", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+	
+	]
+
+	legend_coordinates = {"x1" : .35, "y1" : .40, "x2" : .95, "y2" : .89}
+	#legend_coordinates = {"x1" : 0.65, "y1" : .2, "x2" : .95, "y2" : .89}
+	legend_columns = 2
+	legend_border = 0
+
+	y_title_offset = 1.3
+	y_title = "Events"
+
+
+	jetIsoStr = "CorrJetIso15Dr0.4"
+	injectJetIsoToCuts(cuts, jetIsoStr)
+	injectJetIsoToHistograms(histograms_defs, jetIsoStr)
+
+
+
+
+
+
