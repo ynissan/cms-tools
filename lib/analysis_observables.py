@@ -330,6 +330,8 @@ dileptonObservablesDTypesList = {
     "upsilon_1" : "bool",
     "upsilon_2" : "bool",
     "NSelectionLeptons" : "int",
+    "NSelectionMuons" : "int",
+    "NSelectionElectrons" : "int",
     "isoCr" : "int",
     "isoCrMinDr" : "float"
 }

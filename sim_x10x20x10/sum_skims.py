@@ -42,8 +42,8 @@ if two_leptons:
         skim_dir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_sam/single/"
         output_dir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim_sam/sum"
 elif no_lepton_selection:
-    skim_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/single/"
-    output_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum"
+    skim_dir = "/afs/desy.de/user/n/diepholq/nfs/x1x2x1/signal/skim_nlp/single/"
+    output_dir = "/afs/desy.de/user/n/diepholq/nfs/x1x2x1/signal/skim_nlp/sum"
 
 if not os.path.exists(output_dir):
     os.mkdir(output_dir)

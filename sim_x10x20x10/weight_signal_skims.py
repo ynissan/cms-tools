@@ -21,12 +21,17 @@ from lib import analysis_observables
 parser = argparse.ArgumentParser(description='Sum signal files.')
 parser.add_argument('-f', '--force', dest='force', help='Force Update', action='store_true')
 parser.add_argument('-sam', '--sam', dest='sam', help='Sam Skims', action='store_true')
+parser.add_argument('-nlp', '--no_lepton_selection', dest='no_lepton_selection', help='No Lepton Selection Skim', action='store_true')
 args = parser.parse_args()
 
 force = args.force
 sam = args.sam
+no_lepton_selection = args.no_lepton_selection
 
 signal_dir = "/nfs/dust/cms/user/diepholq/x1x2x1/signal/skim/single"
+
+if no_lepton_selection:
+    signal_dir = "/nfs/dust/cms/user/diepholq/x1x2x1/signal_nlp/skim/single"
 
 def main():
     points = {}
