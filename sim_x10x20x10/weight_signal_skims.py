@@ -31,7 +31,7 @@ no_lepton_selection = args.no_lepton_selection
 signal_dir = "/nfs/dust/cms/user/diepholq/x1x2x1/signal/skim/single"
 
 if no_lepton_selection:
-    signal_dir = "/nfs/dust/cms/user/diepholq/x1x2x1/signal_nlp/skim/single"
+    signal_dir = "/nfs/dust/cms/user/diepholq/x1x2x1/signal/skim_nlp/single"
 
 def main():
     points = {}
@@ -60,7 +60,6 @@ def main():
     print("\n\n\n")
     print(points)
     print("\n\n\n")
-    #exit(0)
     
     for fileName in fileList:
         print("Weighting", os.path.basename(fileName))

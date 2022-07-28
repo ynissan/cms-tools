@@ -21,9 +21,12 @@ args = parser.parse_args()
 
 #m_stop = 500, m_Chi_pm = 115, dm = 1.4
 signal_files = [
+#glob("/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_1.root")
 glob("/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim/sum/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_1.root")
+#glob("/nfs/dust/cms/user/beinsam/CommonSamples/MC_BSM/CompressedHiggsino/RadiativeMu_2016Fast/ntuple_sidecarv3/*")
+#glob("/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim_nlp/single/higgsino_Summer16_stopstop_800GeV_mChipm400GeV_dm1p0GeV_pu35_part2of25_RA2AnalysisTree.root")
 ]
-signal_file = "/afs/desy.de/user/n/nissanuv/q_nfs/x1x2x1/signal/skim/sum/higgsino_Summer16_stopstop_500GeV_mChipm115GeV_dm1p4GeV_1.root"
+#signal_file = "/afs/desy.de/user/n/nissanuv/q_nfs/x1x2x1/signal/skim/sum/higgsino_Summer16_stopstop_500GeV_mChipm115GeV_dm1p4GeV_1.root"
 
 if args.breakk:
 	#chain = TChain("TreeMaker2/PreSelection")
@@ -188,20 +191,6 @@ def plot_hist(key,linestyle,linewidth,linecolor,same,legendentry,pdf,canvasgloba
 
 
 
-# genmuons2 = []
-# for ientry in range(number_of_entries):
-# 	chain.GetEntry(ientry)
-# 	if ientry % 1000 == 0:
-# 		print("Processing " + str(ientry), "of", number_of_entries)
-# 	for idx in range(len(chain.GenParticles)):
-# 		if abs(chain.GenParticles_PdgId[idx]) == 13 and chain.GenParticles[idx].Pt() > 2 and chain.GenParticles[idx].Pt() < 15:
-# 			genmuons2.append(chain.GenParticles[idx])
-# 	genmuons = [chain.GenParticles[idx] for idx in range(len(chain.GenParticles)) if (abs(chain.GenParticles_PdgId[idx]) == 13 and 
-# 	chain.GenParticles[idx].Pt() > 2 and chain.GenParticles[idx].Pt() < 15)]	
-# 	print(len(genmuons),"      ", len(genmuons2))
-
-
-
 
 
 #main-------------------------------------------------------------------------------------
@@ -308,12 +297,21 @@ def mainGen(PtThreshold):
 		histograms["histRecoMuonMultiplicityIso"].Fill(RecoMuonMultiplicityIso)
 
 
+def debug():
+	print("Starting Loop")
+	MuonNumberEvents = 0
+	for ientry in range(number_of_entries):
+		chain.GetEntry(ientry)
+		if ientry % 1000 == 0:
+			print("Processing " + str(ientry), "of", number_of_entries)
+		if chain.twoLeptonsNoIso == 1 and chain.leptonFlavourNoIso == "Muons":
+			MuonNumberEvents += 1
+	print(MuonNumberEvents)
+debug()
+exit(0)
 
-
-
-
-
-
+isostr = "isoCrCorrJetIso15Dr0.4"
+samesignstr = "sameSignCorrJetIso15Dr0.4"
 def mainReco(PtThreshold,MuonNumber,comparison_type,histinvMass,histpT):
 	print("Starting Loop")
 	MuonNumberEvents = 0
@@ -329,6 +327,8 @@ def mainReco(PtThreshold,MuonNumber,comparison_type,histinvMass,histpT):
 		MuonMultiplicityPtPassed = 0
 		selectedMuonsIdxs = []
 		charges_list = []
+		isobranch_reco = getattr(chain,isostr)
+		samesignbranch_reco = getattr(chain,samesignstr)
 
 		if chain.MHT < 200:                 #cuts
 			continue
@@ -336,7 +336,10 @@ def mainReco(PtThreshold,MuonNumber,comparison_type,histinvMass,histpT):
 			continue
 		if chain.MinDeltaPhiMhtJets < 0.4:
 			continue
-
+		if isobranch_reco != 0:
+			continue
+		if samesignbranch_reco != 0:
+			continue
 		for muon in range(len(chain.Muons)):                   #pT criterion
 			if chain.Muons[muon].Pt() < PtThreshold and chain.Muons[muon].Pt() > 2:
 				MuonMultiplicityPtPassed += 1
@@ -352,7 +355,7 @@ def mainReco(PtThreshold,MuonNumber,comparison_type,histinvMass,histpT):
 		antimus = charges_list.count(1)
 		if mus == 0 or antimus == 0:
 			continue 
-		#MuonNumberEvents += 1  # 
+		MuonNumberEvents += 1  # 
 # 		print([chain.Muons[i].Pt() for i in selectedMuonsIdxs])
 # 		continue
 		if MuonNumber == 3:
@@ -374,20 +377,29 @@ def mainReco(PtThreshold,MuonNumber,comparison_type,histinvMass,histpT):
 					same_idx1 = charges_list.index(1)
 					same_idx2 = charges_list.index(1,same_idx1+1)
 					same_idx3 = charges_list.index(1,same_idx2+1)
+					same_idx_list= [same_idx1,same_idx2,same_idx3]
+					for idx in same_idx_list:
+						invMass_list.append((chain.Muons[selectedMuonsIdxs[muon1invMass]]+chain.Muons[selectedMuonsIdxs[idx]]).M())
+						min_invMass = min(invMass_list)
+						min_invMass_index = invMass_list.index(min_invMass)
+						muon2invMass = same_idx_list[min_invMass_index] 
+						if args.fivegev:
+							if min_invMass > 5:
+								continue
 				if antimus == 1:
 					muon1invMass = charges_list.index(1)
 					same_idx1 = charges_list.index(-1)
 					same_idx2 = charges_list.index(-1,same_idx1+1)
 					same_idx3 = charges_list.index(-1,same_idx2+1)
 					same_idx_list= [same_idx1,same_idx2,same_idx3]
-				for idx in same_idx_list:
-					invMass_list.append((chain.Muons[selectedMuonsIdxs[muon1invMass]]+chain.Muons[selectedMuonsIdxs[idx]]).M())
-					min_invMass = min(invMass_list)
-					min_invMass_index = invMass_list.index(min_invMass)
-					muon2invMass = same_idx_list[min_invMass_index] 
-					if args.fivegev:
-						if min_invMass > 5:
-							continue
+					for idx in same_idx_list:
+						invMass_list.append((chain.Muons[selectedMuonsIdxs[muon1invMass]]+chain.Muons[selectedMuonsIdxs[idx]]).M())
+						min_invMass = min(invMass_list)
+						min_invMass_index = invMass_list.index(min_invMass)
+						muon2invMass = same_idx_list[min_invMass_index] 
+						if args.fivegev:
+							if min_invMass > 5:
+								continue
 				#print(invMass_list,min_invMass_index)
 				if mus == 2:
 					mu_idx1 = charges_list.index(-1)
@@ -446,12 +458,12 @@ def mainReco(PtThreshold,MuonNumber,comparison_type,histinvMass,histpT):
 				selectedMuonsIdxs = [selectedMuonsIdxs[min_pT_idx],selectedMuonsIdxs[second_idx]]
 
 		if MuonNumber == 3:         #choosing the second muon with less pT
-			muon1 = opposite_midx
-			if chain.Muons[same_idx1].Pt() < chain.Muons[same_idx2].Pt():
+			muon1 = selectedopposite_midx
+			if chain.Muons[selectedMuonsIdxs[same_idx1]].Pt() < chain.Muons[selectedMuonsIdxs[same_idx2]].Pt():
 				muon2pT = same_idx1
 			else: 
 				muon2pT = same_idx2
-			if (chain.Muons[opposite_midx] + chain.Muons[same_idx1]).M() < (chain.Muons[opposite_midx] + chain.Muons[same_idx2]).M():   #choosing 2nd muon with min invMass together with opposite sign muon
+			if (chain.Muons[selectedMuonsIdxs[opposite_midx]] + chain.Muons[selectedMuonsIdxs[same_idx1]]).M() < (chain.Muons[selectedMuonsIdxs[opposite_midx]] + chain.Muons[selectedMuonsIdxs[same_idx2]]).M():   #choosing 2nd muon with min invMass together with opposite sign muon
 				muon2invMass = same_idx1
 			else:
 				muon2invMass = same_idx2
@@ -460,12 +472,9 @@ def mainReco(PtThreshold,MuonNumber,comparison_type,histinvMass,histpT):
 			if comparison_type == "pT":
 				selectedMuonsIdxs = [selectedMuonsIdxs[opposite_midx],selectedMuonsIdxs[muon2pT]]
 
-		MuonNumberEvents += 1 
+		#MuonNumberEvents += 1 
 		genmuons = [chain.GenParticles[idx] for idx in range(len(chain.GenParticles)) if (abs(chain.GenParticles_PdgId[idx]) == 13 and 
 		chain.GenParticles[idx].Pt() > 2 and chain.GenParticles[idx].Pt() < 15)]        #gen muons selection from genparticles, followed by matching
-		# genmuons_from_neutralino = [chain.GenParticles[idx] for idx in range(len(chain.GenParticles)) if (abs(chain.GenParticles_PdgId[idx]) == 13 and 
-# 		chain.GenParticles[idx].Pt() > 2 and chain.GenParticles[idx].Pt() < 15 and chain.GenParticles_ParentId[idx] == 1000023 
-# 		and chain.GenParticles_ParentId[chain.GenParticles_ParentIdx[idx]] == 1000006)] #gen muons whose parent is the scnd neutralino
 		gen_matched = 0 
 		gen_matched_chi = 0
 		genmuons_from_neutralino = []
@@ -508,19 +517,15 @@ def mainReco(PtThreshold,MuonNumber,comparison_type,histinvMass,histpT):
 			AllFromChi += 1
 	#event loop end
 	fraction_both_gen = AllGenMatchedEvents/MuonNumberEvents
-	#fraction_at_least_one = AtLeastOnefromChi/MuonNumberEvents
-	#fraction_genmatched_at_least_one = AtLeastOnefromChi/AllGenMatchedEvents
 	print(f"Number of events with MuonNumber = {MuonNumber}: {MuonNumberEvents}")
 	print("Fraction of those events where all muons are matched to gen muons :",fraction_both_gen)
-	#print("Fraction of all gen matched events where at least one is matched to a muon from chi02 decay:",AtLeastOnefromChi/AllGenMatchedEvents)
-	#print("Fraction of all events where all muons are genmatched and at least one is matched to a muon from chi02 decay:",AtLeastOnefromChi/MuonNumberEvents)
 	print("Fraction of those events where all muons are genmatched to a muon from a chi02 decay:",AllFromChi/MuonNumberEvents)
 	print("Fraction of those events where both $\mu$ are matched to gen muons from the same chi02 decay:",both_from_same_chi/MuonNumberEvents)
 	return AllGenMatchedEvents, AllFromChi, both_from_same_chi, MuonNumberEvents
 
 #plot_hist(key,linestyle,linewidth,linecolor,same,legendentry,pdf,canvasglobal,legendglobal):
 
-#mainReco(PtUpper[0],4,"pT",histograms["histinvMass4"],histograms["histpT4"])		
+#mainReco(PtUpper[0],2,"invMass",histograms["histinvMass4"],histograms["histpT4"])		
 # plot_hist("histpT4",1,2,"default",False,None,True,None,None)
 # plot_hist("histpT4",1,2,"default",False,None,True,None,None)
 if args.recoplots:
