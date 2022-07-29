@@ -118,5 +118,5 @@ Queue
 EOM
 done
 
-#condor_submit $output_file
+condor_submit $output_file
 rm $output_file

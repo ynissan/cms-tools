@@ -340,7 +340,7 @@ def getSingleLeptonAfterSelection(Electrons, Electrons_passJetIso, Electrons_del
     
     return lep, lepIdx, lepCharge, lepFlavour
 
-def countLeptonsAfterSelection_with_cr(Electrons, Electrons_passJetIso, Electrons_deltaRLJ, Electrons_charge, Muons, Muons_passJetIso, Muons_mediumID, Muons_deltaRLJ, Muons_charge, muonLowerPt = 2, muonLowerPtTight = False, muons_tightID = None):
+def countLeptonsAfterSelection(Electrons, Electrons_passJetIso, Electrons_deltaRLJ, Electrons_charge, Muons, Muons_passJetIso, Muons_mediumID, Muons_deltaRLJ, Muons_charge, muonLowerPt = 2, muonLowerPtTight = False, muons_tightID = None):
     nL = 0
     for i in range(Electrons.size()):
         e = Electrons[i]
@@ -353,40 +353,6 @@ def countLeptonsAfterSelection_with_cr(Electrons, Electrons_passJetIso, Electron
         if muonPassesTightSelection(i, Muons, Muons_mediumID, Muons_passJetIso, Muons_deltaRLJ, muonLowerPt, muonLowerPtTight, muons_tightID):
             nL += 1
     return nL
-
-
-def countLeptonsAfterSelection(Electrons, Electrons_passJetIso, Electrons_deltaRLJ, Electrons_charge, Muons, Muons_passJetIso, Muons_mediumID, Muons_deltaRLJ, Muons_charge, muonLowerPt = 2, muonLowerPtTight = False, muons_tightID = None):
-	nL = 0
-    for i in range(Electrons.size()):
-        e = Electrons[i]
-        #print e, e.Pt(), bool(Electrons_passJetIso[i]), Electrons_deltaRLJ[i]
-        if electronPassesTightSelection(i, Electrons, Electrons_passJetIso, Electrons_deltaRLJ):
-            #print "here..."
-            nL += 1
-    for i in range(Muons.size()):
-        m = Muons[i]
-        if muonPassesTightSelection(i, Muons, Muons_mediumID, Muons_passJetIso, Muons_deltaRLJ, muonLowerPt, muonLowerPtTight, muons_tightID):
-            nL += 1
-    return nL
-    
-
-def countMuonsAfterSelection(Muons, Muons_passJetIso, Muons_mediumID, Muons_deltaRLJ, Muons_charge, muonLowerPt = 2, muonLowerPtTight = False, muons_tightID = None):
-    for i in range(Muons.size()):
-        m = Muons[i]
-        if muonPassesTightSelection(i, Muons, Muons_mediumID, Muons_passJetIso, Muons_deltaRLJ, muonLowerPt, muonLowerPtTight, muons_tightID):
-            nM += 1
-    return nM
-    
-def countElectronsAfterSelection(Electrons, Electrons_passJetIso, Electrons_deltaRLJ, Electrons_charge):
-	nE = 0
-    for i in range(Electrons.size()):
-        e = Electrons[i]
-        #print e, e.Pt(), bool(Electrons_passJetIso[i]), Electrons_deltaRLJ[i]
-        if electronPassesTightSelection(i, Electrons, Electrons_passJetIso, Electrons_deltaRLJ):
-            #print "here..."
-            nE += 1
-    return nE
-
 
 def hasHighPtJpsiMuon(highPtLeptonPtThreshold, Leptons, Leptons_passIso, leptons_tightID):
     for i in range(Leptons.size()):
@@ -493,7 +459,7 @@ def getTwoJPsiLeptonsAfterSelection(highPtLeptonPtThreshold, lowPtLeptonPtThresh
     
     return None, None, None
 
-def getTwoLeptonsAfterSelection_with_cr(Electrons, Electrons_passJetIso, Electrons_deltaRLJ, Electrons_charge, Muons, Muons_passJetIso, Muons_mediumID, Muons_deltaRLJ, Muons_charge, muonLowerPt = 2, muonLowerPtTight = False, muons_tightID = None, createJetIsoCr = False, Electrons_passJetCrIso = None, Muons_passJetCrIso = None, Electrons_minDrD3Iso = None, Muons_minDrD3Iso = None):
+def getTwoLeptonsAfterSelection(Electrons, Electrons_passJetIso, Electrons_deltaRLJ, Electrons_charge, Muons, Muons_passJetIso, Muons_mediumID, Muons_deltaRLJ, Muons_charge, muonLowerPt = 2, muonLowerPtTight = False, muons_tightID = None, createJetIsoCr = False, Electrons_passJetCrIso = None, Muons_passJetCrIso = None, Electrons_minDrD3Iso = None, Muons_minDrD3Iso = None):
     leps = []
     lepCharges = []
     lepIdx = []
@@ -593,95 +559,6 @@ def getTwoLeptonsAfterSelection_with_cr(Electrons, Electrons_passJetIso, Electro
     #    print "YEY!!!"
     
     return leps, lepIdx, lepCharges, lepFlavour, same_sign, jetIsoCr, minDrJetIsoCr
-
-
-def getTwoLeptonsAfterSelection(Electrons, Electrons_passJetIso, Electrons_deltaRLJ, Electrons_charge, Muons, Muons_passJetIso, Muons_mediumID, Muons_deltaRLJ, Muons_charge, muonLowerPt = 2, muonLowerPtTight = False, muons_tightID = None, createJetIsoCr = False, Electrons_passJetCrIso = None, Muons_passJetCrIso = None, Electrons_minDrD3Iso = None, Muons_minDrD3Iso = None):
-    leps = []
-    lepCharges = []
-    lepIdx = []
-    lepFlavour = None
-    nL = 0
-    jetIsoCr = 0
-    minDrJetIsoCr = -1
-    
-    for i in range(Electrons.size()):
-        e = Electrons[i]
-        #print e, e.Pt(), bool(Electrons_passJetIso[i]), Electrons_deltaRLJ[i]
-        if electronPassesTightSelection(i, Electrons, Electrons_passJetIso, Electrons_deltaRLJ):
-            #print "here..."
-            nL += 1
-			if nL > 4:
-                return None, None, None, None, None, None, None
-            leps.append(e)
-            lepIdx.append(i)
-            lepCharges.append(Electrons_charge[i])
-            lepFlavour = "Electrons"
-	els = lepCharges.count(-1)
-	antiels = lepCharges.count(1)
-	if nL == 3:
-		if els == 0 or antiels == 0:    #prevent only same charge electrons
-			continue 
-		if els == 1:
-			opposite_eidx = lepCharges.index(-1)   #use lepIdx with this index to get electron
-			same_idx1 = lepCharges.index(1)
-			same_idx2 = lepCharges.index(1,same_idx1+1)
-		else:
-			opposite_eidx = lepCharges.index(1)
-			same_idx1 = lepCharges.index(-1)
-			same_idx2 = lepCharges.index(-1,same_idx1+1)
-		if (Electrons[lepIdx[opposite_midx]] + Electrons[lepIdx[same_idx1]]).M() < (Electrons[lepIdx[opposite_midx]] + Electrons[lepIdx[same_idx2]]).M():   #choosing 2nd muon with min invMass together with opposite sign muon
-			electron2invMass = same_idx1
-			index_to_be_popped = same_idx2
-		else:
-			electron2invMass = same_idx2
-			index_to_be_popped = same_idx1
-		leps.pop(index_to_be_popped)
-		lepsIdx.pop(index_to_be_popped)
-		lepCharges.pop(index_to_be_popped)
-
-if nL == 1 and jetIsoCr == 0:
-        return None, None, None, None, None, None, None
-    elif nL == 1 and jetIsoCr == 1:
-        # reset - we don't care about a single CR electron
-        leps = []
-        lepCharges = []
-        lepIdx = []
-        lepFlavour = None
-        nL = 0
-        jetIsoCr = 0
-        minDrJetIsoCr = -1
-    
-    for i in range(Muons.size()):
-        m = Muons[i]
-        if muonPassesTightSelection(i, Muons, Muons_mediumID, Muons_passJetIso, Muons_deltaRLJ, muonLowerPt, muonLowerPtTight, muons_tightID):
-            nL += 1
-            if nL > 2:
-                return None, None, None, None, None, None, None
-            leps.append(m)
-            lepIdx.append(i)
-            lepCharges.append(Muons_charge[i])
-            lepFlavour = "Muons"
-    
-    if nL != 2:
-        return None, None, None, None, None, None, None
-    
-    if lepIdx[0] == lepIdx[1]:
-        ("How can two leptons have same idx?!")
-        exit(1)
-        
-    same_sign = False
-    if lepCharges[0] * lepCharges[1] > 0:
-        same_sign = True
-    
-    if leps[0].Pt() < leps[1].Pt():
-        leps = [leps[1], leps[0]]
-        lepIdx = [lepIdx[1], lepIdx[0]]
-        lepCharges = [lepCharges[1], lepCharges[0]]
-    
-    #if lepFlavour == "Electrons":
-    #    print "YEY!!!"
-    
-    return leps, lepIdx, lepCharges, lepFlavour, same_sign, 0, -1
 
 ################## FILTERS ##################
 

@@ -21,10 +21,10 @@ args = parser.parse_args()
 
 #m_stop = 500, m_Chi_pm = 115, dm = 1.4
 signal_files = [
-#glob("/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_1.root")
-glob("/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim/sum/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_1.root")
+glob("/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_1.root")
+#glob("/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim/sum/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_1.root")
 #glob("/nfs/dust/cms/user/beinsam/CommonSamples/MC_BSM/CompressedHiggsino/RadiativeMu_2016Fast/ntuple_sidecarv3/*")
-#glob("/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim_nlp/single/higgsino_Summer16_stopstop_800GeV_mChipm400GeV_dm1p0GeV_pu35_part2of25_RA2AnalysisTree.root")
+#glob("/nfs/dust/cms/user/diepholq/x1x2x1/signal/skim/single/higgsino_Summer16_stopstop_800GeV_mChipm400GeV_dm1p4GeV_pu35_part22of25_RA2AnalysisTree.root")
 ]
 #signal_file = "/afs/desy.de/user/n/nissanuv/q_nfs/x1x2x1/signal/skim/sum/higgsino_Summer16_stopstop_500GeV_mChipm115GeV_dm1p4GeV_1.root"
 
@@ -297,34 +297,30 @@ def mainGen(PtThreshold):
 		histograms["histRecoMuonMultiplicityIso"].Fill(RecoMuonMultiplicityIso)
 
 
-def debug():
-	print("Starting Loop")
-	MuonNumberEvents = 0
-	for ientry in range(number_of_entries):
-		chain.GetEntry(ientry)
-		if ientry % 1000 == 0:
-			print("Processing " + str(ientry), "of", number_of_entries)
-		if chain.twoLeptonsNoIso == 1 and chain.leptonFlavourNoIso == "Muons":
-			MuonNumberEvents += 1
-	print(MuonNumberEvents)
-debug()
-exit(0)
 
 isostr = "isoCrCorrJetIso15Dr0.4"
 samesignstr = "sameSignCorrJetIso15Dr0.4"
-def mainReco(PtThreshold,MuonNumber,comparison_type,histinvMass,histpT):
+def mainReco(PtThreshold,MuonNumber,comparison_type,histograms):
 	print("Starting Loop")
-	MuonNumberEvents = 0
-	AllGenMatchedEvents = 0
-	AtLeastOnefromChi = 0
-	AllFromChi = 0
-	both_from_same_chi = 0
+	MuonNumberEvents2 = 0
+	MuonNumberEvents3 = 0
+	MuonNumberEvents4 = 0
+	AllGenMatchedEvents2 = 0
+	AllFromChi2 = 0
+	both_from_same_chi2 = 0
+	AllGenMatchedEvents3 = 0
+	AllFromChi3 = 0
+	both_from_same_chi3 = 0
+	AllGenMatchedEvents4 = 0
+	AllFromChi4 = 0
+	both_from_same_chi4 = 0
 	for ientry in range(number_of_entries):
 		chain.GetEntry(ientry)
 		if ientry % 1000 == 0:
 			print("Processing " + str(ientry), "of", number_of_entries)
 		MuonSize = len(chain.Muons)
 		MuonMultiplicityPtPassed = 0
+		both_from_same_chi = 0
 		selectedMuonsIdxs = []
 		charges_list = []
 		isobranch_reco = getattr(chain,isostr)
@@ -344,9 +340,14 @@ def mainReco(PtThreshold,MuonNumber,comparison_type,histinvMass,histpT):
 			if chain.Muons[muon].Pt() < PtThreshold and chain.Muons[muon].Pt() > 2:
 				MuonMultiplicityPtPassed += 1
 				selectedMuonsIdxs.append(muon)
-		if MuonMultiplicityPtPassed != MuonNumber:              #check for right number of muons that pass pT criterion
+		if MuonMultiplicityPtPassed == 2:
+			MuonNumber = 2
+		if MuonMultiplicityPtPassed == 3:
+			MuonNumber = 3
+		if MuonMultiplicityPtPassed == 4:
+			MuonNumber = 4
+		if MuonMultiplicityPtPassed != 2 and MuonMultiplicityPtPassed != 3 and MuonMultiplicityPtPassed != 4:               #check for right number of muons that pass pT criterion
 			continue
-
 		opposite_charge = None
 		
 		for midx in range(MuonNumber):                    #opposite charge check
@@ -354,11 +355,14 @@ def mainReco(PtThreshold,MuonNumber,comparison_type,histinvMass,histpT):
 		mus = charges_list.count(-1)
 		antimus = charges_list.count(1)
 		if mus == 0 or antimus == 0:
+			print("same sign")
 			continue 
-		MuonNumberEvents += 1  # 
+		if MuonNumber == 2:
+			MuonNumberEvents2 += 1  # 
 # 		print([chain.Muons[i].Pt() for i in selectedMuonsIdxs])
 # 		continue
 		if MuonNumber == 3:
+			MuonNumberEvents3 += 1
 			if mus == 1:
 				opposite_midx = charges_list.index(-1)
 				same_idx1 = charges_list.index(1)
@@ -369,6 +373,7 @@ def mainReco(PtThreshold,MuonNumber,comparison_type,histinvMass,histpT):
 				same_idx2 = charges_list.index(-1,same_idx1+1)
 
 		if MuonNumber == 4:
+			MuonNumberEvents4 += 1
 			if comparison_type == "invMass":
 				invMass_list = []
 				invMass_dict = {}
@@ -458,7 +463,7 @@ def mainReco(PtThreshold,MuonNumber,comparison_type,histinvMass,histpT):
 				selectedMuonsIdxs = [selectedMuonsIdxs[min_pT_idx],selectedMuonsIdxs[second_idx]]
 
 		if MuonNumber == 3:         #choosing the second muon with less pT
-			muon1 = selectedopposite_midx
+			muon1 = opposite_midx
 			if chain.Muons[selectedMuonsIdxs[same_idx1]].Pt() < chain.Muons[selectedMuonsIdxs[same_idx2]].Pt():
 				muon2pT = same_idx1
 			else: 
@@ -504,24 +509,54 @@ def mainReco(PtThreshold,MuonNumber,comparison_type,histinvMass,histpT):
 						if parentidx == genmuons_from_neutralino_ParentIdxs[minCan_chi]:
 							both_from_same_chi += 1
 							#print(midx,parentidx)
+		if MuonNumber == 2:
+			for muon in selectedMuonsIdxs:
+				histograms["histpT2"].Fill(chain.Muons[muon].Pt())
+			histograms["histinvMass2"].Fill((chain.Muons[selectedMuonsIdxs[0]]+chain.Muons[selectedMuonsIdxs[1]]).M())
+			if gen_matched == 2: 
+				AllGenMatchedEvents2 += 1
+			if gen_matched_chi == 2: 
+				AllFromChi2 += 1
+			if both_from_same_chi == 1:
+				both_from_same_chi2 += 1
+		if MuonNumber == 3:
+			for muon in selectedMuonsIdxs:
+				histograms["histpT3"].Fill(chain.Muons[muon].Pt())
+			histograms["histinvMass3"].Fill((chain.Muons[selectedMuonsIdxs[0]]+chain.Muons[selectedMuonsIdxs[1]]).M())
+			if gen_matched == 2: 
+				AllGenMatchedEvents3 += 1
+			if gen_matched_chi == 2: 
+				AllFromChi3 += 1
+			if both_from_same_chi == 1:
+				both_from_same_chi3 += 1
+		if MuonNumber == 4:
+			for muon in selectedMuonsIdxs:
+				histograms["histpT4"].Fill(chain.Muons[muon].Pt())
+			histograms["histinvMass4"].Fill((chain.Muons[selectedMuonsIdxs[0]]+chain.Muons[selectedMuonsIdxs[1]]).M())
+			if gen_matched == 2: 
+				AllGenMatchedEvents4 += 1
+			if gen_matched_chi == 2: 
+				AllFromChi4 += 1
+			if both_from_same_chi == 1:
+				both_from_same_chi4 += 1
 
-		for muon in selectedMuonsIdxs:
-			histpT.Fill(chain.Muons[muon].Pt())
-		histinvMass.Fill((chain.Muons[selectedMuonsIdxs[0]]+chain.Muons[selectedMuonsIdxs[1]]).M())
-
-		if gen_matched == 2: 
-			AllGenMatchedEvents += 1
-# 		if gen_matched_chi > 0:
-# 			AtLeastOnefromChi += 1 
-		if gen_matched_chi == 2: 
-			AllFromChi += 1
 	#event loop end
-	fraction_both_gen = AllGenMatchedEvents/MuonNumberEvents
-	print(f"Number of events with MuonNumber = {MuonNumber}: {MuonNumberEvents}")
-	print("Fraction of those events where all muons are matched to gen muons :",fraction_both_gen)
-	print("Fraction of those events where all muons are genmatched to a muon from a chi02 decay:",AllFromChi/MuonNumberEvents)
-	print("Fraction of those events where both $\mu$ are matched to gen muons from the same chi02 decay:",both_from_same_chi/MuonNumberEvents)
-	return AllGenMatchedEvents, AllFromChi, both_from_same_chi, MuonNumberEvents
+	fraction_both_gen2 = AllGenMatchedEvents2/MuonNumberEvents2
+	print(f"Number of events with MuonNumber = 2: {MuonNumberEvents2}")
+	print("Fraction of those events where all muons are matched to gen muons :",fraction_both_gen2)
+	print("Fraction of those events where all muons are genmatched to a muon from a chi02 decay:",AllFromChi2/MuonNumberEvents2)
+	print("Fraction of those events where both $\mu$ are matched to gen muons from the same chi02 decay:",both_from_same_chi2/MuonNumberEvents2)
+	fraction_both_gen3 = AllGenMatchedEvents3/MuonNumberEvents3
+	print(f"Number of events with MuonNumber = 3: {MuonNumberEvents3}")
+	print("Fraction of those events where all muons are matched to gen muons :",fraction_both_gen3)
+	print("Fraction of those events where all muons are genmatched to a muon from a chi02 decay:",AllFromChi3/MuonNumberEvents3)
+	print("Fraction of those events where both $\mu$ are matched to gen muons from the same chi02 decay:",both_from_same_chi3/MuonNumberEvents3)
+	fraction_both_gen4 = AllGenMatchedEvents4/MuonNumberEvents4
+	print(f"Number of events with MuonNumber = 4: {MuonNumberEvents4}")
+	print("Fraction of those events where all muons are matched to gen muons :",fraction_both_gen4)
+	print("Fraction of those events where all muons are genmatched to a muon from a chi02 decay:",AllFromChi4/MuonNumberEvents4)
+	print("Fraction of those events where both $\mu$ are matched to gen muons from the same chi02 decay:",both_from_same_chi4/MuonNumberEvents4)
+	return MuonNumberEvents2, AllGenMatchedEvents2, AllFromChi2, both_from_same_chi2, MuonNumberEvents3, AllGenMatchedEvents3, AllFromChi3, both_from_same_chi3, MuonNumberEvents4, AllGenMatchedEvents4, AllFromChi4, both_from_same_chi4
 
 #plot_hist(key,linestyle,linewidth,linecolor,same,legendentry,pdf,canvasglobal,legendglobal):
 
@@ -529,17 +564,32 @@ def mainReco(PtThreshold,MuonNumber,comparison_type,histinvMass,histpT):
 # plot_hist("histpT4",1,2,"default",False,None,True,None,None)
 # plot_hist("histpT4",1,2,"default",False,None,True,None,None)
 if args.recoplots:
-	for munumber in [2,3,4]:
-		AllGenMatchedEvents,AllFromChi,both_from_same_chi,MuonNumberEvents = mainReco(PtUpper[0],munumber,"invMass",histograms["histinvMass"+str(munumber)],histograms["histpT"+str(munumber)])  #pT or invMass
-		print("plotting")
-		xaxis = histograms["histFractionsBothGen"+str(munumber)].GetXaxis()
-		histograms["histFractionsBothGen"+str(munumber)].SetMaximum(1)
-		xaxis.SetBinLabel(3,"Both \mu genmatched")
-		xaxis.SetBinLabel(1,"At least one fake \mu")
-		xaxis.SetBinLabel(4,"Both to \chi_{2}^{0} decay")
-		histograms["histFractionsBothGen"+str(munumber)].AddBinContent(3,AllGenMatchedEvents/MuonNumberEvents)
-		histograms["histFractionsSameChi"+str(munumber)].AddBinContent(4,both_from_same_chi/MuonNumberEvents)
-		histograms["histFakes"+str(munumber)].AddBinContent(1,1-AllGenMatchedEvents/MuonNumberEvents)
+	MuonNumberEvents2, AllGenMatchedEvents2, AllFromChi2, both_from_same_chi2, MuonNumberEvents3, AllGenMatchedEvents3, AllFromChi3, both_from_same_chi3, MuonNumberEvents4, AllGenMatchedEvents4, AllFromChi4, both_from_same_chi4 = mainReco(PtUpper[0],None,"invMass",histograms)  #pT or invMass
+	print("plotting")
+	xaxis2 = histograms["histFractionsBothGen2"].GetXaxis()
+	histograms["histFractionsBothGen2"].SetMaximum(1)
+	xaxis2.SetBinLabel(3,"Both \mu genmatched")
+	xaxis2.SetBinLabel(1,"At least one fake \mu")
+	xaxis2.SetBinLabel(4,"Both to \chi_{2}^{0} decay")
+	histograms["histFractionsBothGen2"].AddBinContent(3,AllGenMatchedEvents2/MuonNumberEvents2)
+	histograms["histFractionsSameChi2"].AddBinContent(4,both_from_same_chi2/MuonNumberEvents2)
+	histograms["histFakes2"].AddBinContent(1,1-AllGenMatchedEvents2/MuonNumberEvents2)
+	xaxis3 = histograms["histFractionsBothGen3"].GetXaxis()
+	histograms["histFractionsBothGen3"].SetMaximum(1)
+	xaxis3.SetBinLabel(3,"Both \mu genmatched")
+	xaxis3.SetBinLabel(1,"At least one fake \mu")
+	xaxis3.SetBinLabel(4,"Both to \chi_{2}^{0} decay")
+	histograms["histFractionsBothGen3"].AddBinContent(3,AllGenMatchedEvents3/MuonNumberEvents3)
+	histograms["histFractionsSameChi3"].AddBinContent(4,both_from_same_chi3/MuonNumberEvents3)
+	histograms["histFakes3"].AddBinContent(1,1-AllGenMatchedEvents3/MuonNumberEvents3)
+	xaxis4 = histograms["histFractionsBothGen4"].GetXaxis()
+	histograms["histFractionsBothGen4"].SetMaximum(1)
+	xaxis4.SetBinLabel(3,"Both \mu genmatched")
+	xaxis4.SetBinLabel(1,"At least one fake \mu")
+	xaxis4.SetBinLabel(4,"Both to \chi_{2}^{0} decay")
+	histograms["histFractionsBothGen4"].AddBinContent(3,AllGenMatchedEvents4/MuonNumberEvents4)
+	histograms["histFractionsSameChi4"].AddBinContent(4,both_from_same_chi4/MuonNumberEvents4)
+	histograms["histFakes4"].AddBinContent(1,1-AllGenMatchedEvents4/MuonNumberEvents4)
 # 	plot_hist("histpT3",1,2,"kRed-4",True,"3 \mu",False,canvaspT,legendpT)
 # 	plot_hist("histpT4",1,2,"kGreen-2",True,"4 \mu",True,canvaspT,legendpT)
 # 	canvasinvMass,legendinvMass = plot_hist("histinvMass2",1,2,"default",False,"2 \mu",False,None,None)
@@ -560,7 +610,7 @@ if args.recoplots:
 		plot_hist("histFakes"+str(munumber),1,2,color,True,None,False,canvasFractions,legendFractions)
 		if munumber != 4:
 			plot_hist("histFractionsSameChi"+str(munumber),1,2,color,True,str(munumber)+" \mu",False,canvasFractions,legendFractions)
-plot_hist("histFractionsSameChi4",1,2,"40",True,str(munumber)+" \mu",True,canvasFractions,legendFractions)
+	plot_hist("histFractionsSameChi4",1,2,"40",True,str(munumber)+" \mu",True,canvasFractions,legendFractions)
 
 
 #plotting---------------------------------------------------------------------------------

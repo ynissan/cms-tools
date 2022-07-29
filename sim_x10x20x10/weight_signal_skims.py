@@ -28,10 +28,10 @@ force = args.force
 sam = args.sam
 no_lepton_selection = args.no_lepton_selection
 
-signal_dir = "/nfs/dust/cms/user/diepholq/x1x2x1/signal/skim/single"
+signal_dir = "/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim/single"
 
 if no_lepton_selection:
-    signal_dir = "/nfs/dust/cms/user/diepholq/x1x2x1/signal/skim_nlp/single"
+    signal_dir = "/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim_nlp/single"
 
 def main():
     points = {}
