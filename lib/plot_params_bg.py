@@ -352,40 +352,42 @@ class dimuon_background_estimation_non_isolated_and_tautau(BaseParams):
     histrograms_file = BaseParams.histograms_root_files_dir + "/dimuon_background_estimation_non_isolated_and_tautau.root"
     save_histrograms_to_file = True
     load_histrograms_from_file = False
-    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/"
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum_total"
     data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/slim_sum/"
     
     plot_error = True
     plot_data = False
     plot_data_for_bg_estimation = True
     
-    plot_signal = True
+    plot_signal = False
     blind_data = False
     bg_retag = True
     
     jetIsoStr = ""
     
-    jetIso = "CorrJetIso10.5Dr0.55"
+    jetIso = "CorrJetNoMultIso10Dr0.6"
     
     cuts = [
-        {"name":"none", "title": "None", "condition" : "(MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 140 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0)"},
-        {"name":"orth", "title": "orth", "condition" : "(MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 140 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && (leptons%%%[1].Pt() <= 3.5 || deltaR%%% <= 0.3))"},
+        {"name":"none", "title": "None", "condition" : "(passedMhtMet6pack == 1 && passesUniversalSelection == 1 && MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 140 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0)"},
+        {"name":"orth", "title": "orth", "condition" : "(passedMhtMet6pack == 1 && passesUniversalSelection == 1 && MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 140 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && (leptons%%%[1].Pt() <= 3.5 || deltaR%%% <= 0.3))"},
     ]
     injectJetIsoToCuts(cuts, jetIso)
 
     histograms_defs = [     
-        { "obs" : "dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
+        #{ "obs" : "dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
+        { "obs" : "dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.05,0.15,0.25,0.35,0.45,0.6,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
         { "obs" : "fine_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 40, "units" : "BDT", "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}}
     ]
     injectJetIsoToHistograms(histograms_defs, jetIso)
     
     weightString = {
         #'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight * BranchingRatio",
-        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * BranchingRatio",
+        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * BranchingRatio * passesUniversalSelection",
     }
     
     calculatedLumi = {
-        'MET' : 35.712736198,
+        #'MET' : 35.712736198,
+        'MET' : 35.7389543
     }
     
     bgReTagging = {
@@ -411,12 +413,111 @@ class dimuon_background_estimation_non_isolated_and_tautau(BaseParams):
     }
     
     bgReTaggingFactors = {
-        "tautau" : [0.792, 0.631],
-        "non-iso" : [0.876, 0.0868]
+        "tautau" : [1.44864,0.46772],
+        "non-iso" : [0.4604,0.06955]
     }
     
     colorPalette = [
         { "name" : "yellow", "fillColor" : TColor.GetColor("#ffd700"), "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 5,  "markerStyle" : kOpenCircle},
         { "name" : "blue", "fillColor" : TColor.GetColor("#0057b7"), "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
     ]
+
+class dimuon_background_estimation_non_isolated_and_tautau_run2(dimuon_background_estimation_non_isolated_and_tautau):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dimuon_background_estimation_non_isolated_and_tautau_run2.root"
+    run2lumi = utils.LUMINOSITY/1000
+    calculatedLumi2016 = 35.7389543
+    calculatedLumi = {
+        'MET' : calculatedLumi2016,   
+    }
+    bgReTaggingFactors = {
+        "tautau" : [(run2lumi/calculatedLumi2016) * 1.44864,0.46772],
+        "non-iso" : [(run2lumi/calculatedLumi2016) * 0.4604,0.06955]
+    }
+
+class dimuon_background_data_estimation_vs_mc_non_isolated(BaseParams):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dimuon_background_data_estimation_vs_mc_non_isolated.root"
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True
     
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum_total"
+    data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/slim_sum/"
+    
+    plot_error = True
+    plot_data = False
+    plot_data_for_bg_estimation = True
+    
+    plot_signal = False
+    blind_data = False
+    bg_retag = True
+    
+    jetIsoStr = ""
+    
+    jetIso = "CorrJetNoMultIso10Dr0.6"
+    
+    cuts = [
+        {"name":"none", "title": "None", "condition" : "(passedMhtMet6pack == 1 && passesUniversalSelection == 1 && MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 140 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0)"},
+        {"name":"orth", "title": "orth", "condition" : "(passedMhtMet6pack == 1 && passesUniversalSelection == 1 && MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 140 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && (leptons%%%[1].Pt() <= 3.5 || deltaR%%% <= 0.3))"},
+    ]
+    injectJetIsoToCuts(cuts, jetIso)
+
+    histograms_defs = [     
+        { "obs" : "dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
+        { "obs" : "fine_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 40, "units" : "BDT", "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}}
+    ]
+    injectJetIsoToHistograms(histograms_defs, jetIso)
+    
+    weightString = {
+        #'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight * BranchingRatio",
+        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * BranchingRatio * passesUniversalSelection",
+    }
+    
+    calculatedLumi = {
+        'MET' : 35.7389543,
+    }
+    
+    bgReTagging = {
+        "mc" : "!tautau%%% && isoCr%%% == 0",
+        "non-iso" : "isoCr%%% >= 1"
+    }
+    
+    injectJetIsoToMapValues(bgReTagging, jetIso)
+    
+    bgReTaggingUseSources = True
+    
+    bgReTaggingOrder = {
+        "mc" : 1,
+        "non-iso" : 2
+    }
+    bgReTaggingNames = {
+        "mc" : "MC",
+        "non-iso" : "data-driven"
+    }
+    bgReTaggingSources = {
+        "mc" : "bg",
+        "non-iso" : "data"
+    }
+    
+    bgReTaggingFactors = {
+        "non-iso" : [0.4604,0.06955]
+    }
+    
+    nostack = True
+    plot_ratio = True
+    plot_custom_ratio = True
+    customRatios = [  [["mc"],["non-iso"]]  ]
+    
+    colorPalette = [
+        { "name" : "yellow", "fillColor" : TColor.GetColor("#ffd700"), "lineColor" : kRed, "fillStyle" : 3444, "markerColor" : 5,  "markerStyle" : kOpenCircle},
+        { "name" : "blue", "fillColor" : TColor.GetColor("#0057b7"), "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    ]
+
+class dimuon_background_data_estimation_vs_mc_non_isolated_run2_lumi(dimuon_background_data_estimation_vs_mc_non_isolated):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dimuon_background_data_estimation_vs_mc_non_isolated_run2_lumi.root"
+    run2lumi = utils.LUMINOSITY/1000
+    calculatedLumi2016 = 35.7389543
+    calculatedLumi = {
+        'MET' : run2lumi,   
+    }
+    bgReTaggingFactors = {
+        "non-iso" : [(run2lumi/calculatedLumi2016) * 0.4604,0.06955]
+    }

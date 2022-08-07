@@ -91,6 +91,8 @@ commonBranches = {
         "passed2016BFilter" : "bool",
         
         "passesUniversalSelection" : "bool",
+        
+        "FastSimWeightPR31285To36122" : "float"
 }
 
 def main():
@@ -1551,6 +1553,11 @@ def main():
             vars["tEffhMetMhtRealXMht2017"][0] = tEffhMetMhtRealXMht2017.Eval(MHT)
             vars["tEffhMetMhtRealXMht2018"][0] = tEffhMetMhtRealXMht2018.Eval(MHT)
             
+            if signal and sam:
+                vars["FastSimWeightPR31285To36122"][0] = c.FastSimWeightPR31285To36122
+            else:
+                vars["FastSimWeightPR31285To36122"][0] = 1
+            
             vars["passedMhtMet6pack"][0] = True
             vars["passedSingleMuPack"][0] = True
             
@@ -1566,6 +1573,8 @@ def main():
             vars["tEffhMetMhtRealXMht2016"][0] = 1
             vars["tEffhMetMhtRealXMht2017"][0] = 1
             vars["tEffhMetMhtRealXMht2018"][0] = 1
+            
+            vars["FastSimWeightPR31285To36122"][0] = 1
             
             vars["passedMhtMet6pack"][0] = analysis_ntuples.passTrig(c, "MhtMet6pack")
             vars["passedSingleMuPack"][0] = analysis_ntuples.passTrig(c, "SingleMuon")

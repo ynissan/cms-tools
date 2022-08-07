@@ -223,13 +223,16 @@ def createPlotsFast(rootfiles, types, histograms, weight, category, conditions, 
 
         if plot_par.turnOnOnlyUsedObsInTree:
             c.SetBranchStatus("*",0);
+            print("plot_par.usedObs", plot_par.usedObs)
+            #exit(0)
             for obs in plot_par.usedObs:
-                print("c.SetBranchStatus(" + obs + ")")
+                print("from usedObs c.SetBranchStatus(" + obs + ")")
                 c.SetBranchStatus(obs,1)
+            print("plot_par.histograms_defs", plot_par.histograms_defs)
             for hist_def in plot_par.histograms_defs:
                 if hist_def.get("usedObs") is not None:
                     for obs in hist_def["usedObs"]:
-                        print("c.SetBranchStatus(" + obs + ")")
+                        print("from hist_def c.SetBranchStatus(" + obs + ")")
                         c.SetBranchStatus(obs,1)
                 elif hist_def.get("formula") is not None:
                     c.SetBranchStatus(hist_def["formula"],1)
@@ -473,6 +476,7 @@ def plotRatio(c1, pad, memory, numHist, denHist, hist_def, numLabel = "Data", de
         yTitle = denLabel + " / " + numLabel
     else:
         yTitle = numLabel + " / " + denLabel
+    print("yTitle", yTitle, "numLabel", numLabel, "denLabel", denLabel)
     rdataHist.GetYaxis().SetTitle(yTitle)
     
     rdataHist.Draw("p")
@@ -2187,21 +2191,27 @@ def main():
                                         memory.append(numDenHists[numDenHistInx])
                                         titles[numDenHistInx] = histName
                                     else:
-                                        print(("looking for", histName))
+                                        print("looking for", histName)
                                         print(bgHists)
                                         for i, hist in enumerate(bgHists):
                                             if histName == hist.GetName().split("_")[-1]:
                                                 if numDenHists[numDenHistInx] is None:
                                                     numDenHists[numDenHistInx] = hist.Clone()
                                                     memory.append(numDenHists[numDenHistInx])
-                                                    titles[numDenHistInx] = histName
+                                                    if plot_par.bgReTaggingNames.get(histName) is not None:
+                                                        titles[numDenHistInx] = plot_par.bgReTaggingNames[histName]
+                                                    else:
+                                                        titles[numDenHistInx] = histName
                                                 else:
                                                     numDenHists[numDenHistInx].Add(hist)
-                                                    titles[numDenHistInx] = " + " + histName
+                                                    if plot_par.bgReTaggingNames.get(histName) is not None:
+                                                        titles[numDenHistInx] = " + " + plot_par.bgReTaggingNames[histName]
+                                                    else:
+                                                        titles[numDenHistInx] = " + " + histName
                             if ratioNum == 0:
-                                plotRatio(c1, histRPad, memory, numDenHists[0], numDenHists[1], hist_def, titles[0] + " / " + titles[1])
+                                plotRatio(c1, histRPad, memory, numDenHists[0], numDenHists[1], hist_def, titles[0], titles[1])
                             else:
-                                plotRatio(c1, histR2Pad, memory, numDenHists[0], numDenHists[1], hist_def, titles[0] + " / " + titles[1], False)
+                                plotRatio(c1, histR2Pad, memory, numDenHists[0], numDenHists[1], hist_def, titles[0], titles[1], False)
                     else:
                         stackSum = None
                         if plot_par.solid_bg:
@@ -2464,6 +2474,7 @@ def main():
                                             numDenHists[numDenHistInx] = stackSum.Clone()
                                             memory.append(numDenHists[numDenHistInx])
                                             titles[numDenHistInx] = "bg"
+
                                     elif histName in plot_par.plot_custom_types:
                                         histFullName = cut["name"] + "_" + hist_def["obs"] + "_" + histName
                                         hist = histograms[histFullName]
@@ -2476,14 +2487,21 @@ def main():
                                                 if numDenHists[numDenHistInx] is None:
                                                     numDenHists[numDenHistInx] = hist.Clone()
                                                     memory.append(numDenHists[numDenHistInx])
-                                                    titles[numDenHistInx] = histName
+                                                    if plot_par.bgReTaggingNames.get(histName) is not None:
+                                                        titles[numDenHistInx] = plot_par.bgReTaggingNames[histName]
+                                                    else:
+                                                        titles[numDenHistInx] = histName
                                                 else:
                                                     numDenHists[numDenHistInx].Add(hist)
-                                                    titles[numDenHistInx] = " + " + histName
+                                                    if plot_par.bgReTaggingNames.get(histName) is not None:
+                                                        titles[numDenHistInx] = " + " + plot_par.bgReTaggingNames[histName]
+                                                    else:
+                                                        titles[numDenHistInx] = " + " + histName
+
                             if ratioNum == 0:
-                                plotRatio(c1, histRPad, memory, numDenHists[0], numDenHists[1], hist_def, titles[0] + " / " + titles[1])
+                                plotRatio(c1, histRPad, memory, numDenHists[0], numDenHists[1], hist_def, titles[0], titles[1])
                             else:
-                                plotRatio(c1, histR2Pad, memory, numDenHists[0], numDenHists[1], hist_def, titles[0] + " / " + titles[1], False)
+                                plotRatio(c1, histR2Pad, memory, numDenHists[0], numDenHists[1], hist_def, titles[0], titles[1], False)
                     else:
                         stackSum = None
                         if plot_par.solid_bg:

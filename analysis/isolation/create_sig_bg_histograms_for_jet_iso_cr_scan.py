@@ -63,11 +63,11 @@ unwanted_iso = "CorrJetIso"
 if args.output_file:
     output_file = args.output_file[0]
 else:
-    output_file = "sig_bg_histograms_for_jet_iso_scan" + wanted_iso + "_no_tautau_after_mht_with_data.root"
+    output_file = "sig_bg_histograms_for_jet_iso_scan" + wanted_iso + "_with_tautau_after_mht_with_data.root"
 
 bins = 40
 
-notautau = True
+notautau = False
 
 signals = [
     "mu100_dm4p30",
@@ -156,7 +156,6 @@ def main():
                                     fnew.cd()
                                     hist.Write()
         f.Close()
-    exit(0)
     
     i = 0
     
@@ -321,7 +320,7 @@ def main():
                             for isoCr in isoCrs:
                                 bg_2l_hist[lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else "")].Write("bg_2l_" + ("orth_" if orth else "") + lep + "_" + jetiso + ("_isoCr" if isoCr else ""))
     fnew.Close()
-    
+    print "End: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S')
     
     
     

@@ -872,6 +872,7 @@ def calcSignificanceLlhdSingleCount(sigHist, bgHist):
     return calcZ(lhdH1, lhdH0)
 
 def scaleHistogram(hist, factor, factorErr):
+    print("Scaling", hist.GetName(), " with ", factor, factorErr)
     tmpHist = hist.Clone()
     tmpHist.Sumw2()
     binsNumber = tmpHist.GetNbinsX()

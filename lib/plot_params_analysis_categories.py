@@ -251,8 +251,8 @@ class dilepton_muons(BaseParams):
     
     #(twoLeptons == 1 && (leptons[1].Pt() <= 3.5 || deltaR <= 0.3) && MHT >= 220 &&  MET >= 140 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1 && BTagsDeepMedium == 0 && vetoElectronsPassIsoTightID == 0 && vetoMuonsPassIsoPassIso == 0 && @leptons.size() == 2 && leptonFlavour == \"" + lep + "\" && sameSign == 0)", True)
     histograms_defs = []
-    histograms_defs.extend(common_histograms)
-    histograms_defs.extend(two_leps_histograms)
+    histograms_defs.extend(copy.deepcopy(common_histograms))
+    histograms_defs.extend(copy.deepcopy(two_leps_histograms))
     #histograms_defs.extend(extra_study_obs)
     
     weightString = {
