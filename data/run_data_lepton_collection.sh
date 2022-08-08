@@ -58,7 +58,7 @@ file_limit=0
 i=0
 count=0
 input_files=""
-files_per_job=2
+files_per_job=1
 index=0
 name=""
 

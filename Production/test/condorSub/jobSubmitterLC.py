@@ -21,6 +21,8 @@ class jobSubmitterLC(jobSubmitter):
         parser.add_option("-i", "--input", dest="input", default=slimmedProductionPath, help="input path to directory (default = %default)")
         parser.add_option("-d", "--dicts", dest="dicts", type="string", action="callback", callback=list_callback, default=None,
             help="comma-separated list of input sample names (default = %default)")
+        parser.add_option("-file_list", "--file_list", dest="file_list", type="string", action="callback", callback=list_callback, default=None,
+            help="comma-separated list of input files (default = %default)")
     
     def checkExtraOptions(self,options,parser):
         super(jobSubmitterLC,self).checkExtraOptions(options,parser)
@@ -59,60 +61,69 @@ class jobSubmitterLC(jobSubmitter):
         job.name = "leptonCollection"
         self.generatePerJob(job)
         print "Wanted dicts", self.dicts
+        print "Wanted files", self.file_list
         self.timenow = int(time.time())
-        print "Getting files in SlimmedProduction...", self.input
-        status, out = commands.getstatusoutput('eval `scram unsetenv -sh`; gfal-ls ' + self.input)
-        #out = "Run2016H-17Jul2018-v1.SingleElectron_FCB308E4-E88A-E811-93CB-1866DA890A68.root"
-        print out
-        print "Getting files existing in LeptonCollection...", leptonCollectionPath
-        status, existingOut = commands.getstatusoutput('eval `scram unsetenv -sh`;gfal-ls ' + leptonCollectionPath)
-        existingFiles = existingOut.split("\n")
-        #existingFiles = []
-        print existingFiles
         files = []
         nFiles = 0
-        for file in out.split("\n"):
-            #print "checking", file
-            if file in existingFiles:
-                #print "File", file, " alreading exists. Skipping."
-                continue
-            if self.dicts is not None and len(self.dicts) > 0:
-                shouldProcess = False
-                for dict in self.dicts:
-                    if dict in file and "Run2016" in file:
-                        shouldProcess = True
-                        break
-                if not shouldProcess:
+        if self.file_list is None or len(self.file_list) == 0:
+            print "Getting files in SlimmedProduction...", self.input
+            status, out = commands.getstatusoutput('eval `scram unsetenv -sh`; gfal-ls ' + self.input)
+            #out = "Run2016H-17Jul2018-v1.SingleElectron_FCB308E4-E88A-E811-93CB-1866DA890A68.root"
+            print out
+            print "Getting files existing in LeptonCollection...", leptonCollectionPath
+            status, existingOut = commands.getstatusoutput('eval `scram unsetenv -sh`;gfal-ls ' + leptonCollectionPath)
+            existingFiles = existingOut.split("\n")
+            #existingFiles = []
+            print existingFiles
+            
+            for file in out.split("\n"):
+                #print "checking", file
+                if file in existingFiles:
+                    #print "File", file, " alreading exists. Skipping."
                     continue
-            print "Adding file=" + file
-            files.append(file)
-            nFiles += 1
-            print "len(files)", len(files), "self.nFilesPerJob", self.nFilesPerJob, "nFiles", nFiles, "self.nFiles", self.nFiles
-            if len(files) < self.nFilesPerJob and nFiles < self.nFiles:
-                print "***"
-                continue
-            print "----"
-            print "Adding job..."
+                if self.dicts is not None and len(self.dicts) > 0:
+                    shouldProcess = False
+                    for dict in self.dicts:
+                        if dict in file and "Run2016" in file:
+                            shouldProcess = True
+                            break
+                    if not shouldProcess:
+                        continue
+                print "Adding file=" + file
+                files.append(file)
+                nFiles += 1
+                print "len(files)", len(files), "self.nFilesPerJob", self.nFilesPerJob, "nFiles", nFiles, "self.nFiles", self.nFiles
+                if len(files) < self.nFilesPerJob and nFiles < self.nFiles:
+                    print "***"
+                    continue
+                print "----"
+                print "Adding job..."
             
-            job.njobs += 1
-            if self.count and not self.prepare:
+                job.njobs += 1
+                if self.count and not self.prepare:
+                    files = []
+                    if nFiles >= self.nFiles:
+                        break
+                    continue
+                job.nums.append(job.njobs-1)
+                # just keep list of jobs
+                if self.missing and not self.prepare:
+                    files = []
+                    if nFiles >= self.nFiles:
+                        break
+                    continue
+            
+                self.generateSubmissionForFiles(job, files)
                 files = []
                 if nFiles >= self.nFiles:
                     break
-                continue
-            job.nums.append(job.njobs-1)
-            # just keep list of jobs
-            if self.missing and not self.prepare:
-                files = []
-                if nFiles >= self.nFiles:
-                    break
-                continue
-            
-            self.generateSubmissionForFiles(job, files)
-            files = []
-            if nFiles >= self.nFiles:
-                break
-            
+        else:
+            for file in self.file_list:
+                files.append(file)
+                nFiles += 1
+                job.njobs += 1
+                job.nums.append(job.njobs-1)
+                self.generateSubmissionForFiles(job, files)
         if len(files) > 0:
             print "---- REMAINING JOBS"
             print "Adding job..."
