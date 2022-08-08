@@ -119,6 +119,7 @@ class jobSubmitterLC(jobSubmitter):
                     break
         else:
             for file in self.file_list:
+                print "Adding file=" + file
                 files.append(file)
                 nFiles += 1
                 job.njobs += 1
