@@ -271,6 +271,7 @@ dileptonObservablesVecList = {
     "leptonsIdx" : "int",
     "leptons_charge" : "int",
     "leptons_ParentPdgId" : "int"
+    
 }
 
 genObservablesVecList = {
@@ -278,6 +279,7 @@ genObservablesVecList = {
 }
 
 dileptonObservablesStringList = ["leptonFlavour"]
+
 
 # USED FOR GEN STUFF TOO
 commonObservablesDTypesList = {
@@ -291,8 +293,11 @@ commonObservablesDTypesList = {
     "nmtautau" : "float",
     "mt1" : "float",
     "mt2" : "float",
+    "mt3" : "float",
     "mth1" : "float",
     "mth2" : "float",
+    "mth3" : "float",
+    "pt_third_lepton" : "float",
     "deltaEtaLeadingJetDilepton" : "float",
     "deltaPhiLeadingJetDilepton" : "float",
     "dilepHt" : "float",
@@ -309,9 +314,11 @@ dileptonObservablesDTypesList = {
     
     "deltaPhiMetLepton1" : "float",
     "deltaPhiMetLepton2" : "float",
+    "deltaPhiMetLepton3" : "float",
     
     "deltaPhiMhtLepton1" : "float",
     "deltaPhiMhtLepton2" : "float",
+    "deltaPhiMhtLepton3" : "float",
     
     "tautau" : "bool",
     "rr" : "bool",
@@ -330,6 +337,8 @@ dileptonObservablesDTypesList = {
     "upsilon_1" : "bool",
     "upsilon_2" : "bool",
     "NSelectionLeptons" : "int",
+    "NSelectionMuons" : "int",
+    "NSelectionElectrons" : "int",
     "isoCr" : "int",
     "isoCrMinDr" : "float"
 }

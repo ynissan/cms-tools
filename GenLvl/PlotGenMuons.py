@@ -21,13 +21,14 @@ args = parser.parse_args()
 
 #m_stop = 500, m_Chi_pm = 115, dm = 1.4
 signal_files = [
-glob("/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_1.root")
-#glob("/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim/sum/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_1.root")
-#glob("/nfs/dust/cms/user/beinsam/CommonSamples/MC_BSM/CompressedHiggsino/RadiativeMu_2016Fast/ntuple_sidecarv3/*")
-#glob("/nfs/dust/cms/user/diepholq/x1x2x1/signal/skim/single/higgsino_Summer16_stopstop_800GeV_mChipm400GeV_dm1p4GeV_pu35_part22of25_RA2AnalysisTree.root")
+#glob("/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_*.root")
+#glob("/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim/single/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_*pu35_part*of25_RA2AnalysisTree.root")
+#glob("/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim_nlp/single/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_*pu35_part*of25_RA2AnalysisTree.root")
+#glob("/nfs/dust/cms/user/beinsam/CommonSamples/MC_BSM/CompressedHiggsino/RadiativeMu_2016Fast/ntuple_sidecarv3/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_*pu35_part*of25_RA2AnalysisTree.root")
+glob("/nfs/dust/cms/user/diepholq/x1x2x1/signal/skim/sum/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_*.root")
 ]
 #signal_file = "/afs/desy.de/user/n/nissanuv/q_nfs/x1x2x1/signal/skim/sum/higgsino_Summer16_stopstop_500GeV_mChipm115GeV_dm1p4GeV_1.root"
-
+#print(signal_files)
 if args.breakk:
 	#chain = TChain("TreeMaker2/PreSelection")
 	chain = TChain("tEvent")
@@ -146,9 +147,7 @@ def minDeltaLepLeps(lep, leps):
     return min, minCan
 
 
-file = open("efficiencies.txt","w")
-file.write(" ")
-file.close()
+
 
 def calculate_efficiency(hist1,hist2):
 	eff = hist1.Integral()/hist2.Integral()
@@ -186,7 +185,7 @@ def plot_hist(key,linestyle,linewidth,linecolor,same,legendentry,pdf,canvasgloba
 	legend.Draw()
 	canvas.Update()
 	if pdf:
-		Titel = key+ ".pdf"
+		Titel = key+ "LepSelection.pdf"
 		canvas.Print(Titel)
 
 
@@ -298,10 +297,33 @@ def mainGen(PtThreshold):
 
 
 
+
+
+# for ientry in range(number_of_entries):
+# 	idlist = []
+# 	chain.GetEntry(ientry)
+# 	if ientry % 1000 == 0:
+# 		print("Processing " + str(ientry), "of", number_of_entries)
+# 	for i in range(len(chain.Muons_mediumID)):
+# 		idlist.append(chain.Muons_mediumID[i])
+# 		if idlist.count(True) > 3:
+# 			print(idlist.count(True))
+# canvas = TCanvas("canvas","canvas")
+# canvas.SetCanvasSize(800,600)
+# chain.Draw("Muons_mediumID","Muons.Pt()>2 && Muons.Pt()<15")
+# # chain.Draw("Muons_mediumID")
+# canvas.Print("Muons_mediumId_nlp.pdf")
+# exit(0)
+
+
+
+
+
 isostr = "isoCrCorrJetIso15Dr0.4"
 samesignstr = "sameSignCorrJetIso15Dr0.4"
-def mainReco(PtThreshold,MuonNumber,comparison_type,histograms):
+def mainReco(PtThreshold,comparison_type,histograms):
 	print("Starting Loop")
+	MuonNumber = 0
 	MuonNumberEvents2 = 0
 	MuonNumberEvents3 = 0
 	MuonNumberEvents4 = 0
@@ -320,11 +342,14 @@ def mainReco(PtThreshold,MuonNumber,comparison_type,histograms):
 			print("Processing " + str(ientry), "of", number_of_entries)
 		MuonSize = len(chain.Muons)
 		MuonMultiplicityPtPassed = 0
+		MuonMultiplicityTightSelectionPassed = 0
 		both_from_same_chi = 0
 		selectedMuonsIdxs = []
 		charges_list = []
 		isobranch_reco = getattr(chain,isostr)
 		samesignbranch_reco = getattr(chain,samesignstr)
+		muonsisobranch = getattr(chain,"Muons_passCorrJetIso15Dr0.4")
+		alternative = 0
 
 		if chain.MHT < 200:                 #cuts
 			continue
@@ -336,10 +361,25 @@ def mainReco(PtThreshold,MuonNumber,comparison_type,histograms):
 			continue
 		if samesignbranch_reco != 0:
 			continue
+			                #muonPassesTightSelection(i, Muons, Muons_mediumID, Muons_passJetIso, Muons_deltaRLJ, muonLowerPt, muonLowerPtTight, muons_tightID):
 		for muon in range(len(chain.Muons)):                   #pT criterion
-			if chain.Muons[muon].Pt() < PtThreshold and chain.Muons[muon].Pt() > 2:
+			#if chain.Muons[muon].Pt() < PtThreshold and chain.Muons[muon].Pt() > 2 and (chain.Muons_deltaRLJ[muon] >= 0.4 or chain.Muons_deltaRLJ[muon] < 0) and muonsisobranch[muon] and bool(chain.Muons_mediumID[muon]):
+				# print(bool(chain.Muons_mediumID[muon]))
+# 				alternative += 1
+# 				if alternative > 2:
+# 					print(alternative,bool(chain.Muons_mediumID[muon]))
+# 				if bool(chain.Muons_mediumID[muon]):
+				#MuonMultiplicityPtPassed += 1
+# 			if len(chain.Muons) > 2:
+# 				print(len(chain.Muons))
+			if analysis_ntuples.muonPassesTightSelection(muon,chain.Muons, chain.Muons_mediumID, muonsisobranch, chain.Muons_deltaRLJ, 2, False, None):
+				#MuonMultiplicityTightSelectionPassed += 1
 				MuonMultiplicityPtPassed += 1
 				selectedMuonsIdxs.append(muon)
+				
+# 		if alternative == 3:
+# 			print("gleich3","MuonMultiplicityPtPassed",MuonMultiplicityTightSelectionPassed)
+# 			exit(0)
 		if MuonMultiplicityPtPassed == 2:
 			MuonNumber = 2
 		if MuonMultiplicityPtPassed == 3:
@@ -348,8 +388,8 @@ def mainReco(PtThreshold,MuonNumber,comparison_type,histograms):
 			MuonNumber = 4
 		if MuonMultiplicityPtPassed != 2 and MuonMultiplicityPtPassed != 3 and MuonMultiplicityPtPassed != 4:               #check for right number of muons that pass pT criterion
 			continue
-		opposite_charge = None
-		
+# 		if alternative == 3:
+# 			print("gleich3","MuonMultiplicityPtPassed",MuonMultiplicityPtPassed)
 		for midx in range(MuonNumber):                    #opposite charge check
 			charges_list.append(chain.Muons_charge[selectedMuonsIdxs[midx]])
 		mus = charges_list.count(-1)
@@ -541,30 +581,33 @@ def mainReco(PtThreshold,MuonNumber,comparison_type,histograms):
 				both_from_same_chi4 += 1
 
 	#event loop end
-	fraction_both_gen2 = AllGenMatchedEvents2/MuonNumberEvents2
 	print(f"Number of events with MuonNumber = 2: {MuonNumberEvents2}")
-	print("Fraction of those events where all muons are matched to gen muons :",fraction_both_gen2)
-	print("Fraction of those events where all muons are genmatched to a muon from a chi02 decay:",AllFromChi2/MuonNumberEvents2)
-	print("Fraction of those events where both $\mu$ are matched to gen muons from the same chi02 decay:",both_from_same_chi2/MuonNumberEvents2)
-	fraction_both_gen3 = AllGenMatchedEvents3/MuonNumberEvents3
+	if MuonNumberEvents2 > 0:
+		fraction_both_gen2 = AllGenMatchedEvents2/MuonNumberEvents2
+		print("Fraction of those events where all muons are matched to gen muons :",fraction_both_gen2)
+		print("Fraction of those events where all muons are genmatched to a muon from a chi02 decay:",AllFromChi2/MuonNumberEvents2)
+		print("Fraction of those events where both $\mu$ are matched to gen muons from the same chi02 decay:",both_from_same_chi2/MuonNumberEvents2)
 	print(f"Number of events with MuonNumber = 3: {MuonNumberEvents3}")
-	print("Fraction of those events where all muons are matched to gen muons :",fraction_both_gen3)
-	print("Fraction of those events where all muons are genmatched to a muon from a chi02 decay:",AllFromChi3/MuonNumberEvents3)
-	print("Fraction of those events where both $\mu$ are matched to gen muons from the same chi02 decay:",both_from_same_chi3/MuonNumberEvents3)
-	fraction_both_gen4 = AllGenMatchedEvents4/MuonNumberEvents4
+	if MuonNumberEvents3 > 0:
+		fraction_both_gen3 = AllGenMatchedEvents3/MuonNumberEvents3
+		print("Fraction of those events where all muons are matched to gen muons :",fraction_both_gen3)
+		print("Fraction of those events where all muons are genmatched to a muon from a chi02 decay:",AllFromChi3/MuonNumberEvents3)
+		print("Fraction of those events where both $\mu$ are matched to gen muons from the same chi02 decay:",both_from_same_chi3/MuonNumberEvents3)
 	print(f"Number of events with MuonNumber = 4: {MuonNumberEvents4}")
-	print("Fraction of those events where all muons are matched to gen muons :",fraction_both_gen4)
-	print("Fraction of those events where all muons are genmatched to a muon from a chi02 decay:",AllFromChi4/MuonNumberEvents4)
-	print("Fraction of those events where both $\mu$ are matched to gen muons from the same chi02 decay:",both_from_same_chi4/MuonNumberEvents4)
+# 	if MuonNumberEvents4 > 0:
+# 		fraction_both_gen4 = AllGenMatchedEvents4/MuonNumberEvents4
+# 		print("Fraction of those events where all muons are matched to gen muons :",fraction_both_gen4)
+# 		print("Fraction of those events where all muons are genmatched to a muon from a chi02 decay:",AllFromChi4/MuonNumberEvents4)
+# 		print("Fraction of those events where both $\mu$ are matched to gen muons from the same chi02 decay:",both_from_same_chi4/MuonNumberEvents4)
 	return MuonNumberEvents2, AllGenMatchedEvents2, AllFromChi2, both_from_same_chi2, MuonNumberEvents3, AllGenMatchedEvents3, AllFromChi3, both_from_same_chi3, MuonNumberEvents4, AllGenMatchedEvents4, AllFromChi4, both_from_same_chi4
 
 #plot_hist(key,linestyle,linewidth,linecolor,same,legendentry,pdf,canvasglobal,legendglobal):
 
-#mainReco(PtUpper[0],2,"invMass",histograms["histinvMass4"],histograms["histpT4"])		
+#mainReco(PtUpper[0],"invMass",histograms)		
 # plot_hist("histpT4",1,2,"default",False,None,True,None,None)
 # plot_hist("histpT4",1,2,"default",False,None,True,None,None)
 if args.recoplots:
-	MuonNumberEvents2, AllGenMatchedEvents2, AllFromChi2, both_from_same_chi2, MuonNumberEvents3, AllGenMatchedEvents3, AllFromChi3, both_from_same_chi3, MuonNumberEvents4, AllGenMatchedEvents4, AllFromChi4, both_from_same_chi4 = mainReco(PtUpper[0],None,"invMass",histograms)  #pT or invMass
+	MuonNumberEvents2, AllGenMatchedEvents2, AllFromChi2, both_from_same_chi2, MuonNumberEvents3, AllGenMatchedEvents3, AllFromChi3, both_from_same_chi3, MuonNumberEvents4, AllGenMatchedEvents4, AllFromChi4, both_from_same_chi4 = mainReco(PtUpper[0],"invMass",histograms)  #pT or invMass
 	print("plotting")
 	xaxis2 = histograms["histFractionsBothGen2"].GetXaxis()
 	histograms["histFractionsBothGen2"].SetMaximum(1)
@@ -582,35 +625,41 @@ if args.recoplots:
 	histograms["histFractionsBothGen3"].AddBinContent(3,AllGenMatchedEvents3/MuonNumberEvents3)
 	histograms["histFractionsSameChi3"].AddBinContent(4,both_from_same_chi3/MuonNumberEvents3)
 	histograms["histFakes3"].AddBinContent(1,1-AllGenMatchedEvents3/MuonNumberEvents3)
-	xaxis4 = histograms["histFractionsBothGen4"].GetXaxis()
-	histograms["histFractionsBothGen4"].SetMaximum(1)
-	xaxis4.SetBinLabel(3,"Both \mu genmatched")
-	xaxis4.SetBinLabel(1,"At least one fake \mu")
-	xaxis4.SetBinLabel(4,"Both to \chi_{2}^{0} decay")
-	histograms["histFractionsBothGen4"].AddBinContent(3,AllGenMatchedEvents4/MuonNumberEvents4)
-	histograms["histFractionsSameChi4"].AddBinContent(4,both_from_same_chi4/MuonNumberEvents4)
-	histograms["histFakes4"].AddBinContent(1,1-AllGenMatchedEvents4/MuonNumberEvents4)
-# 	plot_hist("histpT3",1,2,"kRed-4",True,"3 \mu",False,canvaspT,legendpT)
-# 	plot_hist("histpT4",1,2,"kGreen-2",True,"4 \mu",True,canvaspT,legendpT)
-# 	canvasinvMass,legendinvMass = plot_hist("histinvMass2",1,2,"default",False,"2 \mu",False,None,None)
-# 	plot_hist("histinvMass3",1,2,"kRed-4",True,"3 \mu",False,canvasinvMass,legendinvMass)
-# 	plot_hist("histinvMass4",1,2,"kGreen-2",True,"4 \mu",True,canvasinvMass,legendinvMass)
+	# xaxis4 = histograms["histFractionsBothGen4"].GetXaxis()
+# 	histograms["histFractionsBothGen4"].SetMaximum(1)
+# 	xaxis4.SetBinLabel(3,"Both \mu genmatched")
+# 	xaxis4.SetBinLabel(1,"At least one fake \mu")
+# 	xaxis4.SetBinLabel(4,"Both to \chi_{2}^{0} decay")
+# 	histograms["histFractionsBothGen4"].AddBinContent(3,AllGenMatchedEvents4/MuonNumberEvents4)
+# 	histograms["histFractionsSameChi4"].AddBinContent(4,both_from_same_chi4/MuonNumberEvents4)
+# 	histograms["histFakes4"].AddBinContent(1,1-AllGenMatchedEvents4/MuonNumberEvents4)
+	canvaspT, legendpT = plot_hist("histpT2",1,2,"2",False,"2 \mu",False,None,None)
+	plot_hist("histpT3",1,2,"4",True,"3 \mu",True,canvaspT,legendpT)
+	#plot_hist("histpT4",1,2,"40",True,"4 \mu",True,canvaspT,legendpT)
+	canvasinvMass,legendinvMass = plot_hist("histinvMass2",1,2,"2",False,"2 \mu",False,None,None)
+	plot_hist("histinvMass3",1,2,"4",True,"3 \mu",True,canvasinvMass,legendinvMass)
+	#plot_hist("histinvMass4",1,2,"40",True,"4 \mu",True,canvasinvMass,legendinvMass)
 
 canvasFractions,legendFractions = plot_hist("histFractionsBothGen2",1,2,"2",False,None,False,None,None)
-if args.recoplots:
-	for munumber in [2,3,4]:
-		if munumber == 2:
-			color = "2"
-		if munumber == 3:
-			color = "4"
-		if munumber == 4:
-			color = "40"
-		if munumber != 2:
-			plot_hist("histFractionsBothGen"+str(munumber),1,2,color,True,None,False,canvasFractions,legendFractions)
-		plot_hist("histFakes"+str(munumber),1,2,color,True,None,False,canvasFractions,legendFractions)
-		if munumber != 4:
-			plot_hist("histFractionsSameChi"+str(munumber),1,2,color,True,str(munumber)+" \mu",False,canvasFractions,legendFractions)
-	plot_hist("histFractionsSameChi4",1,2,"40",True,str(munumber)+" \mu",True,canvasFractions,legendFractions)
+plot_hist("histFractionsBothGen3",1,2,"3",True,None,True,canvasFractions,legendFractions)
+plot_hist("histFakes2",1,2,"2",True,None,False,canvasFractions,legendFractions)
+plot_hist("histFakes3",1,2,"3",True,None,True,canvasFractions,legendFractions)
+plot_hist("histFractionsSameChi2",1,2,"2",True,"2 \mu",False,canvasFractions,legendFractions)
+plot_hist("histFractionsSameChi3",1,2,"3",True,"3 \mu",True,canvasFractions,legendFractions)
+# if args.recoplots:
+# 	for munumber in [2,3,4]:
+# 		if munumber == 2:
+# 			color = "2"
+# 		if munumber == 3:
+# 			color = "4"
+# 		if munumber == 4:
+# 			color = "40"
+# 		if munumber != 2:
+# 			plot_hist("histFractionsBothGen"+str(munumber),1,2,color,True,None,False,canvasFractions,legendFractions)
+# 		plot_hist("histFakes"+str(munumber),1,2,color,True,None,False,canvasFractions,legendFractions)
+# 		if munumber != 4:
+# 			plot_hist("histFractionsSameChi"+str(munumber),1,2,color,True,str(munumber)+" \mu",False,canvasFractions,legendFractions)
+# 	plot_hist("histFractionsSameChi4",1,2,"40",True,str(munumber)+" \mu",True,canvasFractions,legendFractions)
 
 
 #plotting---------------------------------------------------------------------------------
