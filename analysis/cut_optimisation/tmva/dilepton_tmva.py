@@ -7,9 +7,12 @@ from array import array
 import argparse
 import sys
 import os
+from tempfile import mkdtemp
+import shutil
 
 sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools"))
 from lib import utils
+from lib import analysis_observables
 
 ####### CMDLINE ARGUMENTS #########
 
@@ -82,9 +85,9 @@ factory = TMVA.Factory("TMVAClassification", outputFile,
 dataloaders = {}
 preselections = {}
 
-bgFiles = []
+#bgFiles = []
 bTrees = []
-sFiles = []
+#sFiles = []
 sTrees = []
 
 newFiles = []
@@ -98,18 +101,75 @@ weights = 0
 bg_files = glob(bg_dir + "/*")
 print bg_files
 
+prefix = ""
+if lepNum == "exTrack":
+    prefix = "exTrack_"
+
+
+variablesUsed = []
+
+variablesUsed.append("BTagsDeepMedium")
+variablesUsed.append("MinDeltaPhiMhtJets")
+variablesUsed.append("Weight")
+
+variablesUsed.append(prefix + 'deltaPhi' + iso + str(ptRange) + cat)
+variablesUsed.append(prefix + 'deltaEta' + iso + str(ptRange) + cat)
+variablesUsed.append(prefix + 'deltaR' + iso + str(ptRange) + cat)
+variablesUsed.append(prefix + 'dilepHt' + iso + str(ptRange) + cat)
+variablesUsed.append(prefix + 'invMass' + iso + str(ptRange) + cat)
+
+for obs in analysis_observables.dileptonBDTeventObservables:
+    if "LeadingJet." in obs:
+        variablesUsed.append("LeadingJet")
+    else:
+        variablesUsed.append(obs)
+
 preselection = None
-    
+
 if lepNum == "reco":
-    preselection = "twoLeptons" + iso + str(ptRange) + cat + " == 1 && BTagsDeepMedium == 0 && @leptons" + iso + str(ptRange) + cat + ".size() == 2 && leptonFlavour" + iso + str(ptRange) + cat  + " == \"" + lep + "\"" + " && sameSign" + iso + str(ptRange) + cat + " == 0"
+    #preselection = "twoLeptons" + iso + str(ptRange) + cat + " == 1 && BTagsDeepMedium == 0 && MinDeltaPhiMhtJets > 0.4 && @leptons" + iso + str(ptRange) + cat + ".size() == 2 && leptonFlavour" + iso + str(ptRange) + cat  + " == \"" + lep + "\"" + " && sameSign" + iso + str(ptRange) + cat + " == 0" + " && isoCr" + iso + str(ptRange) + cat + " == 0"
+    #preselection = "twoLeptons" + iso + str(ptRange) + cat + " == 1 && BTagsDeepMedium == 0 && MinDeltaPhiMhtJets > 0.4 && leptonFlavour" + iso + str(ptRange) + cat  + " == \"" + lep + "\"" + " && sameSign" + iso + str(ptRange) + cat + " == 0" + " && isoCr" + iso + str(ptRange) + cat + " == 0"
+    #Inclusive isocr
+    preselection = "twoLeptons" + iso + str(ptRange) + cat + " == 1 && BTagsDeepMedium == 0 && MinDeltaPhiMhtJets > 0.4 && leptonFlavour" + iso + str(ptRange) + cat  + " == \"" + lep + "\"" + " && sameSign" + iso + str(ptRange) + cat + " == 0"
+    
+    variablesUsed.append("twoLeptons" + iso + str(ptRange) + cat)
+    variablesUsed.append("leptonFlavour" + iso + str(ptRange) + cat)
+    variablesUsed.append("sameSign" + iso + str(ptRange) + cat)
+    variablesUsed.append("isoCr" + iso + str(ptRange) + cat)
+    
+    variablesUsed.append('dileptonPt' + iso + str(ptRange) + cat)
+    variablesUsed.append('mth1' + iso + str(ptRange) + cat)
+    
+    variablesUsed.append('leptons' + iso + str(ptRange) + cat)
+
+    variablesUsed.append('deltaPhiMhtLepton1' + iso + str(ptRange) + cat)
+    variablesUsed.append('deltaPhiMhtLepton2' + iso + str(ptRange) + cat)
+    
+    variablesUsed.append('nmtautau' + iso + str(ptRange) + cat)
+    
 else:
-    preselection = "exclusiveTrack" + iso + str(ptRange) + cat + ' == 1 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour' + iso + str(ptRange) + cat  + " == \"" + lep + "\""
- 
+    # Before 
+    #preselection = "exclusiveTrack" + iso + str(ptRange) + cat + ' == 1 && BTagsDeepMedium == 0 &&  trackBDT' + iso + str(ptRange) + cat  +    ' >= 0 && exclusiveTrackLeptonFlavour' + iso + str(ptRange) + cat  + " == \"" + lep + "\""
+    # Making new version without trackBDT precut
+    preselection = "exclusiveTrack" + iso + str(ptRange) + cat + ' == 1 && BTagsDeepMedium == 0 && MinDeltaPhiMhtJets > 0.4 && exclusiveTrackLeptonFlavour' + iso + str(ptRange) + cat  + " == \"" + lep + "\""
+    variablesUsed.append("exclusiveTrack" + iso + str(ptRange) + cat)
+    variablesUsed.append("exclusiveTrackLeptonFlavour" + iso + str(ptRange) + cat)
+    variablesUsed.append('mtl' + iso + str(ptRange) + cat)
+    variablesUsed.append('lepton' + iso + str(ptRange) + cat)
+    variablesUsed.append('track' + iso + str(ptRange) + cat)
+
+print "Variables used", variablesUsed 
+
+tmpDir = mkdtemp(prefix="nissanuv", dir="/tmp") + '/'
+print "tmpDir=",tmpDir
+
+#if not os.path.isdir(tmpDir):
+#    os.mkdir(tmpDir)
 
 for input_file in input_files:
     print "Opening File " + input_file
     fsignal = TFile(input_file)
-    sFiles.append(fsignal)
+    #sFiles.append(fsignal)
     sTree = fsignal.Get("tEvent")
     if sTree.GetEntries() == 0:
         print "Emtpy. Skipping"
@@ -128,17 +188,46 @@ for input_file in input_files:
      # print "Copying tree", input_file, "with", preselection
 #     newFile = TFile(tmp_dir + "signal_" + lepNum + lep + iso + str(ptRange) + cat + ".root", "recreate")
 #     newTree = sTree.CopyTree(preselection)
-    print "Done copying."
+    
     # if newTree.GetEntriesFast() == 0:
 #         print "Empty tree!!!!"
 #         newFile.Close()
     #else:
     #print "Entries copied", newTree.GetEntriesFast()
     #newFiles.append(newFile)
-    sTrees.append(sTree)
-    #newTrees.append(newTree)
-    #foundCategory[lepNum + lep + iso + str(ptRange) + cat] = True
-    dataloaders[lepNum + lep + iso + str(ptRange) + cat].AddSignalTree(sTree, 1)   
+    baseFileName = os.path.basename(input_file)
+    newfile = TFile(tmpDir + baseFileName, "recreate");
+    
+    print "old tree has", sTree.GetEntries()
+    sTree.SetBranchStatus("*",0);
+    for branch in variablesUsed:
+        print "Setting branch on", branch
+        sTree.SetBranchStatus(branch,1);
+    #newSTree = sTree.CloneTree(0)
+    print "Coping tree with preselection", preselection
+    newSTree = sTree.CopyTree(preselection)
+    print "new tree has", newSTree.GetEntries()
+    
+    if newSTree.GetEntries() == 0:
+        newfile.Close()
+        sTree.Delete()
+        fsignal.Close() 
+        continue
+    
+    newfile.cd()
+    newSTree.Write("tEvent");
+    newfile.Close();
+    
+    print "Done copying."
+    #sTrees.append(newSTree)
+    sTree.Delete()
+    fsignal.Close() 
+    
+    newfile = TFile(tmpDir + baseFileName, "read");
+    newFiles.append(newfile)
+    sTree = newfile.Get("tEvent")
+    newTrees.append(sTree)
+    dataloaders[lepNum + lep + iso + str(ptRange) + cat].AddSignalTree(sTree, 1) 
 
 for bg_file in bg_files:
     if "QCD" in bg_file:
@@ -153,7 +242,39 @@ for bg_file in bg_files:
     #    continue
     fbackground = TFile(bg_file)
     bTree = fbackground.Get("tEvent")
-    bgFiles.append(fbackground)
+    
+    baseFileName = os.path.basename(bg_file)
+    newfile = TFile(tmpDir + baseFileName, "recreate");
+    
+    bTree.SetBranchStatus("*",0);
+    for branch in variablesUsed:
+        bTree.SetBranchStatus(branch,1);
+    newBTree = bTree.CopyTree(preselection)
+    print "new tree has", newBTree.GetEntries()
+    if newBTree.GetEntries() == 0:
+        newfile.Close()
+        bTree.Delete()
+        fbackground.Close() 
+        continue
+    
+    newfile.cd()
+    newBTree.Write("tEvent");
+    newfile.Close();
+    print "Done copying."
+    bTree.Delete()
+    fbackground.Close()
+    
+    newfile = TFile(tmpDir + baseFileName, "read")
+    newFiles.append(newfile)
+    bTree = newfile.Get("tEvent")
+    bTrees.append(bTree)
+    dataloaders[lepNum + lep + iso + str(ptRange) + cat].AddBackgroundTree(bTree, 1)
+
+    #bgFiles.append(fbackground)
+    
+    
+    
+    
     #for lepNum in ["reco", "exTrack"]:
         #for lep in ["Electrons", "Muons"]:
         #for lep in ["Muons"]:
@@ -163,10 +284,10 @@ for bg_file in bg_files:
         #            if iso == "CorrJetIso":
         #                ptRanges = utils.leptonCorrJetIsoPtRange
         #            for ptRange in ptRanges:
-    bTrees.append(bTree)
+    #bTrees.append(newBTree)
 
-    print "Getting", iso + str(ptRange) + cat
-    print "Copying tree", bg_file, "with", preselection
+    #print "Getting", iso + str(ptRange) + cat
+    #print "Copying tree", bg_file, "with", preselection
     #newFile = TFile(tmp_dir + "bg_" + lepNum + lep + iso + str(ptRange) + cat + ".root", "recreate")
     #newTree = bTree.CopyTree(preselection)
     #print "Done copying."
@@ -177,7 +298,7 @@ for bg_file in bg_files:
     #    print "Entries copied", newTree.GetEntriesFast()
     #    newFiles.append(newFile)
     #    newTrees.append(newTree)
-    dataloaders[lepNum + lep + iso + str(ptRange) + cat].AddBackgroundTree(bTree, 1)
+    
 
 
 #for lepNum in ["reco", "exTrack"]:
@@ -189,28 +310,31 @@ for bg_file in bg_files:
 #                    if iso == "CorrJetIso":
 #                        ptRanges = utils.leptonCorrJetIsoPtRange
 #                    for ptRange in ptRanges:
-                        
-prefix = ""
-if lepNum == "exTrack":
-    prefix = "exTrack_"
 
 dataloader = dataloaders[lepNum + lep + iso + str(ptRange) + cat]
 
 dataloader.AddVariable(prefix + 'deltaPhi' + iso + str(ptRange) + cat, 'F')
 dataloader.AddVariable(prefix + 'deltaEta' + iso + str(ptRange) + cat, 'F')
 dataloader.AddVariable(prefix + 'deltaR' + iso + str(ptRange) + cat, 'F')
-dataloader.AddVariable(prefix + 'pt3' + iso + str(ptRange) + cat, 'F')
-dataloader.AddVariable(prefix + 'deltaEtaLeadingJetDilepton' + iso + str(ptRange) + cat, 'F')
-dataloader.AddVariable(prefix + 'deltaPhiLeadingJetDilepton' + iso + str(ptRange) + cat, 'F')
-dataloader.AddVariable(prefix + 'dilepHt' + iso + str(ptRange) + cat, 'F')
+# REMOVE THIS
+#dataloader.AddVariable(prefix + 'pt3' + iso + str(ptRange) + cat, 'F')
+#dataloader.AddVariable(prefix + 'deltaEtaLeadingJetDilepton' + iso + str(ptRange) + cat, 'F')
+#dataloader.AddVariable(prefix + 'deltaPhiLeadingJetDilepton' + iso + str(ptRange) + cat, 'F')
+# ------------
+#dataloader.AddVariable(prefix + 'dilepHt' + iso + str(ptRange) + cat, 'F')
 dataloader.AddVariable(prefix + 'invMass' + iso + str(ptRange) + cat, 'F')
 
-dataloader.AddVariable('HT', 'F')
-dataloader.AddVariable('MinDeltaPhiMhtJets', 'F')
-dataloader.AddVariable('MHT', 'F')
-dataloader.AddVariable('LeadingJetPt', 'F')
-dataloader.AddVariable('LeadingJet.Eta()', 'F')
-dataloader.AddVariable('NJets', 'I')
+# moved to dileptonBDTeventObservables
+# dataloader.AddVariable('HT', 'F')
+# dataloader.AddVariable('MinDeltaPhiMhtJets', 'F')
+# dataloader.AddVariable('MHT', 'F')
+# dataloader.AddVariable('LeadingJetPt', 'F')
+# dataloader.AddVariable('LeadingJet.Eta()', 'F')
+# dataloader.AddVariable('NJets', 'I')
+
+for obs in analysis_observables.dileptonBDTeventObservables:
+    dataloader.AddVariable(obs, analysis_observables.dileptonBDTeventObservables[obs])
+    
 
 preselectionCut = None
 
@@ -222,17 +346,20 @@ if lepNum == "reco":
     preselections[lepNum + lep + iso + str(ptRange) + cat] = preselectionCut
     dataloader.AddCut(preselection)
     dataloader.AddVariable('dileptonPt' + iso + str(ptRange) + cat, 'F')
-    dataloader.AddVariable('mt1' + iso + str(ptRange) + cat, 'F')
+    dataloader.AddVariable('mth1' + iso + str(ptRange) + cat, 'F')
     
 #                             dataloader.AddVariable('Alt$(leptons' + iso + str(ptRange) + cat + '[1].Pt(),-1)', 'F')
 #                             dataloader.AddVariable('Alt$(leptons' + iso + str(ptRange) + cat + '[0].Eta(),-1)', 'F')
 #                             dataloader.AddVariable('Alt$(leptons' + iso + str(ptRange) + cat + '[0].Phi(),-1)', 'F')
 #                             
     dataloader.AddVariable('leptons' + iso + str(ptRange) + cat + '[0].Pt()', 'F')
+    dataloader.AddVariable('leptons' + iso + str(ptRange) + cat + '[1].Pt()', 'F')
     dataloader.AddVariable('leptons' + iso + str(ptRange) + cat + '[0].Eta()', 'F')
-    dataloader.AddVariable('leptons' + iso + str(ptRange) + cat + '[0].Phi()', 'F')
-    dataloader.AddVariable('deltaPhiMetLepton1' + iso + str(ptRange) + cat, 'F')
-    dataloader.AddVariable('deltaPhiMetLepton2' + iso + str(ptRange) + cat, 'F')
+    #dataloader.AddVariable('leptons' + iso + str(ptRange) + cat + '[0].Phi()', 'F')
+    dataloader.AddVariable('deltaPhiMhtLepton1' + iso + str(ptRange) + cat, 'F')
+    dataloader.AddVariable('deltaPhiMhtLepton2' + iso + str(ptRange) + cat, 'F')
+    dataloader.AddVariable('nmtautau' + iso + str(ptRange) + cat, 'F')
+        
 else:
     
     #preselectionCut = TCut("exclusiveTrack" + iso + str(ptRange) + cat + ' == 1 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour' + iso + str(ptRange) + cat  + ' == "' + lep + '"')
@@ -274,5 +401,8 @@ factory.TestAllMethods()
 factory.EvaluateAllMethods()
 outputFile.Close()
 
+print "deleting tmp dir", tmpDir
+shutil.rmtree(tmpDir)
+exit(0)
 
 

@@ -87,7 +87,10 @@ universe = vanilla
 should_transfer_files = IF_NEEDED
 executable = /bin/bash
 notification = Never
++RequestRuntime = 86400
+request_memory = 16 GB
 EOM
+
 
 # if [ -z "$SAM" ]; then
 #     for sim in ${INPUT_DIR}/sum/*; do
@@ -166,11 +169,21 @@ echo -e "\n\nRUNNING ALL GROUP\n\n"
 #     mkdir "$OUTPUT_DIR/stderr"
 # fi
 
-for sim in ${INPUT_DIR}/sum/*; do
+if [ -n "$SAM" ]; then
+    FILES=${INPUT_DIR}/sum/*
+else
+    FILES=${INPUT_DIR}/single/*
+fi
+
+#FILES=(higgsino_mu115_dm9p82Chi20Chipm.root higgsino_mu115_dm7p44Chi20Chipm.root higgsino_mu130_dm7p49Chi20Chipm.root)
+
+for sim in ${FILES[@]}; do
+    #sim=${INPUT_DIR}/sum/$sim
     if [ -n "$SAM" ]; then
         filename=`echo $(basename $sim .root)`
     else
-        filename=`echo $(basename $sim .root) | awk -F"_" '{print $1"_"$2"_"$3}'`
+        #filename=`echo $(basename $sim .root) | awk -F"_" '{print $1"_"$2"_"$3}'`
+        filename=`echo $(basename $sim .root)`
     fi
     echo $filename
     tb=all
@@ -181,9 +194,11 @@ cat << EOM >> $output_file
 arguments = $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -i $sim -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$tb $@
 error = ${INPUT_DIR}/stderr/${filename}_track_bdt.err
 output = ${INPUT_DIR}/stdout/${filename}_track_bdt.output
+log = ${INPUT_DIR}/stdout/${filename}_track_bdt.log
 Queue
 EOM
 done
 
 condor_submit $output_file
+echo "log file: $output_file"
 rm $output_file

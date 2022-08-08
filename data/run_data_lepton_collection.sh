@@ -36,7 +36,9 @@ fi
 LC_INTPUT="/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection/"
 
 #files=(${LC_INTPUT}/Run2016*.MET*)
-files=(${LC_INTPUT}/Run2016*.SingleMuon*)
+#files=(${LC_INTPUT}/Run2016*.SingleMuon*)
+#files=(${LC_INTPUT}/Run2016*.SingleElectron*)
+files=(${LC_INTPUT}/Run201[78]*.MET*)
 
 
 timestamp=$(date +%Y%m%d_%H%M%S%N)
@@ -49,13 +51,14 @@ should_transfer_files = IF_NEEDED
 executable = /bin/bash
 notification = Never
 priority = 0
+request_memory = 16 GB
 EOM
 
 file_limit=0
 i=0
 count=0
 input_files=""
-files_per_job=20
+files_per_job=1
 index=0
 name=""
 

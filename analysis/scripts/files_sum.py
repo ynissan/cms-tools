@@ -34,6 +34,7 @@ parser.add_argument('-jpsi_muons', '--jpsi_muons', dest='jpsi_muons', help='JPSI
 parser.add_argument('-jpsi_muons_single_electron', '--jpsi_muons_single_electron', dest='jpsi_muons_single_electron', help='JPSI Muons Skim', action='store_true')
 parser.add_argument('-master', '--master', dest='master', help='Master Skim', action='store_true')
 parser.add_argument('-z_peak', '--z_peak', dest='z_peak', help='Z Peak Skim', action='store_true')
+parser.add_argument('-slim', '--slim', dest='slim', help='slim', action='store_true')
 args = parser.parse_args()
 
 hadd = args.hadd
@@ -54,6 +55,7 @@ jpsi_muons = args.jpsi_muons
 jpsi_muons_single_electron = args.jpsi_muons_single_electron
 master = args.master
 z_peak = args.z_peak
+slim = args.slim
 
 if (bg and signal) or not (bg or signal):
     signal = True
@@ -71,7 +73,7 @@ if bg:
             else:
                 WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/bg/skim"
         elif drell_yan:
-            WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/dy_x1x2x1/bg/skim"
+            WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_dy"
         elif no_lepton_selection:
             WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_nlp"
         elif jpsi_muons:
@@ -82,6 +84,8 @@ if bg:
             WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_master" 
         elif z_peak:
             WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_z" 
+        elif slim:
+            WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim" 
     else:
         WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/hist"
 else:
@@ -90,11 +94,15 @@ else:
         if lepton_collection:
             WORK_DIR = "/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollectionFilesMaps/"
     else:
-        WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/hist"
+        WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/"
     
 
 SINGLE_OUTPUT = WORK_DIR + "/single"
 OUTPUT_SUM = WORK_DIR + "/sum"
+if slim:
+    SINGLE_OUTPUT = WORK_DIR + "/"
+    OUTPUT_SUM = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum" 
+
 OUTPOUT_TYPE_SUM = OUTPUT_SUM + "/type_sum"
 OUTPOUT_PROCESSED = OUTPUT_SUM + "/processed"
 OUTPOUT_STACK = OUTPUT_SUM + "/stack"
@@ -181,7 +189,8 @@ if hadd or all:
     if data_lepton_collection:
         files_glob = fileList
         
-        file = "Run2016_SingleMuon.root"
+        #file = "Run2016_SingleMuon.root"
+        file = "Run2016_SingleElectron.root"
         tmp_dir = "/afs/desy.de/user/n/nissanuv/nfs"
         #file = "Run2016_MET.root"
         print "***NUMBER:" + str(len(files_glob))
@@ -194,16 +203,16 @@ if hadd or all:
         command = "./merge_lepton_collection_map.py -o " + tmp_dir + "/" + file + " -i " + SINGLE_OUTPUT + "/*"
         print "Perorming:", command 
         system(command)
-        command = "gfal-copy " + tmp_dir + "/" + file + " " + "srm://dcache-se-cms.desy.de" + WORK_DIR
+        command = "(eval `scram unsetenv -sh`; gfal-copy " + tmp_dir + "/" + file + " " + "srm://dcache-se-cms.desy.de" + WORK_DIR + ")"
         print "Perorming:", command 
         system(command)
         command = "rm " + tmp_dir + "/" + file
         print "Perorming:", command 
-        system(command)
+        #system(command)
     else:
-        for f in fileList :
+        for f in fileList:
             filename = None
-            if bg:
+            if bg and not slim:
                 filename = os.path.basename(f).split(".")[1]
             else:
                 filename = os.path.basename(f).split(".")[0]
@@ -220,6 +229,7 @@ if hadd or all:
                 #if type == "TT":
                 #    sumTypes[type][types[1]] = True
                 #else:
+                print types
                 types[2] = types[2].split("AOD")[0]
                 sumTypes[type][types[1] + "_" + types[2]] = True
                 #else:
@@ -238,7 +248,11 @@ if hadd or all:
                     command = None
                     file = ""
                     files = ""
-                    if "M-5to50" in typeRange:
+                    if slim:
+                        file = OUTPOUT_TYPE_SUM + "/" + type + "_" + typeRange + ".root"
+                        files = SINGLE_OUTPUT + "/" + type + "_*" + typeRange + "*.root"
+                        command = "hadd -f " + file + " " + files
+                    elif "M-5to50" in typeRange:
                         #command = "/afs/desy.de/user/n/nissanuv/cms-tools/analysis/scripts/ahadd.py -f " + OUTPOUT_TYPE_SUM + "/" + type + "_" + typeRange + ".root " + SINGLE_OUTPUT + "/RunIISummer16MiniAODv3." + type + "_*" + typeRange + "*.root"
                         file = OUTPOUT_TYPE_SUM + "/" + type + "_" + typeRange + ".root"
                         if lepton_collection:

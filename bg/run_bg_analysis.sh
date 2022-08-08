@@ -46,7 +46,14 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --selection)
+        SELECTION=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         --jpsi_single_electron)
+        echo "*****"
+        exit 0
         JPSI_SINGLE_ELECTRON=true
         POSITIONAL+=("$1")
         shift
@@ -74,7 +81,7 @@ if [ -n "$SKIM" ]; then
     elif [ -n "$Z_PEAK" ]; then
         SCRIPT_PATH=$JPSI_SKIMMER_PATH
         OUTPUT_DIR=$SKIM_Z_PEAK_OUTPUT_DIR
-    elif [ -n "JPSI_SINGLE_ELECTRON" ]; then
+    elif [ -n "$JPSI_SINGLE_ELECTRON" ]; then
         SCRIPT_PATH=$JPSI_SKIMMER_PATH
         OUTPUT_DIR=$SKIM_JPSI_SINGLE_ELECTRON_OUTPUT_DIR
     elif [ -n "$TWO_LEPTONS" ]; then
@@ -122,28 +129,35 @@ if [ ! -d "$ERR_OUTPUT" ]; then
 fi
 
 files=()
-for type in ${BG_TYPES[@]}; do 
-    echo "Checking type $type"
-    if [ "$type" = "DYJetsToLL" ]; then
-        files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_M-50_*)
-        files=("${files[@]}" ${BG_NTUPLES}/RunIISummer16MiniAODv3.DYJetsToLL_M-5to50*)
-    elif [ "$type" = "ZJetsToNuNu" ]; then
-        files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_HT*)
-    elif [ "$type" = "TTJets" ]; then
-        files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_TuneCUETP8M1*)
-    else
-        files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_*)
-    fi
-done
 
-
+if [ -z "$SELECTION" ]; then
+    for type in ${BG_TYPES[@]}; do 
+        echo "Checking type $type"
+        if [ "$type" = "DYJetsToLL" ]; then
+            files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_M-50_*)
+            files=("${files[@]}" ${BG_NTUPLES}/RunIISummer16MiniAODv3.DYJetsToLL_M-5to50*)
+        elif [ "$type" = "ZJetsToNuNu" ]; then
+            files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_HT*)
+        elif [ "$type" = "TTJets" ]; then
+            files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_TuneCUETP8M1*)
+        else
+            files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_*)
+        fi
+    done
+else
+    files=${OUTPUT_DIR}/single/*
+fi
 
 madHtFilesGt600=()
 madHtFilesLt600=()
-for type in ${MAD_HT_SPLIT_TYPES[@]}; do 
-    madHtFilesGt600=("${madHtFilesGt600[@]}" ${BG_NTUPLES}/Summer16*${type}*_HT-*)
-    madHtFilesLt600=("${madHtFilesLt600[@]}" ${BG_NTUPLES}/Summer16*${type}_TuneCUETP8M1*)
-done
+
+if [ -z "$DY" ] && [ -z "$SELECTION" ]; then
+    for type in ${MAD_HT_SPLIT_TYPES[@]}; do 
+        madHtFilesGt600=("${madHtFilesGt600[@]}" ${BG_NTUPLES}/Summer16*${type}*_HT-*)
+        madHtFilesLt600=("${madHtFilesLt600[@]}" ${BG_NTUPLES}/Summer16*${type}_TuneCUETP8M1*)
+    done
+fi
+
 
 # echo ${MAD_HT_SPLIT_TYPES[@]}
 # echo ${madHtFilesGt600[@]}
@@ -165,7 +179,7 @@ priority = 0
 EOM
 
 file_limit=0
-files_per_job=8
+files_per_job=2
 
 for type in reg madHtFilesGt600 madHtFilesLt600; do
 
@@ -206,9 +220,9 @@ for type in reg madHtFilesGt600 madHtFilesLt600; do
             #echo "Really skipping"
             continue
         fi
-    
-        if [ -f "$FILE_OUTPUT/$name" ]; then
-            echo "$name exist. Skipping..."
+        
+        if [ -z "$SELECTION" ] && [ -f "$FILE_OUTPUT/$name" ]; then
+            #echo "$name exist. Skipping..."
             continue
         fi
         input_files="$input_files $fullname"

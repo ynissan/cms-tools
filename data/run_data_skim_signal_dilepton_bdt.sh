@@ -54,22 +54,22 @@ COMMAND=$SCRIPTS_WD/skimmer_x1x2x1_dilepton_bdt.py
 EXTRA_FLAGS=""
 
 
-if [ -n "$TWO_LEPTONS" ]; then
-    if [ -n "$SC" ]; then
-        echo "GOT SC"
-        echo "HERE: $@"
-        OUTPUT_DIR=$SKIM_TWO_LEPTONS_DATA_SIG_DILEPTON_BDT_SC_OUTPUT_DIR
-        INPUT_DIR=$TWO_LEPTONS_SAME_SIGN_SKIM_DATA_OUTPUT_DIR/sum
-    else
-        OUTPUT_DIR=$SKIM_TWO_LEPTONS_DATA_SIG_DILEPTON_BDT_OUTPUT_DIR
-        INPUT_DIR=$TWO_LEPTONS_SKIM_DATA_OUTPUT_DIR/sum
-    fi
-    BDT_DIR=$TWO_LEPTONS_OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt
-elif [ -n "$DRELL_YAN" ]; then
+# if [ -n "$TWO_LEPTONS" ]; then
+#     if [ -n "$SC" ]; then
+#         echo "GOT SC"
+#         echo "HERE: $@"
+#         OUTPUT_DIR=$SKIM_TWO_LEPTONS_DATA_SIG_DILEPTON_BDT_SC_OUTPUT_DIR
+#         INPUT_DIR=$TWO_LEPTONS_SAME_SIGN_SKIM_DATA_OUTPUT_DIR/sum
+#     else
+#         OUTPUT_DIR=$SKIM_TWO_LEPTONS_DATA_SIG_DILEPTON_BDT_OUTPUT_DIR
+#         INPUT_DIR=$TWO_LEPTONS_SKIM_DATA_OUTPUT_DIR/sum
+#     fi
+#     BDT_DIR=$TWO_LEPTONS_OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt
+if [ -n "$DRELL_YAN" ]; then
     echo "GOT DY"
     echo "HERE: $@"
-    OUTPUT_DIR=$SKIM_DATA_SIG_DILEPTON_BDT_DY_OUTPUT_DIR
-    INPUT_DIR=$SKIM_DATA_BDT_DY_OUTPUT_DIR
+    #OUTPUT_DIR=$SKIM_DATA_SIG_DILEPTON_BDT_DY_OUTPUT_DIR
+    INPUT_DIR=$DY_SKIM_DATA_OUTPUT_DIR
 elif [ -n "$JPSI_MUONS" ]; then
     echo "GOT JPSI_MUONS"
     echo "HERE: $@"
@@ -86,8 +86,14 @@ else
         INPUT_DIR=$SKIM_DATA_BDT_SC_OUTPUT_DIR
         
     else
-        OUTPUT_DIR=$SKIM_DATA_SIG_DILEPTON_BDT_OUTPUT_DIR
-        INPUT_DIR=$SKIM_DATA_BDT_OUTPUT_DIR
+        echo HERE
+        
+        #OUTPUT_DIR=$SKIM_DATA_BDT_OUTPUT_DIR
+        INPUT_DIR=$SKIM_DATA_OUTPUT_DIR
+        echo $INPUT_DIR/sum/
+
+        #OUTPUT_DIR=$SKIM_DATA_SIG_DILEPTON_BDT_OUTPUT_DIR
+        #INPUT_DIR=$SKIM_DATA_BDT_OUTPUT_DIR
     fi
 fi
 
@@ -110,6 +116,8 @@ should_transfer_files = IF_NEEDED
 executable = /bin/bash
 notification = Never
 priority = 0
+request_memory = 16 GB
++RequestRuntime = 86400
 EOM
 
 #for sim in $SKIM_BG_SIG_BDT_OUTPUT_DIR/*; do
@@ -140,8 +148,16 @@ EOM
 #     else
 #         DATA_DIR=$INPUT_DIR/$tb/single
 #     fi
-    
-for data_file in $INPUT_DIR/sum/*; do
+
+echo $INPUT_DIR/sum/
+
+FILES=$INPUT_DIR/sum/*
+#FILES=(Run2016G-17Jul2018-v1.METAOD_207.root)
+
+
+for data_file in ${FILES[@]}; do
+#for data_file in $INPUT_DIR/sum/*; do
+    #data_file=$INPUT_DIR/sum/$data_file
     echo "Will run:"
     data_file_name=$(basename $data_file .root)
         #out_file=${OUTPUT_DIR}/$tb/single/${data_file_name}.root

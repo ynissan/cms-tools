@@ -1,21 +1,22 @@
 #!/bin/bash
 
-shopt -s nullglob
+#shopt -s nullglob
 
 # necessary for running cmsenv
-shopt -s expand_aliases
+#shopt -s expand_aliases
 
 OLD_PWD=$PWD
 
 echo OLD_PWD=$PWD
 
 # CMS ENV
-cd ~/CMSSW_10_1_0/src
+cd ~/CMSSW_11_3_1/src
 
 export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
 source $VO_CMS_SW_DIR/cmsset_default.sh
 
-cmsenv
+#cmsenv
+eval `scramv1 runtime -sh`
 
 echo CMSSW_BASE=$CMSSW_BASE
 

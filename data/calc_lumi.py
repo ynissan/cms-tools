@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3.8
 
 from ROOT import *
 from glob import glob
@@ -26,35 +26,45 @@ from ROOT import LumiSectMap
 ####### CMDLINE ARGUMENTS #########
 
 parser = argparse.ArgumentParser(description='Calculate Luminosity.')
-parser.add_argument('-i', '--input_dir', nargs=1, help='Input Directory', required=True)
+parser.add_argument('-i', '--input_dir', nargs=1, help='Input Directory', required=False)
+parser.add_argument('-j', '--json_file', nargs=1, help='Input JSON File', required=False)
 args = parser.parse_args()
 
 input_dir = None
+json_file = None
 
 if args.input_dir:
     input_dir = args.input_dir[0]
 
-lumi = utils.get_lumi_from_bril('~/tmp_json_1613859532.json', 'ynissan')
+if args.json_file:
+    json_file = args.json_file[0].strip()
+
+lumi = utils.get_lumi_from_bril('/tmp/tmp_json_1653484428.json', 'ynissan')
     #os.remove(tmpJsonFile)
-print "Luminosity=", lumi
+print("Luminosity=", lumi)
 exit(0)
 
-lumiSecs = LumiSectMap()
+if json_file is not None:
+    print("tmpJsonFile", json_file)
+    lumi = utils.get_lumi_from_bril(json_file, 'ynissan')
+    print("Luminosity=", lumi)
+else:
+    lumiSecs = LumiSectMap()
 
-data_files = glob(input_dir + "/*")
+    data_files = glob(input_dir + "/*")
     
-for f in data_files: 
-    print f
-    rootFile = TFile(f)
-    if rootFile.GetListOfKeys().Contains("lumiSecs"):
-        lumis = rootFile.Get('lumiSecs')
-        col = TList()
-        col.Add(lumis)
-        lumiSecs.Merge(col)
-    else:
-        print "Bad file", f
-        os.remove(f)
-    rootFile.Close()
+    for f in data_files: 
+        print(f)
+        rootFile = TFile(f)
+        if rootFile.GetListOfKeys().Contains("lumiSecs"):
+            lumis = rootFile.Get('lumiSecs')
+            col = TList()
+            col.Add(lumis)
+            lumiSecs.Merge(col)
+        else:
+            print("Bad file", f)
+            os.remove(f)
+        rootFile.Close()
 
-lumi = utils.calculateLumiFromLumiSecs(lumiSecs)
-print "Luminosity=", lumi
+    lumi = utils.calculateLumiFromLumiSecs(lumiSecs)
+    print("Luminosity=", lumi)

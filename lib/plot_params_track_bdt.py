@@ -7,9 +7,9 @@ from plot_params_base import *
 
 signals = [
               #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm0p86Chi20Chipm.root",
-              #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm1p92Chi20Chipm.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm1p92Chi20Chipm.root",
               #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm3p28Chi20Chipm.root",
-              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm9p73Chi20Chipm.root"
+              #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm9p73Chi20Chipm.root"
               ]
 
 signalNames = [
@@ -111,8 +111,8 @@ class track_bdt_electron(BaseParams):
 
     
     cuts = [
-        {"name":"none", "title": "None", "condition" : "(exclusiveTrack == 1 && MHT >= 220 &&  MET >= 200 && exTrack_invMass < 30 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour == \"Electrons\" )"},
-        {"name":"bdt", "title": "BDT > 0", "condition" : "(exclusiveTrack == 1 && MHT >= 220 &&  MET >= 200 && exTrack_invMass < 30 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour == \"Electrons\" &&  trackBDT > 0)"}
+        {"name":"none", "title": "None", "condition" : "(exclusiveTrack == 1 && MHT >= 220 &&  MET >= 200 && exTrack_invMass < 10 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour == \"Electrons\" )"},
+        {"name":"bdt", "title": "BDT > 0", "condition" : "(exclusiveTrack == 1 && MHT >= 220 &&  MET >= 200 && exTrack_invMass < 10 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour == \"Electrons\" &&  trackBDT > 0)"}
     ]
     #histograms_defs = []
     #histograms_defs.extend(common_histograms)
@@ -123,7 +123,7 @@ class track_bdt_electron(BaseParams):
 class track_bdt_muon(track_bdt_electron):
     #
     cuts = [
-        {"name":"none", "title": "None", "condition" : "(exclusiveTrack == 1 && MHT >= 220 &&  MET >= 200 && exTrack_invMass < 30 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour == \"Muons\" )"},
-        {"name":"BDT", "title": "BDT > 0", "condition" : "(exclusiveTrack == 1 && MHT >= 220 &&  MET >= 200 && exTrack_invMass < 30 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour == \"Muons\"  &&  trackBDT > 0)"}
+        {"name":"none", "title": "None", "condition" : "(exclusiveTrack == 1 && MHT >= 220 &&  MET >= 200 && exTrack_invMass < 10 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour == \"Muons\" )"},
+        {"name":"BDT", "title": "BDT > 0", "condition" : "(exclusiveTrack == 1 && MHT >= 220 &&  MET >= 200 && exTrack_invMass < 10 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour == \"Muons\"  &&  trackBDT > 0)"}
     ]
     histrograms_file = "/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools/analysis/scripts/track_bdt_muon.root"

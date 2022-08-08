@@ -62,10 +62,15 @@ universe = vanilla
 should_transfer_files = IF_NEEDED
 executable = /bin/bash
 notification = Never
+request_memory = 16 GB
 EOM
 
 for f in $INPUT_DIR/*; do
     filename=$(basename $f .root)
+    if [[ $filename == *"dm13p"* || $filename == *"dm12p"* || $filename == *"dm9p"* || $filename == *"dm7p"* || $filename == *"dm5p"* ]]; then
+        echo $filename contains large dm... Skipping...
+        continue
+    fi
     if [ -f $OUTPUT_DIR/single/${filename}_sig.root ] && [ -f $OUTPUT_DIR/single/${filename}_bg.root ]; then
         echo "$name exist. Skipping..."
         continue

@@ -36,7 +36,7 @@ parser.add_argument('-lep', '--lep', dest='lep', help='Single', action='store_tr
 parser.add_argument('-bt', '--bg_retag', dest='bg_retag', help='Background Retagging', action='store_true')
 args = parser.parse_args()
 
-bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/bg/skim_dilepton_signal_bdt/all/single"
+bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum"
 
 bgReTagging = {
     "tautau" : "tautau",
@@ -59,7 +59,14 @@ bgReTaggingOrder = {
     "n_body" : 6,
 }
 
-hist_def = { "obs" : "dilepBDT", "minX" : 0.1, "maxX" : 1, "bins" : 30, "cond" : str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * ((leptons[1].Pt() <= 3.5 || deltaR <= 0.3) && Mht >= 220 &&  Met >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1 && BTagsDeepMedium == 0 && vetoElectronsTightID == 0 && vetoMuonsPassJetIso == 0)" }
+#orig
+#hist_def = { "obs" : "dilepBDT", "minX" : 0.1, "maxX" : 1, "bins" : 30, "cond" : str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * ((leptons[1].Pt() <= 3.5 || deltaR <= 0.3) && Mht >= 220 &&  Met >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1 && BTagsDeepMedium == 0 && vetoElectronsTightID == 0 && vetoMuonsPassJetIso == 0)" }
+
+#{"name":"none", "title": "None", "condition" : "(twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Muons\" && invMass < 12 && BTagsDeepMedium == 0 && vetoElectrons == 0 && vetoMuons == 0)", "baseline" : "sameSign == 0", "sc" : "sameSign == 1"},
+#muons
+#hist_def = { "obs" : "dilepBDT", "minX" : 0.1, "maxX" : 1, "bins" : 30, "cond" : str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * ((leptons[1].Pt() <= 3.5 || deltaR <= 0.3) && twoLeptons == 1 && @leptons.size() == 2 && sameSign == 0 && MHT >= 220 &&  MET >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1 && BTagsDeepMedium == 0 && vetoElectrons == 0 && vetoMuons == 0 && leptonFlavour == \"Electrons\")" }
+#electrons
+hist_def = { "obs" : "dilepBDT", "minX" : 0.1, "maxX" : 1, "bins" : 30, "cond" : str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * (twoLeptons == 1 && @leptons.size() == 2 && sameSign == 0 && MHT >= 220 &&  MET >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1 && BTagsDeepMedium == 0 && vetoElectrons == 0 && vetoMuons == 0 && leptonFlavour == \"Electrons\")" }
 #hist_def = { "obs" : "dilepBDT", "minX" : -1, "maxX" : 1, "bins" : 60, "cond" : str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * ((leptons[1].Pt() <= 3.5 || deltaR <= 0.3) && (invMass < 10 && invMass > 5) && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81))" }
 ignore_bg_files = ["TT_TuneCUETP8M2T4_13TeV-powheg-pythia8.root", "TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root"]
 

@@ -42,7 +42,7 @@ for fileName in fileList:
     fileBasename = None
     cs = 1
     if bg:
-        fileBasename = os.path.basename(fileName).split(".root")[0]#.split("RunIISummer16MiniAODv3.")[1].split("_TuneCUETP8M1")[0]
+        fileBasename = "_".join(os.path.basename(fileName).split(".root")[0].split("_")[0:3])#.split("RunIISummer16MiniAODv3.")[1].split("_TuneCUETP8M1")[0]
         cs = utils.dyCrossSections.get(fileBasename)
     else:
         fileBasename = (os.path.basename(fileName).split("Chi20Chipm")[0]).replace("p", ".")

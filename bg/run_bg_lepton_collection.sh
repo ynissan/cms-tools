@@ -47,19 +47,23 @@ should_transfer_files = IF_NEEDED
 executable = /bin/bash
 notification = Never
 priority = 0
+request_memory = 16 GB
 EOM
+
+PREFIX="Summer16"
+PREFIX="Fall17"
 
 for type in ${BG_TYPES[@]}; do 
     echo "Checking type $type"
     if [ "$type" = "DYJetsToLL" ]; then
-        files=("${files[@]}" ${LC_INTPUT}/Summer16*.${type}_M-50_*)
-        files=("${files[@]}" ${LC_INTPUT}/Summer16*.DYJetsToLL_M-5to50*)
+        files=("${files[@]}" ${LC_INTPUT}/${PREFIX}*.${type}_M-50_*)
+        files=("${files[@]}" ${LC_INTPUT}/${PREFIX}*.DYJetsToLL_M-5to50*)
     elif [ "$type" = "ZJetsToNuNu" ]; then
-        files=("${files[@]}" ${LC_INTPUT}/Summer16*.${type}_HT*)
+        files=("${files[@]}" ${LC_INTPUT}/${PREFIX}*.${type}_HT*)
     elif [ "$type" = "TTJets" ]; then
-        files=("${files[@]}" ${LC_INTPUT}/Summer16*.${type}_TuneCUETP8M1*)
+        files=("${files[@]}" ${LC_INTPUT}/${PREFIX}*.${type}_TuneCUETP8M1*)
     else
-        files=("${files[@]}" ${LC_INTPUT}/Summer16*.${type}_*)
+        files=("${files[@]}" ${LC_INTPUT}/${PREFIX}*.${type}_*)
     fi
 done
 
@@ -76,7 +80,7 @@ file_limit=0
 i=0
 count=0
 input_files=""
-files_per_job=20
+files_per_job=1
 index=0
 name=""
 

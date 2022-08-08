@@ -28,9 +28,9 @@ args = parser.parse_args()
 print args
 
 input_files = None
-if len(args.input_file) < 2:
-    print "Need at least 2 file"
-    exit(0)
+#if len(args.input_file) < 2:
+#    print "Need at least 2 file"
+#    exit(0)
 input_files = args.input_file
 ######## END OF CMDLINE ARGUMENTS ########
 

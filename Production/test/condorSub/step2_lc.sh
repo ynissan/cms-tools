@@ -8,6 +8,11 @@ if [[ $vomsident = *"cmsgli"* ]]; then
     exit 60322
 fi
 
+echo "========================="
+echo printing os information:
+uname -a
+echo "========================="
+
 echo "Args before getopts: $@"
 
 export JOBNAME=""
@@ -76,11 +81,13 @@ export CMDSTR="gfal-copy"
 export GFLAG=""
 
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CMSSW_BASE/src/cms-tools/lib/classes
+
 cd $CMSSW_BASE/src/cms-tools/lib/classes
 rm LeptonCollectionMapDict.cxx
 rootcling -f LeptonCollectionMapDict.cxx -c LeptonCollectionMap.h LinkDef.h
 rm LeptonCollectionMap_C.so
 echo .L LeptonCollectionMap.C+ | root.exe -b
+
 cd $CMSSW_BASE/src/cms-tools/analysis/scripts/
 
 if [[ ( "$CMSSITE" == "T1_US_FNAL" && "$USER" == "cmsgli" && "${OUTDIR}" == *"root://cmseos.fnal.gov/"* ) ]]; then
@@ -111,7 +118,7 @@ for f in ${ARGS[*]}; do
     if [[ $? -ne 0 ]]; then
         echo "Deleting file because gfal-copy failed"
         echo gfal-rm ${OUTDIR}/$f
-        gfal-rm ${OUTDIR}/$f
+        (eval `scram unsetenv -sh`; gfal-rm ${OUTDIR}/$f)
     fi
     rm $f
     rm -rf tmp

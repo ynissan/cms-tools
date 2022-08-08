@@ -6,7 +6,7 @@ shopt -s nullglob
 shopt -s expand_aliases
 
 # CMS ENV
-cd ~/CMSSW_10_1_0/src
+cd ~/CMSSW_11_3_1/src
 
 export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
 source $VO_CMS_SW_DIR/cmsset_default.sh
@@ -55,8 +55,18 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --selection)
+        SELECTION=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         --master)
         MASTER=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
+        --jpsi_single_electron)
+        JPSI_SINGLE_ELECTRON=true
         POSITIONAL+=("$1")
         shift
         ;;
@@ -77,6 +87,9 @@ if [ -n "$TWO_LEPTONS" ]; then
     fi
 elif [ -n "$DY" ]; then
     OUTPUT_DIR=$DY_SKIM_DATA_OUTPUT_DIR
+    if [ -n "$SELECTION" ]; then
+        SCRIPT_PATH=$SELECTION_SKIMMER_PATH
+    fi
 elif [ -n "$JPSI_MUONS" ]; then
     OUTPUT_DIR=$SKIM_DATA_JPSI_MUONS_OUTPUT_DIR
 elif [ -n "$MINI" ]; then
@@ -85,6 +98,9 @@ elif [ -n "$MINI" ]; then
 elif [ -n "$MASTER" ]; then
     OUTPUT_DIR=$SKIM_DATA_MASTER_OUTPUT_DIR
     SCRIPT_PATH=$MASTER_SKIMMER_PATH
+elif [ -n "$JPSI_SINGLE_ELECTRON" ]; then
+    OUTPUT_DIR=$SKIM_DATA_JPSI_SINGLE_ELECTRON_OUTPUT_DIR
+    SCRIPT_PATH=$JPSI_SKIMMER_PATH
 else
     OUTPUT_DIR=$SKIM_DATA_OUTPUT_DIR
 fi

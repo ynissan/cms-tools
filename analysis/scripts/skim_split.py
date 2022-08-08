@@ -49,7 +49,7 @@ tree = chain.CloneTree(0)
 nentries = chain.GetEntriesFast()
 print 'Analysing', nentries, "entries"
 
-max_per_file = 40000
+max_per_file = 15000
 filenum = 1
 output_file = os.path.splitext(input_file)[0]
 

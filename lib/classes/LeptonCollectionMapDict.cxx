@@ -1,6 +1,7 @@
 // Do NOT change. Changes will be lost next time file is generated
 
 #define R__DICTIONARY_FILENAME LeptonCollectionMapDict
+#define R__NO_DEPRECATION
 
 /*******************************************************************/
 #include <stddef.h>
@@ -33,7 +34,7 @@
 
 #include "TDataMember.h"
 
-// Since CINT ignores the std namespace, we need to do so in this file.
+// The generated code does not explicitly qualifies STL entities
 namespace std {} using namespace std;
 
 // Header files passed as explicit arguments
@@ -206,7 +207,7 @@ TClass *LeptonCollection::Dictionary()
 //______________________________________________________________________________
 TClass *LeptonCollection::Class()
 {
-   if (!fgIsA.load()) { R__LOCKGUARD2(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::LeptonCollection*)0x0)->GetClass(); }
+   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::LeptonCollection*)0x0)->GetClass(); }
    return fgIsA;
 }
 
@@ -241,7 +242,7 @@ TClass *LeptonCollectionArrayHasher::Dictionary()
 //______________________________________________________________________________
 TClass *LeptonCollectionArrayHasher::Class()
 {
-   if (!fgIsA.load()) { R__LOCKGUARD2(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::LeptonCollectionArrayHasher*)0x0)->GetClass(); }
+   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::LeptonCollectionArrayHasher*)0x0)->GetClass(); }
    return fgIsA;
 }
 
@@ -276,7 +277,7 @@ TClass *LeptonCollectionMap::Dictionary()
 //______________________________________________________________________________
 TClass *LeptonCollectionMap::Class()
 {
-   if (!fgIsA.load()) { R__LOCKGUARD2(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::LeptonCollectionMap*)0x0)->GetClass(); }
+   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::LeptonCollectionMap*)0x0)->GetClass(); }
    return fgIsA;
 }
 
@@ -311,7 +312,7 @@ TClass *LeptonCollectionFilesMap::Dictionary()
 //______________________________________________________________________________
 TClass *LeptonCollectionFilesMap::Class()
 {
-   if (!fgIsA.load()) { R__LOCKGUARD2(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::LeptonCollectionFilesMap*)0x0)->GetClass(); }
+   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::LeptonCollectionFilesMap*)0x0)->GetClass(); }
    return fgIsA;
 }
 
@@ -477,7 +478,7 @@ namespace ROOT {
       vector<int> *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(vector<int>));
       static ::ROOT::TGenericClassInfo 
-         instance("vector<int>", -2, "vector", 214,
+         instance("vector<int>", -2, "vector", 386,
                   typeid(vector<int>), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &vectorlEintgR_Dictionary, isa_proxy, 0,
                   sizeof(vector<int>) );
@@ -487,6 +488,8 @@ namespace ROOT {
       instance.SetDeleteArray(&deleteArray_vectorlEintgR);
       instance.SetDestructor(&destruct_vectorlEintgR);
       instance.AdoptCollectionProxyInfo(TCollectionProxyInfo::Generate(TCollectionProxyInfo::Pushback< vector<int> >()));
+
+      ::ROOT::AddClassAlternate("vector<int>","std::vector<int, std::allocator<int> >");
       return &instance;
    }
    // Static variable to force the class initialization
@@ -540,7 +543,7 @@ namespace ROOT {
       vector<double> *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(vector<double>));
       static ::ROOT::TGenericClassInfo 
-         instance("vector<double>", -2, "vector", 214,
+         instance("vector<double>", -2, "vector", 386,
                   typeid(vector<double>), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &vectorlEdoublegR_Dictionary, isa_proxy, 0,
                   sizeof(vector<double>) );
@@ -550,6 +553,8 @@ namespace ROOT {
       instance.SetDeleteArray(&deleteArray_vectorlEdoublegR);
       instance.SetDestructor(&destruct_vectorlEdoublegR);
       instance.AdoptCollectionProxyInfo(TCollectionProxyInfo::Generate(TCollectionProxyInfo::Pushback< vector<double> >()));
+
+      ::ROOT::AddClassAlternate("vector<double>","std::vector<double, std::allocator<double> >");
       return &instance;
    }
    // Static variable to force the class initialization
@@ -603,7 +608,7 @@ namespace ROOT {
       vector<bool> *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(vector<bool>));
       static ::ROOT::TGenericClassInfo 
-         instance("vector<bool>", -2, "vector", 541,
+         instance("vector<bool>", -2, "vector", 592,
                   typeid(vector<bool>), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &vectorlEboolgR_Dictionary, isa_proxy, 0,
                   sizeof(vector<bool>) );
@@ -613,6 +618,8 @@ namespace ROOT {
       instance.SetDeleteArray(&deleteArray_vectorlEboolgR);
       instance.SetDestructor(&destruct_vectorlEboolgR);
       instance.AdoptCollectionProxyInfo(TCollectionProxyInfo::Generate(TCollectionProxyInfo::Pushback< vector<bool> >()));
+
+      ::ROOT::AddClassAlternate("vector<bool>","std::vector<bool, std::allocator<bool> >");
       return &instance;
    }
    // Static variable to force the class initialization
@@ -666,7 +673,7 @@ namespace ROOT {
       vector<TLorentzVector> *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(vector<TLorentzVector>));
       static ::ROOT::TGenericClassInfo 
-         instance("vector<TLorentzVector>", -2, "vector", 214,
+         instance("vector<TLorentzVector>", -2, "vector", 386,
                   typeid(vector<TLorentzVector>), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &vectorlETLorentzVectorgR_Dictionary, isa_proxy, 0,
                   sizeof(vector<TLorentzVector>) );
@@ -676,6 +683,8 @@ namespace ROOT {
       instance.SetDeleteArray(&deleteArray_vectorlETLorentzVectorgR);
       instance.SetDestructor(&destruct_vectorlETLorentzVectorgR);
       instance.AdoptCollectionProxyInfo(TCollectionProxyInfo::Generate(TCollectionProxyInfo::Pushback< vector<TLorentzVector> >()));
+
+      ::ROOT::AddClassAlternate("vector<TLorentzVector>","std::vector<TLorentzVector, std::allocator<TLorentzVector> >");
       return &instance;
    }
    // Static variable to force the class initialization
@@ -729,7 +738,7 @@ namespace ROOT {
       unordered_map<array<long,3>,string,LeptonCollectionArrayHasher> *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(unordered_map<array<long,3>,string,LeptonCollectionArrayHasher>));
       static ::ROOT::TGenericClassInfo 
-         instance("unordered_map<array<long,3>,string,LeptonCollectionArrayHasher>", -2, "unordered_map", 98,
+         instance("unordered_map<array<long,3>,string,LeptonCollectionArrayHasher>", -2, "unordered_map", 102,
                   typeid(unordered_map<array<long,3>,string,LeptonCollectionArrayHasher>), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &unordered_maplEarraylElongcO3gRcOstringcOLeptonCollectionArrayHashergR_Dictionary, isa_proxy, 0,
                   sizeof(unordered_map<array<long,3>,string,LeptonCollectionArrayHasher>) );
@@ -739,6 +748,8 @@ namespace ROOT {
       instance.SetDeleteArray(&deleteArray_unordered_maplEarraylElongcO3gRcOstringcOLeptonCollectionArrayHashergR);
       instance.SetDestructor(&destruct_unordered_maplEarraylElongcO3gRcOstringcOLeptonCollectionArrayHashergR);
       instance.AdoptCollectionProxyInfo(TCollectionProxyInfo::Generate(TCollectionProxyInfo::MapInsert< unordered_map<array<long,3>,string,LeptonCollectionArrayHasher> >()));
+
+      ::ROOT::AddClassAlternate("unordered_map<array<long,3>,string,LeptonCollectionArrayHasher>","std::unordered_map<std::array<long, 3ul>, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, LeptonCollectionArrayHasher, std::equal_to<std::array<long, 3ul> >, std::allocator<std::pair<std::array<long, 3ul> const, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > >");
       return &instance;
    }
    // Static variable to force the class initialization
@@ -792,7 +803,7 @@ namespace ROOT {
       unordered_map<array<long,3>,LeptonCollection,LeptonCollectionArrayHasher> *ptr = 0;
       static ::TVirtualIsAProxy* isa_proxy = new ::TIsAProxy(typeid(unordered_map<array<long,3>,LeptonCollection,LeptonCollectionArrayHasher>));
       static ::ROOT::TGenericClassInfo 
-         instance("unordered_map<array<long,3>,LeptonCollection,LeptonCollectionArrayHasher>", -2, "unordered_map", 98,
+         instance("unordered_map<array<long,3>,LeptonCollection,LeptonCollectionArrayHasher>", -2, "unordered_map", 102,
                   typeid(unordered_map<array<long,3>,LeptonCollection,LeptonCollectionArrayHasher>), ::ROOT::Internal::DefineBehavior(ptr, ptr),
                   &unordered_maplEarraylElongcO3gRcOLeptonCollectioncOLeptonCollectionArrayHashergR_Dictionary, isa_proxy, 4,
                   sizeof(unordered_map<array<long,3>,LeptonCollection,LeptonCollectionArrayHasher>) );
@@ -802,6 +813,8 @@ namespace ROOT {
       instance.SetDeleteArray(&deleteArray_unordered_maplEarraylElongcO3gRcOLeptonCollectioncOLeptonCollectionArrayHashergR);
       instance.SetDestructor(&destruct_unordered_maplEarraylElongcO3gRcOLeptonCollectioncOLeptonCollectionArrayHashergR);
       instance.AdoptCollectionProxyInfo(TCollectionProxyInfo::Generate(TCollectionProxyInfo::MapInsert< unordered_map<array<long,3>,LeptonCollection,LeptonCollectionArrayHasher> >()));
+
+      ::ROOT::AddClassAlternate("unordered_map<array<long,3>,LeptonCollection,LeptonCollectionArrayHasher>","std::unordered_map<std::array<long, 3ul>, LeptonCollection, LeptonCollectionArrayHasher, std::equal_to<std::array<long, 3ul> >, std::allocator<std::pair<std::array<long, 3ul> const, LeptonCollection> > >");
       return &instance;
    }
    // Static variable to force the class initialization
@@ -847,8 +860,8 @@ namespace {
 0
     };
     static const char* includePaths[] = {
-"/cvmfs/cms.cern.ch/slc6_amd64_gcc630/lcg/root/6.10.09-omkpbe4/include",
-"/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools/lib/classes/",
+"/cvmfs/cms.cern.ch/slc7_amd64_gcc900/lcg/root/6.22.08-ljfedo/include/",
+"/afs/desy.de/user/n/nissanuv/CMSSW_11_3_1/src/cms-tools/lib/classes/",
 0
     };
     static const char* fwdDeclCode = R"DICTFWDDCLS(
@@ -856,7 +869,7 @@ namespace {
 #pragma clang diagnostic ignored "-Wkeyword-compat"
 #pragma clang diagnostic ignored "-Wignored-attributes"
 #pragma clang diagnostic ignored "-Wreturn-type-c-linkage"
-extern int __Cling_Autoloading_Map;
+extern int __Cling_AutoLoading_Map;
 namespace std{template <typename _Tp, std::size_t _Nm> struct __attribute__((annotate("$clingAutoload$array")))  __attribute__((annotate("$clingAutoload$LeptonCollectionMap.h")))  array;
 }
 class __attribute__((annotate("$clingAutoload$LeptonCollectionMap.h")))  LeptonCollection;
@@ -873,27 +886,25 @@ class __attribute__((annotate("$clingAutoload$LeptonCollectionMap.h")))  LeptonC
     static const char* payloadCode = R"DICTPAYLOAD(
 #line 1 "LeptonCollectionMapDict dictionary payload"
 
-#ifndef G__VECTOR_HAS_CLASS_ITERATOR
-  #define G__VECTOR_HAS_CLASS_ITERATOR 1
-#endif
 
 #define _BACKWARD_BACKWARD_WARNING_H
+// Inline headers
 #include "LeptonCollectionMap.h"
 
 #undef  _BACKWARD_BACKWARD_WARNING_H
 )DICTPAYLOAD";
-    static const char* classesHeaders[]={
+    static const char* classesHeaders[] = {
 "LeptonCollection", payloadCode, "@",
 "LeptonCollectionArrayHasher", payloadCode, "@",
 "LeptonCollectionFilesMap", payloadCode, "@",
 "LeptonCollectionMap", payloadCode, "@",
-nullptr};
-
+nullptr
+};
     static bool isInitialized = false;
     if (!isInitialized) {
       TROOT::RegisterModule("LeptonCollectionMapDict",
         headers, includePaths, payloadCode, fwdDeclCode,
-        TriggerDictionaryInitialization_LeptonCollectionMapDict_Impl, {}, classesHeaders);
+        TriggerDictionaryInitialization_LeptonCollectionMapDict_Impl, {}, classesHeaders, /*hasCxxModule*/false);
       isInitialized = true;
     }
   }

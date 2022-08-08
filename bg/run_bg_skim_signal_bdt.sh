@@ -80,7 +80,14 @@ universe = vanilla
 should_transfer_files = IF_NEEDED
 executable = /bin/bash
 notification = Never
+request_memory = 16 GB
++RequestRuntime = 86400
 EOM
+
+#FILES=(WJetsToLNu_HT-600To800_TuneCUETP8M1_11.root TTJets_SingleLeptFromT_TuneCUETP8M1_16.root ST_t-channel_top_3.root TTJets_SingleLeptFromTbar_TuneCUETP8M1_8.root)
+#FILES=(TTJets_DiLept_TuneCUETP8M1_10.root TTJets_DiLept_TuneCUETP8M1_11.root TTJets_DiLept_TuneCUETP8M1_13.root TTJets_DiLept_TuneCUETP8M1_15.root TTJets_DiLept_TuneCUETP8M1_1.root TTJets_DiLept_TuneCUETP8M1_20.root TTJets_DiLept_TuneCUETP8M1_25.root TTJets_DiLept_TuneCUETP8M1_2.root TTJets_DiLept_TuneCUETP8M1_55.root TTJets_DiLept_TuneCUETP8M1_61.root TTJets_DiLept_TuneCUETP8M1_65.root TTJets_SingleLeptFromT_TuneCUETP8M1_10.root TTJets_SingleLeptFromT_TuneCUETP8M1_116.root TTJets_SingleLeptFromT_TuneCUETP8M1_18.root TTJets_SingleLeptFromT_TuneCUETP8M1_6.root TTJets_SingleLeptFromT_TuneCUETP8M1_76.root TTJets_SingleLeptFromT_TuneCUETP8M1_7.root TTJets_SingleLeptFromTbar_TuneCUETP8M1_105.root TTJets_SingleLeptFromTbar_TuneCUETP8M1_112.root TTJets_SingleLeptFromTbar_TuneCUETP8M1_113.root TTJets_SingleLeptFromTbar_TuneCUETP8M1_117.root TTJets_SingleLeptFromTbar_TuneCUETP8M1_118.root TTJets_SingleLeptFromTbar_TuneCUETP8M1_123.root TTJets_SingleLeptFromTbar_TuneCUETP8M1_30.root TTJets_SingleLeptFromTbar_TuneCUETP8M1_38.root TTJets_SingleLeptFromTbar_TuneCUETP8M1_4.root TTJets_SingleLeptFromTbar_TuneCUETP8M1_58.root TTJets_SingleLeptFromTbar_TuneCUETP8M1_63.root TTJets_SingleLeptFromTbar_TuneCUETP8M1_66.root TTJets_SingleLeptFromTbar_TuneCUETP8M1_74.root TTJets_SingleLeptFromTbar_TuneCUETP8M1_96.root WJetsToLNu_HT-200To400_TuneCUETP8M1_28.root WJetsToLNu_HT-200To400_TuneCUETP8M1_32.root WJetsToLNu_HT-200To400_TuneCUETP8M1_56.root WJetsToLNu_HT-200To400_TuneCUETP8M1_7.root WJetsToLNu_HT-200To400_TuneCUETP8M1_8.root WJetsToLNu_HT-200To400_TuneCUETP8M1_9.root WJetsToLNu_HT-400To600_TuneCUETP8M1_13.root WJetsToLNu_HT-400To600_TuneCUETP8M1_17.root WJetsToLNu_HT-400To600_TuneCUETP8M1_21.root WJetsToLNu_HT-400To600_TuneCUETP8M1_25.root WJetsToLNu_HT-400To600_TuneCUETP8M1_26.root WJetsToLNu_HT-400To600_TuneCUETP8M1_2.root WJetsToLNu_HT-400To600_TuneCUETP8M1_9.root WJetsToLNu_HT-600To800_TuneCUETP8M1_14.root WJetsToLNu_HT-600To800_TuneCUETP8M1_15.root WJetsToLNu_HT-600To800_TuneCUETP8M1_16.root WJetsToLNu_HT-600To800_TuneCUETP8M1_1.root WJetsToLNu_HT-600To800_TuneCUETP8M1_21.root WJetsToLNu_HT-600To800_TuneCUETP8M1_22.root WJetsToLNu_HT-600To800_TuneCUETP8M1_23.root WJetsToLNu_HT-600To800_TuneCUETP8M1_24.root WJetsToLNu_HT-600To800_TuneCUETP8M1_25.root WJetsToLNu_HT-600To800_TuneCUETP8M1_26.root WJetsToLNu_HT-600To800_TuneCUETP8M1_27.root WJetsToLNu_HT-600To800_TuneCUETP8M1_28.root WJetsToLNu_HT-600To800_TuneCUETP8M1_29.root WJetsToLNu_HT-600To800_TuneCUETP8M1_30.root WJetsToLNu_HT-600To800_TuneCUETP8M1_31.root WJetsToLNu_HT-600To800_TuneCUETP8M1_32.root WJetsToLNu_HT-600To800_TuneCUETP8M1_33.root WJetsToLNu_HT-600To800_TuneCUETP8M1_34.root WJetsToLNu_HT-600To800_TuneCUETP8M1_35.root WJetsToLNu_HT-600To800_TuneCUETP8M1_36.root WJetsToLNu_HT-600To800_TuneCUETP8M1_37.root WJetsToLNu_HT-600To800_TuneCUETP8M1_39.root WJetsToLNu_HT-600To800_TuneCUETP8M1_3.root WJetsToLNu_HT-600To800_TuneCUETP8M1_41.root WJetsToLNu_HT-600To800_TuneCUETP8M1_43.root WJetsToLNu_HT-600To800_TuneCUETP8M1_45.root WJetsToLNu_HT-600To800_TuneCUETP8M1_46.root WJetsToLNu_HT-600To800_TuneCUETP8M1_47.root WJetsToLNu_HT-600To800_TuneCUETP8M1_50.root WJetsToLNu_HT-600To800_TuneCUETP8M1_51.root WJetsToLNu_HT-600To800_TuneCUETP8M1_52.root WJetsToLNu_HT-600To800_TuneCUETP8M1_53.root WJetsToLNu_HT-600To800_TuneCUETP8M1_54.root WJetsToLNu_HT-600To800_TuneCUETP8M1_55.root WJetsToLNu_HT-600To800_TuneCUETP8M1_56.root WJetsToLNu_HT-600To800_TuneCUETP8M1_57.root WJetsToLNu_HT-800To1200_TuneCUETP8M1_11.root WJetsToLNu_HT-800To1200_TuneCUETP8M1_12.root WJetsToLNu_HT-800To1200_TuneCUETP8M1_14.root WJetsToLNu_HT-800To1200_TuneCUETP8M1_15.root WJetsToLNu_HT-800To1200_TuneCUETP8M1_16.root WJetsToLNu_HT-800To1200_TuneCUETP8M1_17.root WJetsToLNu_HT-800To1200_TuneCUETP8M1_18.root WJetsToLNu_HT-800To1200_TuneCUETP8M1_19.root WJetsToLNu_HT-800To1200_TuneCUETP8M1_1.root WJetsToLNu_HT-800To1200_TuneCUETP8M1_23.root WJetsToLNu_HT-800To1200_TuneCUETP8M1_24.root WJetsToLNu_HT-800To1200_TuneCUETP8M1_25.root WJetsToLNu_HT-800To1200_TuneCUETP8M1_3.root ZJetsToNuNu_HT-400To600_13TeV-madgraph_9.root)
+FILES=$INPUT_DIR/sum/type_sum/*
+
 
 for sim in $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
     filename=$(basename $sim .root)
@@ -104,7 +111,10 @@ for sim in $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
 
     #for bg_file in $SKIM_OUTPUT_DIR/sum/type_sum/*ZJetsToNuNu_HT-100To200*; do
     #for bg_file in $SKIM_OUTPUT_DIR/sum/type_sum/WW_TuneCUETP8M1*; do
-    for bg_file in $INPUT_DIR/sum/type_sum/*; do
+    for bg_file_name in ${FILES[@]}; do
+    #for bg_file in $INPUT_DIR/sum/type_sum/*; do
+        #bg_file=$INPUT_DIR/sum/type_sum/$bg_file_name
+        bg_file=$bg_file_name
         echo "Will run:"
         bg_file_name=$(basename $bg_file .root)
         out_file=${OUTPUT_DIR}/$filename/single/${bg_file_name}.root

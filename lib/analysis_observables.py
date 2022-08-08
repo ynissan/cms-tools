@@ -4,9 +4,12 @@ commonFlatObs = {
     "RunNum" : "int",
     "LumiBlockNum" : "int",
     "EvtNum" : "float",
+    "MT2" : "float",
+}
+
+commonRecalcFlatObs = {
     "MET" : "float",
     "METPhi" : "float",
-    "MT2" : "float",
     "HT" : "float",
     "MHT" : "float",
     "MHTPhi" : "float",
@@ -21,6 +24,8 @@ bgFlatObs = {
 }
 
 filtersObs = {
+    "JetID" : "bool",
+    "NVtx" : "int",
     "globalSuperTightHalo2016Filter" : "int",
     "globalTightHalo2016Filter" : "int",
     "HBHENoiseFilter" : "int",    
@@ -97,7 +102,8 @@ jetsObs = {
     "Jets_multiplicity" : "int",
     "Jets_electronMultiplicity" : "int",
     "Jets_partonFlavor" : "int",
-    "Jets_qgLikelihood" : "double"
+    "Jets_qgLikelihood" : "double",
+    "Jets_neutralEmEnergyFraction" : "double"
 }
 
 jetsCalcObs = {
@@ -233,6 +239,14 @@ muonsObs = {
     "Muons_MTW" : "double",
 }
 
+dyMuonsFlatObs = {
+    "DYMuonsInvMass" : "float"
+}
+
+dyMuonsClassObs = {
+    "DYMuonsSum" : "TLorentzVector",
+}
+
 origMuonsObs = {
     "Muons_orig" : "TLorentzVector",
 }
@@ -274,8 +288,11 @@ commonObservablesDTypesList = {
     "deltaR" : "float",
     "pt3" : "float",
     "mtautau" : "float",
+    "nmtautau" : "float",
     "mt1" : "float",
     "mt2" : "float",
+    "mth1" : "float",
+    "mth2" : "float",
     "deltaEtaLeadingJetDilepton" : "float",
     "deltaPhiLeadingJetDilepton" : "float",
     "dilepHt" : "float",
@@ -289,8 +306,13 @@ extraObservablesDTypesList = {
 
 dileptonObservablesDTypesList = {
     "twoLeptons" : "bool",
+    
     "deltaPhiMetLepton1" : "float",
     "deltaPhiMetLepton2" : "float",
+    
+    "deltaPhiMhtLepton1" : "float",
+    "deltaPhiMhtLepton2" : "float",
+    
     "tautau" : "bool",
     "rr" : "bool",
     "rf" : "bool",
@@ -307,7 +329,9 @@ dileptonObservablesDTypesList = {
     "j_psi" : "bool",
     "upsilon_1" : "bool",
     "upsilon_2" : "bool",
-    "NSelectionLeptons" : "int"
+    "NSelectionLeptons" : "int",
+    "isoCr" : "int",
+    "isoCrMinDr" : "float"
 }
 
 commonPostBdtObservablesDTypesList = {
@@ -333,10 +357,13 @@ exclusiveTrackObservablesDTypesList = {
     "mtt" : "float",
     "mtl" : "float",
     "NTracks" : "int",
-    "deltaRMetTrack" : "float",
-    "deltaRMetLepton" : "float",
+    
     "deltaPhiMetTrack" : "float",
     "deltaPhiMetLepton" : "float",
+    
+    "deltaPhiMhtTrack" : "float",
+    "deltaPhiMhtLepton" : "float",
+    
     "trackBDT" : "float",
     "secondTrackBDT" : "float"
 }
@@ -347,4 +374,14 @@ exclusiveTrackObservablesClassList = {
     "secondTrack" : "TLorentzVector",
     "l1" : "TLorentzVector",
     "l2" : "TLorentzVector",
+}
+
+dileptonBDTeventObservables = {
+    'HT' : 'F',
+    'MinDeltaPhiMhtJets' :'F',
+    'MHT' : 'F',
+    'LeadingJetPt' : 'F',
+    # it's not in absolute sign because the lepton is not either 
+    'LeadingJet.Eta()' : 'F',
+    'NJets' : 'I',
 }
