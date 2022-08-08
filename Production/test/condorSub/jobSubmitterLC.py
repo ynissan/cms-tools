@@ -21,7 +21,7 @@ class jobSubmitterLC(jobSubmitter):
         parser.add_option("-i", "--input", dest="input", default=slimmedProductionPath, help="input path to directory (default = %default)")
         parser.add_option("-d", "--dicts", dest="dicts", type="string", action="callback", callback=list_callback, default=None,
             help="comma-separated list of input sample names (default = %default)")
-        parser.add_option("-file_list", "--file_list", dest="file_list", type="string", action="callback", callback=list_callback, default=None,
+        parser.add_option("-F", "--fileList", dest="fileList", type="string", action="callback", callback=list_callback, default=None,
             help="comma-separated list of input files (default = %default)")
     
     def checkExtraOptions(self,options,parser):
@@ -61,11 +61,11 @@ class jobSubmitterLC(jobSubmitter):
         job.name = "leptonCollection"
         self.generatePerJob(job)
         print "Wanted dicts", self.dicts
-        print "Wanted files", self.file_list
+        print "Wanted files", self.fileList
         self.timenow = int(time.time())
         files = []
         nFiles = 0
-        if self.file_list is None or len(self.file_list) == 0:
+        if self.fileList is None or len(self.fileList) == 0:
             print "Getting files in SlimmedProduction...", self.input
             status, out = commands.getstatusoutput('eval `scram unsetenv -sh`; gfal-ls ' + self.input)
             #out = "Run2016H-17Jul2018-v1.SingleElectron_FCB308E4-E88A-E811-93CB-1866DA890A68.root"
@@ -118,7 +118,7 @@ class jobSubmitterLC(jobSubmitter):
                 if nFiles >= self.nFiles:
                     break
         else:
-            for file in self.file_list:
+            for file in self.fileList:
                 print "Adding file=" + file
                 files.append(file)
                 nFiles += 1
