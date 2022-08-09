@@ -112,9 +112,19 @@ for f in ${ARGS[*]}; do
         rm -rf tmp
         continue
     fi
+    echo Listing CMSSW_11_2_3
+    ls -l ~/CMSSW_11_2_3/src
+    echo ====================
+    cd ~/CMSSW_11_2_3/src
+    cmsenv
+    . /cvmfs/oasis.opensciencegrid.org/mis/osg-wn-client/current/el7-x86_64/setup.sh
+    export PYTHONHOME=/cvmfs/cms.cern.ch/slc7_amd64_gcc820/external/python/2.7.15/
+    . /cvmfs/grid.cern.ch/umd-c7ui-latest/etc/profile.d/setup-c7-ui-example.sh
+    cmsenv
+
     echo "Running ${CMDSTR} -n 1 tmp/$f ${OUTDIR}/"
-    (eval `scram unsetenv -sh`; ${CMDSTR} -f tmp/$f ${OUTDIR}/)
-    #${CMDSTR} -f tmp/$f ${OUTDIR}/
+    #(eval `scram unsetenv -sh`; ${CMDSTR} -f tmp/$f ${OUTDIR}/)
+    ${CMDSTR} -f tmp/$f ${OUTDIR}/
     if [[ $? -ne 0 ]]; then
         echo "Deleting file because gfal-copy failed"
         echo gfal-rm ${OUTDIR}/$f
