@@ -112,8 +112,10 @@ for f in ${ARGS[*]}; do
         rm -rf tmp
         continue
     fi
+    export SCRAM_ARCH=slc7_amd64_gcc900
     cmsrel CMSSW_11_2_3
     echo Listing CMSSW_11_2_3
+    
     ls -l ./CMSSW_11_2_3/src
     echo ====================
     cd ./CMSSW_11_2_3/src
