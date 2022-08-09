@@ -87,7 +87,7 @@ rm LeptonCollectionMapDict.cxx
 rootcling -f LeptonCollectionMapDict.cxx -c LeptonCollectionMap.h LinkDef.h
 rm LeptonCollectionMap_C.so
 echo .L LeptonCollectionMap.C+ | root.exe -b
-$SCRIPT_DIR="$CMSSW_BASE/src/cms-tools/analysis/scripts/"
+SCRIPT_DIR="$CMSSW_BASE/src/cms-tools/analysis/scripts/"
 cd $SCRIPT_DIR
 
 if [[ ( "$CMSSITE" == "T1_US_FNAL" && "$USER" == "cmsgli" && "${OUTDIR}" == *"root://cmseos.fnal.gov/"* ) ]]; then
@@ -99,6 +99,7 @@ fi
 
 for f in ${ARGS[*]}; do
     echo "Processing " $f
+    cd $SCRIPT_DIR
     echo "Running ${CMDSTR} -n 1 $INDIR/$f ."
     (eval `scram unsetenv -sh`; ${CMDSTR} -n 1 $INDIR/$f .)
     #${CMDSTR} -n 1 $INDIR/$f .
@@ -137,9 +138,9 @@ for f in ${ARGS[*]}; do
         rm $f
         rm -rf tmp
     )
-    cd $SCRIPT_DIR
-    cmsenv
-    . /cvmfs/oasis.opensciencegrid.org/mis/osg-wn-client/current/el7-x86_64/setup.sh
+    
+    #cmsenv
+   # . /cvmfs/oasis.opensciencegrid.org/mis/osg-wn-client/current/el7-x86_64/setup.sh
 done
 
 exit 0
