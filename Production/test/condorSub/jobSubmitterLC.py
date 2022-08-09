@@ -87,7 +87,7 @@ class jobSubmitterLC(jobSubmitter):
                 if self.dicts is not None and len(self.dicts) > 0:
                     shouldProcess = False
                     for dict in self.dicts:
-                        if dict in file and "Run2016" in file:
+                        if dict in file:
                             shouldProcess = True
                             break
                     if not shouldProcess:
