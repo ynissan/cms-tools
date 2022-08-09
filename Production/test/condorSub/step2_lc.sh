@@ -112,10 +112,11 @@ for f in ${ARGS[*]}; do
         rm -rf tmp
         continue
     fi
+    cmsrel CMSSW_11_2_3
     echo Listing CMSSW_11_2_3
-    ls -l ~/CMSSW_11_2_3/src
+    ls -l ./CMSSW_11_2_3/src
     echo ====================
-    cd ~/CMSSW_11_2_3/src
+    cd ./CMSSW_11_2_3/src
     cmsenv
     . /cvmfs/oasis.opensciencegrid.org/mis/osg-wn-client/current/el7-x86_64/setup.sh
     export PYTHONHOME=/cvmfs/cms.cern.ch/slc7_amd64_gcc820/external/python/2.7.15/
