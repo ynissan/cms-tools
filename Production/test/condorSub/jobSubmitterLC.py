@@ -28,7 +28,8 @@ class jobSubmitterLC(jobSubmitter):
         super(jobSubmitterLC,self).checkExtraOptions(options,parser)
         
         if len(options.output)==0:
-            options.output = "srm://dcache-se-cms.desy.de:8443//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection/"
+            #options.output = "srm://dcache-se-cms.desy.de:8443//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection/"
+            options.output = "xroot://dcache-cms-xrootd.desy.de//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection/"
             #options.output = "srm://dcache-se-cms.desy.de:8443//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/tmp/"
     
     def generateExtra(self,job):
