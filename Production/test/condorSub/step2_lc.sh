@@ -124,7 +124,7 @@ for f in ${ARGS[*]}; do
     export PYTHONHOME=/cvmfs/cms.cern.ch/slc7_amd64_gcc820/external/python/2.7.15/
     . /cvmfs/grid.cern.ch/umd-c7ui-latest/etc/profile.d/setup-c7-ui-example.sh
     cmsenv
-
+    cd ../../
     echo "Running ${CMDSTR} -n 1 tmp/$f ${OUTDIR}/"
     #(eval `scram unsetenv -sh`; ${CMDSTR} -f tmp/$f ${OUTDIR}/)
     ${CMDSTR} -f tmp/$f ${OUTDIR}/
