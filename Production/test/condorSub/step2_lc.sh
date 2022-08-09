@@ -87,8 +87,8 @@ rm LeptonCollectionMapDict.cxx
 rootcling -f LeptonCollectionMapDict.cxx -c LeptonCollectionMap.h LinkDef.h
 rm LeptonCollectionMap_C.so
 echo .L LeptonCollectionMap.C+ | root.exe -b
-
-cd $CMSSW_BASE/src/cms-tools/analysis/scripts/
+$SCRIPT_DIR="$CMSSW_BASE/src/cms-tools/analysis/scripts/"
+cd $SCRIPT_DIR
 
 if [[ ( "$CMSSITE" == "T1_US_FNAL" && "$USER" == "cmsgli" && "${OUTDIR}" == *"root://cmseos.fnal.gov/"* ) ]]; then
     export CMDSTR="gfal-copy"
@@ -135,6 +135,8 @@ for f in ${ARGS[*]}; do
     fi
     rm $f
     rm -rf tmp
+    cd $SCRIPT_DIR
+    cmsenv
 done
 
 exit 0
