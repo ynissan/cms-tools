@@ -36,8 +36,8 @@ class jobSubmitterLC(jobSubmitter):
         job.patterns.update([
             ("JOBNAME",job.name+"_$(Process)_$(Cluster)"),
             ("EXTRAINPUTS","input/args_"+job.name+"_$(Process).txt"),
-            #("EXTRAARGS","-j "+job.name+" -p $(Process) -o "+self.output + " -i " + "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/SlimmedProduction/"),
-            ("EXTRAARGS","-j "+job.name+" -p $(Process) -o "+self.output + " -i " + "xroot://dcache-cms-xrootd.desy.de//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/SlimmedProduction/"),
+            ("EXTRAARGS","-j "+job.name+" -p $(Process) -o "+self.output + " -i " + "srm://dcache-se-cms.desy.de/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/SlimmedProduction/"),
+            #("EXTRAARGS","-j "+job.name+" -p $(Process) -o "+self.output + " -i " + "xroot://dcache-cms-xrootd.desy.de//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/SlimmedProduction/"),
         ])
 #("EXTRAARGS","-j "+job.name+" -p $(Process) -o "+self.output + " -i " + "root://dcache-cms-xrootd.desy.de//pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/SlimmedProduction/"),
     
@@ -125,7 +125,7 @@ class jobSubmitterLC(jobSubmitter):
                 job.njobs += 1
                 job.nums.append(job.njobs-1)
                 self.generateSubmissionForFiles(job, files)
-        if len(files) > 0:
+        if len(files) > 0 and (self.fileList is None or len(self.fileList) == 0):
             print "---- REMAINING JOBS"
             print "Adding job..."
             job.njobs += 1
