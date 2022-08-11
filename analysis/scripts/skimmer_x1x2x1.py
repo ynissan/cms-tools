@@ -1054,14 +1054,14 @@ def main():
                             cuts = str(ptRange) + "Dr" + str(drCut)
                             print("***We don't have any JET?")
                             leptonsCorrJetVars[isoJets[lep]["obs"] + "_passCorrJetIso" + cuts].push_back(True)
-                            leptonsCorrJetVars[isoJets[lep]["obs"] + "_passCorrJetNoMultIso" + cuts].push_back(True)
+                            
                             leptonsCorrJetVars[isoJets[lep]["obs"] + "_passCorrJetD3Iso" + cuts].push_back(False)
                             leptonsCorrJetVars[isoJets[lep]["obs"] + "_passCorrJetNoMultD3Iso" + cuts].push_back(False)
                 else:
                     eval(leptonsVecName.lower() + "CalcObs")[leptonsVecName  +  "_correctedMinDeltaRJets"].push_back(min)
                     eval(leptonsVecName.lower() + "CalcObs")[leptonsVecName  +  "_correctedClosestJet"].push_back(minCan)
                     
-                    for lepIso in ["CorrJetIso"]:#, "CorrJetNoMultIso"]:
+                    for lepIso in ["CorrJetNoMultIso"]:#, "CorrJetNoMultIso"]:
                         d3Iso = "CorrJetD3Iso" if lepIso == "CorrJetIso" else "CorrJetNoMultD3Iso"
                         for ptRange in utils.leptonCorrJetIsoPtRange:
                         
@@ -1271,10 +1271,16 @@ def main():
                                 dileptonVars["pt3" + postfix][0] = analysis_tools.pt3(leptons[0].Pt(),leptons[0].Phi(),leptons[1].Pt(),leptons[1].Phi(),MET,METPhi)
                                 dileptonVars["mt1" + postfix][0] = analysis_tools.MT2(MET, METPhi, leptons[0])
                                 dileptonVars["mt2" + postfix][0] = analysis_tools.MT2(MET, METPhi, leptons[1])
-                                dileptonVars["mt3" + postfix][0] = analysis_tools.MT2(MET, METPhi, leptons[2])
+                                if leptonsIdx[2] == -1:
+                                    dileptonVars["mt3" + postfix][0] = -1
+                                else:
+                                    dileptonVars["mt3" + postfix][0] = analysis_tools.MT2(MET, METPhi, leptons[2])
                                 dileptonVars["mth1" + postfix][0] = analysis_tools.MT2(MHT, MHTPhi, leptons[0])
                                 dileptonVars["mth2" + postfix][0] = analysis_tools.MT2(MHT, MHTPhi, leptons[1])
-                                dileptonVars["mth3" + postfix][0] = analysis_tools.MT2(MHT, MHTPhi, leptons[2])
+                                if leptonsIdx[2] == -1:
+                                    dileptonVars["mth3" + postfix][0] = -1
+                                else:
+                                    dileptonVars["mth3" + postfix][0] = analysis_tools.MT2(MHT, MHTPhi, leptons[2])
                                 
                                 #dileptonVars["pt_thirdLepton" + postfix][0] = pt_thirdLepton
                         
@@ -1291,11 +1297,16 @@ def main():
                                 dileptonVars["dilepHt" + postfix][0] = analysis_ntuples.htJet30Leps(jetsObs["Jets"], leptons)
                                 dileptonVars["deltaPhiMetLepton1" + postfix][0] = abs(leptons[0].DeltaPhi(pt))
                                 dileptonVars["deltaPhiMetLepton2" + postfix][0] = abs(leptons[1].DeltaPhi(pt))
-                                dileptonVars["deltaPhiMetLepton3" + postfix][0] = abs(leptons[2].DeltaPhi(pt))
-                                
+                                if leptonsIdx[2] == -1:
+                                    dileptonVars["deltaPhiMetLepton3" + postfix][0] = -1
+                                else:
+                                    dileptonVars["deltaPhiMetLepton3" + postfix][0] = abs(leptons[2].DeltaPhi(pt))
                                 dileptonVars["deltaPhiMhtLepton1" + postfix][0] = abs(leptons[0].DeltaPhi(mhtvec))
                                 dileptonVars["deltaPhiMhtLepton2" + postfix][0] = abs(leptons[1].DeltaPhi(mhtvec))
-                                dileptonVars["deltaPhiMhtLepton3" + postfix][0] = abs(leptons[2].DeltaPhi(mhtvec))
+                                if leptonsIdx[2] == -1:
+                                    dileptonVars["deltaPhiMhtLepton3" + postfix][0] = -1
+                                else:
+                                    dileptonVars["deltaPhiMhtLepton3" + postfix][0] = abs(leptons[2].DeltaPhi(mhtvec))
                         
                                 if not data:
                                     gens = [i for i in range(var_GenParticles.size())]
