@@ -53,7 +53,7 @@ EOM
 PREFIX="Summer16"
 PREFIX="Fall17"
 
-for type in ${BG_TYPES[@]}; do 
+for type in ${BG_TYPES_17[@]}; do 
     echo "Checking type $type"
     if [ "$type" = "DYJetsToLL" ]; then
         files=("${files[@]}" ${LC_INTPUT}/${PREFIX}*.${type}_M-50_*)
