@@ -126,7 +126,7 @@ def main():
             
             
             base_cond = "(passedMhtMet6pack == 1 && passesUniversalSelection == 1 && MinDeltaPhiMhtJets > 0.4 && MHT >= 220 &&  MET >= 140 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)"
-            sc_cond =  "(" + ("sc_exTrack_deltaR > 0.05 && " if lep == "Electrons" else "") + "sc_exclusiveTrack%%% == 1 && sc_trackBDT%%% > 0 && sc_exTrack_invMass%%% < 12 && sc_exTrack_dilepBDT%%% < 0 && sc_exclusiveTrackLeptonFlavour%%% == \""+lep+"\")"
+            sc_cond =  "(" + ("sc_exTrack_deltaR > 0.05 && " if lep == "Electrons" else "") + "sc_exclusiveTrack%%% == 1 && sc_trackBDT%%% > 0 && sc_exTrack_invMass%%% < 12 && sc_exTrack_dilepBDT%%% > 0 && sc_exclusiveTrackLeptonFlavour%%% == \""+lep+"\")"
             cond = base_cond + " && " + sc_cond
             drawString = cond.replace("%%%", jetIsos[lep])
             
@@ -135,7 +135,7 @@ def main():
             hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, "sc_exTrack_dilepBDT" + jetIsos[lep], binning["1t"][lep], drawString, False)
             #hist = utils.getHistogramFromTree(, c, , bins, -1, 1, , True)
             #hist = utils.getHistogramFromTree(deltaM + "_1t_" + lep, c, "MET", bins, 0, 500, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 *  Weight * BranchingRatio * (exclusiveTrack" + jetIsos[lep] + " == 1 && MHT >= 220 && exTrack_invMass" + jetIsos[lep] + " < 12 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour" + jetIsos[lep] + " == \"" + lep + "\")", True)
-            
+            print("For 1t", lep, "got histogram with", hist.Integral())
             hist.Sumw2()
             print("Scaling historgram with", lumi_weight_for_data)
             hist.Scale(lumi_weight_for_data)

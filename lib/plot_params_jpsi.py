@@ -1,6 +1,8 @@
 import sys
 import os
 
+from ROOT import *
+
 sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
 
 import crystal_ball_params
@@ -388,10 +390,10 @@ class jpsi_muons_fit_data_delta_r(jpsi_muons_fit_data_tag_pt):
             baseCondition = "tracks[probeTrack].Pt() < 20 && "
             if eta1 == 0:
                 baseCondition += "tracks[probeTrack].Pt() > 3 && "
-            histograms_defs.append({ "obs" : "id_" + obsBaseName, "formula" : "invMass", "units" : "M_{ll} Id \Delta_{}R \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "linearYspace" : 1.8, "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": baseCondition + "tracks_mi[probeTrack] > -1 && Muons_mediumID[tracks_mi[probeTrack]] == 1 && deltaR >= " + str(pt1) + " && deltaR <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
+            histograms_defs.append({ "obs" : "id_" + obsBaseName, "formula" : "invMass", "units" : "m_{\mu^{+}\mu^{-}} [GeV] Id \Delta_{}R \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "linearYspace" : 1.8, "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": baseCondition + "tracks_mi[probeTrack] > -1 && Muons_mediumID[tracks_mi[probeTrack]] == 1 && deltaR >= " + str(pt1) + " && deltaR <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
             #histograms_defs.append({ "obs" : "reco_" + obsBaseName, "formula" : "invMass", "units" : "M_{ll} Reco Pt \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": "tracks_mi[probeTrack] > -1 && tracks[probeTrack].Pt() >= " + str(pt1) + " && tracks[probeTrack].Pt() <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })#&& tracks_trkRelIso[ti] < 0.1 #track.Pt() <= 10 && 
             #histograms_defs.append({ "obs" : "iso_" + obsBaseName, "formula" : "invMass", "units" : "M_{ll} Iso \Delta_{}R \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": baseCondition + "tracks_mi[probeTrack] > -1 && Muons_mediumID[tracks_mi[probeTrack]] == 1 && deltaR >= " + str(pt1) + " && deltaR <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2)  + " && Muons_passCorrJetIso10[tracks_mi[probeTrack]] == 1" })
-            histograms_defs.append({ "obs" : obsBaseName, "formula" : "invMass", "units" : "M_{ll} \Delta_{}R \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "linearYspace" : 1.8, "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": baseCondition + "deltaR >= " + str(pt1) + " && deltaR <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })
+            histograms_defs.append({ "obs" : obsBaseName, "formula" : "invMass", "units" : "m_{\mu^{+}\mu^{-}} [GeV] \Delta_{}R \in [" + str(pt1) + ", " + str(pt2) + "], \eta \in [" + str(eta1) + ", " + str(eta2) + "]", "linearYspace" : 1.8, "minX" : 2.5, "maxX" : 3.5, "bins" : 60, "condition": baseCondition + "deltaR >= " + str(pt1) + " && deltaR <= " + str(pt2) + " && abs(tracks[probeTrack].Eta()) >= " + str(eta1) + " && abs(tracks[probeTrack].Eta()) <= " + str(eta2) })
    
     
 class jpsi_muons_fit_bg_delta_r(jpsi_muons_fit_data_delta_r):
@@ -437,11 +439,15 @@ class jpsi_muons_fit_bg_delta_r_high_tag_pt(jpsi_muons_fit_data_delta_r_high_tag
     crystalBallInitialConditions = crystal_ball_params.crystalBallInitialConditionsBgDeltaRHighTagPt
 
 class jpsi_muons_fit_bg_delta_r_single_electron(jpsi_muons_fit_bg_delta_r_high_tag_pt):
-    histrograms_file = "/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools/analysis/scripts/invMassBgDeltaRHistsSingleElectron.root"
+    histrograms_file = BaseParams.histograms_root_files_dir + "/invMassBgDeltaRHistsSingleElectron.root"
     crystalBallInitialConditions = crystal_ball_params.crystalBallInitialConditionsBgDeltaRSingleElectron
     cuts = [
         {"name":"none", "title": "None", "condition" : "1"},
     ]
+    
+    weightString = {
+        'SingleElectron' : "puWeight"
+    }
     
     fit_inv_mass_cut_jpsi = "none"
     bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_jpsi_single_electron/sum/type_sum"
@@ -450,13 +456,26 @@ class jpsi_muons_fit_bg_delta_r_single_electron(jpsi_muons_fit_bg_delta_r_high_t
     }
     plot_kind = "SingleElectron"
     use_calculated_lumi_weight = False
+    
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True
+    
+    colorPalette = [
+        { "name" : "yellow", "fillColor" : kYellow-4, "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 5,  "markerStyle" : kOpenCircle},
+        { "name" : "lightgreen", "fillColor" : kGreen-6, "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    ]
+    
+    legend_coordinates = {"x1" : .4, "y1" : .65, "x2" : .89, "y2" : .89}
+    show_lumi = False
+    y_title = "Tracks"
+    
 
 class jpsi_muons_fit_data_delta_r_single_electron(jpsi_muons_fit_data_delta_r_high_tag_pt):
-    histrograms_file = "/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools/analysis/scripts/invMassDataDeltaRHistsSingleElectron.root"
+    histrograms_file = BaseParams.histograms_root_files_dir + "/invMassDataDeltaRHistsSingleElectron.root"
     crystalBallInitialConditions = crystal_ball_params.crystalBallInitialConditionsDataDeltaRSingleElectron
     
     cuts = [
-        {"name":"none", "title": "None", "condition" : "1"},
+        {"name":"none", "title": "None", "condition" : "passedSingleElectronPack == 1"},
     ]
     
     fit_inv_mass_cut_jpsi = "none"
@@ -467,10 +486,21 @@ class jpsi_muons_fit_data_delta_r_single_electron(jpsi_muons_fit_data_delta_r_hi
     }
     
     calculatedLumi = {
+        #This was actually calculated!!!
         'SingleElectron' : 36.0,
     }
     plot_kind = "SingleElectron"
     use_calculated_lumi_weight = False
+    
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True
+    
+    show_lumi = True
+    
+    y_title = "Tracks"
+    
+    legend_coordinates = {"x1" : .4, "y1" : .65, "x2" : .89, "y2" : .89}
+    label_text = plotutils.StampStr.PRE
     
 
 class jpsi_muons_fit_data_delta_r_single_electron_no_trigger(jpsi_muons_fit_data_delta_r_single_electron):
@@ -478,3 +508,6 @@ class jpsi_muons_fit_data_delta_r_single_electron_no_trigger(jpsi_muons_fit_data
     weightString = {
         'SingleElectron' : "1"
     }
+    cuts = [
+        {"name":"none", "title": "None", "condition" : "1"},
+    ]

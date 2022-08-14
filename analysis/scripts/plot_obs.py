@@ -923,6 +923,8 @@ def main():
     #gROOT.SetStyle("tdrStyle")
     #gROOT.ForceStyle()
     
+    gStyle.SetOptFit(0)
+    
     histograms = {}
     sumTypes = {}
     fit_funcs = {}
@@ -2255,6 +2257,8 @@ def main():
                     filename = (cut["name"] + "_" + hist_def["obs"])
                     print(("Saving file " + "./" + png_name + "/" + filename + "_log.pdf"))
                     c1.SaveAs("./" + png_name + "/" + filename + "_log.pdf")
+                    c1.Update()
+                    c1.SaveAs("./" + png_name + "/" + filename + "_log.root")
                 else:
                     print("BREAKING IN LOG SCALE")
                     break
@@ -2541,6 +2545,8 @@ def main():
                     filename = (cut["name"] + "_" + hist_def["obs"])
                     print(("Saving file " + "./" + png_name + "/" + filename + ".pdf"))
                     c1.SaveAs("./" + png_name + "/" + filename + ".pdf")
+                    c1.Update()
+                    c1.SaveAs("./" + png_name + "/" + filename + ".root")
                     c1.Clear()
                     pId = 1
                     continue

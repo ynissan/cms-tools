@@ -76,7 +76,7 @@ dyCrossSections = {
 
 #LUMINOSITY = 35900. #pb^-1
 LUMINOSITY = 135000.
-CMS_WD="/afs/desy.de/user/n/nissanuv/CMSSW_11_3_1/src"
+#CMS_WD="/afs/desy.de/user/n/nissanuv/CMSSW_11_3_1/src"
 CS_DIR="/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/cs/stdout"
 LEPTON_COLLECTION_DIR="/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection"
 LEPTON_COLLECTION_FILES_MAP_DIR="/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollectionFilesMaps"

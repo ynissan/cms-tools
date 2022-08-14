@@ -380,7 +380,7 @@ def isleptonPassesJpsiSelection(i, lowPtLeptonPtThreshold, Leptons, Leptons_pass
     return True
 
 def isleptonPassesJpsiTagSelection(i, leptonLowerPt, Leptons, Leptons_passIso, Leptons_mediumID):
-    if Leptons[i].Pt() < leptonLowerPt or Leptons[i].Eta() > 2.4 or not bool(Leptons_mediumID[i]):
+    if Leptons[i].Pt() < leptonLowerPt or Leptons[i ].Eta() > 2.4 or not bool(Leptons_mediumID[i]):
         return False
     return True
 
