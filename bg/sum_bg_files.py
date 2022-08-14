@@ -258,7 +258,7 @@ notification = Never
                     i += 1
     condor_f.close()
     print("condor_file", condor_file)
-    #system("condor_submit " + condor_file)
+    os.system("condor_submit " + condor_file)
 main()
 
 exit(0)
