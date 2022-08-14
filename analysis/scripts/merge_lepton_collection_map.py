@@ -20,6 +20,7 @@ from ROOT import LeptonCollection
 parser = argparse.ArgumentParser(description='Create skims for x1x2x1 process.')
 parser.add_argument('-i', '--input_file', nargs='+', help='Input Filename', required=False)
 parser.add_argument('-o', '--output_file', nargs=1, help='Output Filename', required=False)
+parser.add_argument('-f', '--input_file_name', nargs=1, help='Input Filename', required=False)
 args = parser.parse_args()
 
 print args
@@ -28,7 +29,17 @@ input_files = None
 #if len(args.input_file) < 2:
 #    print "Need at least 2 file"
 #    exit(0)
-input_files = args.input_file
+if args.input_file_name:
+    input_file_name =  args.input_file_name[0]
+    input_file_handle = open(input_file_name, "r")
+    lines = input_file_handle.readlines()
+    input_file_handle.close()
+    input_files = lines[0].split(" ")
+else:
+    input_files = args.input_file
+
+print("input_files", input_files)
+
 ######## END OF CMDLINE ARGUMENTS ########
 
 #SINGLE_OUTPUT = "/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/LeptonCollection"

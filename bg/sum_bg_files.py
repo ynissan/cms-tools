@@ -69,6 +69,7 @@ OUTPOUT_TYPE_SUM = OUTPUT_SUM + "/type_sum"
 
 OUTPUT_SUM_OUTPUT = OUTPUT_SUM + "/stdout"
 OUTPUT_SUM_ERROR = OUTPUT_SUM + "/stderr"
+FILES_LIST_OUTPUT = OUTPUT_SUM + "/files"
 
 if not os.path.isdir(OUTPUT_SUM):
     os.mkdir(OUTPUT_SUM)
@@ -81,6 +82,9 @@ if not os.path.isdir(OUTPUT_SUM_OUTPUT):
 
 if not os.path.isdir(OUTPUT_SUM_ERROR):
     os.mkdir(OUTPUT_SUM_ERROR)
+if sum_2017_lepton_collection:
+    if not os.path.isdir(FILES_LIST_OUTPUT):
+        os.mkdir(FILES_LIST_OUTPUT)
 
 condor_wrapper = utils.TOOLS_BASE_PATH + "/analysis/scripts/condor_wrapper.sh"
 
@@ -213,6 +217,10 @@ notification = Never
             #     
             #     print(chunk)
             
+            to_run = ["DYJetsToLL_M-50_TuneCP5", "QCD_HT500to700_TuneCP5", "TTJets_SingleLeptFromT_TuneCP5", "TTJets_SingleLeptFromTbar_TuneCP5", "WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8"]
+            if base_file not in to_run:
+                continue
+            
             first_file = OUTPOUT_TYPE_SUM + "/" + base_file + "_" + str(1) + ".root"
             if os.path.exists(first_file):
                 print("File", first_file, " exists. Skipping")
@@ -234,6 +242,8 @@ notification = Never
             for chunk in ([files] if sum_2017_lepton_collection else chunker_longest(files, chunk_size)):
                 if sum_2017_lepton_collection:
                     output_file = OUTPOUT_TYPE_SUM + "/Fall17." + base_file + ".root"
+                    file_list_file = FILES_LIST_OUTPUT + "/Fall17." + base_file + ".txt"
+                    
                 else:
                     output_file = OUTPOUT_TYPE_SUM + "/" + base_file + "_" + str(i) + ".root"
                 
@@ -244,7 +254,10 @@ notification = Never
                     files_list = " ".join([f for f in chunk if f is not None])
                     command = ""
                     if sum_2017_lepton_collection:
-                        command = utils.TOOLS_BASE_PATH + "/analysis/scripts/merge_lepton_collection_map.py -o " + output_file + " -i " + files_list
+                        file_list_file_handle = open(file_list_file,'w')
+                        file_list_file_handle.write(files_list)
+                        file_list_file_handle.close()
+                        command = utils.TOOLS_BASE_PATH + "/analysis/scripts/merge_lepton_collection_map.py -o " + output_file + " -f " + file_list_file
                     else:
                         command = "hadd -f " + output_file + " " + files_list
                     print("Perorming:", command)
