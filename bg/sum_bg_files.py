@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.8
+#!/usr/bin/env python
 
 from ROOT import *
 from glob import glob
@@ -17,6 +17,14 @@ from lib import analysis_ntuples
 from lib import analysis_tools
 from lib import utils
 from lib import analysis_observables
+
+parser = argparse.ArgumentParser(description='Sum BG files.')
+parser.add_argument('-sum_2017_lepton_collection', '--sum_2017_lepton_collection', dest='sum_2017_lepton_collection', help='2017 Lepton Collection', action='store_true')
+args = parser.parse_args()
+
+sum_2017_lepton_collection = args.sum_2017_lepton_collection
+
+print("sum_2017_lepton_collection", sum_2017_lepton_collection)
 
 # gSystem.Load('LumiSectMap_C')
 # from ROOT import LumiSectMap
@@ -47,10 +55,13 @@ def chunker_longest(iterable, chunksize):
 #     
 #     print(chunk)
 
-parser = argparse.ArgumentParser(description='Sum histograms and trees.')
-args = parser.parse_args()
-
 WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim"
+
+if sum_2017_lepton_collection:
+    WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/lc"
+
+print("WORK_DIR", WORK_DIR)
+
 SINGLE_OUTPUT = WORK_DIR + "/single"
 OUTPUT_SUM = WORK_DIR + "/sum"
 
@@ -71,7 +82,7 @@ if not os.path.isdir(OUTPUT_SUM_OUTPUT):
 if not os.path.isdir(OUTPUT_SUM_ERROR):
     os.mkdir(OUTPUT_SUM_ERROR)
 
-condor_wrapper = os.path.expandvars("$CMSSW_BASE/src/cms-tools/analysis/scripts/condor_wrapper.sh")
+condor_wrapper = utils.TOOLS_BASE_PATH + "/analysis/scripts/condor_wrapper.sh"
 
 sumTypes = {}
 
@@ -81,7 +92,7 @@ def getCompoundTypeFiles(cType):
         rootFiles.extend(glob(OUTPOUT_TYPE_SUM + "/*" + type + "*.root"))
     return rootFiles
 
-file_num_per_type = {'QCD': {'HT500to700_TuneCUETP8M1': 7241, 'HT300to500_TuneCUETP8M1': 6042, 'HT700to1000_TuneCUETP8M1': 1422, 'HT200to300_TuneCUETP8M1': 4767, 'HT1000to1500_TuneCUETP8M1': 2087, 'HT1500to2000_TuneCUETP8M1': 1914, 'HT2000toInf_TuneCUETP8M1': 862}, 'WJetsToLNu': {'HT-800To1200_TuneCUETP8M1': 855, 'HT-200To400_TuneCUETP8M1': 2027, 'HT-1200To2500_TuneCUETP8M1': 885, 'HT-600To800_TuneCUETP8M1': 1819, 'TuneCUETP8M1_13TeV-madgraphMLM-pythia8': 1961, 'HT-400To600_TuneCUETP8M1': 820, 'HT-2500ToInf_TuneCUETP8M1': 215}, 'TTJets': {'SingleLeptFromTbar_TuneCUETP8M1': 6213, 'SingleLeptFromT_TuneCUETP8M1': 6863, 'DiLept_TuneCUETP8M1': 3291}, 'ST': {'t-channel_top': 6505, 't-channel_antitop': 2501}, 'ZJetsToNuNu': {'HT-200To400_13TeV-madgraph': 1092, 'HT-100To200_13TeV-madgraph': 1825, 'HT-400To600_13TeV-madgraph': 954, 'HT-800To1200_13TeV-madgraph': 221, 'HT-600To800_13TeV-madgraph': 224, 'HT-2500ToInf_13TeV-madgraph': 45, 'HT-1200To2500_13TeV-madgraph': 24}, 'DYJetsToLL': {'M-50_HT-400to600': 786, 'M-50_HT-600to800': 1360, 'M-50_HT-200to400': 909, 'M-50_HT-1200to2500': 103, 'M-50_TuneCUETP8M1': 4012, 'M-5to50_HT-70to100': 424, 'M-5to50_HT-200to400': 94, 'M-50_HT-800to1200': 357, 'M-50_HT-100to200': 890, 'M-50_HT-2500toInf': 62, 'M-5to50_HT-600toInf': 57, 'M-5to50_HT-100to200': 27, 'M-5to50_HT-400to600': 21}, 'WW': {'TuneCUETP8M1_13TeV-pythia8': 332}, 'WZ': {'TuneCUETP8M1_13TeV-pythia8': 395}, 'WWZ': {'TuneCUETP8M1_13TeV-amcatnlo-pythia8': 22}, 'WZZ': {'TuneCUETP8M1_13TeV-amcatnlo-pythia8': 38}, 'ZZ': {'TuneCUETP8M1_13TeV-pythia8': 141}, 'ZZZ': {'TuneCUETP8M1_13TeV-amcatnlo-pythia8': 35}}
+#file_num_per_type = {'QCD': {'HT500to700_TuneCUETP8M1': 7241, 'HT300to500_TuneCUETP8M1': 6042, 'HT700to1000_TuneCUETP8M1': 1422, 'HT200to300_TuneCUETP8M1': 4767, 'HT1000to1500_TuneCUETP8M1': 2087, 'HT1500to2000_TuneCUETP8M1': 1914, 'HT2000toInf_TuneCUETP8M1': 862}, 'WJetsToLNu': {'HT-800To1200_TuneCUETP8M1': 855, 'HT-200To400_TuneCUETP8M1': 2027, 'HT-1200To2500_TuneCUETP8M1': 885, 'HT-600To800_TuneCUETP8M1': 1819, 'TuneCUETP8M1_13TeV-madgraphMLM-pythia8': 1961, 'HT-400To600_TuneCUETP8M1': 820, 'HT-2500ToInf_TuneCUETP8M1': 215}, 'TTJets': {'SingleLeptFromTbar_TuneCUETP8M1': 6213, 'SingleLeptFromT_TuneCUETP8M1': 6863, 'DiLept_TuneCUETP8M1': 3291}, 'ST': {'t-channel_top': 6505, 't-channel_antitop': 2501}, 'ZJetsToNuNu': {'HT-200To400_13TeV-madgraph': 1092, 'HT-100To200_13TeV-madgraph': 1825, 'HT-400To600_13TeV-madgraph': 954, 'HT-800To1200_13TeV-madgraph': 221, 'HT-600To800_13TeV-madgraph': 224, 'HT-2500ToInf_13TeV-madgraph': 45, 'HT-1200To2500_13TeV-madgraph': 24}, 'DYJetsToLL': {'M-50_HT-400to600': 786, 'M-50_HT-600to800': 1360, 'M-50_HT-200to400': 909, 'M-50_HT-1200to2500': 103, 'M-50_TuneCUETP8M1': 4012, 'M-5to50_HT-70to100': 424, 'M-5to50_HT-200to400': 94, 'M-50_HT-800to1200': 357, 'M-50_HT-100to200': 890, 'M-50_HT-2500toInf': 62, 'M-5to50_HT-600toInf': 57, 'M-5to50_HT-100to200': 27, 'M-5to50_HT-400to600': 21}, 'WW': {'TuneCUETP8M1_13TeV-pythia8': 332}, 'WZ': {'TuneCUETP8M1_13TeV-pythia8': 395}, 'WWZ': {'TuneCUETP8M1_13TeV-amcatnlo-pythia8': 22}, 'WZZ': {'TuneCUETP8M1_13TeV-amcatnlo-pythia8': 38}, 'ZZ': {'TuneCUETP8M1_13TeV-pythia8': 141}, 'ZZZ': {'TuneCUETP8M1_13TeV-amcatnlo-pythia8': 35}}
 print(("Start: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S')))
 
 condor_file="/tmp/condor_submut." + datetime.now().strftime('%d-%m-%Y_%H:%M:%S')
@@ -165,9 +176,10 @@ notification = Never
             sumTypes[type][types[1] + "_" + types[2]] = 1
         else:
             sumTypes[type][types[1] + "_" + types[2]] += 1
-
+    print("printing sumTypes")
+    print(sorted(sumTypes))
     print(sumTypes)
-
+    
     for type in sumTypes:
         for typeRange in sumTypes[type]:
             print("\n\n\n\n\n-----")
@@ -185,7 +197,10 @@ notification = Never
                 #command = "hadd -f " + file + " " + files
             else:
                 base_file = type + "_" + typeRange
-                files = sorted(glob(SINGLE_OUTPUT + "/Summer16*." + type + "_" + typeRange + "*.root"))
+                prefix = "Summer16*."
+                if sum_2017_lepton_collection:
+                    prefix = "Fall17."
+                files = sorted(glob(SINGLE_OUTPUT + "/" + prefix + type + "_" + typeRange + "*.root"))
                 #command = "hadd -f " + file + " " + files
             
             # print(["bla"]*5)
@@ -206,20 +221,32 @@ notification = Never
             i = 1
             
             chunk_size = default_file_num
-            if base_file in file_num_per_type:
-                chunk_size = file_num_per_type[base_file]
-            else:
-                print("Don't have chunk_size for",base_file)
             
-            for chunk in chunker_longest(files, chunk_size):
-                output_file = OUTPOUT_TYPE_SUM + "/" + base_file + "_" + str(i) + ".root"
+            if sum_2017_lepton_collection:
+                chunk_size = 1000000000000
+            else:
+            
+                if base_file in file_num_per_type:
+                    chunk_size = file_num_per_type[base_file]
+                else:
+                    print("Don't have chunk_size for",base_file)
+            
+            for chunk in ([files] if sum_2017_lepton_collection else chunker_longest(files, chunk_size)):
+                if sum_2017_lepton_collection:
+                    output_file = OUTPOUT_TYPE_SUM + "/Fall17." + base_file + ".root"
+                else:
+                    output_file = OUTPOUT_TYPE_SUM + "/" + base_file + "_" + str(i) + ".root"
                 
                 if os.path.exists(output_file):
                     print("File", output_file, " exists. Skipping")
                     break
                 else:
                     files_list = " ".join([f for f in chunk if f is not None])
-                    command = "hadd -f " + output_file + " " + files_list
+                    command = ""
+                    if sum_2017_lepton_collection:
+                        command = utils.TOOLS_BASE_PATH + "/analysis/scripts/merge_lepton_collection_map.py -o " + output_file + " -i " + files_list
+                    else:
+                        command = "hadd -f " + output_file + " " + files_list
                     print("Perorming:", command)
                     
                     #system(command)
@@ -230,7 +257,8 @@ notification = Never
                     
                     i += 1
     condor_f.close()
-    system("condor_submit " + condor_file)
+    print("condor_file", condor_file)
+    #system("condor_submit " + condor_file)
 main()
 
 exit(0)
