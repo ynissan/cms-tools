@@ -18,7 +18,7 @@ SIMS=(["dm051"]="/nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggs
 #declare -A SIM_GROUP=(["all"]="dm")
 
 declare -A SIM_GROUP=(
-           ["all"]="dm1p dm2p dm3p dm4p" \
+           ["all"]="dm0p dm1p" \
            )
 
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$CMSSW_BASE/src/stops/lib/classes"
@@ -63,7 +63,7 @@ MAD_HT_SPLIT_TYPES=()
 # LEPTON_ISOLATION_CATEGORIES=("" LowPt LowPtTight)
 # LEPTON_CORR_JET_ISO_RANGE=(0 1 5 10 15)
 
-LEPTON_ISOLATION_LIST=(NoIso CorrJetIso CorrJetNoMultIso JetIso)
+LEPTON_ISOLATION_LIST=(NoIso CorrJetNoMultIso)
 LEPTON_ISOLATION_CATEGORIES=("")
 LEPTON_CORR_JET_ISO_RANGE=(0 1 5 6 7 8 9 10 10.5 11 11.5 12 12.5 13 15 20)
 LEPTON_CORR_JET_ISO_DR_CUTS=(0.4 0.45 0.5 0.55 0.6)

@@ -154,16 +154,16 @@ tracksVars = (
 
 
 leptonsCorrJetVecList = {
-    "CorrJetIso" : "bool",
-    "CorrJetD3Iso" : "bool",
-    "NonJetIso" : "bool",
+    #"CorrJetIso" : "bool",
+    #"CorrJetD3Iso" : "bool",
+    #"NonJetIso" : "bool",
     
     
     "CorrJetNoMultIso" : "bool",
     "CorrJetNoMultD3Iso" : "bool",
     
-    "JetIso" : "bool",
-    "JetD3Iso" : "bool",
+    #"JetIso" : "bool",
+    #"JetD3Iso" : "bool",
     
     "NoIso" : "bool",
 }
