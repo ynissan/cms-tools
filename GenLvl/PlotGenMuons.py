@@ -336,6 +336,8 @@ def mainReco(PtThreshold,comparison_type,histograms):
 	AllGenMatchedEvents4 = 0
 	AllFromChi4 = 0
 	both_from_same_chi4 = 0
+	Total_NSelectionMuonbranchIso = 0
+	Total_NSelectionMuonbranchNoIso = 0
 	for ientry in range(number_of_entries):
 		chain.GetEntry(ientry)
 		if ientry % 1000 == 0:
@@ -397,9 +399,9 @@ def mainReco(PtThreshold,comparison_type,histograms):
 		mus = charges_list.count(-1)
 		antimus = charges_list.count(1)
 		if mus == 0 or antimus == 0:
-			print("same sign")
-			print(chain.Muons_charge)
-			print(charges_list)
+			# print("same sign")
+# 			print(chain.Muons_charge)
+# 			print(charges_list)
 			continue 
 		if MuonNumber == 2:
 			MuonNumberEvents2 += 1  # 
@@ -584,27 +586,31 @@ def mainReco(PtThreshold,comparison_type,histograms):
 			if both_from_same_chi == 1:
 				both_from_same_chi4 += 1
 		histograms["histNSelectionMuonsIso"].Fill(int(NSelectionMuonbranchIso))
+		Total_NSelectionMuonbranchIso += NSelectionMuonbranchIso
 		histograms["histNSelectionMuonsNoIso"].Fill(NSelectionMuonbranchNoIso)
+		Total_NSelectionMuonbranchNoIso += NSelectionMuonbranchNoIso
 
 	#event loop end
+	print("Total_NSelectionMuonbranchIso:",Total_NSelectionMuonbranchIso)
+	print("Total_NSelectionMuonbranchNoIso:",Total_NSelectionMuonbranchNoIso)
 	print(f"Number of events with MuonNumber = 2: {MuonNumberEvents2}")
 	if MuonNumberEvents2 > 0:
 		fraction_both_gen2 = AllGenMatchedEvents2/MuonNumberEvents2
 		print("Fraction of those events where all muons are matched to gen muons :",fraction_both_gen2)
 		print("Fraction of those events where all muons are genmatched to a muon from a chi02 decay:",AllFromChi2/MuonNumberEvents2)
-		print("Fraction of those events where both $\mu$ are matched to gen muons from the same chi02 decay:",both_from_same_chi2/MuonNumberEvents2)
+		print("Fraction of those events where both muons are matched to gen muons from the same chi02 decay:",both_from_same_chi2/MuonNumberEvents2)
 	print(f"Number of events with MuonNumber = 3: {MuonNumberEvents3}")
 	if MuonNumberEvents3 > 0:
 		fraction_both_gen3 = AllGenMatchedEvents3/MuonNumberEvents3
 		print("Fraction of those events where all muons are matched to gen muons :",fraction_both_gen3)
 		print("Fraction of those events where all muons are genmatched to a muon from a chi02 decay:",AllFromChi3/MuonNumberEvents3)
-		print("Fraction of those events where both $\mu$ are matched to gen muons from the same chi02 decay:",both_from_same_chi3/MuonNumberEvents3)
+		print("Fraction of those events where both muons are matched to gen muons from the same chi02 decay:",both_from_same_chi3/MuonNumberEvents3)
 	print(f"Number of events with MuonNumber = 4: {MuonNumberEvents4}")
 	if MuonNumberEvents4 > 0:
 		fraction_both_gen4 = AllGenMatchedEvents4/MuonNumberEvents4
 		print("Fraction of those events where all muons are matched to gen muons :",fraction_both_gen4)
 		print("Fraction of those events where all muons are genmatched to a muon from a chi02 decay:",AllFromChi4/MuonNumberEvents4)
-		print("Fraction of those events where both $\mu$ are matched to gen muons from the same chi02 decay:",both_from_same_chi4/MuonNumberEvents4)
+		print("Fraction of those events where both muons are matched to gen muons from the same chi02 decay:",both_from_same_chi4/MuonNumberEvents4)
 	return MuonNumberEvents2, AllGenMatchedEvents2, AllFromChi2, both_from_same_chi2, MuonNumberEvents3, AllGenMatchedEvents3, AllFromChi3, both_from_same_chi3, MuonNumberEvents4, AllGenMatchedEvents4, AllFromChi4, both_from_same_chi4
 
 #plot_hist(key,linestyle,linewidth,linecolor,same,legendentry,pdf,canvasglobal,legendglobal):
@@ -645,8 +651,8 @@ if args.recoplots:
 	canvasinvMass,legendinvMass = plot_hist("histinvMass2",1,2,"2",False,"2 \mu",False,None,None)
 	plot_hist("histinvMass3",1,2,"4",True,"3 \mu",True,canvasinvMass,legendinvMass)
 	#plot_hist("histinvMass4",1,2,"40",True,"4 \mu",True,canvasinvMass,legendinvMass)
-	CanvasNSelectionMuons, LegendNSelectionMuons = plot_hist("histNSelectionMuonsIso",1,2,"2",False,"N $\mu$ Iso", False, None, None)
-	plot_hist("histNSelectionMuonsNoIso",1,2,"3",True,"N $\mu$ No Iso",True,CanvasNSelectionMuons,LegendNSelectionMuons)
+	CanvasNSelectionMuons, LegendNSelectionMuons = plot_hist("histNSelectionMuonsIso",1,2,"2",False,"N \mu Iso", False, None, None)
+	plot_hist("histNSelectionMuonsNoIso",1,2,"3",True,"N \mu No Iso",True,CanvasNSelectionMuons,LegendNSelectionMuons)
 
 canvasFractions,legendFractions = plot_hist("histFractionsBothGen2",1,2,"2",False,None,False,None,None)
 # plot_hist("histFractionsBothGen3",1,2,"3",True,None,True,canvasFractions,legendFractions)
