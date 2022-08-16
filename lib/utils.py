@@ -179,8 +179,8 @@ defaultJetIsoSetting = "NoIso"
 #leptonIsolationList = [ "CorrJetIso", "NonJetIso", "NoIso" ]
 #leptonIsolationList = [ "CorrJetIso", "NoIso" ]
 #leptonIsolationList = [ "NoIso", "CorrJetIso", "CorrJetNoMultIso", "JetIso" ]
-leptonIsolationList = [ "NoIso", "CorrJetIso" ]
-leptonIsolationCrList = [ "CorrJetD3Iso"]
+leptonIsolationList = [ "NoIso", "CorrJetNoMultIso" ]
+leptonIsolationCrList = [ "CorrJetNoMultD3Iso"]
 
 #leptonIsolationList = [ "NoIso", "CorrJetIso", "CorrJetNoMultIso", "JetIso" ]
 #leptonIsolationCrList = [ "CorrJetD3Iso", "CorrJetNoMultD3Iso","JetD3Iso" ]

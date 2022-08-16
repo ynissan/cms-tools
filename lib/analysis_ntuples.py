@@ -770,6 +770,8 @@ def getTwoLeptonsAfterSelection(Electrons, Electrons_passJetIso, Electrons_delta
     if nL == 2:
         if lepCharges[0] * lepCharges[1] > 0:
             same_sign = True
+    
+    
     if lepIdx[2] == -1:
         if leps[0].Pt() < leps[1].Pt():
             leps = [leps[1], leps[0],leps[2]]
@@ -800,7 +802,7 @@ def getTwoLeptonsAfterSelection(Electrons, Electrons_passJetIso, Electrons_delta
     #    print "YEY!!!"
     if len(leps) < 3:
     	print("nL",nL,"nM",nM,"nE",nE,"muonCharges",muonCharges,"muonIdx",muonIdx,"lepIdx",lepIdx,"lepCharges",lepCharges)
-    	exit(1)
+    	#exit(1)
     return leps, lepIdx, lepCharges, lepFlavour, same_sign, 0, -1
 
 

@@ -21,11 +21,11 @@ args = parser.parse_args()
 
 #m_stop = 500, m_Chi_pm = 115, dm = 1.4
 signal_files = [
-#glob("/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_*.root")
+glob("/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_*.root")
 #glob("/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim/single/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_*pu35_part*of25_RA2AnalysisTree.root")
 #glob("/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim_nlp/single/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_*pu35_part*of25_RA2AnalysisTree.root")
 #glob("/nfs/dust/cms/user/beinsam/CommonSamples/MC_BSM/CompressedHiggsino/RadiativeMu_2016Fast/ntuple_sidecarv3/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_*pu35_part*of25_RA2AnalysisTree.root")
-glob("/nfs/dust/cms/user/diepholq/x1x2x1/signal/skim/sum/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_*.root")
+#glob("/nfs/dust/cms/user/diepholq/x1x2x1/signal/skim/sum/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_*.root")
 ]
 #signal_file = "/afs/desy.de/user/n/nissanuv/q_nfs/x1x2x1/signal/skim/sum/higgsino_Summer16_stopstop_500GeV_mChipm115GeV_dm1p4GeV_1.root"
 #print(signal_files)
@@ -68,7 +68,7 @@ def create_hist(Name,axisargs):
 arglist = ["Muon",[10,0,10],"RecoMuonMultiplicity",[10,0,10],"RecoMuonMultiplicityIso",[10,0,10],"GenfromStop",[10,0,10],"RecofromStop",[10,0,10],"RecofromStopIso",[10,0,10],"DeltaR",[50,0,5],"DeltaRljet",[50,0,5],"MuonParent",[12,0,12],"MuonParentInsideJet",[12,0,12],
 "MuonParentInsideBJet",[12,0,12],"MuonStopPt",[60,0,30],"RecoMuonStopPt",[60,0,30],"RecoMuonStopPtIso",[60,0,30],"MuonTopPt",[60,0,30],"RecoMuonTopPt",[60,0,30],"RecoMuonTopPtIso",[60,0,30],
 "FractionsBothGen2",[4,0,4],"FractionsSameChi2",[4,0,4],"Fakes2",[4,0,4],"FractionsBothGen3",[4,0,4],"FractionsSameChi3",[4,0,4],"Fakes3",[4,0,4],
-"FractionsBothGen4",[4,0,4],"FractionsSameChi4",[4,0,4],"Fakes4",[4,0,4],"pT2",[60,0,15],"pT3",[60,0,15],"pT4",[60,0,15],"invMass2",[40,0,10],"invMass3",[40,0,10],"invMass4",[40,0,10]]
+"FractionsBothGen4",[4,0,4],"FractionsSameChi4",[4,0,4],"Fakes4",[4,0,4],"pT2",[60,0,15],"pT3",[60,0,15],"pT4",[60,0,15],"invMass2",[40,0,10],"invMass3",[40,0,10],"invMass4",[40,0,10],"NSelectionMuonsIso",[6,0,6],"NSelectionMuonsNoIso",[6,0,6]]
 
 i = 0
 while i < len(arglist):
@@ -185,7 +185,7 @@ def plot_hist(key,linestyle,linewidth,linecolor,same,legendentry,pdf,canvasgloba
 	legend.Draw()
 	canvas.Update()
 	if pdf:
-		Titel = key+ "LepSelection.pdf"
+		Titel = key+ "_nlp.pdf"
 		canvas.Print(Titel)
 
 
@@ -319,8 +319,8 @@ def mainGen(PtThreshold):
 
 
 
-isostr = "isoCrCorrJetIso15Dr0.4"
-samesignstr = "sameSignCorrJetIso15Dr0.4"
+isostr = "isoCrCorrJetNoMultIso15Dr0.4"
+samesignstr = "sameSignCorrJetNoMultIso15Dr0.4"
 def mainReco(PtThreshold,comparison_type,histograms):
 	print("Starting Loop")
 	MuonNumber = 0
@@ -336,6 +336,8 @@ def mainReco(PtThreshold,comparison_type,histograms):
 	AllGenMatchedEvents4 = 0
 	AllFromChi4 = 0
 	both_from_same_chi4 = 0
+	Total_NSelectionMuonbranchIso = 0
+	Total_NSelectionMuonbranchNoIso = 0
 	for ientry in range(number_of_entries):
 		chain.GetEntry(ientry)
 		if ientry % 1000 == 0:
@@ -348,7 +350,9 @@ def mainReco(PtThreshold,comparison_type,histograms):
 		charges_list = []
 		isobranch_reco = getattr(chain,isostr)
 		samesignbranch_reco = getattr(chain,samesignstr)
-		muonsisobranch = getattr(chain,"Muons_passCorrJetIso15Dr0.4")
+		muonsisobranch = getattr(chain,"Muons_passCorrJetNoMultIso15Dr0.4")
+		NSelectionMuonbranchIso = getattr(chain, "NSelectionMuonsCorrJetNoMultIso15Dr0.4")
+		NSelectionMuonbranchNoIso = getattr(chain, "NSelectionMuonsNoIso")
 		alternative = 0
 
 		if chain.MHT < 200:                 #cuts
@@ -357,8 +361,8 @@ def mainReco(PtThreshold,comparison_type,histograms):
 			continue
 		if chain.MinDeltaPhiMhtJets < 0.4:
 			continue
-		if isobranch_reco != 0:
-			continue
+# 		if isobranch_reco != 0:
+# 			continue
 		if samesignbranch_reco != 0:
 			continue
 			                #muonPassesTightSelection(i, Muons, Muons_mediumID, Muons_passJetIso, Muons_deltaRLJ, muonLowerPt, muonLowerPtTight, muons_tightID):
@@ -395,7 +399,9 @@ def mainReco(PtThreshold,comparison_type,histograms):
 		mus = charges_list.count(-1)
 		antimus = charges_list.count(1)
 		if mus == 0 or antimus == 0:
-			print("same sign")
+			# print("same sign")
+# 			print(chain.Muons_charge)
+# 			print(charges_list)
 			continue 
 		if MuonNumber == 2:
 			MuonNumberEvents2 += 1  # 
@@ -579,26 +585,32 @@ def mainReco(PtThreshold,comparison_type,histograms):
 				AllFromChi4 += 1
 			if both_from_same_chi == 1:
 				both_from_same_chi4 += 1
+		histograms["histNSelectionMuonsIso"].Fill(int(NSelectionMuonbranchIso))
+		Total_NSelectionMuonbranchIso += NSelectionMuonbranchIso
+		histograms["histNSelectionMuonsNoIso"].Fill(NSelectionMuonbranchNoIso)
+		Total_NSelectionMuonbranchNoIso += NSelectionMuonbranchNoIso
 
 	#event loop end
+	print("Total_NSelectionMuonbranchIso:",Total_NSelectionMuonbranchIso)
+	print("Total_NSelectionMuonbranchNoIso:",Total_NSelectionMuonbranchNoIso)
 	print(f"Number of events with MuonNumber = 2: {MuonNumberEvents2}")
 	if MuonNumberEvents2 > 0:
 		fraction_both_gen2 = AllGenMatchedEvents2/MuonNumberEvents2
 		print("Fraction of those events where all muons are matched to gen muons :",fraction_both_gen2)
 		print("Fraction of those events where all muons are genmatched to a muon from a chi02 decay:",AllFromChi2/MuonNumberEvents2)
-		print("Fraction of those events where both $\mu$ are matched to gen muons from the same chi02 decay:",both_from_same_chi2/MuonNumberEvents2)
+		print("Fraction of those events where both muons are matched to gen muons from the same chi02 decay:",both_from_same_chi2/MuonNumberEvents2)
 	print(f"Number of events with MuonNumber = 3: {MuonNumberEvents3}")
 	if MuonNumberEvents3 > 0:
 		fraction_both_gen3 = AllGenMatchedEvents3/MuonNumberEvents3
 		print("Fraction of those events where all muons are matched to gen muons :",fraction_both_gen3)
 		print("Fraction of those events where all muons are genmatched to a muon from a chi02 decay:",AllFromChi3/MuonNumberEvents3)
-		print("Fraction of those events where both $\mu$ are matched to gen muons from the same chi02 decay:",both_from_same_chi3/MuonNumberEvents3)
+		print("Fraction of those events where both muons are matched to gen muons from the same chi02 decay:",both_from_same_chi3/MuonNumberEvents3)
 	print(f"Number of events with MuonNumber = 4: {MuonNumberEvents4}")
-# 	if MuonNumberEvents4 > 0:
-# 		fraction_both_gen4 = AllGenMatchedEvents4/MuonNumberEvents4
-# 		print("Fraction of those events where all muons are matched to gen muons :",fraction_both_gen4)
-# 		print("Fraction of those events where all muons are genmatched to a muon from a chi02 decay:",AllFromChi4/MuonNumberEvents4)
-# 		print("Fraction of those events where both $\mu$ are matched to gen muons from the same chi02 decay:",both_from_same_chi4/MuonNumberEvents4)
+	if MuonNumberEvents4 > 0:
+		fraction_both_gen4 = AllGenMatchedEvents4/MuonNumberEvents4
+		print("Fraction of those events where all muons are matched to gen muons :",fraction_both_gen4)
+		print("Fraction of those events where all muons are genmatched to a muon from a chi02 decay:",AllFromChi4/MuonNumberEvents4)
+		print("Fraction of those events where both muons are matched to gen muons from the same chi02 decay:",both_from_same_chi4/MuonNumberEvents4)
 	return MuonNumberEvents2, AllGenMatchedEvents2, AllFromChi2, both_from_same_chi2, MuonNumberEvents3, AllGenMatchedEvents3, AllFromChi3, both_from_same_chi3, MuonNumberEvents4, AllGenMatchedEvents4, AllFromChi4, both_from_same_chi4
 
 #plot_hist(key,linestyle,linewidth,linecolor,same,legendentry,pdf,canvasglobal,legendglobal):
@@ -625,41 +637,43 @@ if args.recoplots:
 	histograms["histFractionsBothGen3"].AddBinContent(3,AllGenMatchedEvents3/MuonNumberEvents3)
 	histograms["histFractionsSameChi3"].AddBinContent(4,both_from_same_chi3/MuonNumberEvents3)
 	histograms["histFakes3"].AddBinContent(1,1-AllGenMatchedEvents3/MuonNumberEvents3)
-	# xaxis4 = histograms["histFractionsBothGen4"].GetXaxis()
-# 	histograms["histFractionsBothGen4"].SetMaximum(1)
-# 	xaxis4.SetBinLabel(3,"Both \mu genmatched")
-# 	xaxis4.SetBinLabel(1,"At least one fake \mu")
-# 	xaxis4.SetBinLabel(4,"Both to \chi_{2}^{0} decay")
-# 	histograms["histFractionsBothGen4"].AddBinContent(3,AllGenMatchedEvents4/MuonNumberEvents4)
-# 	histograms["histFractionsSameChi4"].AddBinContent(4,both_from_same_chi4/MuonNumberEvents4)
-# 	histograms["histFakes4"].AddBinContent(1,1-AllGenMatchedEvents4/MuonNumberEvents4)
+	xaxis4 = histograms["histFractionsBothGen4"].GetXaxis()
+	histograms["histFractionsBothGen4"].SetMaximum(1)
+	xaxis4.SetBinLabel(3,"Both \mu genmatched")
+	xaxis4.SetBinLabel(1,"At least one fake \mu")
+	xaxis4.SetBinLabel(4,"Both to \chi_{2}^{0} decay")
+	histograms["histFractionsBothGen4"].AddBinContent(3,AllGenMatchedEvents4/MuonNumberEvents4)
+	histograms["histFractionsSameChi4"].AddBinContent(4,both_from_same_chi4/MuonNumberEvents4)
+	histograms["histFakes4"].AddBinContent(1,1-AllGenMatchedEvents4/MuonNumberEvents4)
 	canvaspT, legendpT = plot_hist("histpT2",1,2,"2",False,"2 \mu",False,None,None)
 	plot_hist("histpT3",1,2,"4",True,"3 \mu",True,canvaspT,legendpT)
 	#plot_hist("histpT4",1,2,"40",True,"4 \mu",True,canvaspT,legendpT)
 	canvasinvMass,legendinvMass = plot_hist("histinvMass2",1,2,"2",False,"2 \mu",False,None,None)
 	plot_hist("histinvMass3",1,2,"4",True,"3 \mu",True,canvasinvMass,legendinvMass)
 	#plot_hist("histinvMass4",1,2,"40",True,"4 \mu",True,canvasinvMass,legendinvMass)
+	CanvasNSelectionMuons, LegendNSelectionMuons = plot_hist("histNSelectionMuonsIso",1,2,"2",False,"N \mu Iso", False, None, None)
+	plot_hist("histNSelectionMuonsNoIso",1,2,"3",True,"N \mu No Iso",True,CanvasNSelectionMuons,LegendNSelectionMuons)
 
 canvasFractions,legendFractions = plot_hist("histFractionsBothGen2",1,2,"2",False,None,False,None,None)
-plot_hist("histFractionsBothGen3",1,2,"3",True,None,True,canvasFractions,legendFractions)
-plot_hist("histFakes2",1,2,"2",True,None,False,canvasFractions,legendFractions)
-plot_hist("histFakes3",1,2,"3",True,None,True,canvasFractions,legendFractions)
-plot_hist("histFractionsSameChi2",1,2,"2",True,"2 \mu",False,canvasFractions,legendFractions)
-plot_hist("histFractionsSameChi3",1,2,"3",True,"3 \mu",True,canvasFractions,legendFractions)
-# if args.recoplots:
-# 	for munumber in [2,3,4]:
-# 		if munumber == 2:
-# 			color = "2"
-# 		if munumber == 3:
-# 			color = "4"
-# 		if munumber == 4:
-# 			color = "40"
-# 		if munumber != 2:
-# 			plot_hist("histFractionsBothGen"+str(munumber),1,2,color,True,None,False,canvasFractions,legendFractions)
-# 		plot_hist("histFakes"+str(munumber),1,2,color,True,None,False,canvasFractions,legendFractions)
-# 		if munumber != 4:
-# 			plot_hist("histFractionsSameChi"+str(munumber),1,2,color,True,str(munumber)+" \mu",False,canvasFractions,legendFractions)
-# 	plot_hist("histFractionsSameChi4",1,2,"40",True,str(munumber)+" \mu",True,canvasFractions,legendFractions)
+# plot_hist("histFractionsBothGen3",1,2,"3",True,None,True,canvasFractions,legendFractions)
+# plot_hist("histFakes2",1,2,"2",True,None,False,canvasFractions,legendFractions)
+# plot_hist("histFakes3",1,2,"3",True,None,True,canvasFractions,legendFractions)
+# plot_hist("histFractionsSameChi2",1,2,"2",True,"2 \mu",False,canvasFractions,legendFractions)
+# plot_hist("histFractionsSameChi3",1,2,"3",True,"3 \mu",True,canvasFractions,legendFractions)
+if args.recoplots:
+	for munumber in [2,3,4]:
+		if munumber == 2:
+			color = "2"
+		if munumber == 3:
+			color = "4"
+		if munumber == 4:
+			color = "40"
+		if munumber != 2:
+			plot_hist("histFractionsBothGen"+str(munumber),1,2,color,True,None,False,canvasFractions,legendFractions)
+		plot_hist("histFakes"+str(munumber),1,2,color,True,None,False,canvasFractions,legendFractions)
+		if munumber != 4:
+			plot_hist("histFractionsSameChi"+str(munumber),1,2,color,True,str(munumber)+" \mu",False,canvasFractions,legendFractions)
+	plot_hist("histFractionsSameChi4",1,2,"40",True,str(munumber)+" \mu",True,canvasFractions,legendFractions)
 
 
 #plotting---------------------------------------------------------------------------------
