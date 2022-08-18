@@ -90,7 +90,7 @@ for group in "${!SIM_GROUP[@]}"; do
         #echo input=$input
         input="$input $INPUT_DIR/*$pattern*.root"
     done
-    for lepNum in exTrack reco; do
+    for lepNum in reco; do
         for lep in Muons Electrons; do
             for iso in "${LEPTON_ISOLATION_LIST[@]}"; do
                 for category in "${LEPTON_ISOLATION_CATEGORIES[@]}"; do

@@ -392,4 +392,5 @@ dileptonBDTeventObservables = {
     'LeadingJetPt' : 'F',
     'LeadingJet.Eta()' : 'F',
     'NJets' : 'I',
+    'BTagsDeepMedium' : 'I'
 }

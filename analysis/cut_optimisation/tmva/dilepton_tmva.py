@@ -125,7 +125,8 @@ for obs in analysis_observables.dileptonBDTeventObservables:
 
 preselection = None
 
-preselection = "twoLeptons" + iso + str(ptRange) + cat + " == 1 && BTagsDeepMedium == 0 && MinDeltaPhiMetJets > 0.4 && leptonFlavour" + iso + str(ptRange) + cat  + " == \"" + lep + "\"" + " && sameSign" + iso + str(ptRange) + cat + " == 0" + " && isoCr" + iso + str(ptRange) + cat + " == 0"
+preselection = "twoLeptons" + iso + str(ptRange) + cat + " == 1 && MinDeltaPhiMhtJets > 0.4 && leptonFlavour" + iso + str(ptRange) + cat  + " == \"" + lep + "\"" + " && sameSign" + iso + str(ptRange) + cat + " == 0" + " == 0"
+
 
 variablesUsed.append("twoLeptons" + iso + str(ptRange) + cat)
 variablesUsed.append("leptonFlavour" + iso + str(ptRange) + cat)
@@ -133,15 +134,15 @@ variablesUsed.append("sameSign" + iso + str(ptRange) + cat)
 variablesUsed.append("isoCr" + iso + str(ptRange) + cat)
 
 variablesUsed.append('dileptonPt' + iso + str(ptRange) + cat)
-variablesUsed.append('mt1' + iso + str(ptRange) + cat)
+variablesUsed.append('mth1' + iso + str(ptRange) + cat)
 
 variablesUsed.append('leptons' + iso + str(ptRange) + cat)
 
-variablesUsed.append('deltaPhiMetLepton1' + iso + str(ptRange) + cat)
-variablesUsed.append('deltaPhiMetLepton2' + iso + str(ptRange) + cat)
+variablesUsed.append('deltaPhiMhtLepton1' + iso + str(ptRange) + cat)
+variablesUsed.append('deltaPhiMhtLepton2' + iso + str(ptRange) + cat)
 
-variablesUsed.append('mtautau' + iso + str(ptRange) + cat)
-    
+variablesUsed.append("BTagsDeepMedium")
+
 print "Variables used", variablesUsed 
 
 tmpDir = mkdtemp(prefix="nissanuv", dir="/tmp") + '/'
