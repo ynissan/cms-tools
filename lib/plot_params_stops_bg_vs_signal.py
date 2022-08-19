@@ -156,7 +156,7 @@ class stops_bg_vs_signal(BaseParams):
     histograms_defs = copy.deepcopy(common_histograms + two_leps_histograms)
     
     cuts = [
-        {"name":"none", "title": "MET > 140 && MinDeltaPhiMhtJets > 0.4", "condition" : "MET > 140 && MinDeltaPhiMhtJets > 0.4", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+    {"name":"none", "title": "MET > 140 && MinDeltaPhiMhtJets > 0.4", "condition" : "MET > 140 && MinDeltaPhiMhtJets > 0.4", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
 
 	{"name":"step1", "title": "MET > 140 && MinDeltaPhiMhtJets > 0.4 && leptons%%%[0].Pt() < 7 && leptons%%%[1].Pt() < 7", "condition" : "MET > 140 && BTagsDeepMedium > 0 && MinDeltaPhiMhtJets > 0.4", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
         
@@ -238,7 +238,7 @@ class stops_bg_vs_signal_Iso(BaseParams):
 	y_title = "Events"
 
 
-	jetIsoStr = "CorrJetIso15Dr0.4"
+	jetIsoStr = "CorrJetNoMultIso15Dr0.4"
 	injectJetIsoToCuts(cuts, jetIsoStr)
 	injectJetIsoToHistograms(histograms_defs, jetIsoStr)
 
