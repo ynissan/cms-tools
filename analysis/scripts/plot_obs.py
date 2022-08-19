@@ -1248,7 +1248,7 @@ def main():
                         print((sigHistName, sigHist.GetMaximum()))
                         sigHists.append(sigHist)
                         if len(object_retag_name) > 0:
-                            plotutils.setHistColorFillLine(sigHist, utils.colorPalette[cP], 0.35, True)
+                            plotutils.setHistColorFillLine(sigHist, plot_par.colorPalette[cP], 0.35, True)
                             cP += 1
                         else:
                             plotutils.setHistColorFillLine(sigHist, plotutils.signalCp[i], 1)
