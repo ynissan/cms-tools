@@ -36,6 +36,7 @@ parser.add_argument('-bg', '--background', dest='bg', help='Background', action=
 parser.add_argument('-sc', '--same_charge', dest='sc', help='Same Charge', action='store_true')
 parser.add_argument('-dy', '--dy', dest='dy', help='Drell-Yan', action='store_true')
 parser.add_argument('-sam', '--sam', dest='sam', help='Sam Samples', action='store_true')
+parser.add_argument('-phase1', '--phase1', dest='phase1', help='Phase1 Samples', action='store_true')
 parser.add_argument('-jpsi_muons', '--jpsi_muons', dest='jpsi_muons', help='JPSI Muons Skim', action='store_true')
 args = parser.parse_args()
 

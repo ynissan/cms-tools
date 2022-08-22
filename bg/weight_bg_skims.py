@@ -20,11 +20,15 @@ from lib import analysis_observables
 
 parser = argparse.ArgumentParser(description='Sum bg files.')
 parser.add_argument('-f', '--force', dest='force', help='Force Update', action='store_true')
+parser.add_argument('-phase1', '--phase1', dest='phase1', help='Force Update', action='store_true')
 args = parser.parse_args()
 
 force = args.force
+phase1 = args.phase1
 
 bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum"
+if phase1:
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_phase1/sum/type_sum"
 
 def main():
     sumTypes = {}

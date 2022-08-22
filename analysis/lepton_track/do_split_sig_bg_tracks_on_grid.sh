@@ -14,6 +14,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --phase1)
+        PHASE1=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -28,11 +33,15 @@ OUTPUT_DIR=$LEPTON_TRACK_SPLIT_DIR
 COMMAND=$LEPTON_TRACK_DIR/split_sig_bg_tracks.py
 
 if [ -n "$JPSI" ]; then
-    INPUT_DIR=$SKIM_MASTER_OUTPUT_DIR/sum/type_sum
+    INPUT_DIR=$SKIM_SIG_PHASE1_OUTPUT_DIR/sum/type_sum
     OUTPUT_DIR=$SPLIT_JPSI_MASTER_OUTPUT_DIR
     COMMAND=$LEPTON_TRACK_DIR/split_jpsi_events.py
+elif [ -n "$PHASE1" ]; then
+    INPUT_DIR=$SKIM_SIG_PHASE1_OUTPUT_DIR/sum/
+    OUTPUT_DIR=$LEPTON_TRACK_PHASE1_SPLIT_DIR
 fi
 
+echo "input dir:" $INPUT_DIR
 echo "output dir:" $OUTPUT_DIR
 
 #check output directory
@@ -70,6 +79,12 @@ for f in $INPUT_DIR/*; do
     if [[ $filename == *"dm13p"* || $filename == *"dm12p"* || $filename == *"dm9p"* || $filename == *"dm7p"* || $filename == *"dm5p"* ]]; then
         echo $filename contains large dm... Skipping...
         continue
+    fi
+    if [ -n "$PHASE1" ]; then
+        if [[ $filename == *"dm4p"* || $filename == *"dm3p"* ]]; then
+            echo $filename contains large dm... Skipping...
+            continue
+        fi
     fi
     if [ -f $OUTPUT_DIR/single/${filename}_sig.root ] && [ -f $OUTPUT_DIR/single/${filename}_bg.root ]; then
         echo "$name exist. Skipping..."

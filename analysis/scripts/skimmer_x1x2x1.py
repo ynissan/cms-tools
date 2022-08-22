@@ -42,6 +42,7 @@ parser.add_argument('-nlp', '--no_lepton_selection', dest='no_lepton_selection',
 parser.add_argument('-jpsi_muons', '--jpsi_muons', dest='jpsi_muons', help='JPSI Muons Skim', action='store_true')
 parser.add_argument('-jpsi_electrons', '--jpsi_electrons', dest='jpsi_electrons', help='JPSI Electrons Skim', action='store_true')
 parser.add_argument('-testing', '--testing', dest='testing', help='testing', action='store_true')
+parser.add_argument('-phase1', '--phase1', dest='phase1', help='phase1', action='store_true')
 
 args = parser.parse_args()
 
@@ -117,6 +118,10 @@ def main():
     jpsi_electrons = args.jpsi_electrons
     jpsi = False
     testing = args.testing
+    phase1 = args.phase1
+    
+    if signal and phase1:
+        sam = True
     
     if dy:
         print("Got Drell-Yan")
@@ -500,7 +505,10 @@ def main():
     crossSection = 1
     if signal:
         if sam:
-            chiM = os.path.basename(input_file).split("_")[2]
+            if phase1:
+                chiM = os.path.basename(input_file).split("_")[3]
+            else:
+                chiM = os.path.basename(input_file).split("_")[2]
             print("Got chiM=" + chiM)
             crossSection = utils.samCrossSections.get(chiM)
             print("Cross Section is", crossSection)
@@ -988,24 +996,25 @@ def main():
                     eval(leptonsVecName.lower() + "CalcObs")[leptonsVecName  + "_minDeltaRJets"].push_back(min)
                     eval(leptonsVecName.lower() + "CalcObs")[leptonsVecName  + "_closestJet"].push_back(minCan)
                 
-                min, minCan = analysis_ntuples.minDeltaLepLeps(leptonsVec[i], isoJets[lep]["JetIso"])
-                if min is None or min > 0.4:
-                    leptonsCorrJetVars[isoJets[lep]["obs"] + "_passJetIso"].push_back(True)
-                    leptonsCorrJetVars[isoJets[lep]["obs"] + "_passJetD3Iso"].push_back(False)
-                    leptonsCorrJetVars[isoJets[lep]["obs"] + "_minDrJetD3Iso"].push_back(-1)
-                else:
-                    leptonsCorrJetVars[isoJets[lep]["obs"] + "_passJetIso"].push_back(False)
-                    if min is not None and isoJets[lep]["JetIso"][minCan].Pt() < 30:
-                        min, minCan = analysis_ntuples.minDeltaLepLeps(leptonsVec[i], isoJets[lep]["JetD3Iso"])
-                        if min is not None and min < 0.4:# and min >= 0.2:
-                            leptonsCorrJetVars[isoJets[lep]["obs"] + "_passJetD3Iso"].push_back(True)
-                            leptonsCorrJetVars[isoJets[lep]["obs"] + "_minDrJetD3Iso"].push_back(min)
-                        else:
-                            leptonsCorrJetVars[isoJets[lep]["obs"] + "_passJetD3Iso"].push_back(False)
-                            leptonsCorrJetVars[isoJets[lep]["obs"] + "_minDrJetD3Iso"].push_back(-1)
-                    else:
-                        leptonsCorrJetVars[isoJets[lep]["obs"] + "_passJetD3Iso"].push_back(False)
-                        leptonsCorrJetVars[isoJets[lep]["obs"] + "_minDrJetD3Iso"].push_back(-1)
+                # min, minCan = analysis_ntuples.minDeltaLepLeps(leptonsVec[i], isoJets[lep]["JetIso"])
+#                 if min is None or min > 0.4:
+#                     pass
+#                     leptonsCorrJetVars[isoJets[lep]["obs"] + "_passJetIso"].push_back(True)
+#                     leptonsCorrJetVars[isoJets[lep]["obs"] + "_passJetD3Iso"].push_back(False)
+#                     leptonsCorrJetVars[isoJets[lep]["obs"] + "_minDrJetD3Iso"].push_back(-1)
+#                 else:
+#                     leptonsCorrJetVars[isoJets[lep]["obs"] + "_passJetIso"].push_back(False)
+#                     if min is not None and isoJets[lep]["JetIso"][minCan].Pt() < 30:
+#                         min, minCan = analysis_ntuples.minDeltaLepLeps(leptonsVec[i], isoJets[lep]["JetD3Iso"])
+#                         if min is not None and min < 0.4:# and min >= 0.2:
+#                             leptonsCorrJetVars[isoJets[lep]["obs"] + "_passJetD3Iso"].push_back(True)
+#                             leptonsCorrJetVars[isoJets[lep]["obs"] + "_minDrJetD3Iso"].push_back(min)
+#                         else:
+#                             leptonsCorrJetVars[isoJets[lep]["obs"] + "_passJetD3Iso"].push_back(False)
+#                             leptonsCorrJetVars[isoJets[lep]["obs"] + "_minDrJetD3Iso"].push_back(-1)
+#                     else:
+#                         leptonsCorrJetVars[isoJets[lep]["obs"] + "_passJetD3Iso"].push_back(False)
+#                         leptonsCorrJetVars[isoJets[lep]["obs"] + "_minDrJetD3Iso"].push_back(-1)
         
         jetsCalcObs["Jets_muonCorrected"] = cppyy.gbl.std.vector(TLorentzVector)(jetsObs["Jets"])
         jetsCalcObs["Jets_electronCorrected"] = cppyy.gbl.std.vector(TLorentzVector)(jetsObs["Jets"])
@@ -1059,15 +1068,15 @@ def main():
                         for drCut in utils.leptonCorrJetIsoDrCuts:
                             cuts = str(ptRange) + "Dr" + str(drCut)
                             print("***We don't have any JET?")
-                            leptonsCorrJetVars[isoJets[lep]["obs"] + "_passCorrJetIso" + cuts].push_back(True)
+                            #leptonsCorrJetVars[isoJets[lep]["obs"] + "_passCorrJetIso" + cuts].push_back(True)
                             leptonsCorrJetVars[isoJets[lep]["obs"] + "_passCorrJetNoMultIso" + cuts].push_back(True)
-                            leptonsCorrJetVars[isoJets[lep]["obs"] + "_passCorrJetD3Iso" + cuts].push_back(False)
+                            #leptonsCorrJetVars[isoJets[lep]["obs"] + "_passCorrJetD3Iso" + cuts].push_back(False)
                             leptonsCorrJetVars[isoJets[lep]["obs"] + "_passCorrJetNoMultD3Iso" + cuts].push_back(False)
                 else:
                     eval(leptonsVecName.lower() + "CalcObs")[leptonsVecName  +  "_correctedMinDeltaRJets"].push_back(min)
                     eval(leptonsVecName.lower() + "CalcObs")[leptonsVecName  +  "_correctedClosestJet"].push_back(minCan)
                     
-                    for lepIso in ["CorrJetIso", "CorrJetNoMultIso"]:
+                    for lepIso in ["CorrJetNoMultIso"]:#["CorrJetIso", "CorrJetNoMultIso"]:
                         d3Iso = "CorrJetD3Iso" if lepIso == "CorrJetIso" else "CorrJetNoMultD3Iso"
                         for ptRange in utils.leptonCorrJetIsoPtRange:
                         
@@ -1553,7 +1562,7 @@ def main():
             vars["tEffhMetMhtRealXMht2017"][0] = tEffhMetMhtRealXMht2017.Eval(MHT)
             vars["tEffhMetMhtRealXMht2018"][0] = tEffhMetMhtRealXMht2018.Eval(MHT)
             
-            if signal and sam:
+            if signal and sam and not phase1:
                 vars["FastSimWeightPR31285To36122"][0] = c.FastSimWeightPR31285To36122
             else:
                 vars["FastSimWeightPR31285To36122"][0] = 1

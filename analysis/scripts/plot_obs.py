@@ -485,25 +485,38 @@ def plotRatio(c1, pad, memory, numHist, denHist, hist_def, numLabel = "Data", de
     line.SetLineColor(kRed);
     line.Draw("SAME");
     
-    tl = TLatex()
-    tl.SetNDC()
-    print((tl.GetTextSize()))
-    tl.SetTextSize(0.15) 
-    print((tl.GetTextSize()))
-    #tl.SetTextSize(0.5)
-    tl.SetTextFont(42)
-    
-    
-    tl.DrawLatex(.2,.4,"p-value = " + "{:.2f}".format(chi2))
+    # tl = TLatex()
+#     tl.SetNDC()
+#     print((tl.GetTextSize()))
+#     tl.SetTextSize(0.15) 
+#     print((tl.GetTextSize()))
+#     tl.SetTextFont(42)
+    #tl.DrawLatex(.2,.4,"p-value = " + "{:.2f}".format(chi2))
     
     #tl.DrawLatex(.2,.5,"tf = " + "{:.2f}".format(tf))
     
     #tl.DrawLatex(.1,.01,"error = " + "{:.2f}".format(100 * fit_only_signal_integral_error[hist_def["obs"]] / fit_only_signal_integral[hist_def["obs"]]) + "%")
                 
-    
-    
+
     memory.append(line)
     c1.Modified()
+    
+    if plot_par.fit_linear_ratio_plot:
+        fLine = TF1('fLine', funcBackground, -1, 1, 2)
+        fLine.SetParameter(0, 1)
+        fLine.SetParameter(1, 0)
+        fLine.SetLineWidth(2)
+        fLine.SetLineColor(kBlue)
+        fitresult = rdataHist.Fit(fLine, 's0', 'same',-1,1)
+        chi2perndof = fLine.GetChisquare()/fLine.GetNDF()
+        print("chi2perndof", chi2perndof)
+        fLine.Draw("SAME")
+        tl = TLatex()
+        tl.SetNDC()
+        tl.SetTextSize(0.15) 
+        tl.SetTextFont(42)
+        tl.DrawLatex(.2,.4, " m = " + "{:.2f}".format(fLine.GetParameter(1)) + " +- " +  "{:.2f}".format(fLine.GetParError(1)) + " b = " + "{:.2f}".format(fLine.GetParameter(0)) + " +- " + "{:.2f}".format(fLine.GetParError(0)))
+        #"ch2/ndof = " + "{:.2f}".format(chi2perndof)
 
 def createSumTypes(sumTypes):
     if plot_par.plot_bg:
@@ -793,9 +806,6 @@ def normaliseBgTypes(histograms):
                                     histograms[hname].Scale(1./integral)
                                     print(("after normalising", histograms[hname], "with integral", histograms[hname].Integral()))
                                     
-
-def scaleHistograms(plot_par, histograms):
-    exit(0)
     
 # if hist_def.get("scale") is not None and hist_def["scale"] == "width":
 #                                 print "Scale(1, width)"
@@ -1306,6 +1316,11 @@ def main():
                         scDataHistNorm = scDataHist.Clone()
                         scDataHistNorm.Scale(1./scDataHistNorm.Integral())
                         maximum = max(scDataHistNorm.GetMaximum(), maximum)
+                    elif not plot_par.normalise and plot_par.transfer_factor > 0:
+                        print("Applying transfer factor", plot_par.transfer_factor, plot_par.transfer_factor_error)
+                        scDataHistNorm = scDataHist.Clone()
+                        utils.scaleHistogram(scDataHistNorm, plot_par.transfer_factor, plot_par.transfer_factor_error)
+                        maximum = max(scDataHistNorm.GetMaximum(), maximum)
                     else:
                         maximum = max(scDataHist.GetMaximum(), maximum)
                 scBgHistName = "sc_" + cut["name"] + "_" + hist_def["obs"] + "_bg"
@@ -1317,7 +1332,8 @@ def main():
                         maximum = max(scBgHistNorm.GetMaximum(), maximum)
                     elif plot_par.transfer_factor > 0:
                         scBgHistNorm = scBgHist.Clone()
-                        scBgHistNorm.Scale(plot_par.transfer_factor)
+                        utils.scaleHistogram(scBgHistNorm, plot_par.transfer_factor, plot_par.transfer_factor_error)
+                        #scBgHistNorm.Scale(plot_par.transfer_factor)
                         maximum = max(scBgHistNorm.GetMaximum(), maximum)
                     else:
                         maximum = max(scBgHist.GetMaximum(), maximum)
@@ -1559,6 +1575,9 @@ def main():
                     scDataHist = histograms[scDataHistName]
                     if plot_par.normalise:
                         scDataHist.Scale(1./scDataHist.Integral())
+                    elif not plot_par.normalise and plot_par.transfer_factor > 0:
+                        print("Applying transfer factor", plot_par.transfer_factor, plot_par.transfer_factor_error)
+                        utils.scaleHistogram(scDataHist, plot_par.transfer_factor, plot_par.transfer_factor_error)
                     if not (linear and plot_single):
                         scDataHist.SetMinimum(0.0001)
                     else:
@@ -1591,9 +1610,10 @@ def main():
                     if plot_par.normalise and scBgHist.Integral() > 0:
                         scBgHist.Scale(1./scBgHist.Integral())
                     elif plot_par.transfer_factor > 0:
-                        print("Applying transfer factor", plot_par.transfer_factor)
+                        print("Applying transfer factor", plot_par.transfer_factor, plot_par.transfer_factor_error)
                         #exit(0)
-                        scBgHist.Scale(plot_par.transfer_factor)
+                        utils.scaleHistogram(scBgHist, plot_par.transfer_factor, plot_par.transfer_factor_error)
+                        #scBgHist.Scale(plot_par.transfer_factor)
                         intError  = c_double()
                         sc_bg_count = scBgHist.IntegralAndError(scBgHist.FindBin(-1), scBgHist.FindBin(0), intError)
                         
@@ -2576,7 +2596,7 @@ def main():
                 if plot_par.plot_ratio and ratioPads.get(pId) is not None:
                     ratioPads[pId][0].Clear()
                     ratioPads[pId][1].Clear()
-                    if (plot_par.plot_sc and plot_par.plot_data) or plot_par.plot_custom_ratio > 1:
+                    if (plot_par.plot_sc and plot_par.plot_data and plot_par.plot_bg) or plot_par.plot_custom_ratio > 1:
                         ratioPads[pId][2].Clear()
                 else:
                     pad.Clear()

@@ -173,6 +173,8 @@ class BaseParams:
     fit_inv_mass_jpsi_func_bg = False
     fit_inv_mass_jpsi_bg_func = "linear"
     
+    fit_linear_ratio_plot = False
+    
     save_histrograms_to_file = False
     load_histrograms_from_file = False
     histrograms_file = ""
@@ -218,6 +220,7 @@ class BaseParams:
     usedObs = []
     
     transfer_factor = -1
+    transfer_factor_error = -1
     
     colorPalette = plotutils.defaultColorPalette
     

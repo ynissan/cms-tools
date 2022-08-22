@@ -149,16 +149,16 @@ tracksVars = (
 
 
 leptonsCorrJetVecList = {
-    "CorrJetIso" : "bool",
-    "CorrJetD3Iso" : "bool",
+    #"CorrJetIso" : "bool",
+    #"CorrJetD3Iso" : "bool",
     #"NonJetIso" : "bool",
     
     
     "CorrJetNoMultIso" : "bool",
     "CorrJetNoMultD3Iso" : "bool",
     
-    "JetIso" : "bool",
-    "JetD3Iso" : "bool",
+    #"JetIso" : "bool",
+    #"JetD3Iso" : "bool",
     
     "NoIso" : "bool",
 }
@@ -170,15 +170,22 @@ leptonCorrJetIsoDrCuts = [0.4,0.45,0.5,0.55,0.6]
 
 #leptonCorrJetIsoPtRange = [0, 10]
 
-defaultJetIsoSetting = "CorrJetIso10Dr0.5"
+defaultJetIsoSetting = "NoIso"
 
 #leptonIsolationList = [ "JetIso", "CorrJetIso", "NonJetIso" ]
 #leptonIsolationList = [ "CorrJetIso", "NonJetIso", "NoIso" ]
 #Old list
 #leptonIsolationList = [ "CorrJetIso", "NoIso" ]
 #New List
-leptonIsolationList = [ "NoIso", "CorrJetIso", "CorrJetNoMultIso", "JetIso" ]
-leptonIsolationCrList = [ "CorrJetD3Iso", "CorrJetNoMultD3Iso","JetD3Iso" ]
+#leptonIsolationList = [ "NoIso", "CorrJetIso", "CorrJetNoMultIso", "JetIso" ]
+#leptonIsolationCrList = [ "CorrJetD3Iso", "CorrJetNoMultD3Iso","JetD3Iso" ]
+
+
+#Finalising
+leptonIsolationList = [ "NoIso", "CorrJetNoMultIso" ]
+leptonIsolationCrList = [ "CorrJetNoMultD3Iso" ]
+
+
 leptonIsolationIncList = leptonIsolationList + leptonIsolationCrList
 # leptonIsolationCategories = {
 #     "" : { "lowPtTightMuons" : False, "muonPt" : 2},
@@ -638,6 +645,8 @@ def getLeptonCollectionFileMapFile(baseFileName):
         mapNameFile = "Run2016_SingleMuon.root"
     elif "Run2016" in baseFileName and "SingleElectron" in baseFileName:
         mapNameFile = "Run2016_SingleElectron.root"
+    elif "RunIIFall17MiniAODv2" in baseFileName:
+        mapNameFile = "Fall17." + ("_".join(baseFileName.split(".")[1].split("_")[0:3])).split("AOD")[0] + ".root"
     else:
         mapNameFile = ("_".join(baseFileName.split(".")[1].split("_")[0:3])).split("AOD")[0] + ".root"
 

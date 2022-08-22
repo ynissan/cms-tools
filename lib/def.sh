@@ -21,17 +21,25 @@ declare -A SIM_GROUP=(
            ["all"]="dm1p dm2p dm3p dm4p" \
            )
 
+declare -A SIM_GROUP_PHASE1=(
+           ["all"]="dm0p dm1p dm2p" \
+           )
+
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$CMSSW_BASE/src/cms-tools/lib/classes"
 
 
 BG_NTUPLES="/pnfs/desy.de/cms/tier2/store/user/*/NtupleHub/ProductionRun2v3*"
 SIM_NTUPLES_DIR="/pnfs/desy.de/cms/tier2/store/user/ynissan/NtupleHub/SignalNtuplesSplit"
 SAM_NEW_SIM_NTUPLES_DIR="/pnfs/desy.de/cms/tier2/store/user/sbein/CommonSamples/RadiativeMu_2016Fast/ntuple_sidecar/"
-SAM_NEW_SIM_NTUPLES_DIR="/nfs/dust/cms/user/beinsam/CommonSamples/NtupleMaker/3March2020/CMSSW_9_4_11/src/TreeMaker/Production/test"
+
+
+SAM_NEW_SIM_NTUPLES_DIR="/pnfs/desy.de/cms/tier2/store/user/sbein/CommonSamples/RadiativeMu_2016Fast/ntuple_sidecarv2/"
+SAM_SIM_NTUPLES_17_DIR="/pnfs/desy.de/cms/tier2/store/user/sbein/CommonSamples/RadiativeMu_2017Fast/ntuple_sidecarv3/"
+
+#SAM_NEW_SIM_NTUPLES_DIR="/nfs/dust/cms/user/beinsam/CommonSamples/NtupleMaker/3March2020/CMSSW_9_4_11/src/TreeMaker/Production/test"
 DATA_NTUPLES_DIR="/pnfs/desy.de/cms/tier2/store/user/*/NtupleHub/ProductionRun2v3*"
 
 BG_TYPES=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays DYJetsToLL WJetsToLNu ZJetsToNuNu WZZ WWZ WW WZ ZZZ ZZ)
-
 BG_TYPES_17=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays DYJetsToLL WJetsToLNu ZJetsToNuNu WZZ WWZ WWW ZZZ ZZTo2L2Q WZTo1L1Nu2Q WZTo1L3Nu WWTo1L1Nu2Q )
 #BG_TYPES=(QCD)
 
@@ -61,7 +69,8 @@ MAD_HT_SPLIT_TYPES=()
 # LEPTON_ISOLATION_CATEGORIES=("" LowPt LowPtTight)
 # LEPTON_CORR_JET_ISO_RANGE=(0 1 5 10 15)
 
-LEPTON_ISOLATION_LIST=(NoIso CorrJetIso CorrJetNoMultIso JetIso)
+#LEPTON_ISOLATION_LIST=(NoIso CorrJetIso CorrJetNoMultIso JetIso)
+LEPTON_ISOLATION_LIST=(NoIso CorrJetNoMultIso)
 LEPTON_ISOLATION_CATEGORIES=("")
 LEPTON_CORR_JET_ISO_RANGE=(0 1 5 6 7 8 9 10 10.5 11 11.5 12 12.5 13 15 20)
 LEPTON_CORR_JET_ISO_DR_CUTS=(0.4 0.45 0.5 0.55 0.6)
@@ -95,7 +104,7 @@ DATA_DIR="$CMS_TOOLS/data"
 BG_DIR="$CMS_TOOLS/bg"
 BG_HIST_DIR="$OUTPUT_WD/bg/hist"
 SKIM_OUTPUT_DIR="$OUTPUT_WD/bg/skim"
-SKIM_MASTER_OUTPUT_DIR="$OUTPUT_WD/bg/skim_master"
+SKIM_PHASE1_OUTPUT_DIR="$OUTPUT_WD/bg/skim_phase1"
 SKIM_JPSI_SINGLE_ELECTRON_OUTPUT_DIR="$OUTPUT_WD/bg/skim_jpsi_single_electron"
 SKIM_Z_PEAK_OUTPUT_DIR="$OUTPUT_WD/bg/skim_z"
 TWO_LEPTONS_SKIM_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/bg/skim"
@@ -107,6 +116,7 @@ LC_OUTPUT_DIR="$OUTPUT_WD/bg/lc"
 LC_DATA_OUTPUT_DIR="$OUTPUT_WD/data/lc"
 SKIM_SIG_OUTPUT_DIR="$OUTPUT_WD/signal/skim"
 SKIM_SIG_SAM_OUTPUT_DIR="$OUTPUT_WD/signal/skim_sam"
+SKIM_SIG_PHASE1_OUTPUT_DIR="$OUTPUT_WD/signal/skim_phase1"
 SKIM_SIG_NLP_OUTPUT_DIR="$OUTPUT_WD/signal/skim_nlp"
 TWO_LEPTONS_SKIM_SIG_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/signal/skim"
 TWO_LEPTONS_SAM_SKIM_SIG_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/signal/skim_sam"
@@ -143,18 +153,21 @@ SKIM_DATA_SIG_DILEPTON_BDT_SC_OUTPUT_DIR="$OUTPUT_WD/data/skim_dilepton_signal_b
 SKIM_DATA_SIG_DILEPTON_BDT_DY_OUTPUT_DIR="$DY_OUTPUT_WD/data/skim_dilepton_signal_bdt"
 SKIM_DATA_JPSI_MUONS_OUTPUT_DIR="$OUTPUT_WD/data/skim_muons_jpsi"
 SKIM_DATA_MINI_OUTPUT_DIR="$OUTPUT_WD/data/skim_mini"
-SKIM_DATA_MASTER_OUTPUT_DIR="$OUTPUT_WD/data/skim_master"
+SKIM_DATA_PHASE1_OUTPUT_DIR="$OUTPUT_WD/data/skim_phase1"
 SKIM_DATA_JPSI_SINGLE_ELECTRON_OUTPUT_DIR="$OUTPUT_WD/data/skim_jpsi_single_electron"
 SKIM_DATA_Z_PEAK_OUTPUT_DIR="$OUTPUT_WD/data/skim_z"
 
 SIG_DUP_OUTPUT_DIR="$OUTPUT_WD/signal/dup"
 LEPTON_TRACK_SPLIT_DIR="$OUTPUT_WD/signal/lepton_track"
+LEPTON_TRACK_PHASE1_SPLIT_DIR="$OUTPUT_WD/signal/lepton_track_phase1"
+
 
 SPLIT_JPSI_MASTER_OUTPUT_DIR="$SKIM_MASTER_OUTPUT_DIR/split"
 
 RGS_DIR="/afs/desy.de/user/n/nissanuv/cms-tools/analysis/cut_optimisation/rgs"
 RESUMMINO_BIN="/afs/desy.de/user/n/nissanuv/local/bin/resummino"
 DILEPTON_BDT_DIR="$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt"
+DILEPTON_BDT_PHASE1_DIR="$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt_phase1"
 DILEPTON_TWO_LEPTONS_BDT_DIR="$TWO_LEPTONS_OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt"
 
 if [[ `hostname` == *".desy.de"* ]]; then

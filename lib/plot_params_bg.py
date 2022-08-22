@@ -249,7 +249,7 @@ class track_muon_sc_comparison(BaseParams):
     histrograms_file = BaseParams.histograms_root_files_dir + "/track_muon_sc_comparison.root"
     bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum"
     save_histrograms_to_file = True
-    load_histrograms_from_file = False 
+    load_histrograms_from_file = True 
     
     cuts = [
         {"name":"none", "title": "None", "condition" : "(MinDeltaPhiMhtJets > 0.4 && MHT >= 220 &&  MET >= 140 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "exclusiveTrack%%% == 1 && trackBDT%%% > 0 && exTrack_invMass%%% < 12 && exclusiveTrackLeptonFlavour%%% == \"Muons\"", "sc" : "sc_exclusiveTrack%%% == 1 && sc_trackBDT%%% > 0 && sc_exTrack_invMass%%% < 12 && sc_exclusiveTrackLeptonFlavour%%% == \"Muons\"" },
@@ -264,7 +264,7 @@ class track_muon_sc_comparison(BaseParams):
     injectJetIsoToHistograms(histograms_defs, "CorrJetNoMultIso10Dr0.6")  
     
     weightString = {
-        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight * BranchingRatio",
+        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * BranchingRatio",
     }
     
     plot_data = False
@@ -376,6 +376,7 @@ class dimuon_background_estimation_non_isolated_and_tautau(BaseParams):
     histograms_defs = [     
         #{ "obs" : "dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
         { "obs" : "dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.05,0.15,0.25,0.35,0.45,0.6,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
+                                                                                                                                                        
         { "obs" : "fine_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 40, "units" : "BDT", "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}}
     ]
     injectJetIsoToHistograms(histograms_defs, jetIso)
@@ -433,6 +434,31 @@ class dimuon_background_estimation_non_isolated_and_tautau_run2(dimuon_backgroun
         "tautau" : [(run2lumi/calculatedLumi2016) * 1.44864,0.46772],
         "non-iso" : [(run2lumi/calculatedLumi2016) * 0.4604,0.06955]
     }
+
+signals = [
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim_sum/higgsino_mu100_dm1p13Chi20Chipm_1.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim_sum/higgsino_mu100_dm1p47Chi20Chipm_1.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim_sum/higgsino_mu100_dm1p92Chi20Chipm_1.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim_sum/higgsino_mu100_dm3p28Chi20Chipm_1.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim_sum/higgsino_mu100_dm4p30Chi20Chipm_1.root"
+              ]
+
+signalNames = [
+    "\Delta_{}M 1.13 Gev",
+    "\Delta_{}M 1.47 Gev",
+    "\Delta_{}M 1.9 Gev",
+    "\Delta_{}M 3.2 Gev",
+    "\Delta_{}M 4.3 Gev",
+]
+
+class dimuon_background_estimation_non_isolated_and_tautau_and_signal(dimuon_background_estimation_non_isolated_and_tautau):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dimuon_background_estimation_non_isolated_and_tautau_and_signal.root"
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True
+    plot_signal = True
+    signal_dir = signals
+    signal_names = signalNames
+    
 
 class dimuon_background_data_estimation_vs_mc_non_isolated(BaseParams):
     histrograms_file = BaseParams.histograms_root_files_dir + "/dimuon_background_data_estimation_vs_mc_non_isolated.root"

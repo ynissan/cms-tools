@@ -9,6 +9,27 @@ timestamp=$(date +%Y%m%d_%H%M%S%N)
 output_file="${WORK_DIR}/condor_submut.${timestamp}"
 echo "output file: $output_file"
 
+#---------- GET OPTIONS ------------
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        --phase1)
+        PHASE1=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
+        *)    # unknown option
+        POSITIONAL+=("$1") # save it in an array for later
+        shift # past argument
+        ;;
+    esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+#---------- END OPTIONS ------------
+
 cat << EOM > $output_file
 universe = vanilla
 should_transfer_files = IF_NEEDED
@@ -19,26 +40,42 @@ priority = 0
 request_memory = 16 GB
 EOM
 
-if [ ! -d "$LEPTON_TRACK_SPLIT_DIR/cut_optimisation" ]; then
-    mkdir "$LEPTON_TRACK_SPLIT_DIR/cut_optimisation"
+SPLIT_DIR=$LEPTON_TRACK_SPLIT_DIR
+
+SIM_GROUP_KEYS="${!SIM_GROUP[@]}"
+echo "SIM_GROUP_KEYS $SIM_GROUP_KEYS"
+if [ -n "$PHASE1" ]; then
+    SPLIT_DIR=$LEPTON_TRACK_PHASE1_SPLIT_DIR
+    SIM_GROUP_KEYS="${!SIM_GROUP_PHASE1[@]}"
 fi
 
-if [ ! -d "$LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva" ]; then
-    mkdir "$LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva"
+if [ ! -d "$SPLIT_DIR/cut_optimisation" ]; then
+    mkdir "$SPLIT_DIR/cut_optimisation"
+fi
+
+if [ ! -d "$SPLIT_DIR/cut_optimisation/tmva" ]; then
+    mkdir "$SPLIT_DIR/cut_optimisation/tmva"
 else
     #rm -rf "$LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva"
-    mkdir "$LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva"
+    mkdir "$SPLIT_DIR/cut_optimisation/tmva"
 fi
 
-for group in "${!SIM_GROUP[@]}"; do
-    value=${SIM_GROUP[$group]}
+for group in $SIM_GROUP_KEYS; do
+    echo "Running on group $group"
+    value=""
+    if [ -n "$PHASE1" ]; then
+        value=${SIM_GROUP_PHASE1[$group]}
+    else
+        value=${SIM_GROUP[$group]}
+    fi
+    echo "Value is $value"
     input=""
     background=""
     for pattern in $value; do
-        input="$input $LEPTON_TRACK_SPLIT_DIR/single/*$pattern*_sig.root"
-        background="$background $LEPTON_TRACK_SPLIT_DIR/single/*$pattern*_bg.root"
+        input="$input $SPLIT_DIR/single/*$pattern*_sig.root"
+        background="$background $SPLIT_DIR/single/*$pattern*_bg.root"
     done
-    dir="$LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/${group}"
+    dir="$SPLIT_DIR/cut_optimisation/tmva/${group}"
     mkdir $dir
     cmd="$CONDOR_WRAPPER $CUT_OPTIMISATION_SCRIPTS/track_tmva.py -i $input -bg  $background --no_norm -o $dir/${group}.root"
     echo $cmd

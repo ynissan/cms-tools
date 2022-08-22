@@ -19,12 +19,14 @@ parser.add_argument('-i', '--input_dir', nargs=1, help='Input Directory', requir
 parser.add_argument('-f', '--force', dest='force', help='Force Update', action='store_true')
 parser.add_argument('-data', '--data', dest='data', help='data', action='store_true')
 parser.add_argument('-sam', '--sam', dest='sam', help='Sam Samples', action='store_true')
+parser.add_argument('-phase1', '--phase1', dest='phase1', help='Sam Samples', action='store_true')
 args = parser.parse_args()
 
 input_dir = args.input_dir[0]
 force = args.force
 sam = args.sam
 data = args.data
+phase1 = args.phase1
 ######## END OF CMDLINE ARGUMENTS ########
 
 fileList = glob(input_dir + "/*");
@@ -34,7 +36,11 @@ for filename in fileList:
     f = TFile(filename, "update")
     numOfEvents = 0
     if sam:
-        point = "_".join(os.path.basename(filename).split("_")[2:4])
+        point = ""
+        if phase1:
+            point = "_".join(os.path.basename(filename).split("_")[3:5])
+        else:
+            point = "_".join(os.path.basename(filename).split("_")[2:4])
         point_files = glob(input_dir + "/*" + point + "*")
         print "point", point, "has", len(point_files), "files"
         numOfEvents = 20000 * len(point_files)

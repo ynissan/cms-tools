@@ -27,6 +27,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --phase1)
+        PHASE1=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -45,6 +50,8 @@ cmsenv
 
 #OUTPUT_DIR=$SKIM_BG_SIG_BDT_OUTPUT_DIR
 INPUT_DIR=$SKIM_OUTPUT_DIR
+TRACK_SPLIT_DIR=$LEPTON_TRACK_SPLIT_DIR
+
 
 if [ -n "$SC" ]; then
     echo "GOT SC"
@@ -57,6 +64,9 @@ elif [ -n "$DRELL_YAN" ]; then
     INPUT_DIR=$DY_SKIM_OUTPUT_DIR
 elif [ -n "$JPSI_MUONS" ]; then
     INPUT_DIR=$JPSI_MUONS_SKIM_OUTPUT_DIR
+elif [ -n "$PHASE1" ]; then
+    INPUT_DIR=$SKIM_PHASE1_OUTPUT_DIR
+    TRACK_SPLIT_DIR=$LEPTON_TRACK_PHASE1_SPLIT_DIR
 fi
 
 #echo OUTPUT_DIR=$OUTPUT_DIR
@@ -89,7 +99,7 @@ EOM
 FILES=$INPUT_DIR/sum/type_sum/*
 
 
-for sim in $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
+for sim in $TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
     filename=$(basename $sim .root)
 
     # if [ ! -d "$OUTPUT_DIR/$filename" ]; then
@@ -111,6 +121,7 @@ for sim in $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
 
     #for bg_file in $SKIM_OUTPUT_DIR/sum/type_sum/*ZJetsToNuNu_HT-100To200*; do
     #for bg_file in $SKIM_OUTPUT_DIR/sum/type_sum/WW_TuneCUETP8M1*; do
+    #
     for bg_file_name in ${FILES[@]}; do
     #for bg_file in $INPUT_DIR/sum/type_sum/*; do
         #bg_file=$INPUT_DIR/sum/type_sum/$bg_file_name
@@ -123,7 +134,7 @@ for sim in $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
             continue
         fi
         #cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_univ_bdt_track_bdt.py -i $bg_file -o $out_file -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@"
-        cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -bg -i $bg_file -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename $@"
+        cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -bg -i $bg_file -tb $TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename $@"
         echo $cmd
 cat << EOM >> $output_file
 arguments = $cmd

@@ -16,6 +16,7 @@ parser = argparse.ArgumentParser(description='Create skims for x1x2x1 process.')
 parser.add_argument('-tl', '--tl', dest='two_leptons', help='Two Leptons', action='store_true')
 parser.add_argument('-sam', '--sam', dest='sam', help='Sam Skims', action='store_true')
 parser.add_argument('-slim', '--slim', dest='slim', help='Slim Skims', action='store_true')
+parser.add_argument('-phase1', '--phase1', dest='phase1', help='Phase 1', action='store_true')
 parser.add_argument('-nlp', '--no_lepton_selection', dest='no_lepton_selection', help='No Lepton Selection Skim', action='store_true')
 args = parser.parse_args()
 
@@ -23,6 +24,7 @@ two_leptons = args.two_leptons
 sam = args.sam
 no_lepton_selection = args.no_lepton_selection
 slim = args.slim
+phase1 = args.phase1
 
 skim_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/single/"
 output_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum"
@@ -32,8 +34,12 @@ if slim:
     output_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim_sum"
 
 if sam:
-    skim_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_sam/single/"
-    output_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_sam/sum"
+    if phase1:
+        skim_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/single/"
+        output_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/sum"
+    else:
+        skim_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_sam/single/"
+        output_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_sam/sum"
 
 if two_leptons:
     skim_dir = "/afs/desy.de/user/n/nissanuv/nfs/2lx1x2x1/signal/skim/single/"
@@ -58,7 +64,10 @@ def chunker_longest(iterable, chunksize):
 for f in files:
     point = None
     if sam:
-        point = "_".join(os.path.basename(f).split("_")[2:4])
+        if phase1:
+            point = "_".join(os.path.basename(f).split("_")[3:5])
+        else:
+            point = "_".join(os.path.basename(f).split("_")[2:4])
     else:
         point = "_".join(os.path.basename(f).split("_")[0:3])
     if points.get(point) is None:

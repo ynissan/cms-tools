@@ -22,6 +22,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --phase1)
+        PHASE1=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -40,6 +45,7 @@ cmsenv
 
 #OUTPUT_DIR=$SKIM_SIG_BDT_OUTPUT_DIR
 INPUT_DIR=$SKIM_SIG_OUTPUT_DIR
+TRACK_SPLIT_DIR=$LEPTON_TRACK_SPLIT_DIR
 #OUTPUT_DIR="$OUTPUT_WD/signal/skim_signal_bdt_tighter"
 
 #if [ -n "$SC" ]; then
@@ -53,8 +59,12 @@ if [ -n "$SAM" ]; then
     echo "HERE: $@"
     INPUT_DIR=$SKIM_SIG_SAM_OUTPUT_DIR
     #OUTPUT_DIR=$SKIM_SAM_SIG_BDT_OUTPUT_DIR
+elif [ -n "$PHASE1" ]; then
+    echo "GOT PHASE1"
+    echo "HERE: $@"
+    INPUT_DIR=$SKIM_SIG_PHASE1_OUTPUT_DIR
+    TRACK_SPLIT_DIR=$LEPTON_TRACK_PHASE1_SPLIT_DIR
 fi
-
 # if [ -z "$SAM" ]; then
 #     #check output directory
 #     if [ ! -d "$OUTPUT_DIR" ]; then
@@ -169,7 +179,7 @@ echo -e "\n\nRUNNING ALL GROUP\n\n"
 #     mkdir "$OUTPUT_DIR/stderr"
 # fi
 
-if [ -n "$SAM" ]; then
+if [ -n "$SAM" ] || [ -n "$PHASE1" ]; then
     FILES=${INPUT_DIR}/sum/*
 else
     FILES=${INPUT_DIR}/single/*
@@ -189,9 +199,9 @@ for sim in ${FILES[@]}; do
     tb=all
     echo "Will run:"
     #echo $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_univ_bdt_track_bdt.py -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$tb  -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@
-    echo $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -i $sim -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$tb $@
+    echo $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -i $sim -tb $TRACK_SPLIT_DIR/cut_optimisation/tmva/$tb --signal $@
 cat << EOM >> $output_file
-arguments = $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -i $sim -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$tb $@
+arguments = $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -i $sim -tb $TRACK_SPLIT_DIR/cut_optimisation/tmva/$tb --signal $@
 error = ${INPUT_DIR}/stderr/${filename}_track_bdt.err
 output = ${INPUT_DIR}/stdout/${filename}_track_bdt.output
 log = ${INPUT_DIR}/stdout/${filename}_track_bdt.log

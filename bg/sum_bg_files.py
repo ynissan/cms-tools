@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3.8
 
 from ROOT import *
 from glob import glob
@@ -20,11 +20,14 @@ from lib import analysis_observables
 
 parser = argparse.ArgumentParser(description='Sum BG files.')
 parser.add_argument('-sum_2017_lepton_collection', '--sum_2017_lepton_collection', dest='sum_2017_lepton_collection', help='2017 Lepton Collection', action='store_true')
+parser.add_argument("-phase1", "--phase1", dest='phase1', help='2017 Background', action='store_true')
 args = parser.parse_args()
 
 sum_2017_lepton_collection = args.sum_2017_lepton_collection
+phase1 = args.phase1
 
 print("sum_2017_lepton_collection", sum_2017_lepton_collection)
+print("phase1", phase1)
 
 # gSystem.Load('LumiSectMap_C')
 # from ROOT import LumiSectMap
@@ -59,6 +62,8 @@ WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim"
 
 if sum_2017_lepton_collection:
     WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/lc"
+elif phase1:
+    WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_phase1"
 
 print("WORK_DIR", WORK_DIR)
 
@@ -148,6 +153,38 @@ file_num_per_type = {
 "WW_TuneCUETP8M1_13TeV-pythia8" : 50,
 }
 
+file_num_per_type_phase1 = {
+    "DYJetsToLL_M-50_HT-1200to2500" : 30,
+    "DYJetsToLL_M-50_HT-200to400" : 30,
+    "DYJetsToLL_M-50_HT-2500toInf" : 45,
+    "DYJetsToLL_M-50_HT-400to600" : 20,
+    "DYJetsToLL_M-50_HT-600to800" : 20,
+    "DYJetsToLL_M-50_HT-800to1200" : 20,
+    "DYJetsToLL_M-50_TuneCP5" : 400,
+    "QCD_HT1500to2000_TuneCP5" : 30,
+    "QCD_HT2000toInf_TuneCP5" : 30,
+    "QCD_HT200to300_TuneCP5" : 300,
+    "QCD_HT500to700_TuneCP5" : 200,
+    "TTJets_DiLept_TuneCP5" : 20,
+    "TTJets_SingleLeptFromT_TuneCP5" : 30,
+    "TTJets_SingleLeptFromTbar_TuneCP5" : 30,
+    "WJetsToLNu_HT-100To200_TuneCP5" : 30,
+    "WJetsToLNu_HT-1200To2500_TuneCP5" : 10,
+    "WJetsToLNu_HT-200To400_TuneCP5" : 20,
+    "WJetsToLNu_HT-2500ToInf_TuneCP5" : 10,
+    "WJetsToLNu_HT-400To600_TuneCP5" : 10,
+    "WJetsToLNu_HT-600To800_TuneCP5" : 10,
+    "WJetsToLNu_HT-800To1200_TuneCP5" : 10,
+    "WWTo1L1Nu2Q_13TeV_amcatnloFXFX" : 30,
+    "WZTo1L1Nu2Q_13TeV_amcatnloFXFX" : 30,
+    "WZTo1L3Nu_13TeV_amcatnloFXFX" : 30,
+    "ZJetsToNuNu_HT-200To400_13TeV-madgraph" : 30,
+    "ZJetsToNuNu_HT-400To600_13TeV-madgraph" : 20,
+    "ZJetsToNuNu_HT-600To800_13TeV-madgraph" : 20,
+    "ZJetsToNuNu_HT-800To1200_13TeV-madgraph" : 20,
+}
+
+
 def main():
     
     condor_f = open(condor_file,'w')
@@ -160,10 +197,10 @@ notification = Never
     
     print("Adding histograms.")
     fileList = glob(SINGLE_OUTPUT + "/*");
-    
+    totalFiles = 0
     for f in fileList:
         filename = os.path.basename(f).split(".")[1]
-
+        totalFiles += 1
         types = filename.split("_")
         type = types[0]
         
@@ -180,10 +217,11 @@ notification = Never
             sumTypes[type][types[1] + "_" + types[2]] = 1
         else:
             sumTypes[type][types[1] + "_" + types[2]] += 1
+    print("Total Files", totalFiles)
     print("printing sumTypes")
     print(sorted(sumTypes))
     print(sumTypes)
-    
+    #exit(0)
     for type in sumTypes:
         for typeRange in sumTypes[type]:
             print("\n\n\n\n\n-----")
@@ -204,6 +242,8 @@ notification = Never
                 prefix = "Summer16*."
                 if sum_2017_lepton_collection:
                     prefix = "Fall17."
+                elif phase1:
+                    prefix = "RunIIFall17MiniAODv2."
                 files = sorted(glob(SINGLE_OUTPUT + "/" + prefix + type + "_" + typeRange + "*.root"))
                 #command = "hadd -f " + file + " " + files
             
@@ -217,9 +257,9 @@ notification = Never
             #     
             #     print(chunk)
             
-            to_run = ["DYJetsToLL_M-50_TuneCP5", "QCD_HT500to700_TuneCP5", "TTJets_SingleLeptFromT_TuneCP5", "TTJets_SingleLeptFromTbar_TuneCP5", "WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8"]
-            if base_file not in to_run:
-                continue
+            #to_run = ["DYJetsToLL_M-50_TuneCP5", "QCD_HT500to700_TuneCP5", "TTJets_SingleLeptFromT_TuneCP5", "TTJets_SingleLeptFromTbar_TuneCP5", "WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8"]
+            #if base_file not in to_run:
+            #    continue
             
             first_file = OUTPOUT_TYPE_SUM + "/" + base_file + "_" + str(1) + ".root"
             if os.path.exists(first_file):
@@ -232,8 +272,12 @@ notification = Never
             
             if sum_2017_lepton_collection:
                 chunk_size = 1000000000000
+            elif phase1:
+                if base_file in file_num_per_type_phase1:
+                    chunk_size = file_num_per_type_phase1[base_file]
+                else:
+                    print("Don't have chunk_size for",base_file)
             else:
-            
                 if base_file in file_num_per_type:
                     chunk_size = file_num_per_type[base_file]
                 else:
@@ -243,7 +287,6 @@ notification = Never
                 if sum_2017_lepton_collection:
                     output_file = OUTPOUT_TYPE_SUM + "/Fall17." + base_file + ".root"
                     file_list_file = FILES_LIST_OUTPUT + "/Fall17." + base_file + ".txt"
-                    
                 else:
                     output_file = OUTPOUT_TYPE_SUM + "/" + base_file + "_" + str(i) + ".root"
                 

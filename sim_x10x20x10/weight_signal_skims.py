@@ -22,16 +22,20 @@ parser = argparse.ArgumentParser(description='Sum signal files.')
 parser.add_argument('-f', '--force', dest='force', help='Force Update', action='store_true')
 parser.add_argument('-sam', '--sam', dest='sam', help='Sam Skims', action='store_true')
 parser.add_argument('-nlp', '--nlp', dest='nlp', help='No Lepton Selection', action='store_true')
+parser.add_argument('-phase1', '--phase1', dest='phase1', help='Phase 1', action='store_true')
 args = parser.parse_args()
 
 force = args.force
 sam = args.sam
 nlp = args.nlp
+phase1 = args.phase1
 
 signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/single"
 
 if nlp:
     signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum"
+elif phase1:
+    signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/single"
 
 def main():
     points = {}
