@@ -69,8 +69,9 @@ common_histograms = [
 
 two_leps_histograms = [
     
-    
+    #HIST E
     { "obs" : "invMass%%%", "minX" : 0, "maxX" : 12, "bins" : 20, "blind" : [4,None],"units" : "M_{ll} [GeV]", "linearYspace" : 1.5, "legendCoor" : {"x1" : .35, "y1" : .65, "x2" : .98, "y2" : .95}, "legendCol" : 3  },
+#     { "obs" : "invMass%%%", "minX" : 0, "maxX" : 12, "bins" : 20, "units" : "M_{ll} [GeV]", "linearYspace" : 1.5, "legendCoor" : {"x1" : .35, "y1" : .65, "x2" : .98, "y2" : .95}, "legendCol" : 3  },
     
     
     
@@ -158,7 +159,7 @@ class stops_bg_vs_signal(BaseParams):
     histograms_defs = copy.deepcopy(common_histograms + two_leps_histograms)
     
     cuts = [
-    {"name":"none", "title": "MET > 140 && MinDeltaPhiMhtJets > 0.4", "condition" : "MET > 140 && MinDeltaPhiMhtJets > 0.4", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+    {"name":"none", "title": "MET > 140 && MinDeltaPhiMhtJets > 0.4", "condition" : "MET > 140 && MinDeltaPhiMhtJets > 0.4", "baseline" : " leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"}, 
 
 	{"name":"step1", "title": "MET > 140 && MinDeltaPhiMhtJets > 0.4 && leptons%%%[0].Pt() < 7 && leptons%%%[1].Pt() < 7", "condition" : "MET > 140 && BTagsDeepMedium > 0 && MinDeltaPhiMhtJets > 0.4", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
         
@@ -224,11 +225,11 @@ class stops_bg_vs_signal_Iso(BaseParams):
     histograms_defs = copy.deepcopy(common_histograms + two_leps_histograms)
 
     cuts = [
-    {"name":"none", "title": "MET > 140 && MinDeltaPhiMhtJets > 0.4", "condition" : "MET > 140 && MinDeltaPhiMhtJets > 0.4", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+    {"name":"none", "title": "MET > 140 && MinDeltaPhiMhtJets > 0.4", "condition" : "MET > 140 && MinDeltaPhiMhtJets > 0.4", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"}, #sc?
 
-    {"name":"step1", "title": "MET > 140 && MinDeltaPhiMhtJets > 0.4 && leptons%%%[0].Pt() < 7 && leptons%%%[1].Pt() < 7", "condition" : "MET > 140 && BTagsDeepMedium > 0 && MinDeltaPhiMhtJets > 0.4", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+    #{"name":"step1", "title": "MET > 140 && MinDeltaPhiMhtJets > 0.4 && leptons%%%[0].Pt() < 7 && leptons%%%[1].Pt() < 7", "condition" : "MET > 140 && BTagsDeepMedium > 0 && MinDeltaPhiMhtJets > 0.4", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
 
-    {"name":"step3", "title": "MET > 140 && BTagsDeepMedium > 1 && MinDeltaPhiMhtJets > 0.4", "condition" : "MET > 140 && BTagsDeepMedium > 1 && MinDeltaPhiMhtJets > 0.4", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
+    #{"name":"step3", "title": "MET > 140 && BTagsDeepMedium > 1 && MinDeltaPhiMhtJets > 0.4", "condition" : "MET > 140 && BTagsDeepMedium > 1 && MinDeltaPhiMhtJets > 0.4", "baseline" : "twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "sc" : "1"},
 
     ]
 
@@ -241,16 +242,16 @@ class stops_bg_vs_signal_Iso(BaseParams):
     y_title = "Events"
 
 
-	jetIsoStr = "CorrJetNoMultIso15Dr0.4"
-	injectJetIsoToCuts(cuts, jetIsoStr)
-	injectJetIsoToHistograms(histograms_defs, jetIsoStr)
+    jetIsoStr = "CorrJetNoMultIso15Dr0.4"
+    injectJetIsoToCuts(cuts, jetIsoStr)
+    injectJetIsoToHistograms(histograms_defs, jetIsoStr)
 
 
 
 class stops_bg_two_vs_three_muons_bg(stops_bg_vs_signal_Iso):
     histrograms_file = BaseParams.histograms_root_files_dir + "/stops_bg_two_vs_three_muons_bg.root"
     plot_signal = False
-    
+    no_weights = True
     bg_retag = True
     
     save_histrograms_to_file = True
@@ -278,19 +279,19 @@ class stops_bg_two_vs_three_muons_signal(stops_bg_two_vs_three_muons_bg):
     plot_bg = False
     
     save_histrograms_to_file = True
-    load_histrograms_from_file = True
+    load_histrograms_from_file = False
     
     
     signal_dir = [
         #skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm115GeV_dm0p6GeV_1.root",
-        skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm115GeV_dm1p0GeV_1.root",
-        #skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm200GeV_dm1p4GeV_1.root",
+        #skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm115GeV_dm1p0GeV_1.root",
+        skim_dir + "higgsino_Summer16_stopstop_700GeV_mChipm200GeV_dm1p4GeV_1.root",
         #skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm400GeV_dm1p4GeV_1.root",
     ]
     signal_names = [
     #"m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 0.6 Gev",
-    "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.0 Gev",
-    #"m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 1.4 Gev",
+    #"m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.0 Gev",
+    "m_{#tilde{t}} 700 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 1.4 Gev",
     #"m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 1.4 Gev",
 ]
     
@@ -305,7 +306,7 @@ class stops_bg_two_vs_three_muons_signal(stops_bg_two_vs_three_muons_bg):
                 ],
     }
     
-    no_weights = False
+    no_weights = True
     
     #injectJetIsoToMapValues(object_retag_map["l"], jetIsoStr)
     

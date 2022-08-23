@@ -21,7 +21,8 @@ args = parser.parse_args()
 
 #m_stop = 500, m_Chi_pm = 115, dm = 1.4
 signal_files = [
-glob("/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_*.root")
+glob("/nfs/dust/cms/user/diepholq/x1x2x1/signal/skim/sum/higgsino_Summer16_stopstop_700GeV_mChipm200GeV_dm1p4GeV_1.root")
+#glob("/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_*.root")
 #glob("/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim/single/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_*pu35_part*of25_RA2AnalysisTree.root")
 #glob("/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim_nlp/single/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_*pu35_part*of25_RA2AnalysisTree.root")
 #glob("/nfs/dust/cms/user/beinsam/CommonSamples/MC_BSM/CompressedHiggsino/RadiativeMu_2016Fast/ntuple_sidecarv3/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_*pu35_part*of25_RA2AnalysisTree.root")
@@ -65,10 +66,11 @@ def create_hist(Name,axisargs):
 	hist = TH1F(Name,Name,bins,lowest,highest)
 	histograms.update({Name: hist})
 
+#changed binning of inv mass hist from [40,0,10]
 arglist = ["Muon",[10,0,10],"RecoMuonMultiplicity",[10,0,10],"RecoMuonMultiplicityIso",[10,0,10],"GenfromStop",[10,0,10],"RecofromStop",[10,0,10],"RecofromStopIso",[10,0,10],"DeltaR",[50,0,5],"DeltaRljet",[50,0,5],"MuonParent",[12,0,12],"MuonParentInsideJet",[12,0,12],
 "MuonParentInsideBJet",[12,0,12],"MuonStopPt",[60,0,30],"RecoMuonStopPt",[60,0,30],"RecoMuonStopPtIso",[60,0,30],"MuonTopPt",[60,0,30],"RecoMuonTopPt",[60,0,30],"RecoMuonTopPtIso",[60,0,30],
 "FractionsBothGen2",[4,0,4],"FractionsSameChi2",[4,0,4],"Fakes2",[4,0,4],"FractionsBothGen3",[4,0,4],"FractionsSameChi3",[4,0,4],"Fakes3",[4,0,4],
-"FractionsBothGen4",[4,0,4],"FractionsSameChi4",[4,0,4],"Fakes4",[4,0,4],"pT2",[60,0,15],"pT3",[60,0,15],"pT4",[60,0,15],"invMass2",[40,0,10],"invMass3",[40,0,10],"invMass4",[40,0,10],"NSelectionMuonsIso",[6,0,6],"NSelectionMuonsNoIso",[6,0,6]]
+"FractionsBothGen4",[4,0,4],"FractionsSameChi4",[4,0,4],"Fakes4",[4,0,4],"pT2",[60,0,15],"pT3",[60,0,15],"pT4",[60,0,15],"invMass2",[20,0,12],"invMass3",[20,0,12],"invMass4",[20,0,12],"NSelectionMuonsIso",[6,0,6],"NSelectionMuonsNoIso",[6,0,6]]
 
 i = 0
 while i < len(arglist):
@@ -169,11 +171,11 @@ def plot_hist(key,linestyle,linewidth,linecolor,same,legendentry,pdf,canvasgloba
 		h1.SetLineColor(40)
 	if same == False:
 		canvas = TCanvas("canvas",key)
-		canvas.SetCanvasSize(800,600)
+		#canvas.SetCanvasSize(800,600)
 		legend = TLegend(0.7,0.7,0.9,0.9)
 		if legendentry is not None:
 			legend.AddEntry(key,legendentry,"f")
-		h1.Draw("hist")
+		h1.Draw("hist E")
 		if pdf == False:
 			return canvas,legend
 	if same:
@@ -185,7 +187,7 @@ def plot_hist(key,linestyle,linewidth,linecolor,same,legendentry,pdf,canvasgloba
 	legend.Draw()
 	canvas.Update()
 	if pdf:
-		Titel = key+ "_nlp.pdf"
+		Titel = "TwoVsThree_"+key+ ".pdf"
 		canvas.Print(Titel)
 
 
@@ -297,28 +299,6 @@ def mainGen(PtThreshold):
 
 
 
-
-
-# for ientry in range(number_of_entries):
-# 	idlist = []
-# 	chain.GetEntry(ientry)
-# 	if ientry % 1000 == 0:
-# 		print("Processing " + str(ientry), "of", number_of_entries)
-# 	for i in range(len(chain.Muons_mediumID)):
-# 		idlist.append(chain.Muons_mediumID[i])
-# 		if idlist.count(True) > 3:
-# 			print(idlist.count(True))
-# canvas = TCanvas("canvas","canvas")
-# canvas.SetCanvasSize(800,600)
-# chain.Draw("Muons_mediumID","Muons.Pt()>2 && Muons.Pt()<15")
-# # chain.Draw("Muons_mediumID")
-# canvas.Print("Muons_mediumId_nlp.pdf")
-# exit(0)
-
-
-
-
-
 isostr = "isoCrCorrJetNoMultIso15Dr0.4"
 samesignstr = "sameSignCorrJetNoMultIso15Dr0.4"
 def mainReco(PtThreshold,comparison_type,histograms):
@@ -353,17 +333,23 @@ def mainReco(PtThreshold,comparison_type,histograms):
 		muonsisobranch = getattr(chain,"Muons_passCorrJetNoMultIso15Dr0.4")
 		NSelectionMuonbranchIso = getattr(chain, "NSelectionMuonsCorrJetNoMultIso15Dr0.4")
 		NSelectionMuonbranchNoIso = getattr(chain, "NSelectionMuonsNoIso")
+		leptonFlavourbranchIso = getattr(chain, "leptonFlavourCorrJetNoMultIso15Dr0.4")
+		twoleptonsbranchIso = getattr(chain, "twoLeptonsCorrJetNoMultIso15Dr0.4")
 		alternative = 0
 
-		if chain.MHT < 200:                 #cuts
+		if chain.MHT <= 200:                 #cuts
 			continue
-		if chain.MET < 140:
+		if chain.MET <= 140:
 			continue
-		if chain.MinDeltaPhiMhtJets < 0.4:
+		if chain.MinDeltaPhiMhtJets <= 0.4:
 			continue
 # 		if isobranch_reco != 0:
 # 			continue
 		if samesignbranch_reco != 0:
+			continue
+		if leptonFlavourbranchIso != "Muons":
+			continue
+		if twoleptonsbranchIso != 1:
 			continue
 			                #muonPassesTightSelection(i, Muons, Muons_mediumID, Muons_passJetIso, Muons_deltaRLJ, muonLowerPt, muonLowerPtTight, muons_tightID):
 		for muon in range(len(chain.Muons)):                   #pT criterion
@@ -637,17 +623,18 @@ if args.recoplots:
 	histograms["histFractionsBothGen3"].AddBinContent(3,AllGenMatchedEvents3/MuonNumberEvents3)
 	histograms["histFractionsSameChi3"].AddBinContent(4,both_from_same_chi3/MuonNumberEvents3)
 	histograms["histFakes3"].AddBinContent(1,1-AllGenMatchedEvents3/MuonNumberEvents3)
-	xaxis4 = histograms["histFractionsBothGen4"].GetXaxis()
-	histograms["histFractionsBothGen4"].SetMaximum(1)
-	xaxis4.SetBinLabel(3,"Both \mu genmatched")
-	xaxis4.SetBinLabel(1,"At least one fake \mu")
-	xaxis4.SetBinLabel(4,"Both to \chi_{2}^{0} decay")
-	histograms["histFractionsBothGen4"].AddBinContent(3,AllGenMatchedEvents4/MuonNumberEvents4)
-	histograms["histFractionsSameChi4"].AddBinContent(4,both_from_same_chi4/MuonNumberEvents4)
-	histograms["histFakes4"].AddBinContent(1,1-AllGenMatchedEvents4/MuonNumberEvents4)
+# 	xaxis4 = histograms["histFractionsBothGen4"].GetXaxis()
+# 	histograms["histFractionsBothGen4"].SetMaximum(1)
+# 	xaxis4.SetBinLabel(3,"Both \mu genmatched")
+# 	xaxis4.SetBinLabel(1,"At least one fake \mu")
+# 	xaxis4.SetBinLabel(4,"Both to \chi_{2}^{0} decay")
+# 	histograms["histFractionsBothGen4"].AddBinContent(3,AllGenMatchedEvents4/MuonNumberEvents4)
+# 	histograms["histFractionsSameChi4"].AddBinContent(4,both_from_same_chi4/MuonNumberEvents4)
+# 	histograms["histFakes4"].AddBinContent(1,1-AllGenMatchedEvents4/MuonNumberEvents4)
 	canvaspT, legendpT = plot_hist("histpT2",1,2,"2",False,"2 \mu",False,None,None)
 	plot_hist("histpT3",1,2,"4",True,"3 \mu",True,canvaspT,legendpT)
 	#plot_hist("histpT4",1,2,"40",True,"4 \mu",True,canvaspT,legendpT)
+	histograms["histinvMass2"].SetMaximum(290)
 	canvasinvMass,legendinvMass = plot_hist("histinvMass2",1,2,"2",False,"2 \mu",False,None,None)
 	plot_hist("histinvMass3",1,2,"4",True,"3 \mu",True,canvasinvMass,legendinvMass)
 	#plot_hist("histinvMass4",1,2,"40",True,"4 \mu",True,canvasinvMass,legendinvMass)

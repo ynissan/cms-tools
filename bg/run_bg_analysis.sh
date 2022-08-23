@@ -179,7 +179,7 @@ priority = 0
 EOM
 
 file_limit=0
-files_per_job=4
+files_per_job=4 #4
 
 for type in reg madHtFilesGt600 madHtFilesLt600; do
 
@@ -263,4 +263,4 @@ done
 echo SUBMITTING JOBS....
 
 condor_submit $output_file
-rm $output_file
+#rm $output_file

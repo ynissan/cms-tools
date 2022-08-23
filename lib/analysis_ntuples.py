@@ -771,30 +771,34 @@ def getTwoLeptonsAfterSelection(Electrons, Electrons_passJetIso, Electrons_delta
         if lepCharges[0] * lepCharges[1] > 0:
             same_sign = True
     
-    
-    if lepIdx[2] == -1:
-        if leps[0].Pt() < leps[1].Pt():
-            leps = [leps[1], leps[0],leps[2]]
-            lepIdx = [lepIdx[1], lepIdx[0],lepIdx[2]]
-            lepCharges = [lepCharges[1], lepCharges[0],lepCharges[2]]
-    else:
-        j = 0
-        ordered = False
-        while ordered == False:
-            print(j)
-            changes_made = False
-            for i in range(len(leps)-1):
-                if leps[i].Pt() < leps[i+1].Pt():
-                    leps.insert(i,leps[i+1])
-                    lepIdx.insert(i,lepIdx[i+1])
-                    lepCharges.insert(i,lepCharges[i+1])
-                    leps.pop(i+2)
-                    lepIdx.pop(i+2)
-                    lepCharges.pop(i+2)
-                    changes_made = True
-            if changes_made == False:
-                ordered = True
-            j += 1
+    if leps[0].Pt() < leps[1].Pt():
+        leps = [leps[1], leps[0],leps[2]]
+        lepIdx = [lepIdx[1], lepIdx[0],lepIdx[2]]
+        lepCharges = [lepCharges[1], lepCharges[0],lepCharges[2]]
+
+#     if lepIdx[2] == -1:
+#         if leps[0].Pt() < leps[1].Pt():
+#             leps = [leps[1], leps[0],leps[2]]
+#             lepIdx = [lepIdx[1], lepIdx[0],lepIdx[2]]
+#             lepCharges = [lepCharges[1], lepCharges[0],lepCharges[2]]
+#     else:
+#         j = 0
+#         ordered = False
+#         while ordered == False:
+#             print(j)
+#             changes_made = False
+#             for i in range(len(leps)-1):
+#                 if leps[i].Pt() < leps[i+1].Pt():
+#                     leps.insert(i,leps[i+1])
+#                     lepIdx.insert(i,lepIdx[i+1])
+#                     lepCharges.insert(i,lepCharges[i+1])
+#                     leps.pop(i+2)
+#                     lepIdx.pop(i+2)
+#                     lepCharges.pop(i+2)
+#                     changes_made = True
+#             if changes_made == False:
+#                 ordered = True
+#             j += 1
 
             
     
