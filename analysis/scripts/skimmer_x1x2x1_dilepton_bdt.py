@@ -106,7 +106,7 @@ def main():
                     for postfix in postfixi:
                 
                         for DTypeObs in analysis_observables.commonPostBdtObservablesDTypesList:
-                            for prefix in ["", "exTrack_"]:
+                            for prefix in [""]:#["", "exTrack_"]:
                                 sameChargeOptions = [False, True] if prefix == "exTrack_" else [False]
                             
                                 for sameCharge in sameChargeOptions:
@@ -141,7 +141,7 @@ def main():
                                     tree.SetBranchAddress(sc_prefix + DTypeObs + postfix, vars[sc_prefix + DTypeObs + postfix])
                 
                     if not jpsi:    
-                        for prefix in ["reco", "exTrack"]:
+                        for prefix in ["reco"]:#["reco", "exTrack"]:
                             for lep in ["Muons", "Electrons"]:
                                 dirname = prefix + lep + iso + cat + cuts
                                 name = prefix + lep + iso + cuts + cat
@@ -184,7 +184,7 @@ def main():
                             postfixi = [iso + cuts + cat, ""]
                 
                         for postfix in postfixi:
-                            for prefix in ["reco", "exTrack"]:
+                            for prefix in ["reco"]:#["reco", "exTrack"]:
                                 prefixVars = ""
                             
                                 if prefix == "exTrack":
@@ -291,7 +291,7 @@ def main():
                                         vars[sc_prefix + "trackParentPdgId" + postfix][0] = -1
                             
                             for DTypeObs in analysis_observables.commonPostBdtObservablesDTypesList:
-                                for prefix in ["", "exTrack_"]:
+                                for prefix in [""]:#["", "exTrack_"]:
                                     sameChargeOptions = [False, True] if prefix == "exTrack_" else [False]
                             
                                     for sameCharge in sameChargeOptions:

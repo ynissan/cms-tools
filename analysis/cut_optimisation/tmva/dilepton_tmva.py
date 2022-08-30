@@ -125,7 +125,7 @@ for obs in analysis_observables.dileptonBDTeventObservables:
 
 preselection = None
 
-preselection = "twoLeptons" + iso + str(ptRange) + cat + " == 1 && MinDeltaPhiMhtJets > 0.4 && leptonFlavour" + iso + str(ptRange) + cat  + " == \"" + lep + "\"" + " && sameSign" + iso + str(ptRange) + cat + " == 0"
+preselection = "twoLeptons" + iso + str(ptRange) + cat + " == 1 && MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium >= 1 && leptonFlavour" + iso + str(ptRange) + cat  + " == \"" + lep + "\"" + " && sameSign" + iso + str(ptRange) + cat + " == 0"
 
 
 variablesUsed.append("twoLeptons" + iso + str(ptRange) + cat)
@@ -238,7 +238,7 @@ dataloader.AddVariable(prefix + 'deltaPhi' + iso + str(ptRange) + cat, 'F')
 dataloader.AddVariable(prefix + 'deltaEta' + iso + str(ptRange) + cat, 'F')
 dataloader.AddVariable(prefix + 'deltaR' + iso + str(ptRange) + cat, 'F')
 
-dataloader.AddVariable(prefix + 'dilepHt' + iso + str(ptRange) + cat, 'F')
+#dataloader.AddVariable(prefix + 'dilepHt' + iso + str(ptRange) + cat, 'F')
 dataloader.AddVariable(prefix + 'invMass' + iso + str(ptRange) + cat, 'F')
 
 for obs in analysis_observables.dileptonBDTeventObservables:
@@ -252,11 +252,11 @@ dataloader.AddCut(preselection)
 dataloader.AddVariable('dileptonPt' + iso + str(ptRange) + cat, 'F')
 dataloader.AddVariable('mth1' + iso + str(ptRange) + cat, 'F')
 dataloader.AddVariable('leptons' + iso + str(ptRange) + cat + '[0].Pt()', 'F')
+dataloader.AddVariable('leptons' + iso + str(ptRange) + cat + '[1].Pt()', 'F')
 dataloader.AddVariable('leptons' + iso + str(ptRange) + cat + '[0].Eta()', 'F')
-dataloader.AddVariable('leptons' + iso + str(ptRange) + cat + '[0].Phi()', 'F')
+
 dataloader.AddVariable('deltaPhiMhtLepton1' + iso + str(ptRange) + cat, 'F')
 dataloader.AddVariable('deltaPhiMhtLepton2' + iso + str(ptRange) + cat, 'F')
-dataloader.AddVariable('BTagsDeepMedium', 'I')
 
 # Spectators
 dataloader.AddSpectator('Weight','F')
