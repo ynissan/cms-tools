@@ -107,7 +107,7 @@ if lepNum == "exTrack":
 
 variablesUsed = []
 
-variablesUsed.append("BTagsDeepMedium")
+variablesUsed.append("BTagsDeepMedium") 
 variablesUsed.append("MinDeltaPhiMhtJets")
 variablesUsed.append("Weight")
 
@@ -141,7 +141,7 @@ variablesUsed.append('leptons' + iso + str(ptRange) + cat)
 variablesUsed.append('deltaPhiMhtLepton1' + iso + str(ptRange) + cat)
 variablesUsed.append('deltaPhiMhtLepton2' + iso + str(ptRange) + cat)
 
-variablesUsed.append("BTagsDeepMedium")
+#variablesUsed.append("BTagsDeepMedium")
 
 print "Variables used", variablesUsed 
 

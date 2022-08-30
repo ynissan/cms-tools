@@ -21,12 +21,12 @@ args = parser.parse_args()
 
 #m_stop = 500, m_Chi_pm = 115, dm = 1.4
 signal_files = [
-glob("/nfs/dust/cms/user/diepholq/x1x2x1/signal/skim/sum/higgsino_Summer16_stopstop_700GeV_mChipm200GeV_dm1p4GeV_1.root")
+#glob("/nfs/dust/cms/user/diepholq/x1x2x1/signal/skim/sum/higgsino_Summer16_stopstop_700GeV_mChipm200GeV_dm1p4GeV_1.root")
 #glob("/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_*.root")
 #glob("/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim/single/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_*pu35_part*of25_RA2AnalysisTree.root")
 #glob("/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim_nlp/single/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_*pu35_part*of25_RA2AnalysisTree.root")
 #glob("/nfs/dust/cms/user/beinsam/CommonSamples/MC_BSM/CompressedHiggsino/RadiativeMu_2016Fast/ntuple_sidecarv3/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_*pu35_part*of25_RA2AnalysisTree.root")
-#glob("/nfs/dust/cms/user/diepholq/x1x2x1/signal/skim/sum/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_*.root")
+glob("/nfs/dust/cms/user/diepholq/x1x2x1/signal/skim/sum/higgsino_Summer16_stopstop_*GeV_mChipm*GeV_dm*GeV_*.root")
 ]
 #signal_file = "/afs/desy.de/user/n/nissanuv/q_nfs/x1x2x1/signal/skim/sum/higgsino_Summer16_stopstop_500GeV_mChipm115GeV_dm1p4GeV_1.root"
 #print(signal_files)
@@ -179,7 +179,7 @@ def plot_hist(key,linestyle,linewidth,linecolor,same,legendentry,pdf,canvasgloba
 		if pdf == False:
 			return canvas,legend
 	if same:
-		h1.Draw("hist same")
+		h1.Draw("hist same E")
 		legend = legendglobal
 		if legendentry is not None:
 			legend.AddEntry(key,legendentry,"f")
@@ -634,7 +634,7 @@ if args.recoplots:
 	canvaspT, legendpT = plot_hist("histpT2",1,2,"2",False,"2 \mu",False,None,None)
 	plot_hist("histpT3",1,2,"4",True,"3 \mu",True,canvaspT,legendpT)
 	#plot_hist("histpT4",1,2,"40",True,"4 \mu",True,canvaspT,legendpT)
-	histograms["histinvMass2"].SetMaximum(290)
+	#histograms["histinvMass2"].SetMaximum(h)
 	canvasinvMass,legendinvMass = plot_hist("histinvMass2",1,2,"2",False,"2 \mu",False,None,None)
 	plot_hist("histinvMass3",1,2,"4",True,"3 \mu",True,canvasinvMass,legendinvMass)
 	#plot_hist("histinvMass4",1,2,"40",True,"4 \mu",True,canvasinvMass,legendinvMass)
@@ -648,7 +648,7 @@ canvasFractions,legendFractions = plot_hist("histFractionsBothGen2",1,2,"2",Fals
 # plot_hist("histFractionsSameChi2",1,2,"2",True,"2 \mu",False,canvasFractions,legendFractions)
 # plot_hist("histFractionsSameChi3",1,2,"3",True,"3 \mu",True,canvasFractions,legendFractions)
 if args.recoplots:
-	for munumber in [2,3,4]:
+	for munumber in [2,3]:
 		if munumber == 2:
 			color = "2"
 		if munumber == 3:

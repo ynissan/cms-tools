@@ -283,16 +283,16 @@ class stops_bg_two_vs_three_muons_signal(stops_bg_two_vs_three_muons_bg):
     
     
     signal_dir = [
-        #skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm115GeV_dm0p6GeV_1.root",
-        #skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm115GeV_dm1p0GeV_1.root",
-        skim_dir + "higgsino_Summer16_stopstop_700GeV_mChipm200GeV_dm1p4GeV_1.root",
-        #skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm400GeV_dm1p4GeV_1.root",
+ #        skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm115GeV_dm0p6GeV_1.root",
+         skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm115GeV_dm1p4GeV_1.root",
+ #       skim_dir + "higgsino_Summer16_stopstop_700GeV_mChipm200GeV_dm1p4GeV_1.root",  
+#         skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm400GeV_dm1p4GeV_1.root",
     ]
     signal_names = [
-    #"m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 0.6 Gev",
-    #"m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.0 Gev",
-    "m_{#tilde{t}} 700 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 1.4 Gev",
-    #"m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 1.4 Gev",
+#     "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 0.6 Gev",
+     "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.4 Gev",
+#    "m_{#tilde{t}} 700 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 1.4 Gev",
+#     "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 1.4 Gev",
 ]
     
 
@@ -306,7 +306,7 @@ class stops_bg_two_vs_three_muons_signal(stops_bg_two_vs_three_muons_bg):
                 ],
     }
     
-    no_weights = True
+    no_weights = False
     
     #injectJetIsoToMapValues(object_retag_map["l"], jetIsoStr)
     
