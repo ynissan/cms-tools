@@ -6,25 +6,48 @@ sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
 import utils
 
 from plot_params_base import *
+# 
+# signals = [
+#               "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm0p86Chi20Chipm.root",
+#               "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm1p92Chi20Chipm.root",
+#               "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm3p28Chi20Chipm.root",
+#               "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm9p73Chi20Chipm.root"
+#               ]
 
 signals = [
-              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm0p86Chi20Chipm.root",
-              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm1p92Chi20Chipm.root",
-              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm3p28Chi20Chipm.root",
-              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm9p73Chi20Chipm.root"
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm0p86Chi20Chipm*.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm1p13Chi20Chipm*.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm1p92Chi20Chipm*.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm3p28Chi20Chipm*.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm4p30Chi20Chipm*.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm5p63Chi20Chipm*.root"
+              
               ]
+
+
+# signalNames = [
+#     "\Delta_{}M 0.8 GeV",
+#     "\Delta_{}M 1.9 GeV",
+#     "\Delta_{}M 3.2 GeV",
+#     "\Delta_{}M 9.7 GeV",
+# ]
 
 signalNames = [
     "\Delta_{}M 0.8 GeV",
+    "\Delta_{}M 1.1 GeV",
     "\Delta_{}M 1.9 GeV",
     "\Delta_{}M 3.2 GeV",
-    "\Delta_{}M 9.7 GeV",
+    "\Delta_{}M 4.3 GeV",
+    "\Delta_{}M 5.6 GeV",
 ]
     
 class lepton_selection(BaseParams):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/lepton_selection_mu100_dm1p92Chi20Chipm.root"
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True
     signal_dir = [
               #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm0p86Chi20Chipm.root",
-              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm1p92Chi20Chipm.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm1p92Chi20Chipm_*.root",
               #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm3p28Chi20Chipm.root",
               #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm9p73Chi20Chipm.root"
               ]
@@ -33,6 +56,7 @@ class lepton_selection(BaseParams):
     plot_data = False
     plot_overflow = True
     object_retag = True
+    glob_signal = True
     
     sig_line_width = 1
 
@@ -56,7 +80,7 @@ class lepton_selection(BaseParams):
         { "obs" : "Electrons_pt_endcape_medium", "formula" : "Electrons_mediumID", "units" : "endcaps e mediumID", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "e", "condition" : "abs(Electrons.Eta()) >= 1.2 && abs(Electrons.Eta()) <= 2.4" },
         
         { "obs" : "Electrons_iso", "formula" : "Electrons_passIso", "units" : "e passIso", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "e", "condition" : "1" },
-        { "obs" : "Electrons_passCorrJetIso10", "formula" : "Electrons_passCorrJetIso10", "units" : "e passCorrJetIso10", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "e", "condition" : "1" },
+        { "obs" : "Electrons_CorrJetNoMultIso11Dr0.5", "formula" : "Electrons_passCorrJetNoMultIso11Dr0.5", "units" : "e CorrJetNoMultIso11Dr0.5", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "e", "condition" : "1" },
         
         
         { "obs" : "Muons_pt", "formula" : "abs(Muons.Pt())", "units" : "\mu p_{T}", "minX" : 2, "maxX" : 25, "bins" : 60, "object" : "m", "condition" : "Muons.Pt() >= 2" },
@@ -74,9 +98,9 @@ class lepton_selection(BaseParams):
         { "obs" : "Muons_pt_overlap_medium", "formula" : "Muons_mediumID", "units" : "overlap mediumID", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) > 0.9 && abs(Muons.Eta()) <= 1.2" },
         { "obs" : "Muons_pt_endcape_medium", "formula" : "Muons_mediumID", "units" : "endcaps mediumID", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) >= 1.2 && abs(Muons.Eta()) <= 2.4" },
         
-        { "obs" : "Muons_pt_barrel_jet_iso", "formula" : "Muons_passCorrJetIso10", "units" : "barrel \mu passCorrJetIso10", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) <= 0.9" },
-        { "obs" : "Muons_pt_overlap_jet_iso", "formula" : "Muons_passCorrJetIso10", "units" : "overlap \mu passCorrJetIso10", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) > 0.9 && abs(Muons.Eta()) <= 1.2" },
-        { "obs" : "Muons_pt_endcape_jet_iso", "formula" : "Muons_passCorrJetIso10", "units" : "endcaps \mu passCorrJetIso10", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) >= 1.2 && abs(Muons.Eta()) <= 2.4" },
+        { "obs" : "Muons_pt_barrel_jet_iso", "formula" : "Muons_passCorrJetNoMultIso10Dr0.6", "units" : "barrel \mu CorrJetNoMultIso10Dr0.6", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) <= 0.9" },
+        { "obs" : "Muons_pt_overlap_jet_iso", "formula" : "Muons_passCorrJetNoMultIso10Dr0.6", "units" : "overlap \mu CorrJetNoMultIso10Dr0.6", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) > 0.9 && abs(Muons.Eta()) <= 1.2" },
+        { "obs" : "Muons_pt_endcape_jet_iso", "formula" : "Muons_passCorrJetNoMultIso10Dr0.6", "units" : "endcaps \mu CorrJetNoMultIso10Dr0.6", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) >= 1.2 && abs(Muons.Eta()) <= 2.4" },
         
         { "obs" : "Muons_pt_barrel_iso", "formula" : "Muons_passIso", "units" : "barrel \mu passIso", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) <= 0.9" },
         { "obs" : "Muons_pt_overlap_iso", "formula" : "Muons_passIso", "units" : "overlap \mu passIso", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) > 0.9 && abs(Muons.Eta()) <= 1.2" },
@@ -118,7 +142,7 @@ class track_selection(lepton_selection):
     
     histograms_defs = [
         {"obs" : "tracks.Pt()", "bins" : 50, "minX" : 1.9, "maxX" : 10, "object" : "t" },
-        #{"obs" : "Pt tracks_trackJetIso", "formula" : "tracks.Pt()", "bins" : 50, "minX" : 1.9, "maxX" : 10, "object" : "t", "condition" :  "tracks_passCorrJetIso10 == 1" },
+        #{"obs" : "Pt tracks_trackJetIso", "formula" : "tracks.Pt()", "bins" : 50, "minX" : 1.9, "maxX" : 10, "object" : "t", "condition" :  "tracks_CorrJetNoMultIso10Dr0.6 == 1" },
         {"obs" : "abs(tracks.Eta())", "bins" : 50, "minX" : 0, "maxX" : 3, "object" : "t" },
         #{"obs" : "Pt tracks_trackJetIso", "formula" : "tracks.Pt()", "bins" : 50, "minX" : 1.9, "maxX" : 20, "object" : "t", "condition" :  "tracks_passCorrJetIso5 == 1" },
         
@@ -210,9 +234,9 @@ class jet_isolation_study(BaseParams):
         { "obs" : "Muons_pt_overlap_medium", "formula" : "Muons_mediumID", "units" : "overlap mediumID", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) > 0.9 && abs(Muons.Eta()) <= 1.2" },
         { "obs" : "Muons_pt_endcape_medium", "formula" : "Muons_mediumID", "units" : "endcaps mediumID", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) >= 1.2 && abs(Muons.Eta()) <= 2.4" },
         
-        { "obs" : "Muons_pt_barrel_jet_iso", "formula" : "Muons_passCorrJetIso10", "units" : "barrel \mu passCorrJetIso10", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) <= 0.9" },
-        { "obs" : "Muons_pt_overlap_jet_iso", "formula" : "Muons_passCorrJetIso10", "units" : "overlap \mu passCorrJetIso10", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) > 0.9 && abs(Muons.Eta()) <= 1.2" },
-        { "obs" : "Muons_pt_endcape_jet_iso", "formula" : "Muons_passCorrJetIso10", "units" : "endcaps \mu passCorrJetIso10", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) >= 1.2 && abs(Muons.Eta()) <= 2.4" },
+        { "obs" : "Muons_pt_barrel_jet_iso", "formula" : "Muons_passCorrJetNoMultIso10Dr0.6", "units" : "barrel \mu CorrJetNoMultIso10Dr0.6", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) <= 0.9" },
+        { "obs" : "Muons_pt_overlap_jet_iso", "formula" : "Muons_passCorrJetNoMultIso10Dr0.6", "units" : "overlap \mu CorrJetNoMultIso10Dr0.6", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) > 0.9 && abs(Muons.Eta()) <= 1.2" },
+        { "obs" : "Muons_pt_endcape_jet_iso", "formula" : "Muons_passCorrJetNoMultIso10Dr0.6", "units" : "endcaps \mu CorrJetNoMultIso10Dr0.6", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) >= 1.2 && abs(Muons.Eta()) <= 2.4" },
         
         { "obs" : "Muons_pt_barrel_iso", "formula" : "Muons_passIso", "units" : "barrel \mu passIso", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) <= 0.9" },
         { "obs" : "Muons_pt_overlap_iso", "formula" : "Muons_passIso", "units" : "overlap \mu passIso", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) > 0.9 && abs(Muons.Eta()) <= 1.2" },
@@ -322,62 +346,77 @@ class track_selection_bg(track_selection):
     object_retag = False
 
 signalsGen = [
-              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm0p86Chi20Chipm.root",
-              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm1p92Chi20Chipm.root",
-              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm3p28Chi20Chipm.root",
-              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm9p73Chi20Chipm.root"
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm0p86Chi20Chipm*.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm1p13Chi20Chipm*.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm1p92Chi20Chipm*.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm3p28Chi20Chipm*.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm4p30Chi20Chipm*.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm5p63Chi20Chipm*.root"
+              
               ]
 
 class signal_muons(BaseParams):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/signal_muons.root"
+    save_histrograms_to_file = True
+    load_histrograms_from_file = False
     signal_dir = signalsGen
     signal_names = signalNames
+    glob_signal = True
     cuts = [
         {"name":"none", "title": "No Cuts", "condition" : "genFlavour == \"Muons\""},
+        {"name":"twoLoptonsNoIso", "title": "twoLoptonsNoIso", "condition" : "genFlavour == \"Muons\" && twoLeptonsNoIso == 1 && leptonFlavour == \"Muons\""},
     ]
     histograms_defs = [
-        { "obs" : "Muons_pt", "formula" : "Muons.Pt()", "units" : "p_{T} [GeV]", "minX" : 2, "maxX" : 25, "bins" : 60, "condition" :  "Muons_isZ == 1", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1 },
-        { "obs" : "Muons_Eta", "formula" : "abs(Muons.Eta())", "units" : "|\eta|", "minX" : 0, "maxX" : 2.4, "bins" : 60, "condition" :  "Muons_isZ == 1", "linearYspace" : 1.8, "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1 },
-        { "obs" : "deltaRNoIso", "units" : "#Delta_{}R", "minX" : 0, "maxX" : 3.5, "bins" : 60, "condition" :  "twoLeptonsNoIso == 1 && leptonFlavour == \"Muons\" && Muons_isZ[leptonsIdxNoIso[0]] == 1 &&  Muons_isZ[leptonsIdxNoIso[1]] == 1 ", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1 },
+        { "obs" : "Muons_pt_low", "formula" : "Muons.Pt()", "units" : "p_{T} [GeV]", "minX" : 0, "maxX" : 2, "bins" : 60, "condition" :  "Muons.Pt() <= 2 && Muons_isZ == 1", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1, "linearYspace" : 1.2 },
+        { "obs" : "Muons_pt", "formula" : "Muons.Pt()", "units" : "p_{T} [GeV]", "minX" : 2, "maxX" : 25, "bins" : 60, "condition" :  "Muons.Pt() >= 2 && Muons_isZ == 1", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1, "linearYspace" : 1.2 },
+        { "obs" : "Muons_Eta", "formula" : "abs(Muons.Eta())", "units" : "|\eta|", "minX" : 0, "maxX" : 2.4, "bins" : 60, "condition" :  "Muons.Pt() >= 2 && Muons_isZ == 1", "linearYspace" : 1.8, "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1 },
+        { "obs" : "deltaRNoIso", "units" : "#Delta_{}R", "minX" : 0, "maxX" : 6.3, "bins" : 60, "condition" :  "twoLeptonsNoIso == 1 && leptonFlavour == \"Muons\" && Muons_isZ[leptonsIdxNoIso[0]] == 1 &&  Muons_isZ[leptonsIdxNoIso[1]] == 1 ", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1, "linearYspace" : 1.2 },
         
-        { "obs" : "Muons_pt_barrel", "formula" : "Muons.Pt()", "units" : "Barrel p_{T} [GeV]", "minX" : 2, "maxX" : 10, "bins" : 60, "condition" :  "Muons_isZ == 1 && abs(Muons.Eta()) < 1.2", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1, "linearYspace" : 1.2 },
-        { "obs" : "Muons_pt_endcape", "formula" : "Muons.Pt()", "units" : "Endcaps p_{T} [GeV]", "minX" : 2, "maxX" : 10, "bins" : 60, "condition" :  "Muons_isZ == 1 && abs(Muons.Eta()) >= 1.2 && abs(Muons.Eta()) <= 2.4", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1},#, "linearYspace" : 1.2 },
-        
+        { "obs" : "Muons_pt_barrel", "formula" : "Muons.Pt()", "units" : "Barrel p_{T} [GeV]", "minX" : 2, "maxX" : 20, "bins" : 60, "condition" :  "Muons.Pt() >= 2 && Muons_isZ == 1 && abs(Muons.Eta()) < 1.2", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1, "linearYspace" : 1.2 },
+        { "obs" : "Muons_pt_endcape", "formula" : "Muons.Pt()", "units" : "Endcaps p_{T} [GeV]", "minX" : 2, "maxX" : 20, "bins" : 60, "condition" :  "Muons.Pt() >= 2 && Muons_isZ == 1 && abs(Muons.Eta()) >= 1.2 && abs(Muons.Eta()) <= 2.4", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1, "linearYspace" : 1.2},#, "linearYspace" : 1.2 },
     ]
     
     weightString = {
-        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016",
+        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * BranchingRatio",
         'SingleMuon' : "1"
     }
     
     plot_bg = False
     plot_data = False
-    plot_overflow = False
+    plot_overflow = True
     show_lumi = True
     label_text = plotutils.StampStr.SIM
 
 class signal_muons_gen(BaseParams):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/signal_muons_gen.root"
+    save_histrograms_to_file = True
+    load_histrograms_from_file = False
     signal_dir = signalsGen
     signal_names = signalNames
+    glob_signal = True
+    plot_overflow = True
     cuts = [
         {"name":"none", "title": "No Cuts", "condition" : "genFlavour == \"Muons\""},
     ]
     histograms_defs = [
-        { "obs" : "Muons_pt", "formula" : "GenParticles.Pt()", "units" : "Gen p_{T} [GeV]", "minX" : 2, "maxX" : 25, "bins" : 60, "condition" :  "GenParticles.Pt() < 25 && abs(GenParticles_PdgId) == 13 && GenParticles.Pt() > 2", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1 },
-        { "obs" : "Muons_Eta", "formula" : "abs(GenParticles.Eta())", "units" : "Gen |\eta|", "minX" : 0, "maxX" : 2.4, "bins" : 60, "condition" :  "GenParticles.Pt() < 25 && abs(GenParticles_PdgId) == 13 && GenParticles.Pt() > 2", "linearYspace" : 1.8, "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1 },
-        { "obs" : "gen_deltaR", "units" : "Gen #Delta_{}R", "minX" : 0, "maxX" : 3.5, "bins" : 60, "condition" :  "GenParticles[genLeptonsIdx[0]].Pt() < 10 && GenParticles[genLeptonsIdx[1]].Pt() < 10", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1 },
+        #delta R, "condition" :  "GenParticles[genLeptonsIdx[0]].Pt() < 10 && GenParticles[genLeptonsIdx[1]].Pt() < 10"
+        { "obs" : "Muons_pt", "formula" : "GenParticles.Pt()", "units" : "Gen p_{T} [GeV]", "minX" : 2, "maxX" : 25, "bins" : 60, "condition" :  "GenParticles.Pt() < 25 && GenParticles_Status == 1 && abs(GenParticles_PdgId) == 13 && GenParticles.Pt() > 2", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1 },
+        { "obs" : "Muons_Eta", "formula" : "abs(GenParticles.Eta())", "units" : "Gen |\eta|", "minX" : 0, "maxX" : 3, "bins" : 60, "condition" :  "GenParticles.Pt() < 25 && GenParticles_Status == 1 && abs(GenParticles_PdgId) == 13 && GenParticles.Pt() > 2", "linearYspace" : 1.8, "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1 },
+        { "obs" : "gen_deltaR", "units" : "Gen #Delta_{}R", "minX" : 0, "maxX" : 6.3, "bins" : 60, "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1 },
         
-        { "obs" : "Muons_pt_barrel", "formula" : "GenParticles.Pt()", "units" : "Gen Barrel p_{T} [GeV]", "minX" : 2, "maxX" : 10, "bins" : 60, "condition" :  "GenParticles.Pt() < 25 && abs(GenParticles_PdgId) == 13 && GenParticles.Pt() > 2 && abs(GenParticles.Eta()) < 1.2", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1 },
-        { "obs" : "Muons_pt_endcape", "formula" : "GenParticles.Pt()", "units" : "Gen Endcaps p_{T} [GeV]", "minX" : 2, "maxX" : 10, "bins" : 60, "condition" :  "GenParticles.Pt() < 25  && abs(GenParticles_PdgId) == 13 && GenParticles.Pt() > 2 && abs(GenParticles.Eta()) >= 1.2 && abs(GenParticles.Eta()) <= 2.4", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1 },
+        { "obs" : "Muons_pt_barrel", "formula" : "GenParticles.Pt()", "units" : "Gen Barrel p_{T} [GeV]", "minX" : 2, "maxX" : 20, "bins" : 60, "condition" :  "GenParticles.Pt() < 25 && GenParticles_Status == 1 && abs(GenParticles_PdgId) == 13 && GenParticles.Pt() > 2 && abs(GenParticles.Eta()) < 1.2", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1 },
+        { "obs" : "Muons_pt_endcape", "formula" : "GenParticles.Pt()", "units" : "Gen Endcaps p_{T} [GeV]", "minX" : 2, "maxX" : 20, "bins" : 60, "condition" :  "GenParticles.Pt() < 25 && GenParticles_Status == 1 && abs(GenParticles_PdgId) == 13 && GenParticles.Pt() > 2 && abs(GenParticles.Eta()) >= 1.2 && abs(GenParticles.Eta()) <= 2.4", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1 },
+        { "obs" : "MET", "formula" : "MET", "units" : "MET", "minX" : 0, "maxX" : 2000, "bins" : 60,  "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1 },
+        
         
     ]
     
     weightString = {
-        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016",
+        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * BranchingRatio",
         'SingleMuon' : "1"
     }
     
     plot_bg = False
     plot_data = False
-    plot_overflow = False
     show_lumi = True
     label_text = plotutils.StampStr.SIM

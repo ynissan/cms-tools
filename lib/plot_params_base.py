@@ -109,6 +109,7 @@ class BaseParams:
         #'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight * BranchingRatio",
         'SingleMuon' : "1"
     }
+    applyWeightsToData = False
     bgReTagging = {}
     bgReTaggingOrder = {}
     bgReTaggingNames = utils.bgReTaggingNames
@@ -140,6 +141,8 @@ class BaseParams:
     plot_custom_ratio = False
     
     create_canvas = False
+    
+    glob_signal = False
     
     #customRatios = [  [["DiBoson"],["TTJets"]],  [["WJetsToLNu"],["ZJetsToNuNu"]]  ]
     customRatios = [  [["tc_btag_veto"],["tc_2_btags"]]  ]

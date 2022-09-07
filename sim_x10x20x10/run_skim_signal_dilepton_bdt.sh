@@ -22,6 +22,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --phase1)
+        PHASE1=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -40,6 +45,7 @@ cmsenv
 
 
 INPUT_DIR=$SKIM_SIG_OUTPUT_DIR
+BDT_DIR=$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt
 
 if [ -n "$SAM" ]; then
     echo "GOT SAM"
@@ -51,9 +57,14 @@ elif [ -n "$SC" ]; then
     echo "HERE: $@"
     OUTPUT_DIR=$SKIM_SIG_DILEPTON_BDT_SC_OUTPUT_DIR
     INPUT_DIR=$SKIM_SIG_BDT_SC_OUTPUT_DIR
+elif [ -n "$PHASE1" ]; then
+    cho "GOT PHASE1"
+    echo "HERE: $@"
+    INPUT_DIR=$SKIM_SIG_PHASE1_OUTPUT_DIR
+    BDT_DIR=$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt_phase1
 fi
 
-BDT_DIR=$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt
+
 
 timestamp=$(date +%Y%m%d_%H%M%S%N)
 output_file="${WORK_DIR}/condor_submut.${timestamp}"
@@ -70,7 +81,7 @@ notification = Never
 +RequestRuntime = 86400
 EOM
 
-if [ -n "$SAM" ]; then
+if [ -n "$SAM" ] || [ -n "$PHASE1" ]; then
     FILES=${INPUT_DIR}/sum/*
 else
     FILES=${INPUT_DIR}/single/*

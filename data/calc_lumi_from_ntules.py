@@ -3,6 +3,7 @@
 from ROOT import *
 from glob import glob
 import sys
+import os
 
 sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
 sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/"))
@@ -19,7 +20,9 @@ from ROOT import LumiSectMap
 
 lumiSecs = LumiSectMap()
 
-data_files = glob("/pnfs/desy.de/cms/tier2/store/user/*/NtupleHub/ProductionRun2v*/Run2016B*MET*")
+#data_files = glob("/pnfs/desy.de/cms/tier2/store/user/*/NtupleHub/ProductionRun2v*/Run2016B*MET*")
+#data_files = glob("/afs/desy.de/user/n/nissanuv/ntupleHub/SlimmedProduction/Run201[78]*MET*")
+data_files = glob("/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/tmp/*")
 
 print len(data_files), "Files"
 i=0
@@ -30,7 +33,7 @@ for f in data_files:
     print i, "/", len(data_files)
     print "***"
     c = TChain('TreeMaker2/PreSelection')
-    c = TChain('tEvent')
+    #c = TChain('tEvent')
     c.Add(f)
     
     nentries = c.GetEntries()

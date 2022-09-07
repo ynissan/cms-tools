@@ -260,6 +260,11 @@ class dilepton_muons_bg_isocr_no_retag_CorrJetIso10_5_55_bdt_only(dilepton_muons
     injectJetIsoToHistograms(histograms_defs, "CorrJetIso10.5Dr0.55")
     plot_overflow = True
 
+####################################################################################################
+############ CLOSURE PLOT SCAN FOR CorrJetNoMultIso10_06 WITH/OUT LINE FITS AND WEIGHTS ############
+####################################################################################################
+
+
 class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass(dilepton_muons_bg_isocr_no_retag_CorrJetIso10_5_55):
     histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_no_retag_CorrJetIso10_06_invmass.root"
     
@@ -297,8 +302,64 @@ class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass(dilepton_mu
     calculatedLumi = {
         'MET' : 35.7389543,
     }
+    normalise = False
     
     fit_linear_ratio_plot = True
+
+class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_no_norm_sf(dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass):
+    normalise = False
+    transfer_factor = 0.576
+    transfer_factor_error = 0.05
+    transfer_factor_error = 0.0
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True
+    calculatedLumi = {
+        'MET' : 35.7389543,
+    }
+    fit_linear_ratio_plot = True
+
+class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_no_norm_nf_line_fit(dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_no_norm_sf):
+    fit_linear_ratio_plot = True
+    
+class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_no_norm_sf_line_fit_line_weights(dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_no_norm_nf_line_fit):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_no_norm_sf_line_fit_line_weights.root"
+    weightString = {
+        #'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight * BranchingRatio",
+        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * BranchingRatio * muonsClosureLineFitWeightCorrJetNoMultIso10Dr0.6",
+    }
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True
+    
+
+class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_no_norm_sf_line_fit_line_weights_sf_recalculated(dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_no_norm_sf_line_fit_line_weights):
+    transfer_factor = 0.542
+
+class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_no_norm_sf_line_fit_line_weights_sigma_m(dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_no_norm_nf_line_fit):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_no_norm_sf_line_fit_line_weights_sigma_m.root"
+    weightString = {
+        #'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight * BranchingRatio",
+        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * BranchingRatio * muonsClosureLineFitSigmaMWeightCorrJetNoMultIso10Dr0.6",
+    }
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True
+
+class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_no_norm_sf_line_fit_line_weights_sigma_m_sf_recalculated(dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_no_norm_sf_line_fit_line_weights_sigma_m):
+    transfer_factor = 0.573
+
+class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_no_norm_sf_line_fit_line_weights_sigma_b(dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_no_norm_nf_line_fit):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_no_norm_sf_line_fit_line_weights_sigma_b.root"
+    weightString = {
+        #'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight * BranchingRatio",
+        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * BranchingRatio * muonsClosureLineFitSigmaBWeightCorrJetNoMultIso10Dr0.6",
+    }
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True
+
+class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_no_norm_sf_line_fit_line_weights_sigma_b_sf_recalculated(dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_no_norm_sf_line_fit_line_weights_sigma_b):
+    transfer_factor = 0.498
+
+class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_no_norm_sf_line_fit_line_weights_sf_errors(dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_no_norm_sf_line_fit_line_weights):
+    transfer_factor_error = 0.05
 
 class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign(dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass):
     histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_no_retag_CorrJetIso10_06_invmass_same_sign.root"
@@ -320,12 +381,49 @@ class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_n
     transfer_factor = 0.539
     transfer_factor_error = 0.055
     transfer_factor_error = 0.0
-    #save_histrograms_to_file = True
-    #load_histrograms_from_file = True
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True
     calculatedLumi = {
         'MET' : 35.7389543,
     }
     fit_linear_ratio_plot = True
+
+class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights(dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights.root"
+    weightString = {
+        #'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight * BranchingRatio",
+        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * BranchingRatio * muonsClosureLineFitWeightCorrJetNoMultIso10Dr0.6",
+    }
+
+class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights_sf_recalcualted(dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights):
+    transfer_factor = 0.506
+
+class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights_sigma_m(dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights_sigma_m.root"
+    weightString = {
+        #'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight * BranchingRatio",
+        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * BranchingRatio * muonsClosureLineFitSigmaMWeightCorrJetNoMultIso10Dr0.6",
+    }
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True
+
+class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights_sigma_m_sf_recalculated(dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights_sigma_m):
+    transfer_factor = 0.534
+
+class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights_sigma_b(dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights_sigma_b.root"
+    weightString = {
+        #'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight * BranchingRatio",
+        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * BranchingRatio * muonsClosureLineFitSigmaBWeightCorrJetNoMultIso10Dr0.6",
+    }
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True
+
+class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights_sigma_b_sf_recalculated(dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights_sigma_b):
+    transfer_factor = 0.465
+
+class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights_sf_errors(dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights):
+    transfer_factor_error = 0.055
 
 class dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign(dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign):
     histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign.root"
@@ -348,21 +446,49 @@ class dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign
     fit_linear_ratio_plot = True
     load_histrograms_from_file = True
 
-
-class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_no_norm_nf(dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass):
-    normalise = False
-    transfer_factor = 0.576
-    transfer_factor_error = 0.05
-    transfer_factor_error = 0.0
+class dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights(dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights.root"
+    weightString = {
+        #'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight * BranchingRatio",
+        'MET' : "muonsClosureLineFitWeightCorrJetNoMultIso10Dr0.6",
+    }
+    applyWeightsToData = True
     save_histrograms_to_file = True
     load_histrograms_from_file = True
-    calculatedLumi = {
-        'MET' : 35.7389543,
-    }
-    fit_linear_ratio_plot = True
 
-class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_no_norm_nf_line_fit(dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_no_norm_nf):
-    fit_linear_ratio_plot = True
+class dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights_sf_recalculated(dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights):
+    transfer_factor = 0.610
+
+class dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights_sigma_m(dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights_sigma_m.root"
+    weightString = {
+        #'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight * BranchingRatio",
+        'MET' : "muonsClosureLineFitSigmaMWeightCorrJetNoMultIso10Dr0.6",
+    }
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True
+
+class dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights_sigma_m_sf_recalculated(dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights_sigma_m):
+    transfer_factor = 0.645
+
+class dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights_sigma_b(dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights_sigma_b.root"
+    weightString = {
+        #'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight * BranchingRatio",
+        'MET' : "muonsClosureLineFitSigmaBWeightCorrJetNoMultIso10Dr0.6",
+    }
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True
+
+class dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights_sigma_b_sf_recalculated(dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights_sigma_b):
+    transfer_factor = 0.562
+
+class dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights_sf_errors(dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights):
+    transfer_factor_error = 0.102
+
+###############################################################
+############ CLOSURE PLOT SCAN FOR ALL ISO OPTIONS ############
+###############################################################
 
 class dilepton_muons_bg_isocr_no_retag_scan(dilepton_muons_bg_isocr_no_retag_CorrJetIso10_5_55):
     histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_no_retag_scan_CorrJetNoMultIso_inclusive_isocr_fine_mht.root"
@@ -410,6 +536,15 @@ class dilepton_muons_bg_isocr_no_retag_scan(dilepton_muons_bg_isocr_no_retag_Cor
                         hist_def["baseline"] = hist_def["baseline"].replace("%%%", jetIso)
                         hist_def["sc"] = hist_def["sc"].replace("%%%", jetIso)
                         histograms_defs.append(hist_def)
+
+class dilepton_muons_bg_isocr_no_retag_scan_phase1(dilepton_muons_bg_isocr_no_retag_scan):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_no_retag_scan_phase1.root"
+    save_histrograms_to_file = True
+    load_histrograms_from_file = False 
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_phase1/sum/slim_sum/type_sum"
+    weightString = {
+        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2017 * BranchingRatio",
+    }
 
 class dilepton_muons_bg_isocr_no_retag_scan_electrons(dilepton_muons_bg_isocr_no_retag_scan):
     histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_no_retag_scan_electrons.root"

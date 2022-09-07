@@ -69,8 +69,10 @@ defaultColorPalette = [
 #     { "name" : "red", "fillColor" : kRed, "lineColor" : kRed, "fillStyle" : 0, "lineStyle" : 3 },
 # ]
 
-
+# The names are non-sense 
 signalCp = [
+    { "name" : "blue", "fillColor" : kRed-7, "lineColor" : kRed-7, "fillStyle" : 0, "lineStyle" : 1 },
+    { "name" : "blue", "fillColor" : kRed-4, "lineColor" : kRed-4, "fillStyle" : 0, "lineStyle" : 1 },
     { "name" : "blue", "fillColor" : kRed, "lineColor" : kRed, "fillStyle" : 0, "lineStyle" : 1 },
     { "name" : "cyan", "fillColor" : kRed+1, "lineColor" : kRed+1, "fillStyle" : 0, "lineStyle" : 2 },
     { "name" : "orange", "fillColor" : kRed+2, "lineColor" : kRed+2, "fillStyle" : 0, "lineStyle" : 5 },

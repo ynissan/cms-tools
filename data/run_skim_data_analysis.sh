@@ -59,6 +59,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --phase1)
+        PHASE1=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -85,6 +90,8 @@ elif [ -n "$MASTER" ]; then
     OUTPUT_DIR=$SKIM_DATA_MASTER_OUTPUT_DIR
 elif [ -n "$JPSI_SINGLE_ELECTRON" ]; then
     OUTPUT_DIR=$SKIM_DATA_JPSI_SINGLE_ELECTRON_OUTPUT_DIR
+elif [ -n "$PHASE1" ]; then
+    OUTPUT_DIR=$SKIM_DATA_PHASE1_OUTPUT_DIR
 else
     OUTPUT_DIR=$SKIM_DATA_OUTPUT_DIR
 fi
@@ -123,7 +130,8 @@ file_limit=0
 i=0
 count=0
 input_files=""
-files_per_job=1
+files_per_job=4
+job_num=0
 
 #files_per_job=1
 
@@ -143,8 +151,12 @@ INPUT_DIR=${DATA_NTUPLES_DIR}
 if [ -n "$SELECTION" ]; then
     INPUT_DIR=${DY_SKIM_DATA_OUTPUT_DIR}/single
 fi
-#echo HERE: ${INPUT_DIR}/Run2016*${DATA_PATTERN}*
-for fullname in ${INPUT_DIR}/Run2016*${DATA_PATTERN}*; do
+YEAR_PATTERN=Run2016
+if [ -n "$PHASE1" ]; then
+    YEAR_PATTERN="Run201[78]"
+fi
+#echo HERE: ${INPUT_DIR}/*${DATA_PATTERN}*
+for fullname in ${INPUT_DIR}/${YEAR_PATTERN}*${DATA_PATTERN}*; do
     name=$(basename $fullname)
     if [ -z "$SELECTION" ] && [ -f "$FILE_OUTPUT/$name" ]; then
         #echo "$name exist. Skipping..."
@@ -153,10 +165,13 @@ for fullname in ${INPUT_DIR}/Run2016*${DATA_PATTERN}*; do
     input_files="$input_files $fullname"
     ((count+=1))
     if [ $(($count % $files_per_job)) == 0 ]; then
+        ((job_num+=1))
+        echo Job Num $job_num
         echo $DATA_DIR/run_skim_data_analysis_single.sh -i \"$input_files\" --data ${POSITIONAL[@]}
 cat << EOM >> $output_file
 arguments = $DATA_DIR/run_skim_data_analysis_single.sh -i \"$input_files\" --data ${POSITIONAL[@]}
 error = ${OUTPUT_DIR}/stderr/$(basename $fullname .root).err
+log = ${OUTPUT_DIR}/stdout/$(basename $fullname .root).log
 output = ${OUTPUT_DIR}/stdout/$(basename $fullname .root).output
 Queue
 EOM

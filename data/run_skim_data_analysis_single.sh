@@ -70,6 +70,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --phase1)
+        PHASE1=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -101,6 +106,8 @@ elif [ -n "$MASTER" ]; then
 elif [ -n "$JPSI_SINGLE_ELECTRON" ]; then
     OUTPUT_DIR=$SKIM_DATA_JPSI_SINGLE_ELECTRON_OUTPUT_DIR
     SCRIPT_PATH=$JPSI_SKIMMER_PATH
+elif [ -n "$PHASE1" ]; then
+    OUTPUT_DIR=$SKIM_DATA_PHASE1_OUTPUT_DIR
 else
     OUTPUT_DIR=$SKIM_DATA_OUTPUT_DIR
 fi

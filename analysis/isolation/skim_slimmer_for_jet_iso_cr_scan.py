@@ -25,11 +25,13 @@ parser = argparse.ArgumentParser(description='Slim skims for jet iso scan..')
 parser.add_argument('-s', '--signal', dest='signal', help='Signal', action='store_true')
 parser.add_argument('-bg', '--background', dest='bg', help='Background', action='store_true')
 parser.add_argument('-data', '--data', dest='data', help='Background', action='store_true')
+parser.add_argument('-phase1', '--phase1', dest='phase1', help='Phase 1', action='store_true')
 args = parser.parse_args()
 
 signal = args.signal
 bg = args.bg
 data = args.data
+phase1 = args.phase1
 
 if not signal and not bg and not data:
     bg = True
@@ -45,10 +47,16 @@ if signal:
     output_dir_stdout = base_dir + "/signal/skim/stdout"
     output_dir_stderr = base_dir + "/signal/skim/stderr"
 elif bg:
-    input_dir = base_dir + "/bg/skim/sum/type_sum"
-    output_dir = base_dir + "/bg/skim/sum/slim"
-    output_dir_stdout = base_dir + "/bg/skim/stdout"
-    output_dir_stderr = base_dir + "/bg/skim/stderr"
+    if phase1:
+        input_dir = base_dir + "/bg/skim_phase1/sum/type_sum"
+        output_dir = base_dir + "/bg/skim_phase1/sum/slim"
+        output_dir_stdout = base_dir + "/bg/skim_phase1/stdout"
+        output_dir_stderr = base_dir + "/bg/skim_phase1/stderr"
+    else:
+        input_dir = base_dir + "/bg/skim/sum/type_sum"
+        output_dir = base_dir + "/bg/skim/sum/slim"
+        output_dir_stdout = base_dir + "/bg/skim/stdout"
+        output_dir_stderr = base_dir + "/bg/skim/stderr"
 else:
     input_dir = base_dir + "/data/skim/sum"
     output_dir = base_dir + "/data/skim/slim"

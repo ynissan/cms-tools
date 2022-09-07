@@ -27,6 +27,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --phase1)
+        PHASE1=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -54,6 +59,9 @@ elif [ -n "$JPSI_MUONS" ]; then
     INPUT_DIR=$SKIM_MASTER_OUTPUT_DIR
     BDT_DIR=$SKIM_MASTER_OUTPUT_DIR/split/tmva
     COMMAND=$SCRIPTS_WD/skimmer_jpsi_bdt.py
+elif [ -n "$PHASE1" ]; then
+    INPUT_DIR=$SKIM_PHASE1_OUTPUT_DIR
+    BDT_DIR=$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt_phase1
 else
     if [ -n "$SC" ]; then
         echo "GOT SC"

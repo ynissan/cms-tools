@@ -87,7 +87,7 @@ TOOLS_BASE_PATH = os.path.expandvars("$CMSSW_BASE/src/cms-tools")#/analysis/scri
 
 compoundTypes = {
     "Rare" : ["WZZ", "WWZ", "ZZZ"],
-    "DiBoson" : ["WZ", "WW", "ZZ"],
+    "DiBoson" : ["WZ", "WW", "ZZ", "WWTo1L1Nu2Q", "WZTo1L1Nu2Q", "WZTo1L3Nu", "ZZTo2L2Q"],
     "TTJets": ["ST_t-channel_antitop", "ST_t-channel_top", "TTJets_DiLept", "TTJets_SingleLeptFromT", "TTJets_SingleLeptFromTbar"]
 }
 
@@ -645,6 +645,10 @@ def getLeptonCollectionFileMapFile(baseFileName):
         mapNameFile = "Run2016_SingleMuon.root"
     elif "Run2016" in baseFileName and "SingleElectron" in baseFileName:
         mapNameFile = "Run2016_SingleElectron.root"
+    elif "Run2017" in baseFileName and ".MET" in baseFileName:
+        mapNameFile = "Run2017_MET.root"
+    elif "Run2018" in baseFileName and ".MET" in baseFileName:
+        mapNameFile = "Run2018_MET.root"
     elif "RunIIFall17MiniAODv2" in baseFileName:
         mapNameFile = "Fall17." + ("_".join(baseFileName.split(".")[1].split("_")[0:3])).split("AOD")[0] + ".root"
     else:

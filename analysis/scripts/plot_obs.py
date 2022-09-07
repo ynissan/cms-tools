@@ -307,7 +307,7 @@ def createPlotsFast(rootfiles, types, histograms, weight, category, conditions, 
                                 drawString = " ( " + conditionStr + " )"
                             else:
                                 print("category=",category)
-                                drawString = ((plot_par.weightString[plot_par.plot_kind] + " * ") if "data" not in category else "") + ((str(weight) + " * ") if ("data" not in category and plot_par.use_calculated_lumi_weight)  else "") + " ( " + conditionStr + " )"
+                                drawString = ((plot_par.weightString[plot_par.plot_kind] + " * ") if (("data" not in category) or  plot_par.applyWeightsToData) else "") + ((str(weight) + " * ") if ("data" not in category and plot_par.use_calculated_lumi_weight)  else "") + " ( " + conditionStr + " )"
             
                             #print(("drawString", drawString))
 
@@ -497,7 +497,12 @@ def plotRatio(c1, pad, memory, numHist, denHist, hist_def, numLabel = "Data", de
     
     #tl.DrawLatex(.1,.01,"error = " + "{:.2f}".format(100 * fit_only_signal_integral_error[hist_def["obs"]] / fit_only_signal_integral[hist_def["obs"]]) + "%")
                 
-
+    tl = TLatex()
+    tl.SetNDC()
+    tl.SetTextSize(0.15) 
+    tl.SetTextFont(42)
+    tl.DrawLatex(.15,.8, "sf = " + "{:.3f}".format(rdataHist.GetBinContent(1)) + " err = " +  "{:.3f}".format(rdataHist.GetBinError(1)))
+    
     memory.append(line)
     c1.Modified()
     
@@ -515,7 +520,7 @@ def plotRatio(c1, pad, memory, numHist, denHist, hist_def, numLabel = "Data", de
         tl.SetNDC()
         tl.SetTextSize(0.15) 
         tl.SetTextFont(42)
-        tl.DrawLatex(.2,.4, " m = " + "{:.2f}".format(fLine.GetParameter(1)) + " +- " +  "{:.2f}".format(fLine.GetParError(1)) + " b = " + "{:.2f}".format(fLine.GetParameter(0)) + " +- " + "{:.2f}".format(fLine.GetParError(0)))
+        tl.DrawLatex(.15,.4, "m = " + "{:.2f}".format(fLine.GetParameter(1)) + " +- " +  "{:.2f}".format(fLine.GetParError(1)) + " b = " + "{:.2f}".format(fLine.GetParameter(0)) + " +- " + "{:.2f}".format(fLine.GetParError(0)))
         #"ch2/ndof = " + "{:.2f}".format(chi2perndof)
 
 def createSumTypes(sumTypes):
@@ -623,12 +628,14 @@ def createAllHistograms(histograms, sumTypes):
             if plot_par.plot_fast:
                 print("Plotting Signal Fast")
                 for signalFile in plot_par.signal_dir:
+                    signal_files = glob(signalFile) if plot_par.glob_signal else [signalFile]
                     signalBasename = os.path.basename(signalFile)
-                    createPlotsFast([signalFile], [signalBasename], histograms, weight, "signal", [""], plot_par)
+                    createPlotsFast(signal_files, [signalBasename], histograms, weight, "signal", [""], plot_par)
             else:
                 for signalFile in plot_par.signal_dir:
+                    signal_files = glob(signalFile) if plot_par.glob_signal else [signalFile]
                     signalBasename = os.path.basename(signalFile)
-                    createPlots([signalFile], [signalBasename], histograms, weight, "signal", [""], plot_par)
+                    createPlots(signal_files, [signalBasename], histograms, weight, "signal", [""], plot_par)
                     
         if len(plot_par.plot_custom_types) > 0:
             if plot_par.custom_types_common_files:
@@ -1266,7 +1273,7 @@ def main():
                         print((sigHistName, sigHist.GetMaximum()))
                         sigHists.append(sigHist)
                         if len(object_retag_name) > 0:
-                            plotutils.setHistColorFillLine(sigHist, utils.colorPalette[cP], 0.35, True)
+                            plotutils.setHistColorFillLine(sigHist, plot_par.colorPalette[cP], 0.35, True)
                             cP += 1
                         else:
                             plotutils.setHistColorFillLine(sigHist, plotutils.signalCp[i], 1)
