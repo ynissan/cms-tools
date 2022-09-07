@@ -1,7 +1,7 @@
 import sys
 import os
 
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/lib"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
 
 import crystal_ball_params
 import utils
@@ -109,6 +109,7 @@ class BaseParams:
         #'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight * BranchingRatio",
         'SingleMuon' : "1"
     }
+    applyWeightsToData = False
     bgReTagging = {}
     bgReTaggingOrder = {}
     bgReTaggingNames = utils.bgReTaggingNames
@@ -141,6 +142,8 @@ class BaseParams:
     
     create_canvas = False
     
+    glob_signal = False
+    
     #customRatios = [  [["DiBoson"],["TTJets"]],  [["WJetsToLNu"],["ZJetsToNuNu"]]  ]
     customRatios = [  [["tc_btag_veto"],["tc_2_btags"]]  ]
     choose_bg_files = False
@@ -172,6 +175,8 @@ class BaseParams:
     fit_inv_mass_jpsi_func = "gauss"
     fit_inv_mass_jpsi_func_bg = False
     fit_inv_mass_jpsi_bg_func = "linear"
+    
+    fit_linear_ratio_plot = False
     
     save_histrograms_to_file = False
     load_histrograms_from_file = False
@@ -210,7 +215,7 @@ class BaseParams:
     custom_types_conditions = []
     custom_types_common_files = False
     
-    cms_tools_base_dir = os.path.expandvars("$CMSSW_BASE/src/stops")
+    cms_tools_base_dir = os.path.expandvars("$CMSSW_BASE/src/cms-tools")
     histograms_root_files_dir = cms_tools_base_dir + "/analysis/scripts/histograms_root_files"
     
     #used to turn on only wanted branches in the tree
@@ -218,6 +223,7 @@ class BaseParams:
     usedObs = []
     
     transfer_factor = -1
+    transfer_factor_error = -1
     
     colorPalette = plotutils.defaultColorPalette
     
