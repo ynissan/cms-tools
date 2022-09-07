@@ -2,6 +2,7 @@ import sys
 import os
 from ROOT import *
 import copy 
+from glob import glob
 
 sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/lib"))
 
@@ -11,12 +12,14 @@ import plotutils
 skim_dir = "/afs/desy.de/user/n/nissanuv/q_nfs/x1x2x1/signal/skim/sum/"
 
 signals = [
-    skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm115GeV_dm0p6GeV_1.root",
-    skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm115GeV_dm1p0GeV_1.root",
-    skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm200GeV_dm1p4GeV_1.root",
-    skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm400GeV_dm1p4GeV_1.root",
+     skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm115GeV_dm0p6GeV_1.root",
+     skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm115GeV_dm1p0GeV_1.root",
+     skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm200GeV_dm1p4GeV_1.root",
+     skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm400GeV_dm1p4GeV_1.root",
 ]
+#signals = glob("/nfs/dust/cms/user/diepholq/x1x2x1/signal/skim/single/higgsino_Summer16_stopstop_800GeV_mChipm400GeV_dm1p0GeV_pu35_part*of25_RA2AnalysisTree.root")
 
+# higgsino_Summer16_stopstop_800GeV_mChipm400GeV_dm1p0GeV_pu35_part14of25_RA2AnalysisTree.root
 signalNames = [
     "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 0.6 Gev",
     "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.0 Gev",
@@ -28,6 +31,7 @@ signalNames = [
 common_histograms = [
     
     { "obs" : "MET", "minX" : 0, "maxX" : 800, "bins" : 30, "legendCoor" : {"x1" : .35, "y1" : .7, "x2" : .98, "y2" : .95}, "legendCol" : 3 },
+    { "obs" : "dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT",  "bins" : 50},
     #{ "obs" : "MT2", "minX" : 0, "maxX" : 100, "bins" : 30 },
     { "obs" : "MHT", "minX" : 200, "maxX" : 500, "bins" : 30, "units" : "H_{T}^{Miss} [GeV]" , "legendCoor" : {"x1" : .35, "y1" : .65, "x2" : .98, "y2" : .95}, "legendCol" : 3  },
     { "obs" : "HT", "minX" : 0, "maxX" : 700, "bins" : 30 },
@@ -197,11 +201,11 @@ class stops_bg_vs_signal_Iso(BaseParams):
     'MET' : utils.LUMINOSITY/1000.0,
     }
 
-    plot_bg = True
+    plot_bg = False
     plot_data = False
     plot_signal = True
 
-    no_weights = True
+    no_weights = False
 
     plot_overflow = True
     plot_error = True
