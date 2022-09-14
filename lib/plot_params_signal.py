@@ -11,27 +11,27 @@ from plot_params_base import *
 
 common_histograms = [
     
-    { "obs" : "MET", "minX" : 0, "maxX" : 800, "bins" : 30 },
+    { "obs" : "MET", "minX" : 0, "maxX" : 800, "bins" : 60, "units" : "E_{T}^{Miss} [GeV]", "linearYspace" : 1.3 },
     #{ "obs" : "MT2", "minX" : 0, "maxX" : 100, "bins" : 30 },
-    { "obs" : "MHT", "minX" : 220, "maxX" : 500, "bins" : 30, "units" : "H_{T}^{Miss} [GeV]" },
-    { "obs" : "HT", "minX" : 0, "maxX" : 700, "bins" : 30 },
+    { "obs" : "MHT", "minX" : 0, "maxX" : 500, "bins" : 60, "units" : "H_{T}^{Miss} [GeV]", "linearYspace" : 1.3 },
+    { "obs" : "HT", "minX" : 0, "maxX" : 700, "bins" : 60, "linearYspace" : 1.3 },
     #{ "obs" : "MetDHt", "minX" : 0, "maxX" : 700, "bins" : 30 },
-    { "obs" : "leptonFlavour%%%", "minX" : 0, "maxX" : 2, "bins" : 2 },
+    #{ "obs" : "leptonFlavour%%%", "minX" : 0, "maxX" : 2, "bins" : 2 },
     #{ "obs" : "int(genFlavour == \"Muons\")", "minX" : 0, "maxX" : 2, "bins" : 2, "usedObs" : ["genFlavour"] },
     #{ "obs" : "int(genFlavour == \"Electrons\")", "minX" : 0, "maxX" : 2, "bins" : 2, "usedObs" : ["genFlavour"] },
     
-    { "obs" : "NJets", "minX" : 0, "maxX" : 7, "bins" : 7 },
+    { "obs" : "NJets", "minX" : 0, "maxX" : 7, "bins" : 7, "linearYspace" : 1.3 },
     #{ "obs" : "BTagsLoose", "minX" : 0, "maxX" : 7, "bins" : 7 },
     #{ "obs" : "BTagsMedium", "minX" : 0, "maxX" : 7, "bins" : 7 },
     #{ "obs" : "BTagsDeepLoose", "minX" : 0, "maxX" : 7, "bins" : 7 },
-    { "obs" : "BTagsDeepMedium", "minX" : 0, "maxX" : 7, "bins" : 7 },
+    { "obs" : "BTagsDeepMedium", "minX" : 0, "maxX" : 7, "bins" : 7, "linearYspace" : 1.3 },
     
     #{ "obs" : "LeadingJetQgLikelihood", "minX" : 0, "maxX" : 1, "bins" : 30 },
-    { "obs" : "MinDeltaPhiMhtJets", "minX" : 0, "maxX" : 6.3, "bins" : 20, "units" : "Min\Delta_{}\phi(H_{T}^{Miss}, Jets)" },
-    { "obs" : "MinDeltaPhiMetJets", "minX" : 0, "maxX" : 6.3, "bins" : 20, "units" : "Min\Delta_{}\phi(E_{T}^{Miss}, Jets)" },
+    { "obs" : "MinDeltaPhiMhtJets", "minX" : 0, "maxX" : 3.2, "bins" : 60, "units" : "Min\Delta_{}\phi(H_{T}^{Miss}, Jets)" },
+    { "obs" : "MinDeltaPhiMetJets", "minX" : 0, "maxX" : 3.2, "bins" : 60, "units" : "Min\Delta_{}\phi(E_{T}^{Miss}, Jets)" },
     
-    { "obs" : "LeadingJetPt", "minX" : 0, "maxX" : 800, "bins" : 30, "units" : "p_{T}(j_{1})" },
-    { "obs" : "abs(LeadingJet.Eta())", "minX" : 0, "maxX" : 2.5, "bins" : 30, "usedObs" : ["LeadingJet"], "units" : "|\eta_{j_{1}}|" },
+    { "obs" : "LeadingJetPt", "minX" : 0, "maxX" : 800, "bins" : 60, "units" : "p_{T}(j_{1})", "linearYspace" : 1.3  },
+    { "obs" : "abs(LeadingJet.Eta())", "minX" : 0, "maxX" : 2.5, "bins" : 100, "usedObs" : ["LeadingJet"], "units" : "|\eta_{j_{1}}|" },
     #{ "obs" : "MaxCsv25", "minX" : 0, "maxX" : 1, "bins" : 30 },
     #{ "obs" : "MaxDeepCsv25", "minX" : 0, "maxX" : 1, "bins" : 30 },
     #{ "obs" : "LeadingJetMinDeltaRElectrons", "minX" : 0, "maxX" : 5, "bins" : 30 },
@@ -98,6 +98,36 @@ two_leps_histograms = [
 
 ]
 
+
+signals = [
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm0p86Chi20Chipm*.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm1p13Chi20Chipm*.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm1p92Chi20Chipm*.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm3p28Chi20Chipm*.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm4p30Chi20Chipm*.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm5p63Chi20Chipm*.root"
+              
+              ]
+
+signalsNlp = [
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm0p86Chi20Chipm*.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm1p13Chi20Chipm*.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm1p92Chi20Chipm*.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm3p28Chi20Chipm*.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm4p30Chi20Chipm*.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm5p63Chi20Chipm*.root"
+              
+              ]
+
+signalNames = [
+    "\Delta_{}M 0.8 GeV",
+    "\Delta_{}M 1.1 GeV",
+    "\Delta_{}M 1.9 GeV",
+    "\Delta_{}M 3.2 GeV",
+    "\Delta_{}M 4.3 GeV",
+    "\Delta_{}M 5.6 GeV",
+]
+
 class signal_production_comparison_muons(BaseParams):
     
     plot_signal = True
@@ -151,7 +181,67 @@ class signal_production_comparison_muons(BaseParams):
     print("usedObs", usedObs)
     #exit(0)
 
+class signal_common_distributions_fixed_mu(BaseParams):
     
+    plot_signal = True
+    plot_bg = False
+    plot_data = False
+    plot_error = True
+    plot_overflow = True
     
+    histrograms_file = BaseParams.histograms_root_files_dir + "/signal_common_distributions_fixed_mu.root"
     
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True
     
+    weightString = {
+        'MET' : "BranchingRatio * Weight",
+    }
+    
+    signal_dir = signalsNlp
+    signal_names = signalNames
+    glob_signal = True
+    
+    #histograms_defs = []
+    #histograms_defs.extend(copy.deepcopy(common_histograms))
+    
+    histograms_defs = [
+    
+        { "obs" : "MET", "minX" : 0, "maxX" : 800, "bins" : 60, "units" : "E_{T}^{Miss} [GeV]", "linearYspace" : 1.3 },
+        { "obs" : "MHT", "minX" : 0, "maxX" : 500, "bins" : 60, "units" : "H_{T}^{Miss} [GeV]", "linearYspace" : 1.3 },
+        { "obs" : "HT", "minX" : 0, "maxX" : 700, "bins" : 60, "linearYspace" : 1.3 },
+        { "obs" : "NJets", "minX" : 0, "maxX" : 7, "bins" : 7, "linearYspace" : 1.3 },
+        { "obs" : "BTagsDeepMedium", "minX" : 0, "maxX" : 7, "bins" : 7, "linearYspace" : 1.3 },
+        { "obs" : "MinDeltaPhiMhtJets", "minX" : 0, "maxX" : 3.2, "bins" : 60, "units" : "Min\Delta_{}\phi(H_{T}^{Miss}, Jets)" },
+        { "obs" : "MinDeltaPhiMetJets", "minX" : 0, "maxX" : 3.2, "bins" : 60, "units" : "Min\Delta_{}\phi(E_{T}^{Miss}, Jets)" },
+        { "obs" : "LeadingJetPt", "minX" : 0, "maxX" : 800, "bins" : 60, "units" : "p_{T}(j_{1})", "linearYspace" : 1.3  },
+        #{ "obs" : "abs(LeadingJet.Eta())", "minX" : 0, "maxX" : 2.5, "bins" : 100, "usedObs" : ["LeadingJet"], "units" : "|\eta_{j_{1}}|" },
+        #{ "obs" : 'int(vetoElectronsPassIso)', "minX" : 0, "maxX" : 2, "bins" : 2, "usedObs" : ["vetoElectronsPassIso"]},
+        #{ "obs" : 'int(vetoMuonsPassIso)', "minX" : 0, "maxX" : 2, "bins" : 2, "usedObs" : ["vetoMuonsPassIso"]},
+
+    ]
+    
+    y_title_offset = 1.2
+    
+    cuts = [
+        {"name":"none", "title": "None", "condition" : "1"}
+        #{"name":"non-orth", "title": "Non Orth", "condition" : "(MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 140 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && dilepBDT%%% > 0.3 && isoCr%%% == 0)", "baseline" : "sameSign%%% == 0", "sc" : "sameSign%%% == 1"},
+        #{"name":"orth", "title": "Orth", "condition" : "(MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 140 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && dilepBDT%%% > 0.1 && (leptons%%%[1].Pt() <= 3.5 || deltaR%%% <= 0.3) && isoCr%%% == 0)", "baseline" : "sameSign%%% == 0", "sc" : "sameSign%%% == 1"},
+    ]
+
+class signal_common_distributions_fixed_dm(signal_common_distributions_fixed_mu):
+    signal_dir = [
+        "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm1p47Chi20Chipm*.root",
+          "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu115_dm1p47Chi20Chipm*.root",
+          "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu130_dm1p47Chi20Chipm*.root",
+    ]
+    signal_names = [
+    "\Delta_{}M 1.47 GeV, \mu 100 GeV",
+    "\Delta_{}M 1.47 GeV, \mu 115 GeV",
+    "\Delta_{}M 1.47 GeV, \mu 130 GeV",
+    ]
+    
+    histrograms_file = BaseParams.histograms_root_files_dir + "/signal_common_distributions_fixed_dm.root"
+    
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True

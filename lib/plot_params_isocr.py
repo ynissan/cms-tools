@@ -264,12 +264,40 @@ class dilepton_muons_bg_isocr_no_retag_CorrJetIso10_5_55_bdt_only(dilepton_muons
 ############ CLOSURE PLOT SCAN FOR CorrJetNoMultIso10_06 WITH/OUT LINE FITS AND WEIGHTS ############
 ####################################################################################################
 
+# index_to_optimise = 1
+# ===========
+# 2l_Muons
+# ['-1.00', '-1.00', '-0.05', '0.00', '0.05', '0.20', '0.25', '0.35', '0.45', '0.60']
+# ===========
+# 2l_Electrons
+# ['-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '0.10', '0.20', '0.30']
+# index_to_optimise = 2
+# ===========
+# 2l_Muons
+# ['-0.25', '-0.20', '0.05', '0.20', '0.25', '0.30', '0.35', '0.40', '0.45', '0.55']
+# ===========
+# 2l_Electrons
+# ['-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '0.10', '0.20', '0.30']
+# index_to_optimise = 3
+# ===========
+# 2l_Muons
+# ['-1.00', '-1.00', '-1.00', '-0.45', '0.00', '0.15', '0.20', '0.25', '0.35', '0.45']
+# ===========
+# 2l_Electrons
+# ['-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '0.15']
+# index_to_optimise = 4
+# ===========
+# 2l_Muons
+# ['-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-0.05', '0.35', '0.40', '0.50']
+# ===========
+# 2l_Electrons
+# ['-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00']
 
 class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass(dilepton_muons_bg_isocr_no_retag_CorrJetIso10_5_55):
     histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_no_retag_CorrJetIso10_06_invmass.root"
     
     save_histrograms_to_file = True
-    load_histrograms_from_file = True 
+    load_histrograms_from_file = False 
     
     bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum/type_sum"
     
@@ -286,6 +314,10 @@ class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass(dilepton_mu
         
         { "obs" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 20, "units" : "BDT"},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
         { "obs" : "closure_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,0,0.15,0.25,0.35,0.45,0.6,1]},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
+        { "obs" : "closure_new_bin_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,0,0.1,0.2,0.3,0.4,0.5,1]},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
+        { "obs" : "closure_newer_bin_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,0,0.1,0.2,0.3,0.4,0.45,0.5,0.55,1]},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
+        { "obs" : "closure_newest_bin_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,0,0.1,0.2,0.3,0.4,0.45,0.5,1]},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
+        
         { "obs" : "fine_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 60, "units" : "BDT"},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
         #{ "obs" : "coarse_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 6, "blind" : [None,0.1], "units" : "BDT"},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
         #{ "obs" : "sideband_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 0, "bins" : 1, "blind" : [None,0.1], "units" : "BDT"},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
@@ -302,7 +334,7 @@ class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass(dilepton_mu
     calculatedLumi = {
         'MET' : 35.7389543,
     }
-    normalise = False
+    normalise = True
     
     fit_linear_ratio_plot = True
 
@@ -312,7 +344,7 @@ class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_no_norm_sf(
     transfer_factor_error = 0.05
     transfer_factor_error = 0.0
     save_histrograms_to_file = True
-    load_histrograms_from_file = True
+    load_histrograms_from_file = False
     calculatedLumi = {
         'MET' : 35.7389543,
     }
@@ -382,7 +414,7 @@ class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_n
     transfer_factor_error = 0.055
     transfer_factor_error = 0.0
     save_histrograms_to_file = True
-    load_histrograms_from_file = True
+    load_histrograms_from_file = False
     calculatedLumi = {
         'MET' : 35.7389543,
     }
@@ -430,7 +462,7 @@ class dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign
     plot_bg = False
     plot_data = True
     save_histrograms_to_file = True
-    load_histrograms_from_file = True
+    load_histrograms_from_file = False
     data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/slim_sum"
     calculatedLumi = {
         'MET' : 35.7389543,
@@ -444,7 +476,7 @@ class dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign
     transfer_factor_error = 0.102
     transfer_factor_error = 0.0
     fit_linear_ratio_plot = True
-    load_histrograms_from_file = True
+    load_histrograms_from_file = False
 
 class dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights(dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf):
     histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights.root"
@@ -454,7 +486,7 @@ class dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign
     }
     applyWeightsToData = True
     save_histrograms_to_file = True
-    load_histrograms_from_file = True
+    load_histrograms_from_file = False
 
 class dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights_sf_recalculated(dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_no_norm_sf_line_weights):
     transfer_factor = 0.610

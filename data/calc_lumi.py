@@ -35,6 +35,8 @@ json_file = None
 
 if args.input_dir:
     input_dir = args.input_dir[0]
+else:
+    input_dir = "/afs/desy.de/user/n/nissanuv/ntupleHub/LeptonCollection"
 
 if args.json_file:
     json_file = args.json_file[0].strip()

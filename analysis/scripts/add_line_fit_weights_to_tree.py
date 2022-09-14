@@ -34,6 +34,12 @@ force = args.force
 #    1  p0           1.11418e+00   9.20848e-02   8.82279e-05  -2.51672e-11
 #    2  p1           1.76377e-01   2.07421e-01   1.98733e-04   0.00000e+00
 
+# NEW BINNING
+
+#   NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+#    1  p0           1.11327e+00   9.24861e-02   9.61610e-05   4.61818e-11
+#    2  p1           1.79169e-01   2.08616e-01   2.16905e-04  -1.02369e-11
+
 def funcBackground(x,par):
     return par[0]+par[1]*x[0]
 

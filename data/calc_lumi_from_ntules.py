@@ -22,8 +22,9 @@ lumiSecs = LumiSectMap()
 
 #data_files = glob("/pnfs/desy.de/cms/tier2/store/user/*/NtupleHub/ProductionRun2v*/Run2016B*MET*")
 #data_files = glob("/afs/desy.de/user/n/nissanuv/ntupleHub/SlimmedProduction/Run201[78]*MET*")
-data_files = glob("/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/tmp/*")
-
+#data_files = glob("/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/tmp/*")
+#data_files = glob("/afs/desy.de/user/n/nissanuv/ntupleHub/SlimmedProduction/Run2018D*MET*")
+data_files = glob("/tmp/tmp.root")
 print len(data_files), "Files"
 i=0
     

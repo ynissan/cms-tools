@@ -37,6 +37,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --phase1)
+        PHASE1=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         --jpsi_single_electron)
         JPSI_SINGLE_ELECTRON=true
         POSITIONAL+=("$1")
@@ -53,7 +58,7 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 
 OUTPUT_DIR=$SKIM_DATA_OUTPUT_DIR/sum
 INPUT_DIR=$SKIM_DATA_OUTPUT_DIR/single
-pattern="METAOD_"
+pattern="METAOD"
 if [ -n "$TWO_LEPTONS" ]; then
         if [ -n "$SAME_SIGN" ]; then
             OUTPUT_DIR=$TWO_LEPTONS_SAME_SIGN_SKIM_DATA_OUTPUT_DIR/sum
@@ -63,21 +68,24 @@ if [ -n "$TWO_LEPTONS" ]; then
             INPUT_DIR=$TWO_LEPTONS_SKIM_DATA_OUTPUT_DIR/single
         fi
 elif [ -n "$DRELL_YAN" ]; then
-    pattern="SingleMuonAOD_"
+    pattern="SingleMuonAOD"
     OUTPUT_DIR=$DY_SKIM_DATA_OUTPUT_DIR/sum
     INPUT_DIR=$DY_SKIM_DATA_OUTPUT_DIR/single
 elif [ -n "$JPSI_MUONS" ]; then
-    pattern="SingleMuonAOD_"
+    pattern="SingleMuonAOD"
     INPUT_DIR=$SKIM_DATA_JPSI_MUONS_OUTPUT_DIR/single
     OUTPUT_DIR=$SKIM_DATA_JPSI_MUONS_OUTPUT_DIR/sum
 elif [ -n "$MASTER" ]; then
-    pattern="SingleMuonAOD_"
+    pattern="SingleMuonAOD"
     INPUT_DIR=$SKIM_DATA_MASTER_OUTPUT_DIR/single
     OUTPUT_DIR=$SKIM_DATA_MASTER_OUTPUT_DIR/sum
 elif [ -n "$JPSI_SINGLE_ELECTRON" ]; then
-    pattern="SingleElectronAOD_"
+    pattern="SingleElectronAOD"
     INPUT_DIR=$SKIM_DATA_JPSI_SINGLE_ELECTRON_OUTPUT_DIR/single
     OUTPUT_DIR=$SKIM_DATA_JPSI_SINGLE_ELECTRON_OUTPUT_DIR/sum
+elif [ -n "$PHASE1" ]; then
+    OUTPUT_DIR=$SKIM_DATA_PHASE1_OUTPUT_DIR/sum
+    INPUT_DIR=$SKIM_DATA_PHASE1_OUTPUT_DIR/single
 fi
 
 
@@ -88,6 +96,10 @@ files_per_job=20
 output_count=1
 lastfile=""
 
+if [ -n "$PHASE1" ]; then
+    files_per_job=50
+fi
+
 mkdir $OUTPUT_DIR
 
 for fullname in $INPUT_DIR/*; do
@@ -95,7 +107,7 @@ for fullname in $INPUT_DIR/*; do
     input_files="$input_files $fullname"
     ((count+=1))
     if [ $(($count % $files_per_job)) == 0 ]; then
-        output_name=`echo $(basename $fullname .root) | awk -F"$pattern" "{print \\$1\"${pattern}${output_count}.root\"}"`
+        output_name=`echo $(basename $fullname .root) | awk -F"$pattern" "{print \\$1\"${pattern}_${output_count}.root\"}"`
         ((output_count+=1))
         echo hadd -f $OUTPUT_DIR/$output_name $input_files
         hadd -f $OUTPUT_DIR/$output_name $input_files
@@ -108,7 +120,7 @@ for fullname in $INPUT_DIR/*; do
 done
 
 if [ $(($count % $files_per_job)) != 0 ]; then
-    output_name=`echo $(basename $lastfile .root) | awk -F"$pattern" "{print \\$1\"${pattern}${output_count}.root\"}"`
+    output_name=`echo $(basename $lastfile .root) | awk -F"$pattern" "{print \\$1\"${pattern}_${output_count}.root\"}"`
     ((output_count+=1))
     echo hadd -f $OUTPUT_DIR/$output_name $input_files
     hadd -f $OUTPUT_DIR/$output_name $input_files

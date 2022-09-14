@@ -27,6 +27,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --phase1)
+        PHASE1=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -50,6 +55,7 @@ echo "output file: $output_file"
 
 OUTPUT_DIR=$SKIM_DATA_BDT_OUTPUT_DIR
 INPUT_DIR=$SKIM_DATA_OUTPUT_DIR
+LEPTON_TRACK_DIR=$LEPTON_TRACK_SPLIT_DIR
 
 if [ -n "$SC" ]; then
     echo "GOT SC"
@@ -64,7 +70,13 @@ elif [ -n "$JPSI_MUONS" ]; then
     echo "GOT DY"
     echo "HERE: $@"
     INPUT_DIR=$SKIM_DATA_JPSI_MUONS_OUTPUT_DIR
+elif [ -n "$PHASE1" ]; then
+    echo "GOT PHASE1"
+    echo "HERE: $@"
+    INPUT_DIR=$SKIM_DATA_PHASE1_OUTPUT_DIR
+    LEPTON_TRACK_DIR=$LEPTON_TRACK_PHASE1_SPLIT_DIR
 fi
+
 
 
 
@@ -86,7 +98,7 @@ EOM
 
 #FILES=(Run2016E-17Jul2018-v1.METAOD_17.root Run2016E-17Jul2018-v1.METAOD_18.root Run2016E-17Jul2018-v1.METAOD_20.root Run2016F-17Jul2018-v1.METAOD_21.root Run2016G-17Jul2018-v1.METAOD_28.root)
 
-for sim in $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
+for sim in $LEPTON_TRACK_DIR/cut_optimisation/tmva/*; do
     echo $sim
     filename=$(basename $sim)
     echo $filename
@@ -116,9 +128,9 @@ for sim in $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
 #             continue
 #         fi
         echo "Will run:"
-        echo $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -i $data_file -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename $@
+        echo $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -i $data_file -tb $LEPTON_TRACK_DIR/cut_optimisation/tmva/$filename $@
 cat << EOM >> $output_file
-arguments = $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -i $data_file -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename $@
+arguments = $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -i $data_file -tb $LEPTON_TRACK_DIR/cut_optimisation/tmva/$filename $@
 error = ${INPUT_DIR}/stderr/${data_file_name}_track_bdt.err
 output = ${INPUT_DIR}/stdout/${data_file_name}_track_bdt.output
 log = ${INPUT_DIR}/stdout/${data_file_name}_track_bdt.log

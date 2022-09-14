@@ -130,7 +130,7 @@ file_limit=0
 i=0
 count=0
 input_files=""
-files_per_job=4
+files_per_job=1
 job_num=0
 
 #files_per_job=1

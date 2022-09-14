@@ -141,7 +141,7 @@ class track_muons_data_control_region(BaseParams):
     
     
     weightString = {
-        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight * BranchingRatio",
+        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * BranchingRatio",
     }
     
     calculatedLumi = {

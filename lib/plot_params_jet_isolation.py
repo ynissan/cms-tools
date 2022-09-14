@@ -537,6 +537,7 @@ class bg_jets_multiplicity_muons(data_jets_multiplicity_muons):
     plot_bg = True
     plot_data = False
     bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum"
+    #bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum_total"
     
     weightString = {
         #'MET' : "BranchingRatio * Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight",

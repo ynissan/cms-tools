@@ -85,7 +85,8 @@ def setTDRStyle():
   tdrStyle.SetPadBottomMargin(0.13)
   # changed by UV from 0.16
   #tdrStyle.SetPadLeftMargin(0.16)
-  tdrStyle.SetPadLeftMargin(0.12)
+  #tdrStyle.SetPadLeftMargin(0.12)
+  tdrStyle.SetPadLeftMargin(0.14)
   #Changed from 0.02
   tdrStyle.SetPadRightMargin(0.04)
 
@@ -113,9 +114,9 @@ def setTDRStyle():
   # tdrStyle.SetTitleYSize(Float_t size = 0.02)
   tdrStyle.SetTitleXOffset(0.9)
   tdrStyle.SetTitleYOffset(1.25)
-  # tdrStyle.SetTitleOffset(1.1, "Y") # Another way to set the Offset
+  #tdrStyle.SetTitleOffset(1.0, "Y") # Another way to set the Offset
 
-# For the axis labels:
+# For the axis labels: (meaning - the numbers themselves)
 
   tdrStyle.SetLabelColor(1, "XYZ")
   tdrStyle.SetLabelFont(42, "XYZ")

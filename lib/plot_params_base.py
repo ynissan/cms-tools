@@ -76,6 +76,7 @@ def injectJetIsoToMapValues(obsMap, jetIso):
 # formula - in case we want to override the obs with a specific formula (for naming two histograms differently)
 # sc_formula - formula for same-charge CR
 # bins - bins num
+# binsY - bins num for Y
 # customBins - replaces the bins, minX, minY with custom binning array of low edges (plus one higher one)
 # minX, maxX - for x axis
 # minY, maxY, binsY - for y axis

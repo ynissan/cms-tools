@@ -562,6 +562,22 @@ def foldOverflowBins(hist):
     if under:
         hist.Fill(hist.GetXaxis().GetBinCenter(1), under)
 
+def setOverflowBins(hist):
+    maxRange = hist.GetXaxis().GetNbins()
+    shouldChange = False
+    over = hist.GetBinContent(hist.GetXaxis().GetNbins() + 1)
+    if over:
+        maxRange = hist.GetXaxis().GetNbins() + 1
+        shouldChange = True
+        
+    under = hist.GetBinContent(0)
+    minRange = 1
+    if under:
+        minRange = 0
+        shouldChange = True
+    if shouldChange:
+        hist.GetXaxis().SetRange(minRange, maxRange)
+
 def getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=True, tmpName="hsqrt", predefBins = False, twoD = False, binsY = None, minBinsY = None, maxBinsY = None):
     if tree.GetEntries() == 0:
         return None
@@ -647,6 +663,8 @@ def getLeptonCollectionFileMapFile(baseFileName):
         mapNameFile = "Run2016_SingleElectron.root"
     elif "Run2017" in baseFileName and ".MET" in baseFileName:
         mapNameFile = "Run2017_MET.root"
+    elif "Run2018D" in baseFileName and ".MET" in baseFileName:
+        mapNameFile = "Run2018D_MET.root"
     elif "Run2018" in baseFileName and ".MET" in baseFileName:
         mapNameFile = "Run2018_MET.root"
     elif "RunIIFall17MiniAODv2" in baseFileName:

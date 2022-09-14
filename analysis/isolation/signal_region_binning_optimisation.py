@@ -58,9 +58,40 @@ signals = [
     "mu100_dm1p13"
 ]
 
+index_to_optimise = 1
+
+# index_to_optimise = 1
+# ===========
+# 2l_Muons
+# ['-1.00', '-1.00', '-0.05', '0.00', '0.05', '0.20', '0.25', '0.35', '0.45', '0.60']
+# ===========
+# 2l_Electrons
+# ['-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '0.10', '0.20', '0.30']
+# index_to_optimise = 2
+# ===========
+# 2l_Muons
+# ['-0.25', '-0.20', '0.05', '0.20', '0.25', '0.30', '0.35', '0.40', '0.45', '0.55']
+# ===========
+# 2l_Electrons
+# ['-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '0.10', '0.20', '0.30']
+# index_to_optimise = 3
+# ===========
+# 2l_Muons
+# ['-1.00', '-1.00', '-1.00', '-0.45', '0.00', '0.15', '0.20', '0.25', '0.35', '0.45']
+# ===========
+# 2l_Electrons
+# ['-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '0.15']
+# index_to_optimise = 4
+# ===========
+# 2l_Muons
+# ['-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-0.05', '0.35', '0.40', '0.50']
+# ===========
+# 2l_Electrons
+# ['-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00']
+
 sam = False
 
-output_dir = "./signal_region_plots"
+output_dir = "./signal_region_plots_1_47"
 if lepNum == 1:
     output_dir = "./signal_region_tracks_plots"
 
@@ -217,8 +248,8 @@ def main():
                     else:
                         significance_histograms[i].Draw("hist same")
             
-                binMax = significance_histograms[1].GetMaximumBin()
-                maxValue = significance_histograms[1].GetXaxis().GetBinLowEdge(binMax)
+                binMax = significance_histograms[index_to_optimise].GetMaximumBin()
+                maxValue = significance_histograms[index_to_optimise].GetXaxis().GetBinLowEdge(binMax)
                 
                 print("binMax", binMax, "maxValue", "{:0.2f}".format(maxValue))
                 

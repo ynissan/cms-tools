@@ -38,6 +38,9 @@ output_file = None
 
 sam = True
 
+mtautauveto = " && (nmtautau%%% > 160 || nmtautau%%% < 0)"
+veto_tautau = True
+
 signal_dir = None
 bg_dir = None
 data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/sum"
@@ -54,7 +57,7 @@ else:
 if args.output_file:
     output_file = args.output_file[0]
 else:
-    output_file = "sig_bg_histograms_data_driven_run2.root"
+    output_file = "sig_bg_histograms_data_driven_run2_0_5_bin_tautau_veto.root"
 
 jetIsos = {
     "Electrons": "CorrJetNoMultIso11Dr0.5",
@@ -70,7 +73,9 @@ binning = {
         #"Electrons" : [0,0.1,0.2,0.3,0.35,1],
         #"Muons" : [0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,1]
         "Electrons" : [0,0.1,0.2,0.3,1],
-        "Muons" : [0,0.05,0.15,0.25,0.35,0.45,0.6,1]
+        #"Muons" : [0,0.05,0.15,0.25,0.35,0.45,0.6,1]
+        #new 
+        "Muons" : [0,0.1,0.2,0.3,0.4,0.45,0.5,1]        
     }
 }
 
@@ -151,7 +156,7 @@ def main():
             for orth in orthOpt:
                 c1.cd()
                 print("2l",lep,orth)
-                drawString = "(passedMhtMet6pack == 1 && passesUniversalSelection == 1 && twoLeptons%%% == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour%%% == \"" + lep + "\" && sameSign%%% == 0 && isoCr%%% >= 1 )"
+                drawString = "(passedMhtMet6pack == 1 && passesUniversalSelection == 1 && twoLeptons%%% == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour%%% == \"" + lep + "\" && sameSign%%% == 0 && isoCr%%% >= 1 " + (mtautauveto if veto_tautau else "") + ")"
                 drawString = drawString.replace("%%%", jetIsos[lep])
                 histName = "bg_2l_" + lep + ("_orth" if orth else "")
                 hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, "dilepBDT" + jetIsos[lep], binning["2l"][lep], drawString, False)
@@ -207,12 +212,13 @@ def main():
             
             
             orthOpt = [True, False] if lep == "Muons" else [False]
-            orth_cond = " && (leptons" + jetIsos[lep] + "[1].Pt() <= 3.5 || deltaR" + jetIsos[lep] + " <= 0.3)"
+            orth_cond = " && (leptons%%%[1].Pt() <= 3.5 || deltaR%%% <= 0.3)"
             for orth in orthOpt:
                 c1.cd()
                 
                 
-                drawString = str(utils.LUMINOSITY) + " * FastSimWeightPR31285To36122* passesUniversalSelection * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (twoLeptons" + jetIsos[lep] + " == 1 " + (orth_cond if orth else "") + " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetIsos[lep] + " < 12  && invMass" + jetIsos[lep] + " > 0.4 && !(invMass" + jetIsos[lep] + " > 3 && invMass" + jetIsos[lep] + " < 3.2) && !(invMass" + jetIsos[lep] + " > 0.75 && invMass" + jetIsos[lep] + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetIsos[lep] + " == \"" + lep + "\" && sameSign" + jetIsos[lep] + " == 0 && isoCr" + jetIsos[lep] + " == 0)"
+                drawString = str(utils.LUMINOSITY) + " * FastSimWeightPR31285To36122* passesUniversalSelection * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (twoLeptons%%% == 1 " + (orth_cond if orth else "") + " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour%%% == \"" + lep + "\" && sameSign%%% == 0 && isoCr%%% == 0 " + (mtautauveto if veto_tautau else "") + "  )"
+                drawString = drawString.replace("%%%", jetIsos[lep])
                 histName = deltaM + "_2l_" + lep + ("_orth" if orth else "")
                 hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, "dilepBDT" + jetIsos[lep], binning["2l"][lep], drawString, False)
                 #hist = utils.getHistogramFromTree(deltaM + "_2l_" + ("orth_" if orth else "") + lep , c, "dilepBDT" + jetIsos[lep], bins, -1, 1, cond, True)
@@ -240,12 +246,13 @@ def main():
         
             c1.cd()
             orthOpt = [True, False] if lep == "Muons" else [False]
-            orth_cond = " && (leptons" + jetIsos[lep] + "[1].Pt() <= 3.5 || deltaR" + jetIsos[lep] + " <= 0.3)"
+            orth_cond = " && (leptons%%%[1].Pt() <= 3.5 || deltaR%%% <= 0.3)"
             for orth in orthOpt:
                 c1.cd()
                 print("2l",lep,orth)
                 
-                drawString = str(utils.LUMINOSITY) + " * passesUniversalSelection * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (twoLeptons" + jetIsos[lep] + " == 1 " + (orth_cond if orth else "") + " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetIsos[lep] + " < 12  && invMass" + jetIsos[lep] + " > 0.4 && !(invMass" + jetIsos[lep] + " > 3 && invMass" + jetIsos[lep] + " < 3.2) && !(invMass" + jetIsos[lep] + " > 0.75 && invMass" + jetIsos[lep] + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetIsos[lep] + " == \"" + lep + "\" && sameSign" + jetIsos[lep] + " == 0 && isoCr" + jetIsos[lep] + " == 0 && tautau" + jetIsos[lep] + ")"
+                drawString = str(utils.LUMINOSITY) + " * passesUniversalSelection * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (twoLeptons%%% == 1 " + (orth_cond if orth else "") + " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour%%% == \"" + lep + "\" && sameSign%%% == 0 && isoCr%%% == 0 && tautau%%%" + (mtautauveto if veto_tautau else "") + " )"
+                drawString = drawString.replace("%%%", jetIsos[lep])
                 histName = "bg_2l_" + lep + ("_orth" if orth else "")
                 hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, "dilepBDT" + jetIsos[lep], binning["2l"][lep], drawString, False)
                 hist.Sumw2()

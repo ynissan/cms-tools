@@ -525,7 +525,9 @@ def plotRatio(c1, pad, memory, numHist, denHist, hist_def, numLabel = "Data", de
 
 def createSumTypes(sumTypes):
     if plot_par.plot_bg:
-        if plot_par.choose_bg_categories and len(plot_par.choose_bg_categories_list) > 0:
+        if plot_par.solid_bg:
+            sumTypes["solid"] = True
+        elif plot_par.choose_bg_categories and len(plot_par.choose_bg_categories_list) > 0:
             for type in plot_par.choose_bg_categories_list:
                 sumTypes[type] = {}
         elif plot_par.bg_retag:
@@ -714,28 +716,32 @@ def createAllHistograms(histograms, sumTypes):
                         print(("Skipping type", type, "because not in chosen list"))
                         continue
                     print(("Summing type", type))
-                    rootfiles = glob(plot_par.bg_dir + "/*" + type + "_*.root")
+                    rootfiles = None
+                    if plot_par.solid_bg:
+                        rootfiles = glob(plot_par.bg_dir + "/*.root")
+                    else:
+                        rootfiles = glob(plot_par.bg_dir + "/*" + type + "_*.root")
                     if plot_par.plot_fast:
                         createPlotsFast(rootfiles, [type], histograms, weight, "bg", [""], plot_par)
                     else:
                         createPlots(rootfiles, [type], histograms, weight, "bg", [""], plot_par)
-
-                for cType in utils.compoundTypes:
+                if not plot_par.solid_bg:
+                    for cType in utils.compoundTypes:
             
-                    if plot_par.choose_bg_files and cType not in plot_par.choose_bg_files_list:
-                        print(("Skipping cType", cType, "because not in chosen list"))
-                        continue
+                        if plot_par.choose_bg_files and cType not in plot_par.choose_bg_files_list:
+                            print(("Skipping cType", cType, "because not in chosen list"))
+                            continue
             
-                    print(("Creating compound type", cType))
+                        print(("Creating compound type", cType))
             
-                    rootFiles = utils.getFilesForCompoundType(cType, plot_par.bg_dir)
-                    if len(rootFiles):
-                        if plot_par.plot_fast:
-                            createPlotsFast(rootFiles, [cType], histograms, weight, "bg", [""], plot_par)
+                        rootFiles = utils.getFilesForCompoundType(cType, plot_par.bg_dir)
+                        if len(rootFiles):
+                            if plot_par.plot_fast:
+                                createPlotsFast(rootFiles, [cType], histograms, weight, "bg", [""], plot_par)
+                            else:
+                                createPlots(rootFiles, [cType], histograms, weight, "bg", [""], plot_par)
                         else:
-                            createPlots(rootFiles, [cType], histograms, weight, "bg", [""], plot_par)
-                    else:
-                        print(("**Couldn't find file for " + cType))
+                            print(("**Couldn't find file for " + cType))
                         
             # if plot_par.plot_sc:
 #                 print "CREATING SC CATEGORY!"
@@ -923,7 +929,9 @@ def SubMatrices(mata, matb):
 
 def foldHistogramsOverflow(histograms):
     for k in histograms:
-        utils.foldOverflowBins(histograms[k])
+        #histograms[k].GetXaxis().SetRangeUser(-1, histograms[k].GetXaxis().fNbins+1)
+        #utils.foldOverflowBins(histograms[k])
+        utils.setOverflowBins(histograms[k])
 
 def main():
     print(("Start: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S')))
@@ -1106,6 +1114,7 @@ def main():
             else:
                 print((utils.bcolors.BOLD + utils.bcolors.OKGREEN + "histPad.cd(" + str(pId) + ")" + utils.bcolors.ENDC))
                 pad = histPad.cd(pId)
+                #pad.SetRightMargin(0.18)
 
             histCPad = None
             histRPad = None
@@ -1149,6 +1158,8 @@ def main():
                 if len(types) == 0:
                     types = [k for k in plot_par.bgReTagging]
                 types = sorted(types, key=lambda a: plot_par.bgReTaggingOrder[a])
+            elif plot_par.solid_bg:
+                types = ["solid"]
             else:
                 if len(types) == 0:
                     types = [k for k in utils.bgOrder]
@@ -1171,13 +1182,13 @@ def main():
                                     bgSum += content
                         else:
                             bgSum += histograms[hname].Integral()
-                print(("Normalising BG sum", bgSum))
+                print("Normalising BG sum", bgSum)
                 if bgSum > 0:
                     for type in types:
                         hname = cut["name"] + "_" + hist_def["obs"] + "_" + type
                         if histograms.get(hname) is not None and bgSum > 0:
                             histograms[hname].Scale(1./bgSum)
-
+            print("types", types)
             for type in types:
                 hname = cut["name"] + "_" + hist_def["obs"] + "_" + type
                 if plot_par.plot_rand:
@@ -1502,8 +1513,8 @@ def main():
             elif plot_par.plot_signal:
                 for i in range(len(sigHists)):
                     if i == 0:
-                        print((utils.bcolors.BOLD + utils.bcolors.RED + "sigHists[i].Draw(HIST " + errorStr + ")" + utils.bcolors.ENDC))
-                        sigHists[i].Draw("HIST " + errorStr)
+                        print((utils.bcolors.BOLD + utils.bcolors.RED + "sigHists[i].Draw(" + plotStr + errorStr + ")" + utils.bcolors.ENDC))
+                        sigHists[i].Draw(plotStr + " " + errorStr)
                     else:
                         print((utils.bcolors.BOLD + utils.bcolors.RED + "sigHists[i].Draw(HIST SAME " + errorStr + ")" + utils.bcolors.ENDC))
                         sigHists[i].Draw("HIST SAME " + errorStr)
@@ -2317,6 +2328,7 @@ def main():
             else:
                 print((utils.bcolors.BOLD + utils.bcolors.OKGREEN + "histPad.cd(" + str(pId) + ")" + utils.bcolors.ENDC))
                 pad = histPad.cd(pId)
+                #pad.SetRightMargin(0.18)
             
             
             linearYspace = maximum*1.1
@@ -2396,8 +2408,8 @@ def main():
             if plot_par.plot_signal:
                 for i in range(len(sigHists)):
                     if i == 0 and not plot_par.plot_bg:
-                        print((utils.bcolors.BOLD + utils.bcolors.BLUE + "sigHists[i].Draw(HIST " + errorStr + ")" + utils.bcolors.ENDC))
-                        sigHists[i].Draw("HIST " + errorStr)
+                        print((utils.bcolors.BOLD + utils.bcolors.BLUE + "sigHists[i].Draw(" + plotStr + errorStr + ")" + utils.bcolors.ENDC))
+                        sigHists[i].Draw(plotStr + " " + errorStr)
                     else:
                         print((utils.bcolors.BOLD + utils.bcolors.BLUE + "sigHists[i].Draw(HIST SAME " + errorStr + ")" + utils.bcolors.ENDC))
                         sigHists[i].Draw("HIST SAME " + errorStr)
