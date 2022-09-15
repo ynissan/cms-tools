@@ -23,6 +23,7 @@ class Plotting():
         self.currStyle = tdrstyle.setTDRStyle()
         gROOT.SetStyle("tdrStyle")
         gROOT.ForceStyle()
+        return self.currStyle
     
     def createCanvas(self, name):
         return TCanvas(name, name, self.W, self.H)

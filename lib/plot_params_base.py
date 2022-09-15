@@ -83,6 +83,8 @@ def injectJetIsoToMapValues(obsMap, jetIso):
 # 2D - boolean for 2D
 # plotStr - replaces the "hist" string when drawing the histogram
 # units - x axis title
+# y_title_offset  - y axis offset
+# y_title - y axis title
 # legendCoor - legend coordinates
 # legendCol - legend columns number
 # labelText - work in progress or other text next to CMS
@@ -189,7 +191,8 @@ class BaseParams:
     object_retag_map = {}
     
     sig_line_width = 2
-
+    
+    plot_legend = True
     legend_coordinates = {"x1" : .35, "y1" : .60, "x2" : .89, "y2" : .89}
     legend_columns = 2
     legend_border = 0
@@ -227,4 +230,7 @@ class BaseParams:
     transfer_factor_error = -1
     
     colorPalette = plotutils.defaultColorPalette
+    
+    padRightMargin = -1
+    padLeftMargin = -1
     

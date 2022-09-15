@@ -114,6 +114,7 @@ def setTDRStyle():
   # tdrStyle.SetTitleYSize(Float_t size = 0.02)
   tdrStyle.SetTitleXOffset(0.9)
   tdrStyle.SetTitleYOffset(1.25)
+  #tdrStyle.SetTitleYOffset(1.0)
   #tdrStyle.SetTitleOffset(1.0, "Y") # Another way to set the Offset
 
 # For the axis labels: (meaning - the numbers themselves)

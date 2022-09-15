@@ -944,6 +944,11 @@ def main():
     else:
         plotting = plotutils.Plotting()
     currStyle = plotting.setStyle()
+    if plot_par.padRightMargin > 0:
+        currStyle.SetPadRightMargin(plot_par.padRightMargin)
+    
+    if plot_par.padLeftMargin > 0:
+        currStyle.SetPadLeftMargin(plot_par.padLeftMargin)
     
     #gROOT.SetStyle("tdrStyle")
     #gROOT.ForceStyle()
@@ -1365,17 +1370,19 @@ def main():
             legend_columns = plot_par.legend_columns
             if hist_def.get("legendCoor") is not None:
                 legend_coordinates = hist_def["legendCoor"]
+            legend = None
+            if plot_par.plot_legend:
+                legend = TLegend(legend_coordinates["x1"],legend_coordinates["y1"],legend_coordinates["x2"],legend_coordinates["y2"])
+                if hist_def.get("legendCol") is not None:
+                    legend_columns = hist_def["legendCol"]
+                legend.SetNColumns(legend_columns)
+                legend.SetBorderSize(plot_par.legend_border)
+                legend.SetFillStyle(0)
+                legend.SetTextFont(42)
+                memory.append(legend)
 
-            legend = TLegend(legend_coordinates["x1"],legend_coordinates["y1"],legend_coordinates["x2"],legend_coordinates["y2"])
-            if hist_def.get("legendCol") is not None:
-                legend_columns = hist_def["legendCol"]
-            legend.SetNColumns(legend_columns)
-            legend.SetBorderSize(plot_par.legend_border)
-            legend.SetFillStyle(0)
-            legend.SetTextFont(42)
-            #legend.SetTextSize(0.04)
             newBgHist = None
-            memory.append(legend)
+            
             print(("foundBg=", foundBg))
             
             bg_count = 0
@@ -1450,9 +1457,14 @@ def main():
                     else:
                         print("name", cut["name"] + "_" + hist_def["obs"], "newBgHist", newBgHist, "newBgHist.GetXaxis()", newBgHist.GetXaxis())
                         newBgHist.GetXaxis().SetLabelSize(0)
-
-                    newBgHist.GetYaxis().SetTitle(plot_par.y_title)
-                    newBgHist.GetYaxis().SetTitleOffset(plot_par.y_title_offset)
+                    y_title = plot_par.y_title
+                    y_title_offset = plot_par.y_title_offset
+                    if hist_def.get("y_title") is not None:
+                        y_title = hist_def["y_title"]
+                    if hist_def.get("y_title_offset") is not None:
+                        y_title_offset = hist_def["y_title_offset"]
+                    newBgHist.GetYaxis().SetTitle(y_title)
+                    newBgHist.GetYaxis().SetTitleOffset(y_title_offset)
 
                 #newBgHist.GetXaxis().SetLabelSize(0.055)
                 c1.Modified()
@@ -1468,43 +1480,55 @@ def main():
                     histToStyle.GetXaxis().SetTitle(hist_def["units"] if hist_def.get("units") is not None else hist_def["obs"])
                 else:
                     histToStyle.GetXaxis().SetLabelSize(0)
+                
+                y_title = plot_par.y_title
+                y_title_offset = plot_par.y_title_offset
+                if hist_def.get("y_title") is not None:
+                    y_title = hist_def["y_title"]
+                if hist_def.get("y_title_offset") is not None:
+                    y_title_offset = hist_def["y_title_offset"]
+                histToStyle.GetYaxis().SetTitle(y_title)
+                histToStyle.GetYaxis().SetTitleOffset(y_title_offset)
 
-                histToStyle.GetYaxis().SetTitle(plot_par.y_title)
-                histToStyle.GetYaxis().SetTitleOffset(plot_par.y_title_offset)
                 if not (linear and plot_single):
                     print(("Setting max", maximum*1000))
-                    histToStyle.SetMaximum(maximum*1000)
+                    if not (hist_def.get("2D") is not None and hist_def.get("2D")):
+                        histToStyle.SetMaximum(maximum*1000)
                 else:
                     linearYspace = maximum*1.1
                     if hist_def.get("linearYspace") is not None:
                         linearYspace = maximum * hist_def["linearYspace"]
-                    histToStyle.SetMaximum(linearYspace)
+                    if not (hist_def.get("2D") is not None and hist_def.get("2D")):
+                        histToStyle.SetMaximum(linearYspace)
                 if not (linear and plot_single):
                     print("NOT LINER!")
                     print("dataHist.SetMinimum(0.0001)")
-                    histToStyle.SetMinimum(0.0001)
+                    if not (hist_def.get("2D") is not None and hist_def.get("2D")):
+                        histToStyle.SetMinimum(0.0001)
                 else:
                     print(" LINER!")
                     print("dataHist.SetMinimum(0)")
-                    histToStyle.SetMinimum(0)
+                    if not (hist_def.get("2D") is not None and hist_def.get("2D")):
+                        histToStyle.SetMinimum(0)
             
             
             
-            if plot_par.plot_signal:
+            if plot_par.plot_signal and plot_par.plot_legend:
                 for i in range(len(sigHists)):
                     if object_retaging:
                         legend.AddEntry(sigHists[i], sigHistsBaseNames[i], 'F')
                     else:
                         legend.AddEntry(sigHists[i], sigHistsBaseNames[i], 'l')
-            if foundBg and plot_par.plot_signal:
+            if foundBg and plot_par.plot_signal and not (hist_def.get("2D") is not None and hist_def.get("2D")):
                 for i in range(len(sigHists)):
                     sigHists[i].SetMaximum(maximum)
             if plot_par.plot_signal:
                 for i in range(len(sigHists)):
-                    if not (linear and plot_single):
-                        sigHists[i].SetMinimum(0.0001)
-                    else:
-                        sigHists[i].SetMinimum(0)
+                    if not (hist_def.get("2D") is not None and hist_def.get("2D")):
+                        if not (linear and plot_single):
+                            sigHists[i].SetMinimum(0.0001)
+                        else:
+                            sigHists[i].SetMinimum(0)
                     sigHists[i].SetLineWidth(plot_par.sig_line_width)
             if foundBg and plot_par.plot_signal: 
                 for i in range(len(sigHists)):
@@ -1581,7 +1605,8 @@ def main():
                     #print("*", ratioPads)
                     #print(histCPad, histRPad,histRPadCopy)
                     #exit(0)
-                legend.AddEntry(dataHist, "data", 'p')
+                if legend is not None:
+                    legend.AddEntry(dataHist, "data", 'p')
             
             #dataHist.Draw("P e")
             
@@ -1608,7 +1633,8 @@ def main():
                     scDataHist.SetMarkerColor(kRed)
                     print((utils.bcolors.BOLD + utils.bcolors.RED + "scDataHist.Draw(P SAME)" + utils.bcolors.ENDC))
                     scDataHist.Draw("P SAME")
-                    legend.AddEntry(scDataHist, plot_par.sc_label  + " data", 'p')
+                    if legend is not None:
+                        legend.AddEntry(scDataHist, plot_par.sc_label  + " data", 'p')
                 
                 if plot_par.plot_bg:
                     scBgHistName = "sc_" + cut["name"] + "_" + hist_def["obs"] + "_bg"
@@ -1645,8 +1671,8 @@ def main():
                     scBgHist.SetLineColor(plot_par.sc_color)
                     print((utils.bcolors.BOLD + utils.bcolors.RED + "scBgHist.Draw(HIST SAME " + errorStr + ")" + utils.bcolors.ENDC))
                     scBgHist.Draw("HIST SAME " + errorStr)
-                
-                    legend.AddEntry(scBgHist, plot_par.sc_label, 'l')
+                    if legend is not None:
+                        legend.AddEntry(scBgHist, plot_par.sc_label, 'l')
             
             if len(plot_par.plot_custom_types) > 0:
                 for i in range(len(plot_par.plot_custom_types)):
@@ -1655,7 +1681,8 @@ def main():
                     if not (linear and plot_single):
                         hist.SetMinimum(0.0001)
                     hist.Draw("HIST SAME " + errorStr)
-                    legend.AddEntry(hist, plot_par.custom_types_label[i], 'l')
+                    if legend is not None:
+                        legend.AddEntry(hist, plot_par.custom_types_label[i], 'l')
             
             
             if plot_par.fit_inv_mass_jpsi and plot_par.fit_inv_mass_cut_jpsi == cut["name"] and plot_par.fit_inv_mass_obs_jpsi in hist_def["obs"]:
@@ -1856,7 +1883,8 @@ def main():
                 
                 if jpsiHist is None:
                     fFullModel.Draw("SAME")
-                    legend.AddEntry(fFullModel, "Global fit", 'l')
+                    if legend is not None:
+                        legend.AddEntry(fFullModel, "Global fit", 'l')
                 
                 fSignal = None
                 fSignalOnlyModel = None
@@ -2042,7 +2070,8 @@ def main():
                     fitresultSignalOnly = jpsiHist.Fit(fSignalOnlyModel,'s0','same', lowedge, highedge)
                     print((utils.bcolors.BOLD + utils.bcolors.RED + "fSignalOnlyModel.Draw(SAME)" + utils.bcolors.ENDC))
                     fSignalOnlyModel.Draw("SAME")
-                    legend.AddEntry(fSignalOnlyModel, " J/#psi Fit", 'l')
+                    if legend is not None:
+                        legend.AddEntry(fSignalOnlyModel, " J/#psi Fit", 'l')
                     fit_funcs["fSignalOnly" + hist_def["obs"]] = fSignalOnlyModel
                     
                     fit_only_signal_integral_chi_s[hist_def["obs"]] = fSignalOnlyModel.GetChisquare()/fSignalOnlyModel.GetNDF()
@@ -2086,14 +2115,16 @@ def main():
                 print((utils.bcolors.BOLD + utils.bcolors.RED + "fSignal.Draw(SAME)" + utils.bcolors.ENDC))
                 if jpsiHist is None:
                     fSignal.Draw("SAME")
-                    legend.AddEntry(fSignal, "J/#psi", 'l')
+                    if legend is not None:
+                        legend.AddEntry(fSignal, "J/#psi", 'l')
                     
                 fBg.SetLineWidth(2)
                 fBg.SetLineColor(kBlack)
                 print((utils.bcolors.BOLD + utils.bcolors.RED + "fBg.Draw(SAME)" + utils.bcolors.ENDC))
                 if jpsiHist is None:
                     fBg.Draw("SAME")
-                    legend.AddEntry(fBg, "Continuum", 'l')
+                    if legend is not None:
+                        legend.AddEntry(fBg, "Continuum", 'l')
                 
                 print(("printing values for", hist_def["obs"]))
                 print(("Bin Width:", fitHist.GetBinWidth(fitHist.FindBin(3.0))))
@@ -2134,7 +2165,8 @@ def main():
                     tl.DrawLatex(.1,.01,"error = " + "{:.2f}".format(100 * fit_signal_integral_error[hist_def["obs"]] / fit_signal_integral[hist_def["obs"]]) + "%")
                 
             print((utils.bcolors.BOLD + utils.bcolors.RED + "legend.Draw(SAME)" + utils.bcolors.ENDC))
-            legend.Draw("SAME")
+            if legend is not None:
+                legend.Draw("SAME")
             
             if not (linear and plot_single):
                 pad.SetLogy()
@@ -2340,20 +2372,23 @@ def main():
             if plot_par.plot_bg:
                 linBgHist = newBgHist.Clone()
                 memory.append(linBgHist)
-                linBgHist.SetMaximum(linearYspace)
-                linBgHist.SetMinimum(0)
+                if not (hist_def.get("2D") is not None and hist_def.get("2D")):
+                    linBgHist.SetMaximum(linearYspace)
+                    linBgHist.SetMinimum(0)
             else:
                 if plot_par.plot_data:
                     print("HERE")
                     dataHist = dataHist.Clone()
                     memory.append(dataHist)
-                    dataHist.SetMaximum(linearYspace)
-                    dataHist.SetMinimum(0)
+                    if not (hist_def.get("2D") is not None and hist_def.get("2D")):
+                        dataHist.SetMaximum(linearYspace)
+                        dataHist.SetMinimum(0)
                 else:
                     sigHists[0] = sigHists[0].Clone()
                     memory.append(sigHists[0])
-                    sigHists[0].SetMaximum(linearYspace)
-                    sigHists[0].SetMinimum(0)
+                    if not (hist_def.get("2D") is not None and hist_def.get("2D")):
+                        sigHists[0].SetMaximum(linearYspace)
+                        sigHists[0].SetMinimum(0)
             
             histCPad = None
             histRPad = None
@@ -2463,7 +2498,8 @@ def main():
                 
                 
             print((utils.bcolors.BOLD + utils.bcolors.BLUE + "legend.Draw(SAME)" + utils.bcolors.ENDC))
-            legend.Draw("SAME")
+            if legend is not None:
+                legend.Draw("SAME")
             
             if plot_par.plot_ratio or plot_par.plot_custom_ratio > 0:
                 if plot_par.plot_sc:
