@@ -26,19 +26,19 @@ signals = [
 
 
 # signalNames = [
-#     "\Delta_{}M 0.8 GeV",
-#     "\Delta_{}M 1.9 GeV",
-#     "\Delta_{}M 3.2 GeV",
-#     "\Delta_{}M 9.7 GeV",
+#     "\Delta_{}m 0.8 GeV",
+#     "\Delta_{}m 1.9 GeV",
+#     "\Delta_{}m 3.2 GeV",
+#     "\Delta_{}m 9.7 GeV",
 # ]
 
 signalNames = [
-    "\Delta_{}M 0.8 GeV",
-    "\Delta_{}M 1.1 GeV",
-    "\Delta_{}M 1.9 GeV",
-    "\Delta_{}M 3.2 GeV",
-    "\Delta_{}M 4.3 GeV",
-    "\Delta_{}M 5.6 GeV",
+    "\Delta_{}m 0.8 GeV",
+    "\Delta_{}m 1.1 GeV",
+    "\Delta_{}m 1.9 GeV",
+    "\Delta_{}m 3.2 GeV",
+    "\Delta_{}m 4.3 GeV",
+    "\Delta_{}m 5.6 GeV",
 ]
     
 class lepton_selection(BaseParams):
@@ -403,19 +403,25 @@ class signal_muons(BaseParams):
     signal_dir = signalsGen
     signal_names = signalNames
     glob_signal = True
+    legend_text_size = 0.06
+    legend_columns = 1
+    legend_coordinates = {"x1" : .65, "y1" : .55, "x2" : .95, "y2" : .90}
+    
     cuts = [
         {"name":"none", "title": "No Cuts", "condition" : "genFlavour == \"Muons\""},
         #{"name":"twoLoptonsNoIso", "title": "twoLoptonsNoIso", "condition" : "genFlavour == \"Muons\" && twoLeptonsNoIso == 1 && leptonFlavour == \"Muons\""},
     ]
     histograms_defs = [
-        { "obs" : "Muons_pt_low", "formula" : "Muons.Pt()", "units" : "p_{T} [GeV]", "minX" : 0, "maxX" : 2, "bins" : 60, "condition" :  "Muons.Pt() <= 2 && Muons_isZ == 1", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1, "linearYspace" : 1.2, "y_title" : "Number of muons" },
-        { "obs" : "Muons_pt", "formula" : "Muons.Pt()", "units" : "p_{T} [GeV]", "minX" : 2, "maxX" : 25, "bins" : 60, "condition" :  "Muons.Pt() >= 2 && Muons_isZ == 1", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1, "linearYspace" : 1.2, "y_title" : "Number of muons" },
-        { "obs" : "Muons_Eta", "formula" : "abs(Muons.Eta())", "units" : "|\eta|", "minX" : 0, "maxX" : 2.4, "bins" : 60, "condition" :  "Muons.Pt() >= 2 && Muons_isZ == 1", "linearYspace" : 1.8, "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1, "y_title" : "Number of muons" },
-        { "obs" : "deltaRNoIso", "units" : "#Delta_{}R(\mu\mu)", "minX" : 0, "maxX" : 6.3, "bins" : 60, "condition" :  "twoLeptonsNoIso == 1 && leptonFlavour == \"Muons\" && Muons_isZ[leptonsIdxNoIso[0]] == 1 &&  Muons_isZ[leptonsIdxNoIso[1]] == 1 ", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1, "linearYspace" : 1.2 },
-        { "obs" : "invMassNoIso", "units" : "m_{\mu\mu} [GeV]", "minX" : 0, "maxX" : 7, "bins" : 60, "condition" :  "twoLeptonsNoIso == 1 && leptonFlavour == \"Muons\" && Muons_isZ[leptonsIdxNoIso[0]] == 1 &&  Muons_isZ[leptonsIdxNoIso[1]] == 1 ", "legendCoor" : {"x1" : .73, "y1" : .60, "x2" : .97, "y2" : .89}, "legendCol" : 1, "linearYspace" : 1.5 },
+        #{ "obs" : "Muons_pt_low", "formula" : "Muons.Pt()", "units" : "p_{T} [GeV]", "minX" : 0, "maxX" : 2, "bins" : 60, "condition" :  "Muons.Pt() <= 2 && Muons_isZ == 1", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1, "linearYspace" : 1.2, "y_title" : "Number of muons" },
+        { "obs" : "Muons_pt", "formula" : "Muons.Pt()", "units" : "p_{T} [GeV]", "minX" : 2, "maxX" : 25, "bins" : 60, "condition" :  "Muons.Pt() >= 2 && Muons_isZ == 1", "linearYspace" : 1.2, "y_title" : "Number of muons" },
+        { "obs" : "Muons_Eta", "formula" : "abs(Muons.Eta())", "units" : "|\eta|", "minX" : 0, "maxX" : 2.4, "bins" : 60, "condition" :  "Muons.Pt() >= 2 && Muons_isZ == 1", "linearYspace" : 2, "y_title" : "Number of muons" },
+        { "obs" : "deltaRNoIso", "units" : "#Delta_{}R(\mu\mu)", "minX" : 0, "maxX" : 6.3, "bins" : 60, "condition" :  "twoLeptonsNoIso == 1 && leptonFlavour == \"Muons\" && Muons_isZ[leptonsIdxNoIso[0]] == 1 &&  Muons_isZ[leptonsIdxNoIso[1]] == 1 ", "linearYspace" : 1.2 },
+        { "obs" : "invMassNoIso", "units" : "m_{\mu\mu} [GeV]", "minX" : 0, "maxX" : 7, "bins" : 60, "condition" :  "twoLeptonsNoIso == 1 && leptonFlavour == \"Muons\" && Muons_isZ[leptonsIdxNoIso[0]] == 1 &&  Muons_isZ[leptonsIdxNoIso[1]] == 1 ", "linearYspace" : 1.9 },
+        { "obs" : "deltaRNoIso_orth",  "formula" : "deltaRNoIso", "units" : "#Delta_{}R(\mu\mu)", "minX" : 0, "maxX" : 6.3, "bins" : 60, "condition" :  "twoLeptonsNoIso == 1 && leptonFlavour == \"Muons\" && Muons_isZ[leptonsIdxNoIso[0]] == 1 &&  Muons_isZ[leptonsIdxNoIso[1]] == 1 && (leptonsNoIso[1].Pt() <= 3.5 || deltaRNoIso <= 0.3)", "linearYspace" : 1.2 },
+        { "obs" : "invMassNoIso_orth", "formula" : "invMassNoIso", "units" : "m_{\mu\mu} [GeV]", "minX" : 0, "maxX" : 7, "bins" : 60, "condition" :  "twoLeptonsNoIso == 1 && leptonFlavour == \"Muons\" && Muons_isZ[leptonsIdxNoIso[0]] == 1 &&  Muons_isZ[leptonsIdxNoIso[1]] == 1  && (leptonsNoIso[1].Pt() <= 3.5 || deltaRNoIso <= 0.3)", "linearYspace" : 1.5 },
         
-        { "obs" : "Muons_pt_barrel", "formula" : "Muons.Pt()", "units" : "Barrel p_{T} [GeV]", "minX" : 2, "maxX" : 20, "bins" : 60, "condition" :  "Muons.Pt() >= 2 && Muons_isZ == 1 && abs(Muons.Eta()) < 1.2", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1, "linearYspace" : 1.2, "y_title" : "Number of muons" },
-        { "obs" : "Muons_pt_endcape", "formula" : "Muons.Pt()", "units" : "Endcaps p_{T} [GeV]", "minX" : 2, "maxX" : 20, "bins" : 60, "condition" :  "Muons.Pt() >= 2 && Muons_isZ == 1 && abs(Muons.Eta()) >= 1.2 && abs(Muons.Eta()) <= 2.4", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1, "linearYspace" : 1.2, "y_title" : "Number of muons"},
+        { "obs" : "Muons_pt_barrel", "formula" : "Muons.Pt()", "units" : "Barrel p_{T} [GeV]", "minX" : 2, "maxX" : 20, "bins" : 60, "condition" :  "Muons.Pt() >= 2 && Muons_isZ == 1 && abs(Muons.Eta()) < 1.2", "linearYspace" : 1.2, "y_title" : "Number of muons" },
+        { "obs" : "Muons_pt_endcape", "formula" : "Muons.Pt()", "units" : "Endcaps p_{T} [GeV]", "minX" : 2, "maxX" : 20, "bins" : 60, "condition" :  "Muons.Pt() >= 2 && Muons_isZ == 1 && abs(Muons.Eta()) >= 1.2 && abs(Muons.Eta()) <= 2.4", "linearYspace" : 1.2, "y_title" : "Number of muons"},
     ]
     
     weightString = {
@@ -437,26 +443,35 @@ class signal_muons_gen(BaseParams):
     signal_names = signalNames
     glob_signal = True
     plot_overflow = True
+    legend_columns = 1
+    legend_border = 0
+    #legend_align = 32
+    legend_text_size = 0.06
+    legend_coordinates = {"x1" : .65, "y1" : .55, "x2" : .95, "y2" : .90}
+
     cuts = [
         {"name":"none", "title": "No Cuts", "condition" : "genFlavour == \"Muons\""},
     ]
     
     histograms_defs = [
         #delta R, "condition" :  "GenParticles[genLeptonsIdx[0]].Pt() < 10 && GenParticles[genLeptonsIdx[1]].Pt() < 10"
-        { "obs" : "Muons_pt", "formula" : "GenParticles.Pt()", "units" : "Gen p_{T} [GeV]", "minX" : 2, "maxX" : 25, "bins" : 60, "condition" :  "GenParticles.Pt() < 25 && GenParticles_Status == 1 && abs(GenParticles_PdgId) == 13 && GenParticles.Pt() > 2", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1, "y_title" : "Number of muons" },
-        { "obs" : "Muons_Eta", "formula" : "abs(GenParticles.Eta())", "units" : "Gen |\eta|", "minX" : 0, "maxX" : 4, "bins" : 60, "condition" :  "GenParticles.Pt() < 25 && GenParticles_Status == 1 && abs(GenParticles_PdgId) == 13 && GenParticles.Pt() > 2", "linearYspace" : 1.2, "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1, "y_title" : "Number of muons" },
-        { "obs" : "gen_deltaR", "units" : "Gen #Delta_{}R(\mu\mu)", "minX" : 0, "maxX" : 6.3, "bins" : 60, "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1, "linearYspace" : 1.2 },
-        { "obs" : "gen_deltaR_cut", "formula" : "gen_deltaR", "units" : "Gen #Delta_{}R(\mu\mu)", "minX" : 0, "maxX" : 6.3, "bins" : 60, "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1, "linearYspace" : 1.2, "condition" :  "GenParticles[genLeptonsIdx[0]].Pt() > 2 && GenParticles[genLeptonsIdx[1]].Pt() > 2" },
-        { "obs" : "gen_invMass", "units" : "Gen m_{\mu\mu} [GeV]", "minX" : 0, "maxX" : 7, "bins" : 60, "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1, "linearYspace" : 1.2 },
+        { "obs" : "Muons_pt", "formula" : "GenParticles.Pt()", "units" : "Gen p_{T} [GeV]", "minX" : 2, "maxX" : 25, "bins" : 60, "condition" :  "GenParticles.Pt() < 25 && GenParticles_Status == 1 && abs(GenParticles_PdgId) == 13 && GenParticles.Pt() > 2", "y_title" : "Number of muons" },
+        { "obs" : "Muons_Eta", "formula" : "abs(GenParticles.Eta())", "units" : "Gen |\eta|", "minX" : 0, "maxX" : 4, "bins" : 60, "condition" :  "GenParticles.Pt() < 25 && GenParticles_Status == 1 && abs(GenParticles_PdgId) == 13 && GenParticles.Pt() > 2", "y_title" : "Number of muons", "linearYspace" : 1.2 },
+        { "obs" : "gen_deltaR", "units" : "Gen #Delta_{}R(\mu\mu)", "minX" : 0, "maxX" : 6.3, "bins" : 60, "linearYspace" : 1.2  },
+        { "obs" : "gen_deltaR_cut", "formula" : "gen_deltaR", "units" : "Gen #Delta_{}R(\mu\mu)", "minX" : 0, "maxX" : 6.3, "bins" : 60, "linearYspace" : 1.2, "condition" :  "GenParticles[genLeptonsIdx[0]].Pt() > 2 && GenParticles[genLeptonsIdx[1]].Pt() > 2" },
+        { "obs" : "gen_deltaR_orth", "formula" : "gen_deltaR", "units" : "Gen #Delta_{}R(\mu\mu)", "minX" : 0, "maxX" : 6.3, "bins" : 60, "linearYspace" : 1.2, "condition" :  "GenParticles[genLeptonsIdx[0]].Pt() > 2 && GenParticles[genLeptonsIdx[1]].Pt() > 2 && (GenParticles[genLeptonsIdx[1]].Pt() < 3.5 || gen_deltaR < 0.3)" },
+        { "obs" : "gen_invMass", "units" : "Gen m_{\mu\mu} [GeV]", "minX" : 0, "maxX" : 7, "bins" : 60, "linearYspace" : 1.2 },
+        { "obs" : "gen_invMass_cut", "formula" : "gen_invMass", "units" : "Gen m_{\mu\mu} [GeV]", "minX" : 0, "maxX" : 7, "bins" : 60, "linearYspace" : 1.2, "condition" :  "GenParticles[genLeptonsIdx[0]].Pt() > 2 && GenParticles[genLeptonsIdx[1]].Pt() > 2", "linearYspace" : 2  },
+        { "obs" : "gen_invMass_orth", "formula" : "gen_invMass", "units" : "Gen m_{\mu\mu} [GeV]", "minX" : 0, "maxX" : 7, "bins" : 60, "linearYspace" : 1.2, "condition" :  "GenParticles[genLeptonsIdx[0]].Pt() > 2 && GenParticles[genLeptonsIdx[1]].Pt() > 2  && (GenParticles[genLeptonsIdx[1]].Pt() < 3.5 || gen_deltaR < 0.3)", "linearYspace" : 2 },
         
-        { "obs" : "Muons_m1_pt", "formula" : "GenParticles[genLeptonsIdx[0]].Pt()", "units" : "Gen p_{T}(\mu_{1}) [GeV]", "minX" : 2, "maxX" : 20, "bins" : 60, "condition" :  "GenParticles[genLeptonsIdx[0]].Pt() < 25 && GenParticles_Status[genLeptonsIdx[0]] == 1 && abs(GenParticles_PdgId[genLeptonsIdx[0]]) == 13 && GenParticles[genLeptonsIdx[0]].Pt() > 2", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1, "linearYspace" : 1.2, "y_title" : "Number of muons" },
-        { "obs" : "Muons_m2_pt", "formula" : "GenParticles[genLeptonsIdx[1]].Pt()", "units" : "Gen p_{T}(\mu_{2}) [GeV]", "minX" : 2, "maxX" : 20, "bins" : 60, "condition" :  "GenParticles[genLeptonsIdx[1]].Pt() < 25 && GenParticles_Status[genLeptonsIdx[1]] == 1 && abs(GenParticles_PdgId[genLeptonsIdx[1]]) == 13 && GenParticles[genLeptonsIdx[1]].Pt() > 2", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1, "linearYspace" : 1.2, "y_title" : "Number of muons" },
-        { "obs" : "Muons_m1_eta", "formula" : "abs(GenParticles[genLeptonsIdx[0]].Eta())", "units" : "Gen |\eta|(\mu_{1}) [GeV]", "minX" : 0, "maxX" : 4, "bins" : 60, "condition" :  "GenParticles[genLeptonsIdx[0]].Pt() < 25 && GenParticles_Status[genLeptonsIdx[0]] == 1 && abs(GenParticles_PdgId[genLeptonsIdx[0]]) == 13 && GenParticles[genLeptonsIdx[0]].Pt() > 2", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1, "linearYspace" : 1.2, "y_title" : "Number of muons" },
-        { "obs" : "Muons_m2_eta", "formula" : "abs(GenParticles[genLeptonsIdx[1]].Eta())", "units" : "Gen |\eta|(\mu_{2}) [GeV]", "minX" : 0, "maxX" : 4, "bins" : 60, "condition" :  "GenParticles[genLeptonsIdx[1]].Pt() < 25 && GenParticles_Status[genLeptonsIdx[1]] == 1 && abs(GenParticles_PdgId[genLeptonsIdx[1]]) == 13 && GenParticles[genLeptonsIdx[1]].Pt() > 2", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1, "linearYspace" : 1.2, "y_title" : "Number of muons" },
+        { "obs" : "Muons_m1_pt", "formula" : "GenParticles[genLeptonsIdx[0]].Pt()", "units" : "Gen p_{T}(\mu_{1}) [GeV]", "minX" : 2, "maxX" : 20, "bins" : 60, "condition" :  "GenParticles[genLeptonsIdx[0]].Pt() < 25 && GenParticles_Status[genLeptonsIdx[0]] == 1 && abs(GenParticles_PdgId[genLeptonsIdx[0]]) == 13 && GenParticles[genLeptonsIdx[0]].Pt() > 2", "y_title" : "Number of muons" },
+        { "obs" : "Muons_m2_pt", "formula" : "GenParticles[genLeptonsIdx[1]].Pt()", "units" : "Gen p_{T}(\mu_{2}) [GeV]", "minX" : 2, "maxX" : 20, "bins" : 60, "condition" :  "GenParticles[genLeptonsIdx[1]].Pt() < 25 && GenParticles_Status[genLeptonsIdx[1]] == 1 && abs(GenParticles_PdgId[genLeptonsIdx[1]]) == 13 && GenParticles[genLeptonsIdx[1]].Pt() > 2", "y_title" : "Number of muons" },
+        { "obs" : "Muons_m1_eta", "formula" : "abs(GenParticles[genLeptonsIdx[0]].Eta())", "units" : "Gen |\eta|(\mu_{1}) [GeV]", "minX" : 0, "maxX" : 4, "bins" : 60, "condition" :  "GenParticles[genLeptonsIdx[0]].Pt() < 25 && GenParticles_Status[genLeptonsIdx[0]] == 1 && abs(GenParticles_PdgId[genLeptonsIdx[0]]) == 13 && GenParticles[genLeptonsIdx[0]].Pt() > 2", "linearYspace" : 1.2, "y_title" : "Number of muons" },
+        { "obs" : "Muons_m2_eta", "formula" : "abs(GenParticles[genLeptonsIdx[1]].Eta())", "units" : "Gen |\eta|(\mu_{2}) [GeV]", "minX" : 0, "maxX" : 4, "bins" : 60, "condition" :  "GenParticles[genLeptonsIdx[1]].Pt() < 25 && GenParticles_Status[genLeptonsIdx[1]] == 1 && abs(GenParticles_PdgId[genLeptonsIdx[1]]) == 13 && GenParticles[genLeptonsIdx[1]].Pt() > 2", "linearYspace" : 1.2, "y_title" : "Number of muons" },
         
         
-        { "obs" : "Muons_pt_barrel", "formula" : "GenParticles.Pt()", "units" : "Gen Barrel p_{T} [GeV]", "minX" : 2, "maxX" : 20, "bins" : 60, "condition" :  "GenParticles.Pt() < 25 && GenParticles_Status == 1 && abs(GenParticles_PdgId) == 13 && GenParticles.Pt() > 2 && abs(GenParticles.Eta()) < 1.2", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1, "y_title" : "Number of muons" },
-        { "obs" : "Muons_pt_endcape", "formula" : "GenParticles.Pt()", "units" : "Gen Endcaps p_{T} [GeV]", "minX" : 2, "maxX" : 20, "bins" : 60, "condition" :  "GenParticles.Pt() < 25 && GenParticles_Status == 1 && abs(GenParticles_PdgId) == 13 && GenParticles.Pt() > 2 && abs(GenParticles.Eta()) >= 1.2 && abs(GenParticles.Eta()) <= 2.4", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1, "y_title" : "Number of muons" },
+        { "obs" : "Muons_pt_barrel", "formula" : "GenParticles.Pt()", "units" : "Gen Barrel p_{T} [GeV]", "minX" : 2, "maxX" : 20, "bins" : 60, "condition" :  "GenParticles.Pt() < 25 && GenParticles_Status == 1 && abs(GenParticles_PdgId) == 13 && GenParticles.Pt() > 2 && abs(GenParticles.Eta()) < 1.2", "y_title" : "Number of muons" },
+        { "obs" : "Muons_pt_endcape", "formula" : "GenParticles.Pt()", "units" : "Gen Endcaps p_{T} [GeV]", "minX" : 2, "maxX" : 20, "bins" : 60, "condition" :  "GenParticles.Pt() < 25 && GenParticles_Status == 1 && abs(GenParticles_PdgId) == 13 && GenParticles.Pt() > 2 && abs(GenParticles.Eta()) >= 1.2 && abs(GenParticles.Eta()) <= 2.4", "y_title" : "Number of muons" },
     ]
     
     weightString = {

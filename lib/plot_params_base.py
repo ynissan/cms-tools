@@ -196,6 +196,8 @@ class BaseParams:
     legend_coordinates = {"x1" : .35, "y1" : .60, "x2" : .89, "y2" : .89}
     legend_columns = 2
     legend_border = 0
+    legend_align = -1
+    legend_text_size = -1
     
     y_title_offset = 1
     y_title = "Events"

@@ -1368,8 +1368,14 @@ def main():
             legend = None
             legend_coordinates = plot_par.legend_coordinates
             legend_columns = plot_par.legend_columns
+            legend_align = plot_par.legend_align
+            legend_text_size = plot_par.legend_text_size
             if hist_def.get("legendCoor") is not None:
                 legend_coordinates = hist_def["legendCoor"]
+            if hist_def.get("legendAlign") is not None:
+                legend_align = hist_def["legendAlign"]
+            if hist_def.get("legendTextSize") is not None:
+                legend_text_size = hist_def["legendTextSize"]
             legend = None
             if plot_par.plot_legend:
                 legend = TLegend(legend_coordinates["x1"],legend_coordinates["y1"],legend_coordinates["x2"],legend_coordinates["y2"])
@@ -1379,6 +1385,14 @@ def main():
                 legend.SetBorderSize(plot_par.legend_border)
                 legend.SetFillStyle(0)
                 legend.SetTextFont(42)
+                #print("legend.GetTextSize()", legend.GetTextSize())
+                #exit(0)
+                #legend.SetTextSize(0.07)
+                if legend_align > 0:
+                    legend.SetTextAlign(legend_align)
+                if legend_text_size > 0:
+                    print("legend_text_size", legend_text_size)
+                    legend.SetTextSize(legend_text_size)
                 memory.append(legend)
 
             newBgHist = None

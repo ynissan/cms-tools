@@ -120,12 +120,12 @@ signalsNlp = [
               ]
 
 signalNames = [
-    "\Delta_{}M 0.8 GeV",
-    "\Delta_{}M 1.1 GeV",
-    "\Delta_{}M 1.9 GeV",
-    "\Delta_{}M 3.2 GeV",
-    "\Delta_{}M 4.3 GeV",
-    "\Delta_{}M 5.6 GeV",
+    "\Delta_{}m 0.8 GeV",
+    "\Delta_{}m 1.1 GeV",
+    "\Delta_{}m 1.9 GeV",
+    "\Delta_{}m 3.2 GeV",
+    "\Delta_{}m 4.3 GeV",
+    "\Delta_{}m 5.6 GeV",
 ]
 
 class signal_production_comparison_muons(BaseParams):
@@ -236,9 +236,9 @@ class signal_common_distributions_fixed_dm(signal_common_distributions_fixed_mu)
           "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu130_dm1p47Chi20Chipm*.root",
     ]
     signal_names = [
-    "\Delta_{}M 1.47 GeV, \mu 100 GeV",
-    "\Delta_{}M 1.47 GeV, \mu 115 GeV",
-    "\Delta_{}M 1.47 GeV, \mu 130 GeV",
+    "\Delta_{}m 1.47 GeV, \mu 100 GeV",
+    "\Delta_{}m 1.47 GeV, \mu 115 GeV",
+    "\Delta_{}m 1.47 GeV, \mu 130 GeV",
     ]
     
     histrograms_file = BaseParams.histograms_root_files_dir + "/signal_common_distributions_fixed_dm.root"
