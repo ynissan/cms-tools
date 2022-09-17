@@ -358,7 +358,7 @@ signalsGen = [
 class signal_muons_gen_delta_r_vs_pt(BaseParams):
     histrograms_file = BaseParams.histograms_root_files_dir + "/signal_muons_gen_delta_r_vs_pt.root"
     save_histrograms_to_file = True
-    load_histrograms_from_file = False
+    load_histrograms_from_file = True
     signal_dir = [signalsGen[1]]
     signal_names = [signalNames[1]]
     glob_signal = True
@@ -367,8 +367,10 @@ class signal_muons_gen_delta_r_vs_pt(BaseParams):
         #{"name":"twoLoptonsNoIso", "title": "twoLoptonsNoIso", "condition" : "genFlavour == \"Muons\" && twoLeptonsNoIso == 1 && leptonFlavour == \"Muons\""},
     ]
     histograms_defs = [
-        { "obs" : "gen_delta_r_vs_pt_1", "formula" : "gen_deltaR:GenParticles[genLeptonsIdx[0]].Pt()", "units" : "p_{T}(\mu_{1}) [GeV]", "minX" : 0, "maxX" : 25, "minY" : 0, "maxY" : 8,  "bins" : 60, "binsY" : 60, "y_title" : "#Delta_{}R(\mu\mu)", "plotStr" : "colz", "2D" : True },
-        { "obs" : "gen_delta_r_vs_pt_2", "formula" : "gen_deltaR:GenParticles[genLeptonsIdx[1]].Pt()", "units" : "p_{T}(\mu_{2}) [GeV]", "minX" : 0, "maxX" : 25, "minY" : 0, "maxY" : 8, "bins" : 60, "binsY" : 60, "y_title" : "#Delta_{}R(\mu\mu)", "plotStr" : "colz", "2D" : True },
+        { "obs" : "gen_delta_r_vs_pt_1", "formula" : "gen_deltaR:GenParticles[genLeptonsIdx[0]].Pt()", "units" : "p_{T}(\mu_{1}) [GeV]", "minX" : 0, "maxX" : 8, "minY" : 0, "maxY" : 8,  "bins" : 60, "binsY" : 60, "y_title" : "#Delta_{}R(\mu\mu)", "plotStr" : "colz", "2D" : True },
+        { "obs" : "gen_delta_r_vs_pt_2", "formula" : "gen_deltaR:GenParticles[genLeptonsIdx[1]].Pt()", "units" : "p_{T}(\mu_{2}) [GeV]", "minX" : 0, "maxX" : 8, "minY" : 0, "maxY" : 8, "bins" : 60, "binsY" : 60, "y_title" : "#Delta_{}R(\mu\mu)", "plotStr" : "colz", "2D" : True },
+        { "obs" : "gen_invmass_vs_pt_1", "formula" : "gen_invMass:GenParticles[genLeptonsIdx[0]].Pt()", "units" : "p_{T}(\mu_{1}) [GeV]", "minX" : 0, "maxX" : 8, "minY" : 0, "maxY" : 1.4,  "bins" : 60, "binsY" : 60, "y_title" : "m_{\mu\mu} [GeV]", "plotStr" : "colz", "2D" : True },
+        { "obs" : "gen_invmass_vs_pt_2", "formula" : "gen_invMass:GenParticles[genLeptonsIdx[1]].Pt()", "units" : "p_{T}(\mu_{2}) [GeV]", "minX" : 0, "maxX" : 8, "minY" : 0, "maxY" : 1.4, "bins" : 60, "binsY" : 60, "y_title" : "m_{\mu\mu} [GeV]", "plotStr" : "colz", "2D" : True },
     ]
     
     weightString = {
@@ -391,9 +393,15 @@ class signal_muons_gen_delta_r_vs_pt(BaseParams):
 class signal_muons_gen_delta_r_vs_pt_dm5(signal_muons_gen_delta_r_vs_pt):
     histrograms_file = BaseParams.histograms_root_files_dir + "/signal_muons_gen_delta_r_vs_pt_dm5.root"
     save_histrograms_to_file = True
-    load_histrograms_from_file = False
+    load_histrograms_from_file = True
     signal_dir = [signalsGen[5]]
     signal_names = [signalNames[5]]
+    histograms_defs = [
+        { "obs" : "gen_delta_r_vs_pt_1", "formula" : "gen_deltaR:GenParticles[genLeptonsIdx[0]].Pt()", "units" : "p_{T}(\mu_{1}) [GeV]", "minX" : 0, "maxX" : 25, "minY" : 0, "maxY" : 8,  "bins" : 60, "binsY" : 60, "y_title" : "#Delta_{}R(\mu\mu)", "plotStr" : "colz", "2D" : True },
+        { "obs" : "gen_delta_r_vs_pt_2", "formula" : "gen_deltaR:GenParticles[genLeptonsIdx[1]].Pt()", "units" : "p_{T}(\mu_{2}) [GeV]", "minX" : 0, "maxX" : 25, "minY" : 0, "maxY" : 8, "bins" : 60, "binsY" : 60, "y_title" : "#Delta_{}R(\mu\mu)", "plotStr" : "colz", "2D" : True },
+        { "obs" : "gen_invmass_vs_pt_1", "formula" : "gen_invMass:GenParticles[genLeptonsIdx[0]].Pt()", "units" : "p_{T}(\mu_{1}) [GeV]", "minX" : 0, "maxX" : 25, "minY" : 0, "maxY" : 6.5,  "bins" : 60, "binsY" : 60, "y_title" : "m_{\mu\mu} [GeV]", "plotStr" : "colz", "2D" : True },
+        { "obs" : "gen_invmass_vs_pt_2", "formula" : "gen_invMass:GenParticles[genLeptonsIdx[1]].Pt()", "units" : "p_{T}(\mu_{2}) [GeV]", "minX" : 0, "maxX" : 25, "minY" : 0, "maxY" : 6.5, "bins" : 60, "binsY" : 60, "y_title" : "m_{\mu\mu} [GeV]", "plotStr" : "colz", "2D" : True },
+    ]
     
 
 class signal_muons(BaseParams):
