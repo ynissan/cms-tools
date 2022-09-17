@@ -355,6 +355,47 @@ signalsGen = [
               
               ]
 
+class count_signal_events(BaseParams):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/count_signal_events.root"
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True
+    signal_dir = [signalsGen[1]]
+    signal_names = [signalNames[1]]
+    glob_signal = True
+    cuts = [
+        {"name":"none", "title": "No Cuts", "condition" : "genFlavour == \"Muons\""},
+        #{"name":"twoLoptonsNoIso", "title": "twoLoptonsNoIso", "condition" : "genFlavour == \"Muons\" && twoLeptonsNoIso == 1 && leptonFlavourNoIso == \"Muons\""},
+    ]
+    histograms_defs = [
+        #{ "obs" : "gen_delta_r_vs_pt_1", "formula" : "gen_deltaR:GenParticles[genLeptonsIdx[0]].Pt()", "units" : "p_{T}(\mu_{1}) [GeV]", "minX" : 0, "maxX" : 8, "minY" : 0, "maxY" : 8,  "bins" : 60, "binsY" : 60, "y_title" : "#Delta_{}R(\mu\mu)", "plotStr" : "colz", "2D" : True },
+        #{ "obs" : "gen_delta_r_vs_pt_2", "formula" : "gen_deltaR:GenParticles[genLeptonsIdx[1]].Pt()", "units" : "p_{T}(\mu_{2}) [GeV]", "minX" : 0, "maxX" : 8, "minY" : 0, "maxY" : 8, "bins" : 60, "binsY" : 60, "y_title" : "#Delta_{}R(\mu\mu)", "plotStr" : "colz", "2D" : True },
+        { "obs" : "base", "formula" : "gen_invMass", "units" : "p_{T}(\mu_{1}) [GeV]", "minX" : 0, "maxX" : 20, "bins" : 1 },
+        { "obs" : "pt_cut", "formula" : "gen_invMass", "units" : "p_{T}(\mu_{1}) [GeV]", "minX" : 0, "maxX" : 20, "bins" : 1, "condition" : "GenParticles[genLeptonsIdx[0]].Pt() > 2 && GenParticles[genLeptonsIdx[1]].Pt() > 2" },
+        { "obs" : "orth", "formula" : "gen_invMass", "units" : "p_{T}(\mu_{1}) [GeV]", "minX" : 0, "maxX" : 20, "bins" : 1, "condition" : "GenParticles[genLeptonsIdx[0]].Pt() > 2 && GenParticles[genLeptonsIdx[1]].Pt() > 2 && (GenParticles[genLeptonsIdx[1]].Pt() < 3.5 || gen_deltaR < 0.3)" },
+        #{ "obs" : "gen_invmass_vs_pt_2", "formula" : "gen_invMass:GenParticles[genLeptonsIdx[1]].Pt()", "units" : "p_{T}(\mu_{2}) [GeV]", "minX" : 0, "maxX" : 8, "minY" : 0, "maxY" : 1.4, "bins" : 60, "binsY" : 60, "y_title" : "m_{\mu\mu} [GeV]", "plotStr" : "colz", "2D" : True },
+    ]
+    
+    weightString = {
+        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * BranchingRatio",
+        'SingleMuon' : "1"
+    }
+    
+    plot_bg = False
+    plot_data = False
+    plot_overflow = True
+    plot_legend = False
+    show_lumi = True
+    label_text = plotutils.StampStr.SIM
+    
+    padRightMargin = 0.1
+    padLeftMargin = 0.1
+    y_title_offset = 0.7
+
+class count_signal_events_dm5(count_signal_events):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/count_signal_events_dm5.root"
+    signal_dir = [signalsGen[5]]
+    signal_names = [signalNames[5]]
+
 class signal_muons_gen_delta_r_vs_pt(BaseParams):
     histrograms_file = BaseParams.histograms_root_files_dir + "/signal_muons_gen_delta_r_vs_pt.root"
     save_histrograms_to_file = True
@@ -364,7 +405,7 @@ class signal_muons_gen_delta_r_vs_pt(BaseParams):
     glob_signal = True
     cuts = [
         {"name":"none", "title": "No Cuts", "condition" : "genFlavour == \"Muons\""},
-        #{"name":"twoLoptonsNoIso", "title": "twoLoptonsNoIso", "condition" : "genFlavour == \"Muons\" && twoLeptonsNoIso == 1 && leptonFlavour == \"Muons\""},
+        #{"name":"twoLoptonsNoIso", "title": "twoLoptonsNoIso", "condition" : "genFlavour == \"Muons\" && twoLeptonsNoIso == 1 && leptonFlavourNoIso == \"Muons\""},
     ]
     histograms_defs = [
         { "obs" : "gen_delta_r_vs_pt_1", "formula" : "gen_deltaR:GenParticles[genLeptonsIdx[0]].Pt()", "units" : "p_{T}(\mu_{1}) [GeV]", "minX" : 0, "maxX" : 8, "minY" : 0, "maxY" : 8,  "bins" : 60, "binsY" : 60, "y_title" : "#Delta_{}R(\mu\mu)", "plotStr" : "colz", "2D" : True },
@@ -417,16 +458,22 @@ class signal_muons(BaseParams):
     
     cuts = [
         {"name":"none", "title": "No Cuts", "condition" : "genFlavour == \"Muons\""},
-        #{"name":"twoLoptonsNoIso", "title": "twoLoptonsNoIso", "condition" : "genFlavour == \"Muons\" && twoLeptonsNoIso == 1 && leptonFlavour == \"Muons\""},
+        #{"name":"twoLoptonsNoIso", "title": "twoLoptonsNoIso", "condition" : "genFlavour == \"Muons\" && twoLeptonsNoIso == 1 && leptonFlavourNoIso == \"Muons\""},
     ]
     histograms_defs = [
         #{ "obs" : "Muons_pt_low", "formula" : "Muons.Pt()", "units" : "p_{T} [GeV]", "minX" : 0, "maxX" : 2, "bins" : 60, "condition" :  "Muons.Pt() <= 2 && Muons_isZ == 1", "legendCoor" : {"x1" : .60, "y1" : .60, "x2" : .89, "y2" : .89}, "legendCol" : 1, "linearYspace" : 1.2, "y_title" : "Number of muons" },
         { "obs" : "Muons_pt", "formula" : "Muons.Pt()", "units" : "p_{T} [GeV]", "minX" : 2, "maxX" : 25, "bins" : 60, "condition" :  "Muons.Pt() >= 2 && Muons_isZ == 1", "linearYspace" : 1.2, "y_title" : "Number of muons" },
         { "obs" : "Muons_Eta", "formula" : "abs(Muons.Eta())", "units" : "|\eta|", "minX" : 0, "maxX" : 2.4, "bins" : 60, "condition" :  "Muons.Pt() >= 2 && Muons_isZ == 1", "linearYspace" : 2, "y_title" : "Number of muons" },
-        { "obs" : "deltaRNoIso", "units" : "#Delta_{}R(\mu\mu)", "minX" : 0, "maxX" : 6.3, "bins" : 60, "condition" :  "twoLeptonsNoIso == 1 && leptonFlavour == \"Muons\" && Muons_isZ[leptonsIdxNoIso[0]] == 1 &&  Muons_isZ[leptonsIdxNoIso[1]] == 1 ", "linearYspace" : 1.2 },
-        { "obs" : "invMassNoIso", "units" : "m_{\mu\mu} [GeV]", "minX" : 0, "maxX" : 7, "bins" : 60, "condition" :  "twoLeptonsNoIso == 1 && leptonFlavour == \"Muons\" && Muons_isZ[leptonsIdxNoIso[0]] == 1 &&  Muons_isZ[leptonsIdxNoIso[1]] == 1 ", "linearYspace" : 1.9 },
-        { "obs" : "deltaRNoIso_orth",  "formula" : "deltaRNoIso", "units" : "#Delta_{}R(\mu\mu)", "minX" : 0, "maxX" : 6.3, "bins" : 60, "condition" :  "twoLeptonsNoIso == 1 && leptonFlavour == \"Muons\" && Muons_isZ[leptonsIdxNoIso[0]] == 1 &&  Muons_isZ[leptonsIdxNoIso[1]] == 1 && (leptonsNoIso[1].Pt() <= 3.5 || deltaRNoIso <= 0.3)", "linearYspace" : 1.2 },
-        { "obs" : "invMassNoIso_orth", "formula" : "invMassNoIso", "units" : "m_{\mu\mu} [GeV]", "minX" : 0, "maxX" : 7, "bins" : 60, "condition" :  "twoLeptonsNoIso == 1 && leptonFlavour == \"Muons\" && Muons_isZ[leptonsIdxNoIso[0]] == 1 &&  Muons_isZ[leptonsIdxNoIso[1]] == 1  && (leptonsNoIso[1].Pt() <= 3.5 || deltaRNoIso <= 0.3)", "linearYspace" : 1.5 },
+        { "obs" : "deltaRNoIso", "units" : "#Delta_{}R(\mu\mu)", "minX" : 0, "maxX" : 6.3, "bins" : 60, "condition" :  "twoLeptonsNoIso == 1 && leptonFlavourNoIso == \"Muons\" && Muons_isZ[leptonsIdxNoIso[0]] == 1 &&  Muons_isZ[leptonsIdxNoIso[1]] == 1 ", "linearYspace" : 1.2 },
+        { "obs" : "invMassNoIso", "units" : "m_{\mu\mu} [GeV]", "minX" : 0, "maxX" : 7, "bins" : 60, "condition" :  "twoLeptonsNoIso == 1 && leptonFlavourNoIso == \"Muons\" && Muons_isZ[leptonsIdxNoIso[0]] == 1 &&  Muons_isZ[leptonsIdxNoIso[1]] == 1 ", "linearYspace" : 1.9 },
+        { "obs" : "deltaRNoIso_orth",  "formula" : "deltaRNoIso", "units" : "#Delta_{}R(\mu\mu)", "minX" : 0, "maxX" : 6.3, "bins" : 60, "condition" :  "twoLeptonsNoIso == 1 && leptonFlavourNoIso == \"Muons\" && Muons_isZ[leptonsIdxNoIso[0]] == 1 &&  Muons_isZ[leptonsIdxNoIso[1]] == 1 && (leptonsNoIso[1].Pt() <= 3.5 || deltaRNoIso <= 0.3)", "linearYspace" : 1.2 },
+        { "obs" : "invMassNoIso_orth", "formula" : "invMassNoIso", "units" : "m_{\mu\mu} [GeV]", "minX" : 0, "maxX" : 7, "bins" : 60, "condition" :  "twoLeptonsNoIso == 1 && leptonFlavourNoIso == \"Muons\" && Muons_isZ[leptonsIdxNoIso[0]] == 1 &&  Muons_isZ[leptonsIdxNoIso[1]] == 1  && (leptonsNoIso[1].Pt() <= 3.5 || deltaRNoIso <= 0.3)", "linearYspace" : 1.5 },
+        
+        { "obs" : "deltaRCorrJetNoMultIso10Dr0.6", "units" : "#Delta_{}R(\mu\mu)", "minX" : 0, "maxX" : 6.3, "bins" : 60, "condition" :  "twoLeptonsCorrJetNoMultIso10Dr0.6 == 1 && leptonFlavourCorrJetNoMultIso10Dr0.6 == \"Muons\" && Muons_isZ[leptonsIdxCorrJetNoMultIso10Dr0.6[0]] == 1 &&  Muons_isZ[leptonsIdxCorrJetNoMultIso10Dr0.6[1]] == 1 ", "linearYspace" : 1.2 },
+        { "obs" : "invMassCorrJetNoMultIso10Dr0.6", "units" : "m_{\mu\mu} [GeV]", "minX" : 0, "maxX" : 7, "bins" : 60, "condition" :  "twoLeptonsCorrJetNoMultIso10Dr0.6 == 1 && leptonFlavourCorrJetNoMultIso10Dr0.6 == \"Muons\" && Muons_isZ[leptonsIdxCorrJetNoMultIso10Dr0.6[0]] == 1 &&  Muons_isZ[leptonsIdxCorrJetNoMultIso10Dr0.6[1]] == 1 ", "linearYspace" : 1.9 },
+        { "obs" : "deltaRCorrJetNoMultIso10Dr0.6_orth",  "formula" : "deltaRCorrJetNoMultIso10Dr0.6", "units" : "#Delta_{}R(\mu\mu)", "minX" : 0, "maxX" : 6.3, "bins" : 60, "condition" :  "twoLeptonsCorrJetNoMultIso10Dr0.6 == 1 && leptonFlavourCorrJetNoMultIso10Dr0.6 == \"Muons\" && Muons_isZ[leptonsIdxCorrJetNoMultIso10Dr0.6[0]] == 1 &&  Muons_isZ[leptonsIdxCorrJetNoMultIso10Dr0.6[1]] == 1 && (leptonsCorrJetNoMultIso10Dr0.6[1].Pt() <= 3.5 || deltaRCorrJetNoMultIso10Dr0.6 <= 0.3)", "linearYspace" : 1.2 },
+        { "obs" : "invMassCorrJetNoMultIso10Dr0.6_orth", "formula" : "invMassCorrJetNoMultIso10Dr0.6", "units" : "m_{\mu\mu} [GeV]", "minX" : 0, "maxX" : 7, "bins" : 60, "condition" :  "twoLeptonsCorrJetNoMultIso10Dr0.6 == 1 && leptonFlavourCorrJetNoMultIso10Dr0.6 == \"Muons\" && Muons_isZ[leptonsIdxCorrJetNoMultIso10Dr0.6[0]] == 1 &&  Muons_isZ[leptonsIdxCorrJetNoMultIso10Dr0.6[1]] == 1  && (leptonsCorrJetNoMultIso10Dr0.6[1].Pt() <= 3.5 || deltaRCorrJetNoMultIso10Dr0.6 <= 0.3)", "linearYspace" : 1.5 },
+
         
         { "obs" : "Muons_pt_barrel", "formula" : "Muons.Pt()", "units" : "Barrel p_{T} [GeV]", "minX" : 2, "maxX" : 20, "bins" : 60, "condition" :  "Muons.Pt() >= 2 && Muons_isZ == 1 && abs(Muons.Eta()) < 1.2", "linearYspace" : 1.2, "y_title" : "Number of muons" },
         { "obs" : "Muons_pt_endcape", "formula" : "Muons.Pt()", "units" : "Endcaps p_{T} [GeV]", "minX" : 2, "maxX" : 20, "bins" : 60, "condition" :  "Muons.Pt() >= 2 && Muons_isZ == 1 && abs(Muons.Eta()) >= 1.2 && abs(Muons.Eta()) <= 2.4", "linearYspace" : 1.2, "y_title" : "Number of muons"},
