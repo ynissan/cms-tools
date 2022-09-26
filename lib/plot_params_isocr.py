@@ -546,6 +546,8 @@ class dilepton_muons_bg_isocr_no_retag_scan(dilepton_muons_bg_isocr_no_retag_Cor
             else:
                 continue
             for ptRange in ptRanges:
+                if ptRange < 9:
+                    continue
                 for drCut in drCuts:
                     jetIso = ""
                     if len(str(ptRange)) > 0:
@@ -572,7 +574,7 @@ class dilepton_muons_bg_isocr_no_retag_scan(dilepton_muons_bg_isocr_no_retag_Cor
 class dilepton_muons_bg_isocr_no_retag_scan_phase1(dilepton_muons_bg_isocr_no_retag_scan):
     histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_no_retag_scan_phase1.root"
     save_histrograms_to_file = True
-    load_histrograms_from_file = False 
+    load_histrograms_from_file = True 
     bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_phase1/sum/slim_sum/type_sum"
     weightString = {
         'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2017 * BranchingRatio",

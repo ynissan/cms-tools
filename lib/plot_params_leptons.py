@@ -1,5 +1,6 @@
 import sys
 import os
+from ROOT import *
 
 sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
 
@@ -41,10 +42,10 @@ signalNames = [
     "\Delta_{}m 5.6 GeV",
 ]
     
-class lepton_selection(BaseParams):
+class lepton_selection_dm1p92(BaseParams):
     histrograms_file = BaseParams.histograms_root_files_dir + "/lepton_selection_mu100_dm1p92Chi20Chipm.root"
     save_histrograms_to_file = True
-    load_histrograms_from_file = True
+    load_histrograms_from_file = False
     signal_dir = [
               #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum/higgsino_mu100_dm0p86Chi20Chipm.root",
               "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm1p92Chi20Chipm_*.root",
@@ -60,80 +61,138 @@ class lepton_selection(BaseParams):
     
     sig_line_width = 1
 
-    legend_coordinates = {"x1" : .75, "y1" : .75, "x2" : .89, "y2" : .89}
+    legend_coordinates = {"x1" : .70, "y1" : .60, "x2" : .95, "y2" : .95}
     legend_columns = 1
-    legend_border = 1
+    legend_border = 0
+    
+    label_text = plotutils.StampStr.SIM
     
     cuts = [
-        {"name":"none", "title": "No Cuts", "condition" : "1", "object" : {"e" : "Electrons.Pt() < 20", "m" : "Muons.Pt() > 2 && Muons.Pt() < 20"  }},
+        {"name":"none", "title": "No Cuts", "condition" : "1", "object" : {"e" : "Electrons.Pt() < 20", "m" : "Muons.Pt() < 20"  }},
+        {"name":"pt", "title": "Pt", "condition" : "1", "object" : {"e" : "Electrons.Pt() < 20", "m" : "Muons.Pt() > 2 && Muons.Pt() < 20"  }},
         {"name":"no_iso", "title": "no_iso", "condition": "1", "object" : {"e" : "Electrons_deltaRLJ > 0.4 && Electrons.Pt() < 20", "m" : "Muons.Pt() < 20 && Muons.Pt() > 2 && Muons_deltaRLJ > 0.4 && Muons_mediumID == 1 "  }},
     ]
     
     histograms_defs = [
-        {"obs" : "Electrons_pt", "formula" : "abs(Electrons.Pt())", "units" : "e p_{T}", "bins" : 60, "minX" : 5, "maxX" : 20, "object" : "e" },
+        {"obs" : "Electrons_pt", "formula" : "abs(Electrons.Pt())", "units" : "Electron p_{T} [GeV]", "bins" : 60, "minX" : 5, "maxX" : 20, "object" : "e" },
         {"obs" : "Electrons_eta", "formula" : "abs(Electrons.Eta())", "units" : "|\eta|_{e}", "bins" : 50, "minX" : 0, "maxX" : 2.5, "object" : "e" },
         {"obs" : "Electrons_rlj", "formula" : "Electrons_deltaRLJ", "units" : "\Delta_{}R(j_{1}, e)", "bins" : 50, "minX" : 0, "maxX" : 5, "object" : "e" },
         
-        { "obs" : "Electrons_pt_barrel", "formula" : "Electrons.Pt()", "units" : "barrel e p_{T}", "minX" : 5, "maxX" : 20, "bins" : 60, "object" : "e", "condition" : "abs(Electrons.Eta()) < 1.2" },
-        { "obs" : "Electrons_pt_endcape", "formula" : "Electrons.Pt()", "units" : "endcaps e p_{T}", "minX" : 5, "maxX" : 20, "bins" : 60, "object" : "e", "condition" : "abs(Electrons.Eta()) >= 1.2 && abs(Electrons.Eta()) <= 2.4" },
-        { "obs" : "Electrons_pt_barrel_medium", "formula" : "Electrons_mediumID", "units" : "barrel e mediumID", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "e", "condition" : "abs(Electrons.Eta()) < 1.2" },
-        { "obs" : "Electrons_pt_endcape_medium", "formula" : "Electrons_mediumID", "units" : "endcaps e mediumID", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "e", "condition" : "abs(Electrons.Eta()) >= 1.2 && abs(Electrons.Eta()) <= 2.4" },
+        { "obs" : "Electrons_pt_barrel", "formula" : "Electrons.Pt()", "units" : "Barrel Electron p_{T} [GeV]", "minX" : 5, "maxX" : 20, "bins" : 60, "object" : "e", "condition" : "abs(Electrons.Eta()) < 1.2" },
+        { "obs" : "Electrons_pt_endcape", "formula" : "Electrons.Pt()", "units" : "Endcaps Electron p_{T} [GeV]", "minX" : 5, "maxX" : 20, "bins" : 60, "object" : "e", "condition" : "abs(Electrons.Eta()) >= 1.2 && abs(Electrons.Eta()) <= 2.4" },
+        { "obs" : "Electrons_pt_barrel_medium", "formula" : "Electrons_mediumID", "units" : "Barrel Electron mediumID", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "e", "condition" : "abs(Electrons.Eta()) < 1.2" },
+        { "obs" : "Electrons_pt_endcape_medium", "formula" : "Electrons_mediumID", "units" : "Endcaps Electron mediumID", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "e", "condition" : "abs(Electrons.Eta()) >= 1.2 && abs(Electrons.Eta()) <= 2.4" },
         
-        { "obs" : "Electrons_iso", "formula" : "Electrons_passIso", "units" : "e passIso", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "e", "condition" : "1" },
+        { "obs" : "Electrons_iso", "formula" : "Electrons_passIso", "units" : "Electron passIso", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "e", "condition" : "1" },
         { "obs" : "Electrons_CorrJetNoMultIso11Dr0.5", "formula" : "Electrons_passCorrJetNoMultIso11Dr0.5", "units" : "e CorrJetNoMultIso11Dr0.5", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "e", "condition" : "1" },
         
         
-        { "obs" : "Muons_pt", "formula" : "abs(Muons.Pt())", "units" : "\mu p_{T}", "minX" : 2, "maxX" : 25, "bins" : 60, "object" : "m", "condition" : "Muons.Pt() >= 2" },
-        { "obs" : "Muons_Eta", "formula" : "abs(Muons.Eta())", "units" : "|\eta|_{\mu}", "minX" : 0, "maxX" : 2.4, "bins" : 60, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Pt()) >= 2" },
-        { "obs" : "Muons_pt_barrel", "formula" : "Muons.Pt()", "units" : "barrel p_{T}", "minX" : 2, "maxX" : 20, "bins" : 60, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) <= 0.9" },
-        { "obs" : "Muons_pt_overlap", "formula" : "Muons.Pt()", "units" : "overlap p_{T}", "minX" : 2, "maxX" : 20, "bins" : 60, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) > 0.9 && abs(Muons.Eta()) <= 1.2" },
-        { "obs" : "Muons_pt_endcape", "formula" : "Muons.Pt()", "units" : "endcaps p_{T}", "minX" : 2, "maxX" : 20, "bins" : 60, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) >= 1.2 && abs(Muons.Eta()) <= 2.4" },
+        { "obs" : "Muons_pt", "formula" : "abs(Muons.Pt())", "units" : "Muon p_{T} [GeV]", "minX" : 0, "maxX" : 25, "bins" : 60, "object" : "m", "condition" : "1" },
+        { "obs" : "Muons_Eta", "formula" : "abs(Muons.Eta())", "units" : "|\eta|_{\mu}", "minX" : 0, "maxX" : 2.4, "bins" : 60, "object" : "m", "condition" : "1" },
         
-        { "obs" : "Muons_rlj_barrel", "formula" : "Muons_deltaRLJ", "units" : "barrel \Delta_{}R(j_{1}, \mu)", "minX" : 0, "maxX" : 5, "bins" : 60, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) <= 0.9" },
-        { "obs" : "Muons_rlj_overlap", "formula" : "Muons_deltaRLJ", "units" : "overlap \Delta_{}R(j_{1}, \mu)", "minX" : 0, "maxX" : 5, "bins" : 60, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) > 0.9 && abs(Muons.Eta()) <= 1.2" },
-        { "obs" : "Muons_rlj_endcape", "formula" : "Muons_deltaRLJ", "units" : "endcaps \Delta_{}R(j_{1}, \mu)", "minX" : 0, "maxX" : 5, "bins" : 60, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) >= 1.2 && abs(Muons.Eta()) <= 2.4" },
+        { "obs" : "Muons_pt_barrel", "formula" : "Muons.Pt()", "units" : "Barrel Muon p_{T} [GeV]", "minX" : 0, "maxX" : 20, "bins" : 60, "object" : "m", "condition" : "abs(Muons.Eta()) <= 0.9" },
+        { "obs" : "Muons_pt_overlap", "formula" : "Muons.Pt()", "units" : "Overlap Muon p_{T} [GeV]", "minX" : 0, "maxX" : 20, "bins" : 60, "object" : "m", "condition" : "abs(Muons.Eta()) > 0.9 && abs(Muons.Eta()) <= 1.2" },
+        { "obs" : "Muons_pt_endcape", "formula" : "Muons.Pt()", "units" : "Endcaps Muon p_{T} [GeV]", "minX" : 0, "maxX" : 20, "bins" : 60, "object" : "m", "condition" : "abs(Muons.Eta()) >= 1.2 && abs(Muons.Eta()) <= 2.4" },
         
-
-        { "obs" : "Muons_pt_barrel_medium", "formula" : "Muons_mediumID", "units" : "barrel mediumID", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) <= 0.9" },
-        { "obs" : "Muons_pt_overlap_medium", "formula" : "Muons_mediumID", "units" : "overlap mediumID", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) > 0.9 && abs(Muons.Eta()) <= 1.2" },
-        { "obs" : "Muons_pt_endcape_medium", "formula" : "Muons_mediumID", "units" : "endcaps mediumID", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) >= 1.2 && abs(Muons.Eta()) <= 2.4" },
+        { "obs" : "Muons_rlj", "formula" : "Muons_deltaRLJ", "units" : "\Delta_{}R(j_{1}, \mu)", "minX" : 0, "maxX" : 5, "bins" : 60, "object" : "m", "condition" : "1" },
+        { "obs" : "Muons_rlj_barrel", "formula" : "Muons_deltaRLJ", "units" : "Barrel \Delta_{}R(j_{1}, \mu)", "minX" : 0, "maxX" : 5, "bins" : 60, "object" : "m", "condition" : "abs(Muons.Eta()) <= 0.9" },
+        { "obs" : "Muons_rlj_overlap", "formula" : "Muons_deltaRLJ", "units" : "Overlap \Delta_{}R(j_{1}, \mu)", "minX" : 0, "maxX" : 5, "bins" : 60, "object" : "m", "condition" : "abs(Muons.Eta()) > 0.9 && abs(Muons.Eta()) <= 1.2" },
+        { "obs" : "Muons_rlj_endcape", "formula" : "Muons_deltaRLJ", "units" : "Endcaps \Delta_{}R(j_{1}, \mu)", "minX" : 0, "maxX" : 5, "bins" : 60, "object" : "m", "condition" :  "abs(Muons.Eta()) >= 1.2 && abs(Muons.Eta()) <= 2.4" },
         
-        { "obs" : "Muons_pt_barrel_jet_iso", "formula" : "Muons_passCorrJetNoMultIso10Dr0.6", "units" : "barrel \mu CorrJetNoMultIso10Dr0.6", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) <= 0.9" },
-        { "obs" : "Muons_pt_overlap_jet_iso", "formula" : "Muons_passCorrJetNoMultIso10Dr0.6", "units" : "overlap \mu CorrJetNoMultIso10Dr0.6", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) > 0.9 && abs(Muons.Eta()) <= 1.2" },
-        { "obs" : "Muons_pt_endcape_jet_iso", "formula" : "Muons_passCorrJetNoMultIso10Dr0.6", "units" : "endcaps \mu CorrJetNoMultIso10Dr0.6", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) >= 1.2 && abs(Muons.Eta()) <= 2.4" },
+        { "obs" : "Muons_pt_medium", "formula" : "Muons_mediumID", "units" : "Barrel Muon mediumID", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "1" },
+        { "obs" : "Muons_pt_barrel_medium", "formula" : "Muons_mediumID", "units" : "Barrel Muon mediumID", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "abs(Muons.Eta()) <= 0.9" },
+        { "obs" : "Muons_pt_overlap_medium", "formula" : "Muons_mediumID", "units" : "Overlap Muon mediumID", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "abs(Muons.Eta()) > 0.9 && abs(Muons.Eta()) <= 1.2" },
+        { "obs" : "Muons_pt_endcape_medium", "formula" : "Muons_mediumID", "units" : "Endcaps Muon mediumID", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "abs(Muons.Eta()) >= 1.2 && abs(Muons.Eta()) <= 2.4" },
         
-        { "obs" : "Muons_pt_barrel_iso", "formula" : "Muons_passIso", "units" : "barrel \mu passIso", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) <= 0.9" },
-        { "obs" : "Muons_pt_overlap_iso", "formula" : "Muons_passIso", "units" : "overlap \mu passIso", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) > 0.9 && abs(Muons.Eta()) <= 1.2" },
-        { "obs" : "Muons_pt_endcape_iso", "formula" : "Muons_passIso", "units" : "endcaps \mu passIso", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "Muons.Pt() >= 2 && abs(Muons.Eta()) >= 1.2 && abs(Muons.Eta()) <= 2.4" },
+        { "obs" : "Muons_pt_jet_iso", "formula" : "Muons_passCorrJetNoMultIso10Dr0.6", "units" : "Muon pass jet isolation", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "1" },
+        { "obs" : "Muons_pt_barrel_jet_iso", "formula" : "Muons_passCorrJetNoMultIso10Dr0.6", "units" : "Barrel Muon CorrJetNoMultIso10Dr0.6", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "abs(Muons.Eta()) <= 0.9" },
+        { "obs" : "Muons_pt_overlap_jet_iso", "formula" : "Muons_passCorrJetNoMultIso10Dr0.6", "units" : "Overlap Muon CorrJetNoMultIso10Dr0.6", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "abs(Muons.Eta()) > 0.9 && abs(Muons.Eta()) <= 1.2" },
+        { "obs" : "Muons_pt_endcape_jet_iso", "formula" : "Muons_passCorrJetNoMultIso10Dr0.6", "units" : "Endcaps Muon CorrJetNoMultIso10Dr0.6", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "abs(Muons.Eta()) >= 1.2 && abs(Muons.Eta()) <= 2.4" },
+        
+        { "obs" : "Muons_pt_iso", "formula" : "Muons_passIso", "units" : "Muon passIso", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "1" },
+        { "obs" : "Muons_pt_barrel_iso", "formula" : "Muons_passIso", "units" : "barrel Muon passIso", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "abs(Muons.Eta()) <= 0.9" },
+        { "obs" : "Muons_pt_overlap_iso", "formula" : "Muons_passIso", "units" : "overlap Muon passIso", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "abs(Muons.Eta()) > 0.9 && abs(Muons.Eta()) <= 1.2" },
+        { "obs" : "Muons_pt_endcape_iso", "formula" : "Muons_passIso", "units" : "endcaps Muon passIso", "minX" : 0, "maxX" : 2, "bins" : 2, "object" : "m", "condition" : "abs(Muons.Eta()) >= 1.2 && abs(Muons.Eta()) <= 2.4" },
         
     ]
     
-    lepConds = {
-        "e" : { "Zl" : "Electrons_matchGen == 1",
-                "MM" : "Electrons_matchGen == 0"},
-        "m" : { "Zl" : "Muons_matchGen == 1",
-                "MM" : "Muons_matchGen == 0"},
-    }
+    # lepConds = {
+#         "e" : { "Zl" : "Electrons_matchGen == 1",
+#                 "MM" : "Electrons_matchGen == 0"},
+#         "m" : { "Zl" : "Muons_matchGen == 1",
+#                 "MM" : "Muons_matchGen == 0"},
+#     }
 
     object_retag_map = {
         "e" : [ 
+                
                 {"MM" : "Electrons_isZ == 0"},
-                {"Zl" : "Electrons_isZ == 1"}],
-        "m" : [ {"MM" : "Muons_isZ == 0"},
-                {"Zl" : "Muons_isZ == 1"}],
+                {"Zl" : "Electrons_isZ == 1"},
+            ],
+        "m" : [ 
+                
+                {"MM" : "Muons_isZ == 0"},
+                {"Zl" : "Muons_isZ == 1"},
+            ]
     }
     
-    weightString = {
-        'MET' : "1",
-        'SingleMuon' : "1"
-    }
-    
-    calculatedLumi = {
-        'MET' : 0.001,
-        'SingleMuon' : 0.001,
-    }
+    object_retag_labels = {
+         "e" : {
+            "Zl" : "#tilde{\chi}^{0}_{2} #rightarrow #tilde{\chi}^{0}_{1} ee",
+            "MM" : "other"
+            },
 
-class track_selection(lepton_selection):
+        "m" : {
+            "Zl" : "#tilde{\chi}^{0}_{2} #rightarrow #tilde{\chi}^{0}_{1} \mu\mu",
+            "MM" : "other"
+            }
+    }
+    
+    # weightString = {
+#         'MET' : "1",
+#         'SingleMuon' : "1"
+#     }
+#     
+#     calculatedLumi = {
+#         'MET' : 0.001,
+#         'SingleMuon' : 0.001,
+#     }
+    
+    use_calculated_lumi_weight = False
+    no_weights = True
+    show_lumi = False
+    
+    colorPalette = [
+        { "name" : "yellow", "fillColor" : kYellow, "lineColor" : kYellow+1, "fillStyle" : 3444, "markerColor" : 5,  "markerStyle" : kOpenCircle},
+        { "name" : "blue", "fillColor" : kBlue, "lineColor" : kBlue+2, "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    ]
+
+class lepton_selection_dm1p92_initial(lepton_selection_dm1p92):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/lepton_selection_dm1p92_initial.root"
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True
+    plot_overflow = False
+    cuts = [
+        {"name":"none", "title": "No Cuts", "condition" : "1", "object" : {"e" : "Electrons.Pt() < 20", "m" : "Muons.Pt() < 20"  }},
+        {"name":"rlj", "title": "rlj", "condition" : "1", "object" : {"e" : "Electrons_deltaRLJ > 0.4 && Electrons.Pt() < 20", "m" : "Muons_deltaRLJ > 0.4"  }},
+        {"name":"pt", "title": "pt", "condition" : "1", "object" : {"e" : "Electrons_deltaRLJ > 0.4 && Electrons.Pt() < 20", "m" : "Muons.Pt() >= 2"  }},
+    ]
+    
+    histograms_defs = [
+        {"obs" : "Electrons_rlj", "formula" : "Electrons_deltaRLJ", "units" : "\Delta_{}R(j_{1}, e)", "bins" : 50, "minX" : 0, "maxX" : 5, "object" : "e", "y_title" : "Number of electrons" },
+        { "obs" : "Muons_pt", "formula" : "abs(Muons.Pt())", "units" : "Muon p_{T} [GeV]", "minX" : 0, "maxX" : 5, "bins" : 60, "object" : "m", "condition" : "1", "y_title_offset" : 1.2, "y_title" : "Number of muons" },
+        { "obs" : "Muons_rlj", "formula" : "Muons_deltaRLJ", "units" : "\Delta_{}R(j_{1}, \mu)", "minX" : 0, "maxX" : 5, "bins" : 60, "object" : "m", "condition" : "1", "y_title" : "Number of muons", "linearYspace" : 1.4 },
+        
+    ]
+    
+class lepton_selection_dm5p63_initial(lepton_selection_dm1p92_initial): 
+    histrograms_file = BaseParams.histograms_root_files_dir + "/lepton_selection_dm5p63_initial.root"   
+
+    signal_dir = [
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_nlp/sum/higgsino_mu100_dm5p63Chi20Chipm*.root",
+              ]
+              
+class track_selection(lepton_selection_dm1p92):
     cuts = [
         {"name":"none", "title": "No Cuts", "condition" : "tracks.Pt() < 10"},
         {"name":"dxyz", "title": "dxyz", "condition" : "tracks.Pt() < 10 && tracks_dxyVtx < 0.02 && tracks_dzVtx < 0.02"},
@@ -487,8 +546,8 @@ class signal_muons(BaseParams):
     ]
     
     weightString = {
-        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * BranchingRatio",
-        'SingleMuon' : "1"
+       'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * BranchingRatio",
+       'SingleMuon' : "1"
     }
     
     plot_bg = False

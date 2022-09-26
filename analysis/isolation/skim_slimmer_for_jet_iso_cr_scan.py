@@ -42,10 +42,16 @@ bg_dir = None
 base_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1"
 
 if signal:
-    input_dir = base_dir + "/signal/skim/single"
-    output_dir = base_dir + "/signal/skim/slim"
-    output_dir_stdout = base_dir + "/signal/skim/stdout"
-    output_dir_stderr = base_dir + "/signal/skim/stderr"
+    if phase1:
+        input_dir = base_dir + "/signal/skim_phase1/single"
+        output_dir = base_dir + "/signal/skim_phase1/slim"
+        output_dir_stdout = base_dir + "/signal/skim_phase1/stdout"
+        output_dir_stderr = base_dir + "/signal/skim_phase1/stderr"
+    else:
+        input_dir = base_dir + "/signal/skim/single"
+        output_dir = base_dir + "/signal/skim/slim"
+        output_dir_stdout = base_dir + "/signal/skim/stdout"
+        output_dir_stderr = base_dir + "/signal/skim/stderr"
 elif bg:
     if phase1:
         input_dir = base_dir + "/bg/skim_phase1/sum/type_sum"
@@ -58,10 +64,17 @@ elif bg:
         output_dir_stdout = base_dir + "/bg/skim/stdout"
         output_dir_stderr = base_dir + "/bg/skim/stderr"
 else:
-    input_dir = base_dir + "/data/skim/sum"
-    output_dir = base_dir + "/data/skim/slim"
-    output_dir_stdout = base_dir + "/data/skim/stdout"
-    output_dir_stderr = base_dir + "/data/skim/stderr"
+    # data
+    if phase1: 
+        input_dir = base_dir + "/data/skim_phase1/sum"
+        output_dir = base_dir + "/data/skim_phase1/slim"
+        output_dir_stdout = base_dir + "/data/skim_phase1/stdout"
+        output_dir_stderr = base_dir + "/data/skim_phase1/stderr"
+    else:
+        input_dir = base_dir + "/data/skim/sum"
+        output_dir = base_dir + "/data/skim/slim"
+        output_dir_stdout = base_dir + "/data/skim/stdout"
+        output_dir_stderr = base_dir + "/data/skim/stderr"
 
 print "input_dir", input_dir
 print "output_dir", output_dir

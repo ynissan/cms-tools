@@ -154,7 +154,7 @@ def main():
     
     jetIso = "CorrJetNoMultIso11Dr0.55"
 
-    hist_def = { "obs" : "dilepBDT%%%", "formula" : "dilepBDT%%%", "linearYspace" : 1.5, "minX" : -1, "maxX" : 1, "bins" : 40, "condition" : "(MinDeltaPhiMetJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 140 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && !tautau%%%)", "baseline" : "isoCr%%% == 0", "sc" : "isoCr%%% >= 1"}
+    hist_def = { "obs" : "dilepBDT%%%", "formula" : "dilepBDT%%%", "linearYspace" : 1.5, "minX" : -1, "maxX" : 1, "bins" : 40, "condition" : "(MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 140 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && sameSign%%% == 0 && !tautau%%%)", "baseline" : "isoCr%%% == 0", "sc" : "isoCr%%% >= 1"}
     
     hist_def["obs"] = hist_def["obs"].replace("%%%", jetIso)
     hist_def["formula"] = hist_def["formula"].replace("%%%", jetIso)

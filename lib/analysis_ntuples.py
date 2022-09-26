@@ -10,6 +10,11 @@ BTAG_CSV_LOOSE2 = 0.46
 BTAG_DEEP_CSV_LOOSE = 0.2219
 BTAG_DEEP_CSV_MEDIUM = 0.6324
 
+
+BTAG_DEEP_CSV_MEDIUM_2016 = 0.6324
+BTAG_DEEP_CSV_MEDIUM_2017 = 0.4941
+BTAG_DEEP_CSV_MEDIUM_2018 = 0.4184
+
 # def printTree(event, pId, space=0):
 # 	particle = event.GenParticles[l1]
 # 	delim = ""
@@ -56,6 +61,7 @@ def minMaxCsv(jets, jets_bDiscriminatorCSV, pt):
     return minimum, maximum
 
 def numberOfJets(jets, jets_bDiscriminatorCSV, pt, eta, csv):
+    #print csv
     nj = 0
     btags = 0
     leadingJet = None
@@ -82,6 +88,8 @@ def eventNumberOfJets30Pt2_4Eta_DeepLoose(jets, jets_bDiscriminatorCSV):
     return numberOfJets(jets, jets_bDiscriminatorCSV, 30, 2.4, BTAG_DEEP_CSV_LOOSE)
     
 def eventNumberOfJets30Pt2_4Eta_DeepMedium(jets, jets_bDiscriminatorCSV):
+    #print("Current value", BTAG_DEEP_CSV_MEDIUM)
+    #exit(0)
     return numberOfJets(jets, jets_bDiscriminatorCSV, 30, 2.4, BTAG_DEEP_CSV_MEDIUM)
 
 def numberOfLooseBTags(event):
@@ -265,20 +273,6 @@ def leadingLepton(c):
         if v.Pt() > ll.Pt():
             ll = v
     return ll
-
-def passed2016BFilter(t, data=False):
-    if not t.globalSuperTightHalo2016Filter: return False
-    if not t.HBHENoiseFilter: return False    
-    if not t.HBHEIsoNoiseFilter: return False
-    if not t.eeBadScFilter: return False      
-    if not t.BadChargedCandidateFilter: return False
-    if not t.BadPFMuonFilter: return False
-    if not t.CSCTightHaloFilter: return False 
-    if not t.EcalDeadCellTriggerPrimitiveFilter: return False
-    #if data:
-    #    if not t.ecalBadCalibReducedExtraFilter: return False
-    #    if not t.ecalBadCalibReducedFilter: return False
-    return True
 
 def electronPassesKinematicSelection(i, electrons, electrons_deltaRLJ):
     return electrons[i].Pt() <= 15 and (electrons_deltaRLJ[i] >= 0.4 or electrons_deltaRLJ[i] < 0)
@@ -562,6 +556,20 @@ def getTwoLeptonsAfterSelection(Electrons, Electrons_passJetIso, Electrons_delta
 
 ################## FILTERS ##################
 
+def passed2016BFilter(t, data=False):
+    if not t.globalSuperTightHalo2016Filter: return False
+    if not t.HBHENoiseFilter: return False    
+    if not t.HBHEIsoNoiseFilter: return False
+    if not t.eeBadScFilter: return False      
+    if not t.BadChargedCandidateFilter: return False
+    if not t.BadPFMuonFilter: return False
+    if not t.CSCTightHaloFilter: return False 
+    if not t.EcalDeadCellTriggerPrimitiveFilter: return False
+    #if data:
+    #    if not t.ecalBadCalibReducedExtraFilter: return False
+    #    if not t.ecalBadCalibReducedFilter: return False
+    return True
+
 def mkmet(metPt, metPhi):
     met = TLorentzVector()
     met.SetPtEtaPhiE(metPt, 0, metPhi, metPt)
@@ -584,18 +592,76 @@ def passQCDHighMETFilter2(t, MET, METPhi):
             return False
     return True
 
+# def passesUniversalSelection(t, MET, METPhi):
+#     if not bool(t.JetID): return False
+#     if not t.NVtx>0: return False
+#     if not passQCDHighMETFilter(t, MET, METPhi): return False
+#     if not passQCDHighMETFilter2(t, MET, METPhi): return False
+#     if not t.HBHENoiseFilter: return False    
+#     if not t.HBHEIsoNoiseFilter: return False
+#     if not t.eeBadScFilter: return False      
+#     if not t.BadChargedCandidateFilter: return False
+#     if not t.BadPFMuonFilter: return False
+#     if not t.CSCTightHaloFilter: return False
+#     if not t.EcalDeadCellTriggerPrimitiveFilter: return False      ##I think this one makes a sizeable difference    
+#     return True
+
+
+######### FROM VIKTOR ################
+
 def passesUniversalSelection(t, MET, METPhi):
-    if not bool(t.JetID): return False
+    #if not bool(t.JetID): return False
+    if not t.PrimaryVertexFilter: return False
+    if not t.globalSuperTightHalo2016Filter: return False
+    if not t.HBHENoiseFilter: return False  
+    if not t.HBHEIsoNoiseFilter: return False
+    if not t.EcalDeadCellTriggerPrimitiveFilter: return False   ##I think this one makes a sizeable difference    
+    if not t.BadPFMuonFilter: return False
     if not t.NVtx>0: return False
+    
+    
+    
+    
     if not passQCDHighMETFilter(t, MET, METPhi): return False
     if not passQCDHighMETFilter2(t, MET, METPhi): return False
-    if not t.HBHENoiseFilter: return False    
-    if not t.HBHEIsoNoiseFilter: return False
-    if not t.eeBadScFilter: return False      
-    if not t.BadChargedCandidateFilter: return False
-    if not t.BadPFMuonFilter: return False
     if not t.CSCTightHaloFilter: return False
-    if not t.EcalDeadCellTriggerPrimitiveFilter: return False      ##I think this one makes a sizeable difference    
+    
+    return True
+
+
+def passesUniversalSelectionFastSim(t, MET, METPhi):
+    #if not bool(t.JetID): return False
+    if not t.PrimaryVertexFilter: return False
+    if not t.HBHENoiseFilter: return False  
+    if not t.HBHEIsoNoiseFilter: return False
+    if not t.EcalDeadCellTriggerPrimitiveFilter: return False
+    if not t.BadPFMuonFilter: return False
+    if not t.NVtx>0: return False
+    
+    if not passQCDHighMETFilter(t, MET, METPhi): return False
+    if not passQCDHighMETFilter2(t, MET, METPhi): return False
+    return True    
+
+def passesUniversalDataSelection(t, MET, METPhi):
+    #if not bool(t.JetID) and
+    if not t.PrimaryVertexFilter: return False
+    if not t.globalSuperTightHalo2016Filter: return False
+    if not t.HBHENoiseFilter: return False 
+    if not t.HBHEIsoNoiseFilter: return False
+    if not t.EcalDeadCellTriggerPrimitiveFilter: return False
+    if not t.BadPFMuonFilter: return False
+    if not t.BadChargedCandidateFilter: return False
+    if not t.eeBadScFilter: return False
+    if not t.NVtx>0: return False
+    
+
+    if not passQCDHighMETFilter(t, MET, METPhi): return False
+    if not passQCDHighMETFilter2(t, MET, METPhi): return False
+    if not t.CSCTightHaloFilter: return False
+    
+    
+    #if not t.PFCaloMETRatio<5: return False
+                             
     return True
 
 ##############################################

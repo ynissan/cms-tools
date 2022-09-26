@@ -30,8 +30,12 @@ skim_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/single/"
 output_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum"
 
 if slim:
-    skim_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim/"
-    output_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim_sum"
+    if phase1:
+        skim_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim/"
+        output_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim_sum"
+    else:
+        skim_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim/"
+        output_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim_sum"
 
 if sam:
     if phase1:
@@ -63,7 +67,7 @@ def chunker_longest(iterable, chunksize):
 
 for f in files:
     point = None
-    if sam:
+    if sam or phase1:
         if phase1:
             point = "_".join(os.path.basename(f).split("_")[3:5])
         else:

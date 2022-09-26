@@ -1278,7 +1278,10 @@ def main():
                             else:
                                 sigHistsBaseNames.append(signalBasename.split(".")[0].split("_")[-1])
                         else:
-                            sigHistsBaseNames.append(object_retag_name)
+                            if plot_par.object_retag_labels.get(hist_def["object"]) is not None and plot_par.object_retag_labels[hist_def["object"]].get(object_retag_name) is not None:
+                                sigHistsBaseNames.append(plot_par.object_retag_labels[hist_def["object"]].get(object_retag_name))
+                            else:
+                                sigHistsBaseNames.append(object_retag_name)
                         
                         sigHistName =  cut["name"] + "_" + hist_def["obs"] + "_" + signalBasename  + ("" if len(object_retag_name) == 0 else ("_" + object_retag_name))
                     
@@ -1530,7 +1533,7 @@ def main():
             if plot_par.plot_signal and plot_par.plot_legend:
                 for i in range(len(sigHists)):
                     if object_retaging:
-                        legend.AddEntry(sigHists[i], sigHistsBaseNames[i], 'F')
+                        legend.AddEntry(sigHists[i], sigHistsBaseNames[i], 'lF')
                     else:
                         legend.AddEntry(sigHists[i], sigHistsBaseNames[i], 'l')
             if foundBg and plot_par.plot_signal and not (hist_def.get("2D") is not None and hist_def.get("2D")):

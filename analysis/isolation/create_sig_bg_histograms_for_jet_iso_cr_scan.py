@@ -127,7 +127,7 @@ def main():
                             #hist = utils.getHistogramFromTree(basename, c, "exTrack_dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * (exclusiveTrack == 1 && MHT >= 220 && MET >= 200 && exTrack_invMass < 30 && BTagsDeepMedium == 0  && exTrack_dilepBDT >= 0 && exclusiveTrackLeptonFlavour == \"" + lep + "\")", True)
                             # Making new version without trackBDT precut
                             # 1t category
-                            # hist = utils.getHistogramFromTree("bg_1t_" + lep + "_" + jetiso, c, "exTrack_dilepBDT" + jetiso, bins, -1, 1, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 *  Weight * BranchingRatio * (exclusiveTrack" + jetiso + " == 1 && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && exTrack_invMass" + jetiso + " < 12 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour" + jetiso + " == \"" + lep + "\")", True)
+                            # hist = utils.getHistogramFromTree("bg_1t_" + lep + "_" + jetiso, c, "exTrack_dilepBDT" + jetiso, bins, -1, 1, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 *  Weight * BranchingRatio * (exclusiveTrack" + jetiso + " == 1 && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && exTrack_invMass" + jetiso + " < 12 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour" + jetiso + " == \"" + lep + "\")", True)
 #                             
 #                             hist.Sumw2()
 #                             if bg_1t_hist.get(lep) is None:
@@ -202,7 +202,7 @@ def main():
                             c1.cd()
                             
                             #1t category
-                            #hist = utils.getHistogramFromTree(deltaM + "_1t_" + lep + "_" + jetiso, c, "exTrack_dilepBDT" + jetiso, bins, -1, 1, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 *  Weight * BranchingRatio * (exclusiveTrack" + jetiso + " == 1 && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && exTrack_invMass" + jetiso + " < 12 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour" + jetiso + " == \"" + lep + "\")", True)
+                            #hist = utils.getHistogramFromTree(deltaM + "_1t_" + lep + "_" + jetiso, c, "exTrack_dilepBDT" + jetiso, bins, -1, 1, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 *  Weight * BranchingRatio * (exclusiveTrack" + jetiso + " == 1 && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && exTrack_invMass" + jetiso + " < 12 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour" + jetiso + " == \"" + lep + "\")", True)
                             
                             # hist.Sumw2()
 #                             fnew.cd()
@@ -214,7 +214,7 @@ def main():
                             for orth in orthOpt:
                                 for isoCr in isoCrs:
                                     c1.cd()
-                                    cond = str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (twoLeptons" + jetiso + " == 1 " + (orth_cond if orth else "") + " && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " < 12  && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && sameSign" + jetiso + " == 0 " + (("&& isoCr" + jetiso + (" >= 1" if isoCr else " == 0")) if len(cuts) > 0 else "") + ((" && !tautau" + jetiso) if notautau else "") + ")"
+                                    cond = str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (twoLeptons" + jetiso + " == 1 " + (orth_cond if orth else "") + " && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " < 12  && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && sameSign" + jetiso + " == 0 " + (("&& isoCr" + jetiso + (" >= 1" if isoCr else " == 0")) if len(cuts) > 0 else "") + ((" && !tautau" + jetiso) if notautau else "") + ")"
                                     hist = utils.getHistogramFromTree(deltaM + "_2l_" + ("orth_" if orth else "") + lep + "_" + jetiso + ("_isoCr" if isoCr else ""), c, "dilepBDT" + jetiso, bins, -1, 1, cond, True)
                                     hist.Sumw2()
                                     fnew.cd()
@@ -264,7 +264,7 @@ def main():
                             #hist = utils.getHistogramFromTree(basename, c, "exTrack_dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * (exclusiveTrack == 1 && MHT >= 220 && MET >= 200 && exTrack_invMass < 30 && BTagsDeepMedium == 0  && exTrack_dilepBDT >= 0 && exclusiveTrackLeptonFlavour == \"" + lep + "\")", True)
                             # Making new version without trackBDT precut
                             # 1t category
-                            # hist = utils.getHistogramFromTree("bg_1t_" + lep + "_" + jetiso, c, "exTrack_dilepBDT" + jetiso, bins, -1, 1, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 *  Weight * BranchingRatio * (exclusiveTrack" + jetiso + " == 1 && MinDeltaPhiMetJets > 0.4 && MET >= 140 && MHT >= 220 && exTrack_invMass" + jetiso + " < 12 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour" + jetiso + " == \"" + lep + "\")", True)
+                            # hist = utils.getHistogramFromTree("bg_1t_" + lep + "_" + jetiso, c, "exTrack_dilepBDT" + jetiso, bins, -1, 1, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 *  Weight * BranchingRatio * (exclusiveTrack" + jetiso + " == 1 && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && exTrack_invMass" + jetiso + " < 12 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour" + jetiso + " == \"" + lep + "\")", True)
 #                             
 #                             hist.Sumw2()
 #                             if bg_1t_hist.get(lep) is None:

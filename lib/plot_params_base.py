@@ -189,6 +189,7 @@ class BaseParams:
     
     object_retag = False
     object_retag_map = {}
+    object_retag_labels = {}
     
     sig_line_width = 2
     
