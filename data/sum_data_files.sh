@@ -95,19 +95,37 @@ input_files=""
 files_per_job=20
 output_count=1
 lastfile=""
+run_sums=""
+
 
 if [ -n "$PHASE1" ]; then
-    files_per_job=50
+    files_per_job=25
+    run_sums=`ls -1 $INPUT_DIR/ | awk -F"-" '{print $1}' | sort | uniq`
 fi
 
 mkdir $OUTPUT_DIR
 
-for fullname in $INPUT_DIR/*; do
-    lastfile=$fullname
-    input_files="$input_files $fullname"
-    ((count+=1))
-    if [ $(($count % $files_per_job)) == 0 ]; then
-        output_name=`echo $(basename $fullname .root) | awk -F"$pattern" "{print \\$1\"${pattern}_${output_count}.root\"}"`
+for run in $run_sums; do
+    echo Running for run $run
+    for fullname in $INPUT_DIR/${run}*; do
+        lastfile=$fullname
+        input_files="$input_files $fullname"
+        ((count+=1))
+        if [ $(($count % $files_per_job)) == 0 ]; then
+            output_name=`echo $(basename $fullname .root) | awk -F"$pattern" "{print \\$1\"${pattern}_${output_count}.root\"}"`
+            ((output_count+=1))
+            echo hadd -f $OUTPUT_DIR/$output_name $input_files
+            hadd -f $OUTPUT_DIR/$output_name $input_files
+            echo -e "\n\n\n\n\n\n\n"
+            #echo rm $input_files
+            #rm $input_files
+            echo -e "\n\n\n\n\n\n\n"
+            input_files=""
+        fi
+    done
+
+    if [ $(($count % $files_per_job)) != 0 ]; then
+        output_name=`echo $(basename $lastfile .root) | awk -F"$pattern" "{print \\$1\"${pattern}_${output_count}.root\"}"`
         ((output_count+=1))
         echo hadd -f $OUTPUT_DIR/$output_name $input_files
         hadd -f $OUTPUT_DIR/$output_name $input_files
@@ -119,14 +137,3 @@ for fullname in $INPUT_DIR/*; do
     fi
 done
 
-if [ $(($count % $files_per_job)) != 0 ]; then
-    output_name=`echo $(basename $lastfile .root) | awk -F"$pattern" "{print \\$1\"${pattern}_${output_count}.root\"}"`
-    ((output_count+=1))
-    echo hadd -f $OUTPUT_DIR/$output_name $input_files
-    hadd -f $OUTPUT_DIR/$output_name $input_files
-    echo -e "\n\n\n\n\n\n\n"
-    #echo rm $input_files
-    #rm $input_files
-    echo -e "\n\n\n\n\n\n\n"
-    input_files=""
-fi

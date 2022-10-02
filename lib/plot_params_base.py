@@ -95,6 +95,8 @@ def injectJetIsoToMapValues(obsMap, jetIso):
 # usedObs - used to tell which observables were in order to turn them on in the tree
 # ratio1max - max value for ratio1
 # ratio1min - min value for ratio2
+# Ndivisions - x axis tick divisions
+# binLabels - array with alphanumerical labels for x axis
 
 class BaseParams:
     signal_dir = signals

@@ -469,6 +469,12 @@ def plotRatio(c1, pad, memory, numHist, denHist, hist_def, numLabel = "Data", de
         print("Setting title in ratio!")
         #exit(0)
         rdataHist.GetXaxis().SetTitle(hist_def["units"] if hist_def.get("units") is not None else hist_def["obs"])
+        if hist_def.get("Ndivisions") is not None:
+            rdataHist.GetXaxis().SetNdivisions(hist_def["Ndivisions"])
+        if hist_def.get("binLabels") is not None:
+            for i in range(len(hist_def["binLabels"])):
+                rdataHist.GetXaxis().SetBinLabel(i+1, hist_def["binLabels"][i])
+                rdataHist.GetXaxis().SetLabelSize(0.08)
     else:
         rdataHist.GetXaxis().SetTitle("")
     yTitle = ""
@@ -1471,6 +1477,12 @@ def main():
                 if newBgHist is not None and (plot_par.solid_bg or newBgHist.GetNhists() > 0):
                     if not plot_par.plot_ratio:
                         newBgHist.GetXaxis().SetTitle(hist_def["units"] if hist_def.get("units") is not None else hist_def["obs"])
+                        if hist_def.get("Ndivisions") is not None:
+                            newBgHist.GetXaxis().SetNdivisions(hist_def["Ndivisions"])
+                        if hist_def.get("binLabels") is not None:
+                            for i in range(len(hist_def["binLabels"])):
+                                newBgHist.GetXaxis().SetBinLabel(i+1, hist_def["binLabels"][i])
+                                newBgHist.GetXaxis().SetLabelSize(0.08)
                     else:
                         print("name", cut["name"] + "_" + hist_def["obs"], "newBgHist", newBgHist, "newBgHist.GetXaxis()", newBgHist.GetXaxis())
                         newBgHist.GetXaxis().SetLabelSize(0)
@@ -1495,6 +1507,12 @@ def main():
                 #utils.histoStyler(histToStyle)
                 if not plot_par.plot_ratio:
                     histToStyle.GetXaxis().SetTitle(hist_def["units"] if hist_def.get("units") is not None else hist_def["obs"])
+                    if hist_def.get("Ndivisions") is not None:
+                            histToStyle.GetXaxis().SetNdivisions(hist_def["Ndivisions"])
+                    if hist_def.get("binLabels") is not None:
+                        for i in range(len(hist_def["binLabels"])):
+                            histToStyle.GetXaxis().SetBinLabel(i+1, hist_def["binLabels"][i])
+                            histToStyle.GetXaxis().SetLabelSize(0.08)
                 else:
                     histToStyle.GetXaxis().SetLabelSize(0)
                 

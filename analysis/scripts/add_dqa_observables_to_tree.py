@@ -66,7 +66,8 @@ if data_period != "":
     print "data_period: %s, phase: %s" % (data_period, phase)
 else:
     print "Can't determine data/MC era!"
-    quit(1)
+    data_period = "Fall17"
+    phase = 1
 
 if "/signal/" in input_file:
     is_fastsim = True
@@ -84,12 +85,15 @@ if data_period == "Run2018" or data_period == "Autumn18":
 print "Current value for btags", analysis_ntuples.BTAG_DEEP_CSV_MEDIUM
 
 
-newObservableStrs = { "BTagsDeepMedium" : "int",
+newObservableStrs  = { "BTagsDeepMedium" : "int",
                       "prefireWeight" : "float",
                       "hemFailureVeto" : "bool",
                       "hemFailureVetoTracks" : "bool",
                       "passesUniversalSelection" : "bool",
-                     } 
+                     }
+
+if is_data:
+    newObservableStrs["Weight"] = "float"
 
 prefireFile = TFile(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/L1prefiring_jet_2017BtoF.root"))
 prefireHistMap = prefireFile.Get("L1prefiring_jet_2017BtoF")
@@ -206,6 +210,8 @@ for filename in fileList:
                             if -3.0 < track.Eta() and track.Eta() < -1.4 and -1.57 < track.Phi() and track.Phi() < -0.87:
                                 obsMem["hemFailureVetoTracks"][0] = 0
                                 print "hem veto track"
+            elif newObservableStr == "Weight":
+                obsMem["Weight"][0] = 1
             
             branches[obsStr].Fill()
         

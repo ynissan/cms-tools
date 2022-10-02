@@ -21,13 +21,22 @@ from lib import analysis_observables
 parser = argparse.ArgumentParser(description='Add observables to trees.')
 args = parser.parse_args()
 
-WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1"
-SINGLE_OUTPUT = WORK_DIR + "/single"
+WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_phase1"
+#SINGLE_OUTPUT = WORK_DIR + "/single"
 OUTPUT_SUM = WORK_DIR + "/sum"
 
-OUTPUT_SUM_OUTPUT = WORK_DIR + "/stdout"
-OUTPUT_SUM_ERROR = WORK_DIR + "/stderr"
+OUTPOUT_TYPE_SUM = OUTPUT_SUM + "/type_sum"
 
+WORK_DIR = OUTPOUT_TYPE_SUM
+
+OUTPUT_SUM_OUTPUT = OUTPUT_SUM + "/stdout"
+OUTPUT_SUM_ERROR = OUTPUT_SUM + "/stderr"
+
+if not os.path.isdir(OUTPUT_SUM):
+    os.mkdir(OUTPUT_SUM)
+
+if not os.path.isdir(OUTPOUT_TYPE_SUM):
+    os.mkdir(OUTPOUT_TYPE_SUM)
 
 if not os.path.isdir(OUTPUT_SUM_OUTPUT):
     os.mkdir(OUTPUT_SUM_OUTPUT)
@@ -55,8 +64,7 @@ notification = Never
 ''')
     
     print("Adding histograms.")
-    #fileList = glob(WORK_DIR + "/*");
-    fileList = glob(OUTPUT_SUM + "/*");
+    fileList = glob(OUTPOUT_TYPE_SUM + "/*");
     
     for f in fileList:
         filename = os.path.basename(f).split(".")[0]

@@ -43,8 +43,8 @@ base_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1"
 
 if signal:
     if phase1:
-        input_dir = base_dir + "/signal/skim_phase1/single"
-        output_dir = base_dir + "/signal/skim_phase1/slim"
+        input_dir = base_dir + "/signal/skim_phase1/sum"
+        output_dir = base_dir + "/signal/skim_phase1/slim_sum"
         output_dir_stdout = base_dir + "/signal/skim_phase1/stdout"
         output_dir_stderr = base_dir + "/signal/skim_phase1/stderr"
     else:

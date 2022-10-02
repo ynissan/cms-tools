@@ -631,12 +631,14 @@ def passesUniversalSelection(t, MET, METPhi):
 
 def passesUniversalSelectionFastSim(t, MET, METPhi):
     #if not bool(t.JetID): return False
-    if not t.PrimaryVertexFilter: return False
-    if not t.HBHENoiseFilter: return False  
-    if not t.HBHEIsoNoiseFilter: return False
-    if not t.EcalDeadCellTriggerPrimitiveFilter: return False
-    if not t.BadPFMuonFilter: return False
-    if not t.NVtx>0: return False
+    # Recommended but not found in ntuples:
+    # if not t.PrimaryVertexFilter: return False
+#     if not t.HBHENoiseFilter: return False  
+#     if not t.HBHEIsoNoiseFilter: return False
+#     if not t.EcalDeadCellTriggerPrimitiveFilter: return False
+#     if not t.BadPFMuonFilter: return False
+   
+    #if not t.NVtx>0: return False
     
     if not passQCDHighMETFilter(t, MET, METPhi): return False
     if not passQCDHighMETFilter2(t, MET, METPhi): return False
@@ -663,6 +665,22 @@ def passesUniversalDataSelection(t, MET, METPhi):
     #if not t.PFCaloMETRatio<5: return False
                              
     return True
+
+# ORIGINAL
+# def passesUniversalSelection(t, MET, METPhi):
+#     if not bool(t.JetID): return False
+#     if not t.NVtx>0: return False
+#     if not passQCDHighMETFilter(t, MET, METPhi): return False
+#     if not passQCDHighMETFilter2(t, MET, METPhi): return False
+#     if not t.HBHENoiseFilter: return False    
+#     if not t.HBHEIsoNoiseFilter: return False
+#     if not t.eeBadScFilter: return False      
+#     if not t.BadChargedCandidateFilter: return False
+#     if not t.BadPFMuonFilter: return False
+#     if not t.CSCTightHaloFilter: return False
+#     if not t.EcalDeadCellTriggerPrimitiveFilter: return False      ##I think this one makes a sizeable difference    
+#     return True
+
 
 ##############################################
 
