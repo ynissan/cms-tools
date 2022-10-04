@@ -60,7 +60,11 @@ variablesUsed.append("tEffhMetMhtRealXMht2016")
 variablesUsed.append("CrossSection")
 variablesUsed.append("puWeight")
 variablesUsed.append("passesUniversalSelection")
-#variablesUsed.append("gen_mtautau")
+
+variablesUsed.append("prefireWeight")
+variablesUsed.append("hemFailureVeto")
+variablesUsed.append("hemFailureVetoTracks")
+variablesUsed.append("passesUniversalSelection")
 
 
 # basic_histograms_defs = [

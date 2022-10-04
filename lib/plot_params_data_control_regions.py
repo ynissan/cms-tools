@@ -121,7 +121,7 @@ class dilepton_muons_data_control_region_met_filters(dilepton_muons_data_control
     plot_ratio = True
 
 class dilepton_muons_data_control_region_phase1(dilepton_muons_data_control_region):
-    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_data_control_region_phase1.root"
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_data_control_region_phase1_new.root"
     load_histrograms_from_file = False
     bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_phase1/sum/slim_sum/type_sum"
     data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_phase1/slim_sum/"

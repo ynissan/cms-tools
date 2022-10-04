@@ -85,9 +85,11 @@ if data_period == "Run2018" or data_period == "Autumn18":
 print "Current value for btags", analysis_ntuples.BTAG_DEEP_CSV_MEDIUM
 
 
-newObservableStrs  = { "BTagsDeepMedium" : "int",
+newObservableStrs  = {"BTagsDeepMedium" : "int",
                       "prefireWeight" : "float",
-                      "hemFailureVeto" : "bool",
+                      "hemFailureVetoElectrons" : "bool",
+                      "hemFailureVetoJets" : "bool",
+                      "hemFailureVetoMuons" : "bool",
                       "hemFailureVetoTracks" : "bool",
                       "passesUniversalSelection" : "bool",
                      }
@@ -173,43 +175,55 @@ for filename in fileList:
                         obsMem["passesUniversalSelection"][0] = analysis_ntuples.passesUniversalSelection(t, t.MET, t.METPhi)
                     elif is_data:
                         obsMem["passesUniversalSelection"][0] = analysis_ntuples.passesUniversalDataSelection(t, t.MET, t.METPhi)
-            elif newObservableStr == "hemFailureVeto":
-                obsMem["hemFailureVeto"][0] = 1
-                if blockhem or (partiallyblockhem and t.RunNum>=319077):
+            elif newObservableStr == "hemFailureVetoElectrons":
+                obsMem["hemFailureVetoElectrons"][0] = 1
+                if is_fastsim or blockhem or (partiallyblockhem and t.RunNum>=319077):
                     for i, electron in enumerate(t.Electrons):
                         if analysis_ntuples.electronPassesTightSelection(i, t.Electrons, t.Electrons_passNoIso, t.Electrons_deltaRLJ):
                             if -3.0 < electron.Eta() and electron.Eta() < -1.4 and -1.57 < electron.Phi() and electron.Phi() < -0.87:
-                                obsMem["hemFailureVeto"][0] = 0
+                                obsMem["hemFailureVetoElectrons"][0] = 0
                                 print "hem veto electron"
+            elif newObservableStr == "hemFailureVetoMuons":
+                obsMem["hemFailureVetoMuons"][0] = 1
+                if is_fastsim or blockhem or (partiallyblockhem and t.RunNum>=319077):
+                    for i, muon in enumerate(t.Muons):
+                        if analysis_ntuples.muonPassesTightSelection(i, t.Muons, t.Muons_mediumID, t.Muons_passNoIso, t.Muons_deltaRLJ):
+                            if -3.0 < muon.Eta() and muon.Eta() < -1.4 and -1.57 < muon.Phi() and muon.Phi() < -0.87:
+                                obsMem["hemFailureVetoMuons"][0] = 0
+                                print "hem veto muon"
+            elif newObservableStr == "hemFailureVetoJets": 
+                obsMem["hemFailureVetoJets"][0] = 1
+                if is_fastsim or blockhem or (partiallyblockhem and t.RunNum>=319077):
                     for i, jet in enumerate(t.Jets):
                         if jet.Pt() > 30 and -3.2 < jet.Eta() and jet.Eta() < -1.2 and -1.77 < jet.Phi() and jet.Phi() < -0.67:
                             mhtvec = TLorentzVector()
                             mhtvec.SetPtEtaPhiE(t.MHT, 0, t.MHTPhi, t.MHT)
                             deltaPhiJetMht = abs(jet.DeltaPhi(mhtvec))
                             if deltaPhiJetMht < 0.5:
-                                obsMem["hemFailureVeto"][0] = 0
+                                obsMem["hemFailureVetoJets"][0] = 0
                                 print "hem veto jet"
             elif newObservableStr == "hemFailureVetoTracks":
                 obsMem["hemFailureVetoTracks"][0] = 1
-                for ti, track in enumerate(t.tracks):
-                    if track.Pt() > 10:
-                        continue
-                    if abs(track.Eta()) > 2.4:
-                        continue
-                    if t.tracks_trkRelIso[ti] > 0.1:
-                        continue 
-                    if t.tracks_dxyVtx[ti] > 0.02:
-                        continue
-                    if t.tracks_dzVtx[ti] > 0.02:
-                        continue
-                    analysis_muons = [t.Muons[mi] for mi, muon in enumerate(t.Muons) if analysis_ntuples.muonPassesTightSelection(mi, t.Muons, t.Muons_mediumID, t.Muons_passNoIso, t.Muons_deltaRLJ)]
-                    minimum, minCan = analysis_ntuples.minDeltaLepLeps(track, analysis_muons)
-                    if minimum is None or minimum > 0.01:
-                        minimum, minCan = analysis_ntuples.minDeltaLepLeps(track, t.Electrons)
+                if is_fastsim or blockhem or (partiallyblockhem and t.RunNum>=319077):
+                    for ti, track in enumerate(t.tracks):
+                        if track.Pt() > 10:
+                            continue
+                        if abs(track.Eta()) > 2.4:
+                            continue
+                        if t.tracks_trkRelIso[ti] > 0.1:
+                            continue 
+                        if t.tracks_dxyVtx[ti] > 0.02:
+                            continue
+                        if t.tracks_dzVtx[ti] > 0.02:
+                            continue
+                        analysis_muons = [t.Muons[mi] for mi, muon in enumerate(t.Muons) if analysis_ntuples.muonPassesTightSelection(mi, t.Muons, t.Muons_mediumID, t.Muons_passNoIso, t.Muons_deltaRLJ)]
+                        minimum, minCan = analysis_ntuples.minDeltaLepLeps(track, analysis_muons)
                         if minimum is None or minimum > 0.01:
-                            if -3.0 < track.Eta() and track.Eta() < -1.4 and -1.57 < track.Phi() and track.Phi() < -0.87:
-                                obsMem["hemFailureVetoTracks"][0] = 0
-                                print "hem veto track"
+                            minimum, minCan = analysis_ntuples.minDeltaLepLeps(track, t.Electrons)
+                            if minimum is None or minimum > 0.01:
+                                if -3.0 < track.Eta() and track.Eta() < -1.4 and -1.57 < track.Phi() and track.Phi() < -0.87:
+                                    obsMem["hemFailureVetoTracks"][0] = 0
+                                    print "hem veto track"
             elif newObservableStr == "Weight":
                 obsMem["Weight"][0] = 1
             
