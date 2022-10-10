@@ -64,6 +64,7 @@ class lepton_selection_dm1p92(BaseParams):
     legend_coordinates = {"x1" : .65, "y1" : .60, "x2" : .98, "y2" : .95}
     legend_columns = 1
     legend_border = 0
+    signal_legend_string = 'lF'
     
     label_text = plotutils.StampStr.SIM
     

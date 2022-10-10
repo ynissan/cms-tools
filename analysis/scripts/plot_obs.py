@@ -307,7 +307,12 @@ def createPlotsFast(rootfiles, types, histograms, weight, category, conditions, 
                                 drawString = " ( " + conditionStr + " )"
                             else:
                                 print("category=",category)
-                                drawString = ((plot_par.weightString[plot_par.plot_kind] + " * ") if (("data" not in category) or  plot_par.applyWeightsToData) else "") + ((str(weight) + " * ") if ("data" not in category and plot_par.use_calculated_lumi_weight)  else "") + " ( " + conditionStr + " )"
+                                drawWeight = ((plot_par.weightString[plot_par.plot_kind] + " * ") if (("data" not in category) or  plot_par.applyWeightsToData) else "")
+                                drawWeight += ((str(weight) + " * ") if ("data" not in category and plot_par.use_calculated_lumi_weight)  else "")
+                                if plot_par.object_retag_weights.get(object_retag_name) is not None:
+                                    drawWeight += plot_par.object_retag_weights[object_retag_name] + " * "
+                                
+                                drawString = drawWeight + " ( " + conditionStr + " )"
             
                             #print(("drawString", drawString))
 
@@ -403,7 +408,10 @@ def plotRatio(c1, pad, memory, numHist, denHist, hist_def, numLabel = "Data", de
     print("Plotting ratio!")
     
     if styleRefHist is None:
-        styleRefHist = denHist
+        if plot_par.ratio_style_numerator_hist:
+            styleRefHist = numHist
+        else:
+            styleRefHist = denHist
     
     if numHist is None:
         return
@@ -452,9 +460,15 @@ def plotRatio(c1, pad, memory, numHist, denHist, hist_def, numLabel = "Data", de
     #
     memory.append(rdataHist)
     
+    numerical_ratio = 0
+    
     if revRatio:
         rdataHist.Divide(numHist)
+        if numHist.Integral() != 0:
+            numerical_ratio = rdataHist.Integral() / numHist.Integral()
     else:
+        if denHist.Integral() != 0:
+            numerical_ratio = rdataHist.Integral() / denHist.Integral()
         rdataHist.Divide(denHist)
 
     rdataHist.SetMinimum(0)
@@ -502,13 +516,21 @@ def plotRatio(c1, pad, memory, numHist, denHist, hist_def, numLabel = "Data", de
     #tl.DrawLatex(.2,.5,"tf = " + "{:.2f}".format(tf))
     
     #tl.DrawLatex(.1,.01,"error = " + "{:.2f}".format(100 * fit_only_signal_integral_error[hist_def["obs"]] / fit_only_signal_integral[hist_def["obs"]]) + "%")
-                
-    tl = TLatex()
-    tl.SetNDC()
-    tl.SetTextSize(0.15) 
-    tl.SetTextFont(42)
-    tl.DrawLatex(.15,.8, "sf = " + "{:.3f}".format(rdataHist.GetBinContent(1)) + " err = " +  "{:.3f}".format(rdataHist.GetBinError(1)))
+    if plot_par.stamp_scale_factor:
+        tl = TLatex()
+        tl.SetNDC()
+        tl.SetTextSize(0.15) 
+        tl.SetTextFont(42)
+        tl.DrawLatex(.15,.8, "sf = " + "{:.3f}".format(rdataHist.GetBinContent(1)) + " err = " +  "{:.3f}".format(rdataHist.GetBinError(1)))
     
+    if plot_par.stamp_ratio_integral:
+        tl = TLatex()
+        tl.SetNDC()
+        tl.SetTextSize(0.15) 
+        tl.SetTextFont(42)
+        tl.DrawLatex(.15,.8, "ratio = " + "{:.3f}".format(numerical_ratio)) #+ " err = " +  "{:.3f}".format(rdataHist.GetBinError(1)))
+    
+
     memory.append(line)
     c1.Modified()
     
@@ -599,7 +621,7 @@ def createAllHistograms(histograms, sumTypes):
                         dataName = baseName + "_data"
                         histograms[sigName] = utils.UOFlowTH1F(sigName, "", hist_def["bins"], hist_def["minX"], hist_def["maxX"])
                         histograms[dataName] = utils.UOFlowTH1F(dataName, "", hist_def["bins"], hist_def["minX"], hist_def["maxX"])
-                        plotutils.setHistColorFillLine(histograms[sigName], plotutils.signalCp[0], 0.8, large_version)
+                        plotutils.setHistColorFillLine(histograms[sigName], plotutils.signalCp[0], 0.8)
                         for type in sumTypes:
                             if utils.existsInCoumpoundType(type):
                                 continue
@@ -610,7 +632,11 @@ def createAllHistograms(histograms, sumTypes):
                             histograms[bgName] = utils.UOFlowTH1F(bgName, "", hist_def["bins"], hist_def["minX"], hist_def["maxX"])
         
         if plot_par.plot_data:
-            dataFiles = glob(plot_par.data_dir + "/*")
+            dataFiles = None
+            if plot_par.glob_data:
+                dataFiles = glob(plot_par.data_dir)
+            else:
+                dataFiles = glob(plot_par.data_dir + "/*")
             if plot_par.plot_fast:
                 createPlotsFast(dataFiles, ["data"], histograms, 1, "data", [""], plot_par)
             else:
@@ -1284,6 +1310,8 @@ def main():
                             else:
                                 sigHistsBaseNames.append(signalBasename.split(".")[0].split("_")[-1])
                         else:
+                            #print("Looking for object", hist_def["object"], object_retag_name, " in ", plot_par.object_retag_labels, plot_par.object_retag_labels[hist_def["object"]])
+                            #exit(0)
                             if plot_par.object_retag_labels.get(hist_def["object"]) is not None and plot_par.object_retag_labels[hist_def["object"]].get(object_retag_name) is not None:
                                 sigHistsBaseNames.append(plot_par.object_retag_labels[hist_def["object"]].get(object_retag_name))
                             else:
@@ -1297,11 +1325,12 @@ def main():
                             sigHist.Scale(1./sigHist.Integral())
                         print((sigHistName, sigHist.GetMaximum()))
                         sigHists.append(sigHist)
+                        
                         if len(object_retag_name) > 0:
-                            plotutils.setHistColorFillLine(sigHist, plot_par.colorPalette[cP], 0.35, True)
+                            plotutils.setHistColorFillLine(sigHist, plot_par.colorPalette[cP], 0.35)
                             cP += 1
                         else:
-                            plotutils.setHistColorFillLine(sigHist, plotutils.signalCp[i], 1)
+                            plotutils.setHistColorFillLine(sigHist, plot_par.signalCp[i], 1)
                         sigMax = max(sigHist.GetMaximum(), sigMax)
             maximum = sigMax
         
@@ -1450,7 +1479,6 @@ def main():
                 if not (linear and plot_single):
                     newBgHist.SetMaximum(maximum*1000)
                 else:
-                    
                     linearYspace = maximum*1.1
                     if hist_def.get("linearYspace") is not None:
                         linearYspace = maximum * hist_def["linearYspace"]
@@ -1550,10 +1578,8 @@ def main():
             
             if plot_par.plot_signal and plot_par.plot_legend:
                 for i in range(len(sigHists)):
-                    if object_retaging:
-                        legend.AddEntry(sigHists[i], sigHistsBaseNames[i], 'lF')
-                    else:
-                        legend.AddEntry(sigHists[i], sigHistsBaseNames[i], 'l')
+                    legend.AddEntry(sigHists[i], sigHistsBaseNames[i], plot_par.signal_legend_string)
+
             if foundBg and plot_par.plot_signal and not (hist_def.get("2D") is not None and hist_def.get("2D")):
                 for i in range(len(sigHists)):
                     sigHists[i].SetMaximum(maximum)
@@ -2265,6 +2291,8 @@ def main():
                         bgHists = hs.GetHists()
                         for ratioNum in range(plot_par.plot_custom_ratio):
                             cutomRatio = plot_par.customRatios[ratioNum]
+                            print("cutomRatio", cutomRatio)
+                            
                             numDenHists = [None, None]
                             titles = [None, None]
                             for numDenHistInx in range(2):
@@ -2300,21 +2328,37 @@ def main():
                                     else:
                                         print("looking for", histName)
                                         print(bgHists)
-                                        for i, hist in enumerate(bgHists):
-                                            if histName == hist.GetName().split("_")[-1]:
-                                                if numDenHists[numDenHistInx] is None:
-                                                    numDenHists[numDenHistInx] = hist.Clone()
-                                                    memory.append(numDenHists[numDenHistInx])
-                                                    if plot_par.bgReTaggingNames.get(histName) is not None:
-                                                        titles[numDenHistInx] = plot_par.bgReTaggingNames[histName]
+                                        if plot_par.plot_bg:
+                                            for i, hist in enumerate(bgHists):
+                                                if histName == hist.GetName().split("_")[-1]:
+                                                    if numDenHists[numDenHistInx] is None:
+                                                        numDenHists[numDenHistInx] = hist.Clone()
+                                                        memory.append(numDenHists[numDenHistInx])
+                                                        if plot_par.bgReTaggingNames.get(histName) is not None:
+                                                            titles[numDenHistInx] = plot_par.bgReTaggingNames[histName]
+                                                        else:
+                                                            titles[numDenHistInx] = histName
                                                     else:
-                                                        titles[numDenHistInx] = histName
-                                                else:
-                                                    numDenHists[numDenHistInx].Add(hist)
-                                                    if plot_par.bgReTaggingNames.get(histName) is not None:
-                                                        titles[numDenHistInx] = " + " + plot_par.bgReTaggingNames[histName]
-                                                    else:
-                                                        titles[numDenHistInx] = " + " + histName
+                                                        numDenHists[numDenHistInx].Add(hist)
+                                                        if plot_par.bgReTaggingNames.get(histName) is not None:
+                                                            titles[numDenHistInx] = " + " + plot_par.bgReTaggingNames[histName]
+                                                        else:
+                                                            titles[numDenHistInx] = " + " + histName
+                                        elif plot_par.plot_signal and not plot_par.plot_data:
+                                            # We are looking for ratio of signal plots!
+                                            print("Plotting signal custom ratios and looking for", histName)
+                                            histFullName = cut["name"] + "_" + hist_def["obs"] + "_" + histName
+                                            signalFile = plot_par.signal_dir[0]
+                                            signalBasename = os.path.basename(signalFile)
+                                            sigHistName =  cut["name"] + "_" + hist_def["obs"] + "_" + signalBasename  +  "_" + histName
+                                            sigHist = histograms[sigHistName]
+                                            numDenHists[numDenHistInx] = sigHist.Clone()
+                                            memory.append(numDenHists[numDenHistInx])
+                                            if len(plot_par.customRatiosNames) > 0:
+                                                titles[numDenHistInx] = plot_par.customRatiosNames[ratioNum][numDenHistInx]
+                                            else:
+                                                titles[numDenHistInx] = histName
+                                            
                             if ratioNum == 0:
                                 plotRatio(c1, histRPad, memory, numDenHists[0], numDenHists[1], hist_def, titles[0], titles[1])
                             else:
@@ -2596,21 +2640,39 @@ def main():
                                         memory.append(numDenHists[numDenHistInx])
                                         titles[numDenHistInx] = histName
                                     else:
-                                        for i, hist in enumerate(bgHists):
-                                            if histName == hist.GetName().split("_")[-1]:
-                                                if numDenHists[numDenHistInx] is None:
-                                                    numDenHists[numDenHistInx] = hist.Clone()
-                                                    memory.append(numDenHists[numDenHistInx])
-                                                    if plot_par.bgReTaggingNames.get(histName) is not None:
-                                                        titles[numDenHistInx] = plot_par.bgReTaggingNames[histName]
+                                        print("looking for", histName)
+                                        print(bgHists)
+                                        if plot_par.plot_bg:
+                                            for i, hist in enumerate(bgHists):
+                                                if histName == hist.GetName().split("_")[-1]:
+                                                    if numDenHists[numDenHistInx] is None:
+                                                        numDenHists[numDenHistInx] = hist.Clone()
+                                                        memory.append(numDenHists[numDenHistInx])
+                                                        if plot_par.bgReTaggingNames.get(histName) is not None:
+                                                            titles[numDenHistInx] = plot_par.bgReTaggingNames[histName]
+                                                        else:
+                                                            titles[numDenHistInx] = histName
                                                     else:
-                                                        titles[numDenHistInx] = histName
-                                                else:
-                                                    numDenHists[numDenHistInx].Add(hist)
-                                                    if plot_par.bgReTaggingNames.get(histName) is not None:
-                                                        titles[numDenHistInx] = " + " + plot_par.bgReTaggingNames[histName]
-                                                    else:
-                                                        titles[numDenHistInx] = " + " + histName
+                                                        numDenHists[numDenHistInx].Add(hist)
+                                                        if plot_par.bgReTaggingNames.get(histName) is not None:
+                                                            titles[numDenHistInx] = " + " + plot_par.bgReTaggingNames[histName]
+                                                        else:
+                                                            titles[numDenHistInx] = " + " + histName
+
+                                        elif plot_par.plot_signal and not plot_par.plot_data:
+                                            # We are looking for ratio of signal plots!
+                                            print("Plotting signal custom ratios and looking for", histName)
+                                            histFullName = cut["name"] + "_" + hist_def["obs"] + "_" + histName
+                                            signalFile = plot_par.signal_dir[0]
+                                            signalBasename = os.path.basename(signalFile)
+                                            sigHistName =  cut["name"] + "_" + hist_def["obs"] + "_" + signalBasename  +  "_" + histName
+                                            sigHist = histograms[sigHistName]
+                                            numDenHists[numDenHistInx] = sigHist.Clone()
+                                            memory.append(numDenHists[numDenHistInx])
+                                            if len(plot_par.customRatiosNames) > 0:
+                                                titles[numDenHistInx] = plot_par.customRatiosNames[ratioNum][numDenHistInx]
+                                            else:
+                                                titles[numDenHistInx] = histName
 
                             if ratioNum == 0:
                                 plotRatio(c1, histRPad, memory, numDenHists[0], numDenHists[1], hist_def, titles[0], titles[1])

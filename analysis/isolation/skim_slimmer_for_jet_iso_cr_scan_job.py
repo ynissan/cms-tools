@@ -62,10 +62,13 @@ variablesUsed.append("puWeight")
 variablesUsed.append("passesUniversalSelection")
 
 variablesUsed.append("prefireWeight")
-variablesUsed.append("hemFailureVeto")
+variablesUsed.append("hemFailureVetoElectrons")
+variablesUsed.append("hemFailureVetoJets")
+variablesUsed.append("hemFailureVetoMuons")
 variablesUsed.append("hemFailureVetoTracks")
-variablesUsed.append("passesUniversalSelection")
 
+
+variablesUsed.append("passesUniversalSelection")
 
 # basic_histograms_defs = [
 #         { "obs" : "invMass%%%", "minX" : 0, "maxX" : 13, "bins" : 6, "blind" : [4,None]},# "customBins"  : [0,2,4,6,10,12] },

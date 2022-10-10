@@ -104,6 +104,9 @@ class BaseParams:
     signal_names = signalNames
     bg_dir = None
     data_dir = None
+    
+    
+    
     sc_bg_dir = None
     sc_data_dir = None
     
@@ -139,6 +142,11 @@ class BaseParams:
     plot_sc = False
     plot_ratio = False
     plot_reverse_ratio = False
+    # Take the numerator as the styler for the ratio
+    ratio_style_numerator_hist = False
+    # Stamp the ratio of the integrals of the histograms
+    stamp_ratio_integral = False
+    
     plot_point = False
     plot_efficiency = False
     plot_grid_x = False
@@ -148,9 +156,12 @@ class BaseParams:
     create_canvas = False
     
     glob_signal = False
+    glob_data = False
     
     #customRatios = [  [["DiBoson"],["TTJets"]],  [["WJetsToLNu"],["ZJetsToNuNu"]]  ]
     customRatios = [  [["tc_btag_veto"],["tc_2_btags"]]  ]
+    customRatiosNames = [  ["num","den"]  ]
+    
     choose_bg_files = False
     choose_bg_files_list = ["TTJets"]
     # plot only specific subset of BG categories
@@ -160,7 +171,7 @@ class BaseParams:
     choose_bg_files_for_sc = False
     ignore_bg_files = ["TT_TuneCUETP8M2T4_13TeV-powheg-pythia8.root", "TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root"]
     #ignore_bg_files = []
-    blind_data = True
+    blind_data = False
     plot_log_x = False
     plot_real_log_x = False
     nostack = False
@@ -192,6 +203,7 @@ class BaseParams:
     object_retag = False
     object_retag_map = {}
     object_retag_labels = {}
+    object_retag_weights = {}
     
     sig_line_width = 2
     
@@ -201,6 +213,7 @@ class BaseParams:
     legend_border = 0
     legend_align = -1
     legend_text_size = -1
+    signal_legend_string = "l"
     
     y_title_offset = 1
     y_title = "Events"
@@ -231,10 +244,14 @@ class BaseParams:
     turnOnOnlyUsedObsInTree = False
     usedObs = []
     
+    #Write the scale factor into the plot
+    stamp_scale_factor = False
+    
     transfer_factor = -1
     transfer_factor_error = -1
     
     colorPalette = plotutils.defaultColorPalette
+    signalCp = plotutils.signalCp
     
     padRightMargin = -1
     padLeftMargin = -1

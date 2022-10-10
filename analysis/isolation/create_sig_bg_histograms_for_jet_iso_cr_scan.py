@@ -38,10 +38,23 @@ output_file = None
 
 sam = False
 
+phase1_2017 = True
+
 signal_dir = None
 bg_dir = None
+bg_slim_file = None
+data_slim_file = None
+eff_field = "tEffhMetMhtRealXMht2016"
 
-if sam:
+bg_slim_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum.root"
+data_slim_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/slim_sum/slim_sum.root"
+
+if phase1_2017:
+    signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim_sum"
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_phase1/sum/slim_sum"
+    bg_slim_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_phase1/sum/slim_sum.root"
+    eff_field = "tEffhMetMhtRealXMht2017"
+elif sam:
     signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_sam/sum"
     bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum"
 else:
@@ -49,13 +62,14 @@ else:
     bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum/type_sum"
 
 
-bg_slim_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum.root"
-data_slim_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/slim_sum/slim_sum.root"
+
 #bg_slim_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum_before_inc_isocr.root"
 
 jetiso = None
 wanted_iso = "CorrJetNoMultIso"
 unwanted_iso = "CorrJetIso"
+
+get_data = False
 
 # wanted_iso = "CorrJetIso"
 # unwanted_iso = "CorrJetNoMultIso"
@@ -64,6 +78,7 @@ if args.output_file:
     output_file = args.output_file[0]
 else:
     output_file = "sig_bg_histograms_for_jet_iso_scan" + wanted_iso + "_with_tautau_after_mht_with_data.root"
+    output_file = "sig_bg_histograms_for_jet_iso_scan" + wanted_iso + "_with_tautau_2017.root"
 
 bins = 40
 
@@ -77,6 +92,15 @@ signals = [
     "mu100_dm1p13"
 ]
 
+if phase1_2017:
+    signals = [
+        "mChipm100GeV_dm2p259GeV",
+        "mChipm100GeV_dm1p759GeV",
+        "mChipm100GeV_dm1p259GeV",
+        "mChipm100GeV_dm0p759GeV",
+        "mChipm100GeV_dm0p559GeV"
+    ]
+
 ######## END OF CMDLINE ARGUMENTS ########
 
 def main():
@@ -89,73 +113,76 @@ def main():
     mtautau_min = 0
     mtautau_max = 160
     
-    print "Getting Data..."
-    data_files = [data_slim_file]
-    for filename in data_files:#glob(bg_dir + "/*"):
-        print "=====================================\n\n\n\n\n\n\n\n\n\n\n"
-        print "Opening", filename
-        f = TFile(filename)
-        c = f.Get('tEvent')
+    if get_data:
+    
+        print "Getting Data..."
+        data_files = [data_slim_file]
+        for filename in data_files:#glob(bg_dir + "/*"):
         
-        for lep in ["Muons", "Electrons"]:
+            print "=====================================\n\n\n\n\n\n\n\n\n\n\n"
+            print "Opening", filename
+            f = TFile(filename)
+            c = f.Get('tEvent')
+        
+            for lep in ["Muons", "Electrons"]:
             
-            #if lep == "Electrons":
-            #    continue
+                #if lep == "Electrons":
+                #    continue
             
-            for iso in utils.leptonIsolationList:
-                if iso in [unwanted_iso, "JetIso"]:
-                    continue
-                for cat in utils.leptonIsolationCategories:
-                    ptRanges = [""]
-                    drCuts = [""]
-                    if iso == wanted_iso:
-                        ptRanges = utils.leptonCorrJetIsoPtRange
-                        drCuts = utils.leptonCorrJetIsoDrCuts
-                    for ptRange in ptRanges:
-                        for drCut in drCuts:
-                            cuts = ""
-                            if len(str(ptRange)) > 0:
-                                cuts = str(ptRange) + "Dr" + str(drCut)
-                            jetiso = iso + cuts + cat
+                for iso in utils.leptonIsolationList:
+                    if iso in [unwanted_iso, "JetIso"]:
+                        continue
+                    for cat in utils.leptonIsolationCategories:
+                        ptRanges = [""]
+                        drCuts = [""]
+                        if iso == wanted_iso:
+                            ptRanges = utils.leptonCorrJetIsoPtRange
+                            drCuts = utils.leptonCorrJetIsoDrCuts
+                        for ptRange in ptRanges:
+                            for drCut in drCuts:
+                                cuts = ""
+                                if len(str(ptRange)) > 0:
+                                    cuts = str(ptRange) + "Dr" + str(drCut)
+                                jetiso = iso + cuts + cat
                             
-                            #if jetiso != "CorrJetIso10.5Dr0.55":
-                            #    continue
+                                #if jetiso != "CorrJetIso10.5Dr0.55":
+                                #    continue
 
-                            c1.cd()
-                            basename = os.path.basename(filename).split(".")[0]
-                            # prev
-                            #hist = utils.getHistogramFromTree(basename, c, "exTrack_dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * (exclusiveTrack == 1 && MHT >= 220 && MET >= 200 && exTrack_invMass < 30 && BTagsDeepMedium == 0  && exTrack_dilepBDT >= 0 && exclusiveTrackLeptonFlavour == \"" + lep + "\")", True)
-                            # Making new version without trackBDT precut
-                            # 1t category
-                            # hist = utils.getHistogramFromTree("bg_1t_" + lep + "_" + jetiso, c, "exTrack_dilepBDT" + jetiso, bins, -1, 1, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 *  Weight * BranchingRatio * (exclusiveTrack" + jetiso + " == 1 && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && exTrack_invMass" + jetiso + " < 12 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour" + jetiso + " == \"" + lep + "\")", True)
-#                             
-#                             hist.Sumw2()
-#                             if bg_1t_hist.get(lep) is None:
-#                                 bg_1t_hist[lep + "_" + jetiso] = hist
-#                             else:
-#                                 bg_1t_hist[lep + "_" + jetiso].Add(hist)
-#             
-                            orthOpt = [True, False] if lep == "Muons" else [False]
-                            orth_cond = " && (leptons" + jetiso + "[1].Pt() <= 3.5 || deltaR" + jetiso + " <= 0.3)"
-                            isoCrs = [True, False] if iso == wanted_iso else [False]
-                            print "isoCrs", isoCrs
-                            for orth in orthOpt:
-                                for isoCr in isoCrs:
-                                    c1.cd()
+                                c1.cd()
+                                basename = os.path.basename(filename).split(".")[0]
+                                # prev
+                                #hist = utils.getHistogramFromTree(basename, c, "exTrack_dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * (exclusiveTrack == 1 && MHT >= 220 && MET >= 200 && exTrack_invMass < 30 && BTagsDeepMedium == 0  && exTrack_dilepBDT >= 0 && exclusiveTrackLeptonFlavour == \"" + lep + "\")", True)
+                                # Making new version without trackBDT precut
+                                # 1t category
+                                # hist = utils.getHistogramFromTree("bg_1t_" + lep + "_" + jetiso, c, "exTrack_dilepBDT" + jetiso, bins, -1, 1, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 *  Weight * BranchingRatio * (exclusiveTrack" + jetiso + " == 1 && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && exTrack_invMass" + jetiso + " < 12 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour" + jetiso + " == \"" + lep + "\")", True)
+    #                             
+    #                             hist.Sumw2()
+    #                             if bg_1t_hist.get(lep) is None:
+    #                                 bg_1t_hist[lep + "_" + jetiso] = hist
+    #                             else:
+    #                                 bg_1t_hist[lep + "_" + jetiso].Add(hist)
+    #             
+                                orthOpt = [True, False] if lep == "Muons" else [False]
+                                orth_cond = " && (leptons" + jetiso + "[1].Pt() <= 3.5 || deltaR" + jetiso + " <= 0.3)"
+                                isoCrs = [True, False] if iso == wanted_iso else [False]
+                                print "isoCrs", isoCrs
+                                for orth in orthOpt:
+                                    for isoCr in isoCrs:
+                                        c1.cd()
                                     
-                                    print("2l",lep,orth,jetiso,isoCr)
+                                        print("2l",lep,orth,jetiso,isoCr)
 
-                                    #condition = "(passesUniversalSelection * twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " < 12  && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && sameSign" + jetiso + " == 0 && isoCr" + jetiso + (" >= 1" if isoCr else " == 0") + " && ( nmtautau" + jetiso + " < " + str(mtautau_min) + " || nmtautau"  + jetiso + " > " + str(mtautau_max) + " ) && dilepBDT" + jetiso + " < 0)"
-                                    condition = "passesUniversalSelection * passedMhtMet6pack * (twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " < 12  && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && sameSign" + jetiso + " == 0 " + (("&& isoCr" + jetiso + (" >= 1" if isoCr else " == 0")) if len(cuts) > 0 else "") +  " && ( nmtautau" + jetiso + " < " + str(mtautau_min) + " || nmtautau"  + jetiso + " > " + str(mtautau_max) + " ))"
-                                    #condition = "passesUniversalSelection * passedMhtMet6pack * (twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " < 12  && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && sameSign" + jetiso + " == 0 " + (("&& isoCr" + jetiso + (" >= 1" if isoCr else " == 0")) if len(cuts) > 0 else "") + " &&"
-                                    print("condition", condition)
-                                    histName = "data_2l_" + lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else "")
-                                    print("histName", histName)
-                                    hist = utils.getHistogramFromTree(histName, c, "dilepBDT" + jetiso, bins, -1, 1, condition, True)
-                                    hist.Sumw2()
-                                    fnew.cd()
-                                    hist.Write()
-        f.Close()
+                                        #condition = "(passesUniversalSelection * twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " < 12  && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && sameSign" + jetiso + " == 0 && isoCr" + jetiso + (" >= 1" if isoCr else " == 0") + " && ( nmtautau" + jetiso + " < " + str(mtautau_min) + " || nmtautau"  + jetiso + " > " + str(mtautau_max) + " ) && dilepBDT" + jetiso + " < 0)"
+                                        condition = "passesUniversalSelection * passedMhtMet6pack * (twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " < 12  && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && sameSign" + jetiso + " == 0 " + (("&& isoCr" + jetiso + (" >= 1" if isoCr else " == 0")) if len(cuts) > 0 else "") +  " && ( nmtautau" + jetiso + " < " + str(mtautau_min) + " || nmtautau"  + jetiso + " > " + str(mtautau_max) + " ))"
+                                        #condition = "passesUniversalSelection * passedMhtMet6pack * (twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " < 12  && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && sameSign" + jetiso + " == 0 " + (("&& isoCr" + jetiso + (" >= 1" if isoCr else " == 0")) if len(cuts) > 0 else "") + " &&"
+                                        print("condition", condition)
+                                        histName = "data_2l_" + lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else "")
+                                        print("histName", histName)
+                                        hist = utils.getHistogramFromTree(histName, c, "dilepBDT" + jetiso, bins, -1, 1, condition, True)
+                                        hist.Sumw2()
+                                        fnew.cd()
+                                        hist.Write()
+            f.Close()
     
     i = 0
     
@@ -163,9 +190,13 @@ def main():
     
     for signal_file in signals:
         filename = signal_dir + "/higgsino_" + signal_file + "Chi20Chipm_1.root"
+        
+        if phase1_2017:
+            filename = signal_dir + "/" + signal_file + "_1.root"
+            
         print "=====================================\n\n\n\n\n\n\n\n\n\n\n"
         print "Opening", filename  
-        if sam:
+        if sam or phase1_2017:
             deltaM = utils.getPointFromSamFileName(filename)
         else:
             print filename
@@ -190,6 +221,8 @@ def main():
                         ptRanges = utils.leptonCorrJetIsoPtRange
                         drCuts = utils.leptonCorrJetIsoDrCuts
                     for ptRange in ptRanges:
+                        #if ptRange < 9:
+                        #    continue
                         for drCut in drCuts:
                             cuts = ""
                             if len(str(ptRange)) > 0:
@@ -214,7 +247,7 @@ def main():
                             for orth in orthOpt:
                                 for isoCr in isoCrs:
                                     c1.cd()
-                                    cond = str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (twoLeptons" + jetiso + " == 1 " + (orth_cond if orth else "") + " && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " < 12  && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && sameSign" + jetiso + " == 0 " + (("&& isoCr" + jetiso + (" >= 1" if isoCr else " == 0")) if len(cuts) > 0 else "") + ((" && !tautau" + jetiso) if notautau else "") + ")"
+                                    cond = str(utils.LUMINOSITY) + " * " + eff_field + " * passedMhtMet6pack * Weight * BranchingRatio * (twoLeptons" + jetiso + " == 1 " + (orth_cond if orth else "") + " && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " < 12  && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && sameSign" + jetiso + " == 0 " + (("&& isoCr" + jetiso + (" >= 1" if isoCr else " == 0")) if len(cuts) > 0 else "") + ((" && !tautau" + jetiso) if notautau else "") + ")"
                                     hist = utils.getHistogramFromTree(deltaM + "_2l_" + ("orth_" if orth else "") + lep + "_" + jetiso + ("_isoCr" if isoCr else ""), c, "dilepBDT" + jetiso, bins, -1, 1, cond, True)
                                     hist.Sumw2()
                                     fnew.cd()
@@ -249,6 +282,8 @@ def main():
                         ptRanges = utils.leptonCorrJetIsoPtRange
                         drCuts = utils.leptonCorrJetIsoDrCuts
                     for ptRange in ptRanges:
+                        #if ptRange < 9:
+                        #    continue
                         for drCut in drCuts:
                             cuts = ""
                             if len(str(ptRange)) > 0:
@@ -281,7 +316,7 @@ def main():
                                     c1.cd()
                                     
                                     print("2l",lep,orth,jetiso,isoCr)
-                                    hist = utils.getHistogramFromTree("bg_2l_" + lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else ""), c, "dilepBDT" + jetiso, bins, -1, 1, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " < 12  && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && sameSign" + jetiso + " == 0 " + (("&& isoCr" + jetiso + (" >= 1" if isoCr else " == 0")) if len(cuts) > 0 else "") + ((" && !tautau" + jetiso) if notautau else "") + ")", True)
+                                    hist = utils.getHistogramFromTree("bg_2l_" + lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else ""), c, "dilepBDT" + jetiso, bins, -1, 1, str(utils.LUMINOSITY) + " * " + eff_field + " * passedMhtMet6pack * Weight * BranchingRatio * (twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " < 12  && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && sameSign" + jetiso + " == 0 " + (("&& isoCr" + jetiso + (" >= 1" if isoCr else " == 0")) if len(cuts) > 0 else "") + ((" && !tautau" + jetiso) if notautau else "") + ")", True)
                                     hist.Sumw2()
                                     if bg_2l_hist.get(lep + ("_orth" if orth else "")) is None:
                                         bg_2l_hist[lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else "")] = hist
@@ -305,6 +340,8 @@ def main():
                     drCuts = utils.leptonCorrJetIsoDrCuts
                 
                 for ptRange in ptRanges:
+                    #if ptRange < 9:
+                    #        continue
                     for drCut in drCuts:
                         cuts = ""
                         if len(str(ptRange)) > 0:

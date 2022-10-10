@@ -39,25 +39,25 @@ class Plotting():
 
 
 defaultColorPalette = [
-    { "name" : "yellow", "fillColor" : kYellow-4, "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 5,  "markerStyle" : kOpenCircle},
-    { "name" : "red", "fillColor" : kRed-4, "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
-    { "name" : "azure", "fillColor" : kAzure-4, "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 4,  "markerStyle" : kOpenTriangleUp },
-    { "name" : "cyan", "fillColor" : kCyan-7, "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 3,  "markerStyle" : kOpenSquare },
-    { "name" : "spring", "fillColor" : kSpring-1, "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 3,  "markerStyle" : kOpenSquare },
-    { "name" : "gray", "fillColor" : kGray+1, "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 6,  "markerStyle" : kOpenDiamond },
-    { "name" : "teal", "fillColor" : kTeal-9, "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
-    { "name" : "orange", "fillColor" : "#ffbb00", "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
-    { "name" : "lightgreen", "fillColor" : "#42f498", "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "yellow", "fillColor" : kYellow-4, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 5,  "markerStyle" : kOpenCircle},
+    { "name" : "red", "fillColor" : kRed-4, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "azure", "fillColor" : kAzure-4, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 4,  "markerStyle" : kOpenTriangleUp },
+    { "name" : "cyan", "fillColor" : kCyan-7, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 3,  "markerStyle" : kOpenSquare },
+    { "name" : "spring", "fillColor" : kSpring-1, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 3,  "markerStyle" : kOpenSquare },
+    { "name" : "gray", "fillColor" : kGray+1, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 6,  "markerStyle" : kOpenDiamond },
+    { "name" : "teal", "fillColor" : kTeal-9, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "orange", "fillColor" : "#ffbb00", "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "lightgreen", "fillColor" : "#42f498", "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
     
-    { "name" : "velvet", "fillColor" : "#ff00c9", "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
-    { "name" : "darkblue", "fillColor" : "#1B00DC", "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "velvet", "fillColor" : "#ff00c9", "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "darkblue", "fillColor" : "#1B00DC", "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
     
-    { "name" : "maroon", "fillColor" : "#800000", "lineColor" : "#A52A2A", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
-    { "name" : "darkslategray", "fillColor" : "#2F4F4F", "lineColor" : "#708090", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
-    { "name" : "wheat", "fillColor" : "#F5DEB3", "lineColor" : "#FFDEAD", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
-    { "name" : "lightgray", "fillColor" : "#D3D3D3", "lineColor" : "#DCDCDC", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "maroon", "fillColor" : "#800000", "lineColor" : "#A52A2A", "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "darkslategray", "fillColor" : "#2F4F4F", "lineColor" : "#708090", "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "wheat", "fillColor" : "#F5DEB3", "lineColor" : "#FFDEAD", "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "lightgray", "fillColor" : "#D3D3D3", "lineColor" : "#DCDCDC", "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
     
-    { "name" : "black", "fillColor" : kBlack, "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "black", "fillColor" : kBlack, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
 ]
 
 #For solid fill use fillStyle=1001
@@ -74,7 +74,7 @@ defaultColorPalette = [
 signalCp = [
     { "name" : "blue", "fillColor" : kRed-7, "lineColor" : kRed-7, "fillStyle" : 0, "lineStyle" : 1 },
     { "name" : "blue", "fillColor" : kRed-4, "lineColor" : kRed-4, "fillStyle" : 0, "lineStyle" : 1 },
-    { "name" : "blue", "fillColor" : kRed, "lineColor" : kRed, "fillStyle" : 0, "lineStyle" : 1 },
+    { "name" : "red", "fillColor" : kRed, "lineColor" : kRed, "fillStyle" : 0, "lineStyle" : 1 },
     { "name" : "cyan", "fillColor" : kRed+1, "lineColor" : kRed+1, "fillStyle" : 0, "lineStyle" : 2 },
     { "name" : "orange", "fillColor" : kRed+2, "lineColor" : kRed+2, "fillStyle" : 0, "lineStyle" : 5 },
     { "name" : "pink", "fillColor" : kRed+3, "lineColor" : kRed+3, "fillStyle" : 0, "lineStyle" : 6 },
@@ -86,19 +86,23 @@ signalCp = [
 # then the fill is set to 0 by "fillStyle" : 0  in the signalCp
 # For a filled histogram normally alpha is given and noFillStyle=True (so that 1001 is picked)
 
-def setHistColorFillLine(hist, cP, alpha=0.35,noFillStyle=False, lineWidth = 1):
+def setHistColorFillLine(hist, cP, alpha=0.35, lineWidth = 1):
+    #print(cP)
     fillC = cP["fillColor"]
     lineC = cP["lineColor"]
-    if "fillStyle" in cP and not noFillStyle:
+    if "fillStyle" in cP:
         hist.SetFillStyle(cP["fillStyle"])
     else:
         hist.SetFillStyle(1001)
+    if "alpha" in cP:
+        alpha = cP["alpha"]
     hist.SetFillColorAlpha(fillC, alpha)
     print("SetLineColor(", lineC, ")")
     hist.SetLineColor(lineC)
     #if cP.get("lineStyle") is not None:
     #    hist.SetLineStyle(cP["lineStyle"])
-
+    if "lineWidth" in cP:
+        lineWidth = cP["lineWidth"]
     hist.SetLineWidth(lineWidth)
     hist.SetOption("HIST")
 
@@ -285,23 +289,23 @@ def mkcanvas(name='canvas'):
     #h.Sumw2()
 
 oldColorPalette = [
-    { "name" : "yellow", "fillColor" : "#fcf802", "lineColor" : "#e0dc00", "fillStyle" : 3444, "markerColor" : 5,  "markerStyle" : kOpenCircle},
-    { "name" : "green", "fillColor" : "#0bb200", "lineColor" : "#099300", "fillStyle" : 3444, "markerColor" : 3,  "markerStyle" : kOpenSquare },
-    { "name" : "blue", "fillColor" : "#0033cc", "lineColor" : "#00279e", "fillStyle" : 3444, "markerColor" : 4,  "markerStyle" : kOpenTriangleUp },
-    { "name" : "purple", "fillColor" : "#f442f1", "lineColor" : "#a82ba6", "fillStyle" : 3444, "markerColor" : 6,  "markerStyle" : kOpenDiamond },
-    { "name" : "tourq", "fillColor" : "#00ffe9", "lineColor" : "#2a8c83", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
-    { "name" : "orange", "fillColor" : "#ffbb00", "lineColor" : "#b78b12", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
-    { "name" : "lightgreen", "fillColor" : "#42f498", "lineColor" : "#28a363", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
-    { "name" : "red", "fillColor" : "#e60000", "lineColor" : "#c60000", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
-    { "name" : "velvet", "fillColor" : "#ff00c9", "lineColor" : "#ff8ee7", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
-    { "name" : "darkblue", "fillColor" : "#1B00DC", "lineColor" : "#8373FA", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "yellow", "fillColor" : "#fcf802", "lineColor" : "#e0dc00", "fillStyle" : 1001, "markerColor" : 5,  "markerStyle" : kOpenCircle},
+    { "name" : "green", "fillColor" : "#0bb200", "lineColor" : "#099300", "fillStyle" : 1001, "markerColor" : 3,  "markerStyle" : kOpenSquare },
+    { "name" : "blue", "fillColor" : "#0033cc", "lineColor" : "#00279e", "fillStyle" : 1001, "markerColor" : 4,  "markerStyle" : kOpenTriangleUp },
+    { "name" : "purple", "fillColor" : "#f442f1", "lineColor" : "#a82ba6", "fillStyle" : 1001, "markerColor" : 6,  "markerStyle" : kOpenDiamond },
+    { "name" : "tourq", "fillColor" : "#00ffe9", "lineColor" : "#2a8c83", "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "orange", "fillColor" : "#ffbb00", "lineColor" : "#b78b12", "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "lightgreen", "fillColor" : "#42f498", "lineColor" : "#28a363", "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "red", "fillColor" : "#e60000", "lineColor" : "#c60000", "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "velvet", "fillColor" : "#ff00c9", "lineColor" : "#ff8ee7", "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "darkblue", "fillColor" : "#1B00DC", "lineColor" : "#8373FA", "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
     
-    { "name" : "maroon", "fillColor" : "#800000", "lineColor" : "#A52A2A", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
-    { "name" : "darkslategray", "fillColor" : "#2F4F4F", "lineColor" : "#708090", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
-    { "name" : "wheat", "fillColor" : "#F5DEB3", "lineColor" : "#FFDEAD", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
-    { "name" : "lightgray", "fillColor" : "#D3D3D3", "lineColor" : "#DCDCDC", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "maroon", "fillColor" : "#800000", "lineColor" : "#A52A2A", "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "darkslategray", "fillColor" : "#2F4F4F", "lineColor" : "#708090", "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "wheat", "fillColor" : "#F5DEB3", "lineColor" : "#FFDEAD", "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "lightgray", "fillColor" : "#D3D3D3", "lineColor" : "#DCDCDC", "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
     
-    { "name" : "black", "fillColor" : kBlack, "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "black", "fillColor" : kBlack, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
 ]
 
 oldSignalCp = [

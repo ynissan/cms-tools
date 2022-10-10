@@ -58,7 +58,22 @@ signals = [
     "mu100_dm1p13"
 ]
 
+phase1_2017 = True
+
+if phase1_2017:
+    signals = [
+        "mChipm100GeV_dm2p259GeV",
+        "mChipm100GeV_dm1p759GeV",
+        "mChipm100GeV_dm1p259GeV",
+        "mChipm100GeV_dm0p759GeV",
+        "mChipm100GeV_dm0p559GeV"
+    ]
+    histograms_file = "./sig_bg_histograms_for_jet_iso_scanCorrJetNoMultIso_with_tautau_2017.root"
+
+
 index_to_optimise = 1
+if phase1_2017:
+    index_to_optimise = 3
 
 # index_to_optimise = 1
 # ===========
@@ -89,11 +104,26 @@ index_to_optimise = 1
 # 2l_Electrons
 # ['-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00']
 
+#### 2017 version ######
+2l_Muons
+['-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '0.10', '0.30', '0.40', '0.45']
+===========
+2l_Electrons
+['-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00']
+
+
+
 sam = False
 
 output_dir = "./signal_region_plots_1_47"
 if lepNum == 1:
     output_dir = "./signal_region_tracks_plots"
+
+if phase1_2017:
+    output_dir = "./signal_region_plots_0_75_2017"
+    if lepNum == 1:
+        output_dir = "./signal_region_tracks_plots_2017"
+
 
 if not os.path.isdir(output_dir):
     os.mkdir(output_dir)

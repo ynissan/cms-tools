@@ -255,6 +255,25 @@ signalNames = [
     "\Delta_{}m 5.6 GeV",
 ]
 
+signals_2017 = [
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim_sum/mChipm100GeV_dm0p759GeV_1.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim_sum/mChipm100GeV_dm0p959GeV_1.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim_sum/mChipm100GeV_dm1p259GeV_1.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim_sum/mChipm100GeV_dm1p759GeV_1.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim_sum/mChipm100GeV_dm2p259GeV_1.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim_sum/mChipm100GeV_dm3p259GeV_1.root"
+              
+              ]
+
+signalNames_2017 = [
+    "\Delta_{}m^{\pm} 0.75 GeV",
+    "\Delta_{}m^{\pm} 0.95 GeV",
+    "\Delta_{}m^{\pm} 1.25 GeV",
+    "\Delta_{}m^{\pm} 1.75 GeV",
+    "\Delta_{}m^{\pm} 2.25 GeV",
+    "\Delta_{}m^{\pm} 3.25 GeV",
+]
+
 # For this SC we need baseline cuts and sc cuts
 
 class dilepton_muons(BaseParams):
@@ -325,7 +344,7 @@ class dilepton_muons_CorrJetIso10Dr0_6(dilepton_muons_CorrJetIso10_5Dr0_55):
     save_histrograms_to_file = True
     load_histrograms_from_file = False  
     plot_signal = True
-    jetIsoStr = "CorrJetIso10Dr0.6"
+    jetIsoStr = "CorrJetNoMultIso10Dr0.6"
     histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons" + jetIsoStr + ".root"
     cuts = copy.deepcopy(dilepton_muons.cuts)
     injectJetIsoToCuts(cuts, jetIsoStr)
@@ -338,6 +357,14 @@ class dilepton_muons_CorrJetIso10Dr0_6(dilepton_muons_CorrJetIso10_5Dr0_55):
     #exit(0)
     sig_line_width = 3
     plot_error = False
+
+class dilepton_muons_CorrJetIso10Dr0_6_phase1_2017(dilepton_muons_CorrJetIso10Dr0_6):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_CorrJetIso10Dr0_6_phase1_2017.root"
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_phase1/sum/slim_sum/type_sum"
+    signal_dir = signals_2017
+    signal_names = signalNames_2017
     
 class dilepton_muons_CorrJetIso10_5Dr0_55_bdt_only(dilepton_muons_CorrJetIso10_5Dr0_55):
     bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum/type_sum"

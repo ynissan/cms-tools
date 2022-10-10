@@ -37,6 +37,7 @@ if args.input_dir:
     input_dir = args.input_dir[0]
 else:
     input_dir = "/afs/desy.de/user/n/nissanuv/ntupleHub/LeptonCollection"
+    input_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_phase1/sum"
 
 if args.json_file:
     json_file = args.json_file[0].strip()
@@ -53,7 +54,7 @@ if json_file is not None:
 else:
     lumiSecs = LumiSectMap()
 
-    data_files = glob(input_dir + "/*")
+    data_files = glob(input_dir + "/Run2018B*")
     
     for f in data_files: 
         print(f)

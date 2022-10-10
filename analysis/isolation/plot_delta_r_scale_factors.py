@@ -17,6 +17,7 @@ sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
 import utils
 import analysis_ntuples
 import plot_params
+import plotutils
 # 
 gROOT.SetBatch(True)
 gStyle.SetOptStat(0)
@@ -75,6 +76,9 @@ fit_signal_integral_error = {'id_invMass_0.5_1.5_1.2_2.4': 33.2007701322486, 'in
 plot_stability = True
 id_only = True
 
+plotting = plotutils.Plotting()
+currStyle = plotting.setStyle()
+
 # region is barrel - endcaps
 for region in (0,1):
 
@@ -90,33 +94,54 @@ for region in (0,1):
     bins = np.zeros(len(ranges),dtype=float)
     for i in range(len(ranges)):
         bins[i] = ranges[i]
+    
+    c1 = plotting.createCanvas("c1")
+    #c1.SetLeftMargin(0.13)
+    #c1.SetRightMargin(0.02)
+    c1.SetGridx()
+    c1.SetGridy()
+
+    legend = TLegend(.60,.40,.85,.60)
+    legend.SetNColumns(1)
+    legend.SetBorderSize(1)
+    legend.SetFillStyle(0)
+    
+#             legend = TLegend(0.65, 0.70, 0.87, 0.875)
+#             legend.SetBorderSize(0)
+#             legend.SetTextFont(42)
+#             legend.SetTextSize(0.02)
+        
+#     cpRed = plotutils.defaultColorPalette[1]
+#     print(cpRed)
+#     #utils.histoStyler(bg_hist)
+#     bg_hist.UseCurrentStyle()
+#     
+#     
+#     plotutils.setHistColorFillLine(bg_hist, cpRed, 0.35, True)
+#     #utils.formatHist(bg_hist, cpRed, 0.35, True)
+    
+    
+    
 
     barrelHist = TH1F(prefix + "Hist", "", len(ranges)-1, bins)
     barrelHist.Sumw2()
+    barrelHist.UseCurrentStyle()
     barrelHistDen = TH1F(prefix + "HistDen", "", len(ranges)-1, bins)
     barrelHistDen.Sumw2()
+    barrelHistDen.UseCurrentStyle()
     #isoBarrelHist = TH1F(prefix + "IsolHist", "", len(ranges)-1, bins)
     #isoBarrelHist.Sumw2()
 
     
     dataBarrelHist = TH1F(prefix + "DataHist", "", len(ranges)-1, bins)
     dataBarrelHist.Sumw2()
+    dataBarrelHist.UseCurrentStyle()
     dataBarrelHistDen = TH1F(prefix + "DataHistDen", "", len(ranges)-1, bins)
     dataBarrelHistDen.Sumw2()
+    dataBarrelHistDen.UseCurrentStyle()
     #isoDataBarrelHist = TH1F(prefix + "IsoDataHist", "", len(ranges)-1, bins)
     #isoDataBarrelHist.Sumw2()
     
-
-    c1 = TCanvas("c1", "c1", 800, 800)
-    c1.SetLeftMargin(0.13)
-    c1.SetRightMargin(0.02)
-    c1.SetGridx()
-    c1.SetGridy()
-
-    legend = TLegend(.60,.40,.89,.60)
-    legend.SetNColumns(1)
-    legend.SetBorderSize(1)
-    legend.SetFillStyle(0)
 
     ####### MC #########
 
@@ -175,13 +200,19 @@ for region in (0,1):
         minimum = min(barrelHist.GetMinimum(), dataBarrelHist.GetMinimum(), isoDataBarrelHist.GetMinimum(), isoBarrelHist.GetMinimum(), isoBarrelHistFactor.GetMinimum(), isoDataBarrelHistFactor.GetMinimum())
         maximum = max(barrelHist.GetMaximum(), dataBarrelHist.GetMaximum(), isoDataBarrelHist.GetMaximum(), isoBarrelHist.GetMaximum(), isoBarrelHistFactor.GetMaximum(), isoDataBarrelHistFactor.GetMaximum())
     
-    barrelHist.SetMinimum(minimum-0.1)
-    barrelHist.SetMaximum(maximum+0.1)
+    barrelHist.SetMinimum(minimum-0.3)
+    barrelHist.SetMaximum(maximum+0.3)
     
     #Originally it was here isoBarrelHist formatted
+    cP = { "name" : "black", "fillColor" : kBlack, "lineColor" : kBlack, "fillStyle" : 0, "markerColor" : kBlack,  "markerStyle" : kOpenCross }
+    plotutils.setHistColorFillLine(barrelHist, cP)
     
-    utils.formatHist(barrelHist, utils.colorPalette[14], 0, True, True)
-    utils.histoStyler(barrelHist)
+    #utils.formatHist(barrelHist, utils.colorPalette[14], 0, True, True)
+    #utils.histoStyler(barrelHist)
+    
+    #     plotutils.setHistColorFillLine(bg_hist, cpRed, 0.35, True)
+#     #utils.formatHist(bg_hist, cpRed, 0.35, True)
+    
     #barrelHist.GetYaxis().SetTitleOffset(1.5)
     
     #isoBarrelHist.SetLineColor(kBlack)
@@ -207,12 +238,12 @@ for region in (0,1):
 #     isoDataBarrelHistFactor.SetMarkerColor(kBlue)
 #     isoDataBarrelHistFactor.SetLineColor(kBlue)
     
-    isoLegend = TLegend(.76,.75,.97,.89)
+    isoLegend = TLegend(.76,.75,.89,.89)
     isoLegend.SetNColumns(1)
     isoLegend.SetBorderSize(1)
     isoLegend.SetFillStyle(0)
     
-    utils.formatLegend(isoLegend)
+    #utils.formatLegend(isoLegend)
     
     if id_only:
         isoLegend.AddEntry(barrelHist, "MC", 'p')
@@ -229,9 +260,9 @@ for region in (0,1):
     #legend.AddEntry(barrelHistHistCount, "Signal Count Efficiency", 'p')
     barrelHist.GetXaxis().SetTitle("\Delta_{}R")
     if region == 0:
-        barrelHist.GetYaxis().SetTitle("barrel #varepsilon")
+        barrelHist.GetYaxis().SetTitle("Barrel #varepsilon")
     else:
-        barrelHist.GetYaxis().SetTitle("endcaps #varepsilon")
+        barrelHist.GetYaxis().SetTitle("Endcaps #varepsilon")
     #isoBarrelHist.GetYaxis().SetTitle("#varepsilon")
     
     barrelHist.Draw("p")
@@ -246,8 +277,9 @@ for region in (0,1):
             dataBarrelHist.Draw("p same")
 
     isoLegend.Draw("SAME")
+    plotting.stampPlot(c1, "36.0", plotutils.StampStr.PRE, "", True)
     #utils.stamp_plot("22.9")
-    utils.stamp_plot("36.0", utils.StampStr.PRE, utils.StampCoor.ABOVE_PLOT)
+    #utils.stamp_plot("36.0", utils.StampStr.PRE, utils.StampCoor.ABOVE_PLOT)
     if id_only:
         if region == 0:
             c1.SaveAs("barrelDeltaRSingleElectron.pdf")
@@ -270,20 +302,26 @@ for region in (0,1):
     #isoDataBarrelHistFactor.Divide(isoBarrelHistFactor)
     dataBarrelHist.Divide(barrelHist)
     # was isoDataBarrelHist
-    utils.histoStyler(dataBarrelHist)
+    #utils.histoStyler(dataBarrelHist)
     #dataBarrelHist.GetYaxis().SetTitleOffset(1.5)
-    utils.formatLegend(isoLegend)
+    #utils.formatLegend(isoLegend)
     
     dataBarrelHist.GetXaxis().SetTitle("\Delta_{}R")
     if region == 0:
-        dataBarrelHist.GetYaxis().SetTitle("barrel scale factors")
+        dataBarrelHist.GetYaxis().SetTitle("Barrel scale factors")
     else:
-        dataBarrelHist.GetYaxis().SetTitle("endcaps scale factors")
+        dataBarrelHist.GetYaxis().SetTitle("Endcaps scale factors")
     #isoDataBarrelHist.GetYaxis().SetTitle("scale factor")
     if not id_only:
         isoLegend.AddEntry(isoDataBarrelHist, "Isolation", 'p')
         isoLegend.AddEntry(isoDataBarrelHistFactor, "Isolation from ID", 'p')
     isoLegend.AddEntry(dataBarrelHist, "ID", 'p')
+    
+    minimum = dataBarrelHist.GetMinimum()
+    maximum = dataBarrelHist.GetMaximum()
+    
+    dataBarrelHist.SetMinimum(minimum-0.3)
+    dataBarrelHist.SetMaximum(maximum+0.3)
     
     dataBarrelHist
     if not id_only:
@@ -294,7 +332,12 @@ for region in (0,1):
         dataBarrelHist.Draw("p")
     if not id_only:
         isoLegend.Draw("SAME")
-    utils.stamp_plot("36.0", utils.StampStr.PRE, utils.StampCoor.ABOVE_PLOT)
+        
+
+        
+        
+    plotting.stampPlot(c1, "36.0", plotutils.StampStr.PRE, "", True)
+    #utils.stamp_plot("36.0", utils.StampStr.PRE, utils.StampCoor.ABOVE_PLOT)
 
     if region == 0:
 
