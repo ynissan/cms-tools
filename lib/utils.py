@@ -510,7 +510,7 @@ def calculateLumiFromLumiSecs(lumiSecs):
     with open(tmpJsonFile, "w") as fo:
         fo.write(json)
     print("Created json file: " + tmpJsonFile)
-    lumi = get_lumi_from_bril(tmpJsonFile, 'ynissan')
+    lumi = get_lumi_from_bril(tmpJsonFile, 'qdiephol')
     #lumi = "" 
     #os.remove(tmpJsonFile)
     return lumi

@@ -38,6 +38,7 @@ class Plotting():
 
 
 defaultColorPalette = [
+    { "name" : "azure", "fillColor" : kAzure-4, "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 4,  "markerStyle" : kOpenTriangleUp },
     { "name" : "yellow", "fillColor" : kYellow-4, "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 5,  "markerStyle" : kOpenCircle},
     { "name" : "red", "fillColor" : kRed-4, "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
     { "name" : "azure", "fillColor" : kAzure-4, "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 4,  "markerStyle" : kOpenTriangleUp },
@@ -71,12 +72,42 @@ defaultColorPalette = [
 
 
 signalCp = [
+    { "name" : "blue", "fillColor" : kRed, "lineColor" : kRed-6, "fillStyle" : 0, "lineStyle" : 1 },
+    { "name" : "cyan", "fillColor" : kRed+1, "lineColor" : kRed, "fillStyle" : 0, "lineStyle" : 2 },
+    { "name" : "orange", "fillColor" : kRed+2, "lineColor" : kRed+4, "fillStyle" : 0, "lineStyle" : 5 },
+    { "name" : "pink", "fillColor" : kRed+3, "lineColor" : kRed+3, "fillStyle" : 0, "lineStyle" : 6 },
+    { "name" : "grey", "fillColor" : kRed+4, "lineColor" : kRed+4, "fillStyle" : 0, "lineStyle" : 4 },
+    { "name" : "red", "fillColor" : kRed-1, "lineColor" : kRed-1, "fillStyle" : 0, "lineStyle" : 3 }, #startet copypasting below here
+    { "name" : "blue", "fillColor" : kRed, "lineColor" : kRed, "fillStyle" : 0, "lineStyle" : 1 },
+    { "name" : "cyan", "fillColor" : kRed+1, "lineColor" : kRed+1, "fillStyle" : 0, "lineStyle" : 2 },
+    { "name" : "orange", "fillColor" : kRed+2, "lineColor" : kRed+2, "fillStyle" : 0, "lineStyle" : 5 },
+    { "name" : "pink", "fillColor" : kRed+3, "lineColor" : kRed+3, "fillStyle" : 0, "lineStyle" : 6 },
+    { "name" : "grey", "fillColor" : kRed+4, "lineColor" : kRed+4, "fillStyle" : 0, "lineStyle" : 4 },
+    { "name" : "red", "fillColor" : kRed-1, "lineColor" : kRed-1, "fillStyle" : 0, "lineStyle" : 3 },    
     { "name" : "blue", "fillColor" : kRed, "lineColor" : kRed, "fillStyle" : 0, "lineStyle" : 1 },
     { "name" : "cyan", "fillColor" : kRed+1, "lineColor" : kRed+1, "fillStyle" : 0, "lineStyle" : 2 },
     { "name" : "orange", "fillColor" : kRed+2, "lineColor" : kRed+2, "fillStyle" : 0, "lineStyle" : 5 },
     { "name" : "pink", "fillColor" : kRed+3, "lineColor" : kRed+3, "fillStyle" : 0, "lineStyle" : 6 },
     { "name" : "grey", "fillColor" : kRed+4, "lineColor" : kRed+4, "fillStyle" : 0, "lineStyle" : 4 },
     { "name" : "red", "fillColor" : kRed-1, "lineColor" : kRed-1, "fillStyle" : 0, "lineStyle" : 3 },
+    { "name" : "blue", "fillColor" : kRed, "lineColor" : kRed, "fillStyle" : 0, "lineStyle" : 1 },
+    { "name" : "cyan", "fillColor" : kRed+1, "lineColor" : kRed+1, "fillStyle" : 0, "lineStyle" : 2 },
+    { "name" : "orange", "fillColor" : kRed+2, "lineColor" : kRed+2, "fillStyle" : 0, "lineStyle" : 5 },
+    { "name" : "pink", "fillColor" : kRed+3, "lineColor" : kRed+3, "fillStyle" : 0, "lineStyle" : 6 },
+    { "name" : "grey", "fillColor" : kRed+4, "lineColor" : kRed+4, "fillStyle" : 0, "lineStyle" : 4 },
+    { "name" : "red", "fillColor" : kRed-1, "lineColor" : kRed-1, "fillStyle" : 0, "lineStyle" : 3 },
+    { "name" : "blue", "fillColor" : kRed, "lineColor" : kRed, "fillStyle" : 0, "lineStyle" : 1 },
+    { "name" : "cyan", "fillColor" : kRed+1, "lineColor" : kRed+1, "fillStyle" : 0, "lineStyle" : 2 },
+    { "name" : "orange", "fillColor" : kRed+2, "lineColor" : kRed+2, "fillStyle" : 0, "lineStyle" : 5 },
+    { "name" : "pink", "fillColor" : kRed+3, "lineColor" : kRed+3, "fillStyle" : 0, "lineStyle" : 6 },
+    { "name" : "grey", "fillColor" : kRed+4, "lineColor" : kRed+4, "fillStyle" : 0, "lineStyle" : 4 },
+    { "name" : "red", "fillColor" : kRed-1, "lineColor" : kRed-1, "fillStyle" : 0, "lineStyle" : 3 },
+    { "name" : "blue", "fillColor" : kRed, "lineColor" : kRed, "fillStyle" : 0, "lineStyle" : 1 },
+    { "name" : "cyan", "fillColor" : kRed+1, "lineColor" : kRed+1, "fillStyle" : 0, "lineStyle" : 2 },
+    { "name" : "orange", "fillColor" : kRed+2, "lineColor" : kRed+2, "fillStyle" : 0, "lineStyle" : 5 },
+    { "name" : "pink", "fillColor" : kRed+3, "lineColor" : kRed+3, "fillStyle" : 0, "lineStyle" : 6 },
+    { "name" : "grey", "fillColor" : kRed+4, "lineColor" : kRed+4, "fillStyle" : 0, "lineStyle" : 4 },
+    { "name" : "red", "fillColor" : kRed-1, "lineColor" : kRed-1, "fillStyle" : 0, "lineStyle" : 3 },    
 ]
 
 # For signal with only lines - only first two arguments relevant (alpha is only for the fill)

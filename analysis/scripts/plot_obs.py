@@ -10,9 +10,9 @@ import re
 from datetime import datetime
 import math
 
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/"))
-sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/lib"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/"))
+sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/lib/classes"))
 import utils
 import analysis_ntuples
 import plot_params
@@ -501,7 +501,7 @@ def plotRatio(c1, pad, memory, numHist, denHist, hist_def, numLabel = "Data", de
     tl.SetNDC()
     tl.SetTextSize(0.15) 
     tl.SetTextFont(42)
-    tl.DrawLatex(.15,.8, "sf = " + "{:.3f}".format(rdataHist.GetBinContent(1)) + " err = " +  "{:.3f}".format(rdataHist.GetBinError(1)))
+#     tl.DrawLatex(.15,.8, "sf = " + "{:.3f}".format(rdataHist.GetBinContent(1)) + " err = " +  "{:.3f}".format(rdataHist.GetBinError(1)))
     
     memory.append(line)
     c1.Modified()
@@ -1407,7 +1407,12 @@ def main():
                    
                     
                 if not (linear and plot_single):
-                    newBgHist.SetMaximum(maximum*1000)
+#                     newBgHist.SetMaximum(maximum*10)   #1000
+                    linear_log_space = maximum*10
+                    if hist_def.get("linear_log_space") is not None:
+                        linear_log_space = maximum * hist_def["linear_log_space"]
+                    
+                    newBgHist.SetMaximum(linear_log_space)
                 else:
                     
                     linearYspace = maximum*1.1
@@ -1416,7 +1421,7 @@ def main():
                     
                     newBgHist.SetMaximum(linearYspace)
                 if not (linear and plot_single):
-                    newBgHist.SetMinimum(0.0001)
+                    newBgHist.SetMinimum(0.01)   #0.0001
                 else:
                     newBgHist.SetMinimum(0)
                 
