@@ -27,6 +27,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --phase1_2018)
+        PHASE1_2018=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -63,6 +68,11 @@ elif [ -n "$PHASE1" ]; then
     echo "GOT PHASE1"
     echo "HERE: $@"
     INPUT_DIR=$SKIM_SIG_PHASE1_OUTPUT_DIR
+    TRACK_SPLIT_DIR=$LEPTON_TRACK_PHASE1_SPLIT_DIR
+elif [ -n "$PHASE1_2018" ]; then
+    echo "GOT PHASE1 2018"
+    echo "HERE: $@"
+    INPUT_DIR=$SKIM_SIG_PHASE1_2018_OUTPUT_DIR
     TRACK_SPLIT_DIR=$LEPTON_TRACK_PHASE1_SPLIT_DIR
 fi
 # if [ -z "$SAM" ]; then
@@ -179,7 +189,7 @@ echo -e "\n\nRUNNING ALL GROUP\n\n"
 #     mkdir "$OUTPUT_DIR/stderr"
 # fi
 
-if [ -n "$SAM" ] || [ -n "$PHASE1" ]; then
+if [ -n "$SAM" ] || [ -n "$PHASE1" ] || [ -n "$PHASE1_2018" ]; then
     FILES=${INPUT_DIR}/sum/*
 else
     FILES=${INPUT_DIR}/single/*

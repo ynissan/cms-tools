@@ -636,7 +636,7 @@ def createAllHistograms(histograms, sumTypes):
             if plot_par.glob_data:
                 dataFiles = glob(plot_par.data_dir)
             else:
-                dataFiles = glob(plot_par.data_dir + "/*")
+                dataFiles = glob(plot_par.data_dir + "/*") 
             if plot_par.plot_fast:
                 createPlotsFast(dataFiles, ["data"], histograms, 1, "data", [""], plot_par)
             else:

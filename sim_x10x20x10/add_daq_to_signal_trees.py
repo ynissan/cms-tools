@@ -19,11 +19,30 @@ from lib import utils
 from lib import analysis_observables
 
 parser = argparse.ArgumentParser(description='Add observables to trees.')
+parser.add_argument('-phase1', '--phase1', dest='phase1', help='Phase 1', action='store_true')
+parser.add_argument('-phase1_2018', '--phase1_2018', dest='phase1_2018', help='Phase 1 2018', action='store_true')
 args = parser.parse_args()
 
-WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1"
+phase1 = args.phase1
+phase1_2018 = args.phase1_2018
+
+
+
+# 2016 version
+WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim"
+
+if phase1:
+    WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1"
+elif phase1_2018:
+    WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1_2018"
+
 SINGLE_OUTPUT = WORK_DIR + "/single"
 OUTPUT_SUM = WORK_DIR + "/sum"
+
+# 2016 version
+if not phase1 and not phase1_2018:
+    OUTPUT_SUM = SINGLE_OUTPUT
+
 
 OUTPUT_SUM_OUTPUT = WORK_DIR + "/stdout"
 OUTPUT_SUM_ERROR = WORK_DIR + "/stderr"

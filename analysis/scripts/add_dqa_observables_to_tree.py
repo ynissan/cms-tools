@@ -66,13 +66,24 @@ if data_period != "":
     print "data_period: %s, phase: %s" % (data_period, phase)
 else:
     print "Can't determine data/MC era!"
-    data_period = "Fall17"
-    phase = 1
+    if "/bg/skim/" in input_file:
+        data_period = "Summer16"
+        phase = 0
+    else:
+        data_period = "Fall17"
+        phase = 1
 
 if "/signal/" in input_file:
     is_fastsim = True
+    if "/skim/" in input_file:
+        data_period = "Summer16"
+        phase = 0
+    elif "/skim_phase1_2018/":
+        data_period = "Run2018"
+        phase = 1
+        
 
-print "is_fastsim", is_fastsim
+print "is_fastsim", is_fastsim, "data_period", data_period, "phase", phase
 
 # adjust some variables:
 if data_period == "Run2016" or data_period == "Summer16":

@@ -290,7 +290,7 @@ class signal_phase1_hem_failure_pool(signal_phase1_hem_failure_dm1p759GeV):
     load_histrograms_from_file = False
     
     signal_dir = [
-              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/sum/mChipm100GeV_dm[012]p*GeV*.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/sum/mChipm*GeV_dm[012]p*GeV*.root",
               ]
     
     glob_signal = True

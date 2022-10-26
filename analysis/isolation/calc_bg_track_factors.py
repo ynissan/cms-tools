@@ -36,19 +36,31 @@ args = parser.parse_args()
 
 output_file = None
 
-bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum"
 data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/sum"
 
+wanted_year = "2018"
 
-#luminosity = 35.7389543
-#lumi_weight = luminosity * 1000.
-
+if wanted_year != "2016":
+    data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_phase1/sum"
 
 jetiso = {
-    "Electrons": "CorrJetNoMultIso11Dr0.5",
+    "Electrons": "CorrJetNoMultIso10Dr0.5",
     "Muons" : "CorrJetNoMultIso10Dr0.6"
 }
 
+data_filters = {
+    '2016' : "",
+    '2017' : "",
+    '2018' : "hemFailureVetoElectrons && hemFailureVetoJets && hemFailureVetoMuons && ",
+    "phase1" : "hemFailureVetoElectrons && hemFailureVetoJets && hemFailureVetoMuons && " 
+}
+
+# dilepBDTString = {
+#     '2016' : "dilepBDTphase1",
+#     '2017' : "dilepBDT",
+#     '2018' : "dilepBDT",
+#     "phase1" : "dilepBDT",
+# }
 
 
 ######## END OF CMDLINE ARGUMENTS ########
@@ -60,8 +72,12 @@ def main():
     c1.cd()
        
     data_1t_hist = {}
-
-    data_files = glob(data_dir + "/*")
+    
+    pattern = "/*"
+    if wanted_year == "2017" or wanted_year == "2018":
+        pattern = "/Run" + wanted_year + "*"
+    
+    data_files = glob(data_dir + pattern)
     i=1
     for filename in data_files:#glob(bg_dir + "/*"):
         print "====================================="
@@ -73,11 +89,11 @@ def main():
         f = TFile(filename)
         c = f.Get('tEvent')
         
-        #for lep in ["Muons", "Electrons"]:
-        for lep in ["Muons"]:
+        for lep in ["Muons", "Electrons"]:
+        #for lep in ["Muons"]:
             for sc in [False, True]:
                 
-                base_cond = "(passedMhtMet6pack == 1 && passesUniversalSelection == 1 && MinDeltaPhiMhtJets > 0.4 && MHT >= 220 &&  MET >= 140 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)"
+                base_cond = "(" + data_filters[wanted_year] + "passedMhtMet6pack == 1 && passesUniversalSelection == 1 && MinDeltaPhiMhtJets > 0.4 && MHT >= 220 &&  MET >= 140 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)"
                 sc_cond =  "(" + ("sc_exTrack_deltaR > 0.05 && " if lep == "Electrons" else "") + "sc_exclusiveTrack%%% == 1 && sc_trackBDT%%% > 0 && sc_exTrack_invMass%%% < 12 && sc_exTrack_dilepBDT%%% < 0 && sc_exclusiveTrackLeptonFlavour%%% == \""+lep+"\")"  if sc else "(" + ("exTrack_deltaR > 0.05 && " if lep == "Electrons" else "") + "exclusiveTrack%%% == 1 && trackBDT%%% > 0 && exTrack_invMass%%% < 12  && exTrack_dilepBDT%%% < 0 && exclusiveTrackLeptonFlavour%%% == \""+lep+"\")"
                 cond = base_cond + " && " + sc_cond
                 condition = cond.replace("%%%", jetiso[lep])
@@ -109,8 +125,8 @@ def main():
     
     print "=====================================\n\n\n\n\n\n\n\n\n\n\n"
     
-    #for lep in ["Muons", "Electrons"]:
-    for lep in ["Muons"]:
+    for lep in ["Muons", "Electrons"]:
+    #for lep in ["Muons"]:
         print "\n\n\nsc scale factor - " + lep
         numHist = data_1t_hist["1t_" + lep]
         denHist = data_1t_hist["1t_" + lep + "_sc"]
@@ -118,7 +134,6 @@ def main():
         numHist.Divide(denHist)
         print "sf", numHist.GetBinContent(1), "err", numHist.GetBinError(1), "rel-err", numHist.GetBinError(1)/numHist.GetBinContent(1)
  
-      
     exit(0)
     
 main()

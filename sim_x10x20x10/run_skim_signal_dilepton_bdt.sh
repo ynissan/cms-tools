@@ -27,6 +27,16 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --onphase0 )
+        ONPHASE0=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
+        --phase1_2018)
+        PHASE1_2018=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -58,9 +68,17 @@ elif [ -n "$SC" ]; then
     OUTPUT_DIR=$SKIM_SIG_DILEPTON_BDT_SC_OUTPUT_DIR
     INPUT_DIR=$SKIM_SIG_BDT_SC_OUTPUT_DIR
 elif [ -n "$PHASE1" ]; then
-    cho "GOT PHASE1"
+    echo "GOT PHASE1"
     echo "HERE: $@"
     INPUT_DIR=$SKIM_SIG_PHASE1_OUTPUT_DIR
+    BDT_DIR=$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt_phase1
+elif [ -n "$PHASE1_2018" ]; then
+    echo "GOT PHASE1_2018"
+    echo "HERE: $@"
+    INPUT_DIR=$SKIM_SIG_PHASE1_2018_OUTPUT_DIR
+    BDT_DIR=$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt_phase1
+elif [ -n "$ONPHASE0" ]; then
+    echo "GOT ONPHASE0"
     BDT_DIR=$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt_phase1
 fi
 
@@ -81,7 +99,7 @@ notification = Never
 +RequestRuntime = 86400
 EOM
 
-if [ -n "$SAM" ] || [ -n "$PHASE1" ]; then
+if [ -n "$SAM" ] || [ -n "$PHASE1" ] || [ -n "$PHASE1_2018" ]; then
     FILES=${INPUT_DIR}/sum/*
 else
     FILES=${INPUT_DIR}/single/*

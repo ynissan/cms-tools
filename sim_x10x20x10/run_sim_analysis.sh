@@ -32,6 +32,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --phase1_2018)
+        PHASE1_2018=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -58,7 +63,11 @@ if [ -n "$SAM" ]; then
 elif [ -n "$PHASE1" ]; then
     INPUT_DIR=$SAM_SIM_NTUPLES_17_DIR
     OUTPUT_DIR=$SKIM_SIG_PHASE1_OUTPUT_DIR
+elif [ -n "$PHASE1_2018" ]; then
+    INPUT_DIR=$SAM_SIM_NTUPLES_18_DIR
+    OUTPUT_DIR=$SKIM_SIG_PHASE1_2018_OUTPUT_DIR
 fi
+
 if [ -n "$NLP" ]; then
     OUTPUT_DIR=$SKIM_SIG_NLP_OUTPUT_DIR
 fi

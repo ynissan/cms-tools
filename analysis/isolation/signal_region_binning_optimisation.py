@@ -48,6 +48,7 @@ if lepNum == 1:
 else:
     #histograms_file = "./sig_bg_histograms_for_jet_iso_scanCorrJetNoMultIso_no_tautau_after_mht_with_data.root"
     histograms_file = "./sig_bg_histograms_for_jet_iso_scanCorrJetNoMultIso_with_tautau_after_mht_with_data.root"
+    histograms_file = "./sig_bg_histograms_for_jet_iso_scanCorrJetNoMultIso_with_tautau_2016_with_phase1.root"
 #histograms_file = "./met.root"
 
 signals = [
@@ -58,7 +59,7 @@ signals = [
     "mu100_dm1p13"
 ]
 
-phase1_2017 = True
+phase1_2017 = False
 
 if phase1_2017:
     signals = [
@@ -71,7 +72,7 @@ if phase1_2017:
     histograms_file = "./sig_bg_histograms_for_jet_iso_scanCorrJetNoMultIso_with_tautau_2017.root"
 
 
-index_to_optimise = 1
+index_to_optimise = 3
 if phase1_2017:
     index_to_optimise = 3
 
@@ -105,17 +106,17 @@ if phase1_2017:
 # ['-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00']
 
 #### 2017 version ######
-2l_Muons
-['-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '0.10', '0.30', '0.40', '0.45']
-===========
-2l_Electrons
-['-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00']
+# 2l_Muons
+# ['-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '0.10', '0.30', '0.40', '0.45']
+# ===========
+# 2l_Electrons
+# ['-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00']
 
 
 
 sam = False
 
-output_dir = "./signal_region_plots_1_47"
+output_dir = "./signal_region_plots_2016_with_phase1"
 if lepNum == 1:
     output_dir = "./signal_region_tracks_plots"
 
@@ -149,8 +150,8 @@ def main():
     
     for lep in ["Muons", "Electrons"]:
         
-        #if lep != "Muons":
-        #    continue
+        if lep != "Muons":
+           continue
         
         orthOpt = [True, False] if (lepNum == 2 and lep == "Muons") else [False]
         for orth in orthOpt:
@@ -300,8 +301,8 @@ def main():
                 c1.Print(output_dir + "/sr" + str(category + 1) + "_significance_" + ("1t" if lepNum == 1 else "2l") + "_" + ("orth_" if orth else "") + lep + ".pdf")
     for lep in ["Muons", "Electrons"]:
         
-        #if lep != "Muons":
-        #    continue
+        if lep != "Muons":
+           continue
         
         orthOpt = [True, False] if (lepNum == 2 and lep == "Muons") else [False]
         for orth in orthOpt:

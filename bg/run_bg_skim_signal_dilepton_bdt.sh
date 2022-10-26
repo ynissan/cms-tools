@@ -32,6 +32,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --onphase0 )
+        ONPHASE0=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -61,6 +66,9 @@ elif [ -n "$JPSI_MUONS" ]; then
     COMMAND=$SCRIPTS_WD/skimmer_jpsi_bdt.py
 elif [ -n "$PHASE1" ]; then
     INPUT_DIR=$SKIM_PHASE1_OUTPUT_DIR
+    BDT_DIR=$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt_phase1
+elif [ -n "$ONPHASE0" ]; then
+    INPUT_DIR=$SKIM_OUTPUT_DIR
     BDT_DIR=$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt_phase1
 else
     if [ -n "$SC" ]; then

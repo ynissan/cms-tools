@@ -38,7 +38,7 @@ output_file = None
 
 sam = False
 
-phase1_2017 = True
+phase1_2017 = False
 
 signal_dir = None
 bg_dir = None
@@ -46,7 +46,7 @@ bg_slim_file = None
 data_slim_file = None
 eff_field = "tEffhMetMhtRealXMht2016"
 
-bg_slim_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum.root"
+bg_slim_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum_total/slim_sum_total.root"
 data_slim_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/slim_sum/slim_sum.root"
 
 if phase1_2017:
@@ -79,6 +79,12 @@ if args.output_file:
 else:
     output_file = "sig_bg_histograms_for_jet_iso_scan" + wanted_iso + "_with_tautau_after_mht_with_data.root"
     output_file = "sig_bg_histograms_for_jet_iso_scan" + wanted_iso + "_with_tautau_2017.root"
+    output_file = "sig_bg_histograms_for_jet_iso_scan" + wanted_iso + "_with_tautau_2016_with_phase1.root"
+
+single_iso_choice = "CorrJetNoMultIso10Dr0.6"
+
+bdt_var = "dilepBDT"
+bdt_var = "dilepBDTphase1"
 
 bins = 40
 
@@ -147,6 +153,9 @@ def main():
                             
                                 #if jetiso != "CorrJetIso10.5Dr0.55":
                                 #    continue
+                                
+                                if len(single_iso_choice) > 0 and jetiso!= single_iso_choice:
+                                    continue
 
                                 c1.cd()
                                 basename = os.path.basename(filename).split(".")[0]
@@ -178,7 +187,7 @@ def main():
                                         print("condition", condition)
                                         histName = "data_2l_" + lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else "")
                                         print("histName", histName)
-                                        hist = utils.getHistogramFromTree(histName, c, "dilepBDT" + jetiso, bins, -1, 1, condition, True)
+                                        hist = utils.getHistogramFromTree(histName, c, bdt_var + jetiso, bins, -1, 1, condition, True)
                                         hist.Sumw2()
                                         fnew.cd()
                                         hist.Write()
@@ -232,6 +241,9 @@ def main():
                             #if jetiso != "CorrJetIso10.5Dr0.55":
                             #    continue
                             
+                            if len(single_iso_choice) > 0 and jetiso!= single_iso_choice:
+                                    continue
+                            
                             c1.cd()
                             
                             #1t category
@@ -248,7 +260,7 @@ def main():
                                 for isoCr in isoCrs:
                                     c1.cd()
                                     cond = str(utils.LUMINOSITY) + " * " + eff_field + " * passedMhtMet6pack * Weight * BranchingRatio * (twoLeptons" + jetiso + " == 1 " + (orth_cond if orth else "") + " && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " < 12  && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && sameSign" + jetiso + " == 0 " + (("&& isoCr" + jetiso + (" >= 1" if isoCr else " == 0")) if len(cuts) > 0 else "") + ((" && !tautau" + jetiso) if notautau else "") + ")"
-                                    hist = utils.getHistogramFromTree(deltaM + "_2l_" + ("orth_" if orth else "") + lep + "_" + jetiso + ("_isoCr" if isoCr else ""), c, "dilepBDT" + jetiso, bins, -1, 1, cond, True)
+                                    hist = utils.getHistogramFromTree(deltaM + "_2l_" + ("orth_" if orth else "") + lep + "_" + jetiso + ("_isoCr" if isoCr else ""), c, bdt_var + jetiso, bins, -1, 1, cond, True)
                                     hist.Sumw2()
                                     fnew.cd()
                                     hist.Write()
@@ -293,6 +305,9 @@ def main():
                             #if jetiso != "CorrJetIso10.5Dr0.55":
                             #    continue
 
+                            if len(single_iso_choice) > 0 and jetiso!= single_iso_choice:
+                                continue
+                            
                             c1.cd()
                             basename = os.path.basename(filename).split(".")[0]
                             # prev
@@ -316,7 +331,7 @@ def main():
                                     c1.cd()
                                     
                                     print("2l",lep,orth,jetiso,isoCr)
-                                    hist = utils.getHistogramFromTree("bg_2l_" + lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else ""), c, "dilepBDT" + jetiso, bins, -1, 1, str(utils.LUMINOSITY) + " * " + eff_field + " * passedMhtMet6pack * Weight * BranchingRatio * (twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " < 12  && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && sameSign" + jetiso + " == 0 " + (("&& isoCr" + jetiso + (" >= 1" if isoCr else " == 0")) if len(cuts) > 0 else "") + ((" && !tautau" + jetiso) if notautau else "") + ")", True)
+                                    hist = utils.getHistogramFromTree("bg_2l_" + lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else ""), c, bdt_var + jetiso, bins, -1, 1, str(utils.LUMINOSITY) + " * " + eff_field + " * passedMhtMet6pack * Weight * BranchingRatio * (twoLeptons" + jetiso + " == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && invMass" + jetiso + " < 12  && invMass" + jetiso + " > 0.4 && !(invMass" + jetiso + " > 3 && invMass" + jetiso + " < 3.2) && !(invMass" + jetiso + " > 0.75 && invMass" + jetiso + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour" + jetiso + " == \"" + lep + "\" && sameSign" + jetiso + " == 0 " + (("&& isoCr" + jetiso + (" >= 1" if isoCr else " == 0")) if len(cuts) > 0 else "") + ((" && !tautau" + jetiso) if notautau else "") + ")", True)
                                     hist.Sumw2()
                                     if bg_2l_hist.get(lep + ("_orth" if orth else "")) is None:
                                         bg_2l_hist[lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else "")] = hist
@@ -349,7 +364,8 @@ def main():
                         jetiso = iso + cuts + cat
                         #if jetiso != "CorrJetIso10.5Dr0.55":
                         #    continue
-                        
+                        if len(single_iso_choice) > 0 and jetiso!= single_iso_choice:
+                            continue
                         #bg_1t_hist[lep + "_" + jetiso].Write("bg_1t_" + lep + "_" + jetiso)
                         orthOpt = [True, False] if lep == "Muons" else [False]
                         isoCrs = [True, False] if iso == wanted_iso else [False]
@@ -358,11 +374,7 @@ def main():
                                 bg_2l_hist[lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else "")].Write("bg_2l_" + ("orth_" if orth else "") + lep + "_" + jetiso + ("_isoCr" if isoCr else ""))
     fnew.Close()
     print "End: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S')
-    
-    
-    
-    
-    
+
     exit(0)
     
 main()

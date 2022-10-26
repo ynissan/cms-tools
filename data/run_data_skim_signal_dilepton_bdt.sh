@@ -37,6 +37,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --onphase0)
+        ONPHASE0=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -101,7 +106,9 @@ else
         #OUTPUT_DIR=$SKIM_DATA_BDT_OUTPUT_DIR
         INPUT_DIR=$SKIM_DATA_OUTPUT_DIR
         echo $INPUT_DIR/sum/
-
+        if [ -n "$ONPHASE0" ]; then
+            BDT_DIR=$DILEPTON_BDT_PHASE1_DIR
+        fi
         
     fi
 fi
@@ -161,8 +168,8 @@ EOM
 echo $INPUT_DIR/sum/
 
 FILES=$INPUT_DIR/sum/*
-#FILES=(Run2016G-17Jul2018-v1.METAOD_207.root)
-FILES=(Run2018D-PromptReco-v2.METAOD_2235.root Run2018D-PromptReco-v2.METAOD_2236.root)
+FILES=(Run2018A-17Sep2018-v1.METAOD_1843.root)
+#FILES=(Run2018D-PromptReco-v2.METAOD_2235.root Run2018D-PromptReco-v2.METAOD_2236.root)
 
 for data_file in ${FILES[@]}; do
 #for data_file in $INPUT_DIR/sum/*; do
@@ -178,8 +185,8 @@ for data_file in ${FILES[@]}; do
     echo $cmd
 cat << EOM >> $output_file
 arguments = $cmd
-error = ${INPUT_DIR}/stderr/${data_file_name}_dilepton.err
-output = ${INPUT_DIR}/stdout/${data_file_name}_dilepton.output
+error = ${INPUT_DIR}/stderr/${data_file_name}_dilepton_phase1.err
+output = ${INPUT_DIR}/stdout/${data_file_name}_dilepton_phase1.output
 Queue
 EOM
 done

@@ -43,6 +43,7 @@ parser.add_argument('-jpsi_muons', '--jpsi_muons', dest='jpsi_muons', help='JPSI
 parser.add_argument('-jpsi_electrons', '--jpsi_electrons', dest='jpsi_electrons', help='JPSI Electrons Skim', action='store_true')
 parser.add_argument('-testing', '--testing', dest='testing', help='testing', action='store_true')
 parser.add_argument('-phase1', '--phase1', dest='phase1', help='phase1', action='store_true')
+parser.add_argument('-phase1_2018', '--phase1_2018', dest='phase1', help='phase1', action='store_true')
 
 args = parser.parse_args()
 
@@ -118,7 +119,7 @@ def main():
     jpsi_electrons = args.jpsi_electrons
     jpsi = False
     testing = args.testing
-    phase1 = args.phase1
+    phase1 = args.phase1 or args.phase1_2018
     
     if signal and phase1:
         sam = True

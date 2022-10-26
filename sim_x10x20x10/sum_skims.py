@@ -17,6 +17,7 @@ parser.add_argument('-tl', '--tl', dest='two_leptons', help='Two Leptons', actio
 parser.add_argument('-sam', '--sam', dest='sam', help='Sam Skims', action='store_true')
 parser.add_argument('-slim', '--slim', dest='slim', help='Slim Skims', action='store_true')
 parser.add_argument('-phase1', '--phase1', dest='phase1', help='Phase 1', action='store_true')
+parser.add_argument('-phase1_2018', '--phase1_2018', dest='phase1_2018', help='Phase 1 2018', action='store_true')
 parser.add_argument('-nlp', '--no_lepton_selection', dest='no_lepton_selection', help='No Lepton Selection Skim', action='store_true')
 args = parser.parse_args()
 
@@ -25,6 +26,7 @@ sam = args.sam
 no_lepton_selection = args.no_lepton_selection
 slim = args.slim
 phase1 = args.phase1
+phase1_2018 = args.phase1_2018
 
 skim_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/single/"
 output_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/sum"
@@ -41,6 +43,9 @@ if sam:
     if phase1:
         skim_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/single/"
         output_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/sum"
+    elif phase1_2018:
+        skim_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1_2018/single/"
+        output_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1_2018/sum"
     else:
         skim_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_sam/single/"
         output_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_sam/sum"
@@ -67,8 +72,8 @@ def chunker_longest(iterable, chunksize):
 
 for f in files:
     point = None
-    if sam or phase1:
-        if phase1:
+    if sam or phase1 or phase1_2018:
+        if phase1 or phase1_2018:
             point = "_".join(os.path.basename(f).split("_")[3:5])
         else:
             point = "_".join(os.path.basename(f).split("_")[2:4])

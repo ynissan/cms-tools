@@ -22,6 +22,7 @@ parser = argparse.ArgumentParser(description='Add observables to trees.')
 args = parser.parse_args()
 
 WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_phase1"
+WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim"
 OUTPUT_SUM = WORK_DIR + "/sum"
 
 OUTPUT_SUM_OUTPUT = WORK_DIR + "/stdout"
