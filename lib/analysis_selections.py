@@ -25,11 +25,11 @@ non_iso_1t_factors = {
         "Muons" : [1.00821352005,0.0644787681262],
     },
     '2017' : {
-        "Electrons" : [1.04964542389,0.123523932702],
+        "Electrons" : [1.06451618671,0.119074677517],
         "Muons" : [0.953716695309,0.0511205737877],
     },
     '2018' : {
-        "Electrons" : [1.04891300201,0.108074340765],
+        "Electrons" : [1.02030456066,0.102291659779],
         "Muons" : [1.11734688282,0.0491334201941],
     },
 }
@@ -74,6 +74,11 @@ binning = {
     }
 }
 
+###### COMMAND TO COMPARE #######
+#cat tmp | tr '&&' '\n' | sort | uniq |sed 's/^ *//g' |sort
+
+uniform_binning_number = 40
+
 luminosities = {
     '2016' : 35.7389543,
     '2017' : 41.14712197,
@@ -109,6 +114,20 @@ dilepBDTString = {
     "phase1" : "dilepBDT",
 }
 
+exTrackDilepBDTString = {
+    '2016' : "exTrack_dilepBDT",
+    '2017' : "exTrack_dilepBDT",
+    '2018' : "exTrack_dilepBDT",
+    "phase1" : "exTrack_dilepBDT",
+}
+
+exTrackSameSignDilepBDTString = {
+    '2016' : "sc_exTrack_dilepBDT",
+    '2017' : "sc_exTrack_dilepBDT",
+    '2018' : "sc_exTrack_dilepBDT",
+    "phase1" : "sc_exTrack_dilepBDT",
+}
+
 jetIsos = {
     "Electrons": "CorrJetNoMultIso10Dr0.5",
     "Muons" : "CorrJetNoMultIso10Dr0.6"
@@ -128,7 +147,6 @@ two_leptons_bdt_sr = "***%%% > 0"
 two_leptons_bdt_cr = "***%%% < 0"
 
 sos_orth_condition = "(leptons%%%[1].Pt() <= 3.5 || deltaR%%% <= 0.3)"
-
 
 exclusive_track_category =  "exclusiveTrack%%% == 1 && exTrack_invMass%%% < 12 && exclusiveTrackLeptonFlavour%%% ==\"$$$\" && trackBDT%%% > 0"
 exclusive_track_category_sr = "exTrack_dilepBDT%%% > 0"
@@ -151,11 +169,22 @@ not_tautau_mc = "!tautau%%%"
 ###### PRE MADE LISTS ###### 
 
 
-two_leptons_sr_conditions = [common_preselection, two_leptons_condition, two_leptons_condition_zoo_removal, two_leptons_iso_condition, two_leptons_opposite_sign, two_leptons_bdt_sr]
-two_leptons_cr_conditions = [common_preselection, two_leptons_condition, two_leptons_condition_zoo_removal, two_leptons_iso_condition, two_leptons_opposite_sign, two_leptons_bdt_cr]
+two_leptons_full_bdt_conditions = [common_preselection, two_leptons_condition, two_leptons_condition_zoo_removal, two_leptons_iso_condition, two_leptons_opposite_sign]
+two_leptons_sr_conditions = two_leptons_full_bdt_conditions + [two_leptons_bdt_sr]
+two_leptons_cr_conditions = two_leptons_full_bdt_conditions + [two_leptons_bdt_cr]
+
+###### FINAL VERSION FOR THE SIGNALS ###### 
+two_leptons_full_bdt_conditions_outside_mtautau_window = two_leptons_full_bdt_conditions + [mtautau_veto]
+two_leptons_full_bdt_conditions_outside_mtautau_window_sos = two_leptons_full_bdt_conditions_outside_mtautau_window + [sos_orth_condition]
 
 two_leptons_bdt_sr_iso_sb = [common_preselection, two_leptons_condition, two_leptons_condition_zoo_removal, two_leptons_iso_sb_condition, two_leptons_opposite_sign, two_leptons_bdt_sr]
 two_leptons_bdt_sr_iso_sb_outside_mtautau_window = two_leptons_bdt_sr_iso_sb + [mtautau_veto]
+
+######## USED FOR DATA DRIVEN PREDICTION - ISOLATION SIDE BAND IN FULL BDT SCALE ########
+
+two_leptons_full_bdt_iso_sb = [common_preselection, two_leptons_condition, two_leptons_condition_zoo_removal, two_leptons_iso_sb_condition, two_leptons_opposite_sign]
+two_leptons_full_bdt_iso_sb_outside_mtautau_window = two_leptons_full_bdt_iso_sb + [mtautau_veto]
+two_leptons_full_bdt_iso_sb_outside_mtautau_window_sos = two_leptons_full_bdt_iso_sb_outside_mtautau_window + [sos_orth_condition]
 
 
 two_leptons_sr_conditions_sos = two_leptons_sr_conditions + [sos_orth_condition]
@@ -174,8 +203,12 @@ two_leptons_cr_conditions_outside_mtautau_window  = [common_preselection, two_le
 # two_leptons_cr_conditions_outside_mtautau_window_same_sign_iso_sb = [common_preselection, two_leptons_condition, two_leptons_condition_zoo_removal, two_leptons_iso_sb_condition, two_leptons_same_sign, two_leptons_bdt_cr, mtautau_veto]
 # two_leptons_cr_conditions_outside_mtautau_window_same_sign_iso_sb_sos = two_leptons_cr_conditions_outside_mtautau_window_same_sign_iso_sb + [sos_orth_condition]
 
+###### USED FOR MC TAU TAU TRANSFER FACTOR - TAU TAU - INSIDE TAU-TAU WINDOW #########
 two_leptons_bdt_cr_tautau_inside_mtautau_window = [common_preselection, two_leptons_condition, two_leptons_iso_condition, two_leptons_opposite_sign, two_leptons_bdt_cr, inside_mtautau_window, tautau_mc]
 two_leptons_bdt_cr_tautau_inside_mtautau_window_sos = two_leptons_bdt_cr_tautau_inside_mtautau_window + [sos_orth_condition]
+###### USED FOR MC TAU TAU PREDICTION - TAU TAU - OUTSIDE TAU-TAU WINDOW #########
+two_leptons_full_bdt_tautau_outside_mtautau_window_prediction = [common_preselection, two_leptons_condition, two_leptons_iso_condition, two_leptons_condition_zoo_removal, two_leptons_opposite_sign, tautau_mc, mtautau_veto] 
+two_leptons_full_bdt_tautau_outside_mtautau_window_prediction_sos = two_leptons_full_bdt_tautau_outside_mtautau_window_prediction + [sos_orth_condition]
 
 ###### MC - NOT TAU TAU - INSIDE/OUTSIDE TAU-TAU WINDOW #########
 
@@ -192,12 +225,38 @@ two_leptons_bdt_cr_inside_mtautau_window  = [common_preselection, two_leptons_co
 two_leptons_bdt_cr_inside_mtautau_window_sos = two_leptons_bdt_cr_inside_mtautau_window + [sos_orth_condition]
 two_leptons_bdt_cr_inside_mtautau_window_iso_sb = [common_preselection, two_leptons_condition, two_leptons_iso_sb_condition, two_leptons_opposite_sign, two_leptons_bdt_cr, inside_mtautau_window]
 two_leptons_bdt_cr_inside_mtautau_window_iso_sb_sos = two_leptons_bdt_cr_inside_mtautau_window_iso_sb + [sos_orth_condition]
-
 ###### OUTSIDE ######
 two_leptons_bdt_cr_not_tautau_outside_mtautau_window = two_leptons_cr_conditions_outside_mtautau_window + [not_tautau_mc]
 two_leptons_bdt_cr_not_tautau_outside_mtautau_window_sos = two_leptons_bdt_cr_not_tautau_outside_mtautau_window + [sos_orth_condition]
 two_leptons_bdt_cr_not_tautau_outside_mtautau_window_iso_sb = [common_preselection, two_leptons_condition, two_leptons_condition_zoo_removal, two_leptons_iso_sb_condition, two_leptons_opposite_sign, two_leptons_bdt_cr, mtautau_veto, not_tautau_mc]
 two_leptons_bdt_cr_not_tautau_outside_mtautau_window_iso_sb_sos = two_leptons_bdt_cr_not_tautau_outside_mtautau_window_iso_sb + [sos_orth_condition]
+
+
+######## EXCLUSIVE TRACKS ##########
+
+ex_track_cond = "exclusiveTrack%%% == 1 && trackBDT%%% > 0 && exTrack_invMass%%% < 12  && exclusiveTrackLeptonFlavour%%% == \"$$$\""
+sc_ex_track_cond = "sc_exclusiveTrack%%% == 1 && sc_trackBDT%%% > 0 && sc_exTrack_invMass%%% < 12 && sc_exclusiveTrackLeptonFlavour%%% == \"$$$\""
+
+ex_track_electrons_filter = "exTrack_deltaR%%% > 0.05"
+sc_ex_track_electrons_filter = "sc_exTrack_deltaR%%% > 0.05"
+
+ex_track_cr = "exTrack_dilepBDT%%% < 0"
+sc_ex_track_cr = "sc_exTrack_dilepBDT%%% < 0"
+
+ex_track_cr_selections = [common_preselection, ex_track_cond, ex_track_cr]
+ex_track_cr_electrons_selections = ex_track_cr_selections + [ex_track_electrons_filter]
+
+sc_ex_track_cr_selections = [common_preselection, sc_ex_track_cond, sc_ex_track_cr]
+sc_ex_track_cr_electrons_selections = sc_ex_track_cr_selections + [sc_ex_track_electrons_filter]
+
+####### FOR CREATING PREDICTIONS AND SIGNALS ####### 
+
+ex_track_full_range_selections = [common_preselection, ex_track_cond]
+ex_track_full_range_selections_electrons = ex_track_full_range_selections + [ex_track_electrons_filter]
+
+sc_ex_track_full_range_selections = [common_preselection, sc_ex_track_cond]
+sc_ex_track_full_range_selections_electrons = sc_ex_track_full_range_selections + [sc_ex_track_electrons_filter]
+
 
 def injectValues(toReplace, year, flavour):    
     return toReplace.replace("%%%", jetIsos[flavour]).replace("^^^", str(tautau_windows[flavour][0])).replace("@@@", str(tautau_windows[flavour][1])).replace("$$$", flavour).replace("***", dilepBDTString[year])

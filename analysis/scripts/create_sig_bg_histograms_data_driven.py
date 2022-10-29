@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3.8
 
 from ROOT import *
 from glob import glob
@@ -15,6 +15,7 @@ sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/"))
 sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
 import utils
 import analysis_ntuples
+import analysis_selections
 
 gROOT.SetBatch(True)
 gStyle.SetOptStat(0)
@@ -33,12 +34,17 @@ args = parser.parse_args()
 
 sam = True
 
-wanted_year = "2018"
+wanted_year = "2017"
+
+print("WANTED YEAR " + wanted_year)
 
 required_category = "all"
-required_category = "track"
+
+
+required_category = "tracks"
 required_category = "leptons"
 
+use_uniform_binning = True
 
 # required_lepton = "Muons"
 # jetiso = "CorrJetNoMultIso10Dr0.6"
@@ -52,33 +58,52 @@ output_file = None
 if args.output_file:
     output_file = args.output_file[0]
 else:
-    output_file = "sig_bg_histograms_data_driven_" + wanted_year + "_" + required_category + ".root"
+    output_file = "sig_bg_histograms_data_driven_" + wanted_year + "_" + required_category + ("_uniform_binning" if use_uniform_binning else "") + ".root"
+
+print("output_file=" + output_file)
 
 
 signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_sam/sum"
 bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum_total"
 data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/slim_sum"
 
+if required_category != "leptons":
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum"
+    data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/sum"
+
+data_pattern = "*"
+
 if wanted_year != "2016":
-    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_phase1/sum/slim_sum_total"
     if wanted_year == "2017":
-        data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_phase1/slim_2017"
+        signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/sum"
     elif wanted_year == "2018":
-        data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_phase1/slim_2018"
-    elif wanted_year == "phase1":
-        data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_phase1/slim_sum"
+        signal_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1_2018/sum"
+    if required_category != "leptons":
+        bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_phase1/sum/type_sum"
+        data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_phase1/sum"
+        if wanted_year == "2017":
+            data_pattern = "Run2017*"
+        elif wanted_year == "2018":
+            data_pattern = "Run2018*"
+    else:
+        bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_phase1/sum/slim_sum_total"
+        if wanted_year == "2017":
+            data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_phase1/slim_2017"
+        elif wanted_year == "2018":
+            data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_phase1/slim_2018"
+        elif wanted_year == "phase1":
+            data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_phase1/slim_sum"
 
+#luminosity = analysis_selections.luminosities[wanted_year]
+#lumi_weight = luminosity * 1000.
 
-luminosity = luminosities[wanted_year]
-lumi_weight = luminosity * 1000.
-
-mtautauveto = " && (nmtautau%%% > 160 || nmtautau%%% < 0)"
-veto_tautau = True
-
-mtautauVetos = {
-    "Muons" : " && (nmtautau%%% > 130 || nmtautau%%% < 40)",
-    "Electrons" : " && (nmtautau%%% > 160 || nmtautau%%% < 0)"
-}
+# mtautauveto = " && (nmtautau%%% > 130 || nmtautau%%% < 40)"
+# veto_tautau = True
+# 
+# mtautauVetos = {
+#     "Muons" : " && (nmtautau%%% > 130 || nmtautau%%% < 40)",
+#     "Electrons" : " && (nmtautau%%% > 160 || nmtautau%%% < 0)"
+# }
 
 
 
@@ -93,17 +118,15 @@ mtautauVetos = {
 #     }
 # }
 
+#uniform_binning = 40
 
-use_uniform_binning = True
-uniform_binning = 40
-
-print("lumi_weight_for_data", lumi_weight_for_data)
+#print("lumi_weight_for_data", lumi_weight_for_data)
 #exit(0)
 
 ######## END OF CMDLINE ARGUMENTS ########
 
 def main():
-    print "Start: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S')
+    print("Start: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S'))
     
     bg_1t_hist = {}
     bg_2l_hist = {}
@@ -113,10 +136,11 @@ def main():
     c1.cd()
     
     i=0
-    print "Getting DATA DRIVEN BG..."
-    data_files = glob(data_dir + "/*")
+    print("Getting DATA DRIVEN BG...")
+    data_files = glob(data_dir + "/" + data_pattern)
     for filename in data_files:
-        print "Opening", filename
+        #continue
+        print("Opening", filename)
         f = TFile(filename)
         c = f.Get('tEvent')
         
@@ -128,44 +152,88 @@ def main():
             
                 histName = "bg_1t_" + lep
             
-                base_cond = "(passedMhtMet6pack == 1 && passesUniversalSelection == 1 && MinDeltaPhiMhtJets > 0.4 && MHT >= 220 &&  MET >= 140 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)"
-                sc_cond =  "(" + ("sc_exTrack_deltaR%%% > 0.05 && " if lep == "Electrons" else "") + "sc_exclusiveTrack%%% == 1 && sc_trackBDT%%% > 0 && sc_exTrack_invMass%%% < 12 && sc_exTrack_dilepBDT%%% > 0 && sc_exclusiveTrackLeptonFlavour%%% == \""+lep+"\")"
-                cond = base_cond + " && " + sc_cond
-                drawString = cond.replace("%%%", jetIsos[lep])
+                # base_cond = "(passedMhtMet6pack == 1 && passesUniversalSelection == 1 && MinDeltaPhiMhtJets > 0.4 && MHT >= 220 &&  MET >= 140 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)"
+#                 sc_cond =  "(" + ("sc_exTrack_deltaR%%% > 0.05 && " if lep == "Electrons" else "") + "sc_exclusiveTrack%%% == 1 && sc_trackBDT%%% > 0 && sc_exTrack_invMass%%% < 12 && sc_exTrack_dilepBDT%%% > 0 && sc_exclusiveTrackLeptonFlavour%%% == \""+lep+"\")"
+#                 cond = base_cond + " && " + sc_cond
+#                 drawString = cond.replace("%%%", analysis_selections.jetIsos[lep])
+#                 
+#                 hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, "sc_exTrack_dilepBDT" + analysis_selections.jetIsos[lep], analysis_selections.binning["1t"][lep], drawString, False)
+#                 print("For 1t", lep, "got histogram with", hist.Integral())
+#                 hist.Sumw2()
+#                 old_sum = hist.Integral()
+#                 print("old number", old_sum)
+#                 
             
-            
-                #drawString = str(lumi_weight_for_data) + " * passesUniversalSelection * passedMhtMet6pack * (MinDeltaPhiMhtJets > 0.4 && MHT >= 220 &&  MET >= 140 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && exclusiveTrack" + jetIsos[lep] + " == 1 && exTrack_invMass" + jetIsos[lep] + " < 12 && exclusiveTrackLeptonFlavour" + jetIsos[lep] + " == \"" + lep + "\"" + (" && exTrack_deltaR" + jetIsos[lep] + " > 0.05" if lep == "Electrons" else "") +  " && trackBDT" + jetIsos[lep] + " > 0)"
-                hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, "sc_exTrack_dilepBDT" + jetIsos[lep], binning["1t"][lep], drawString, False)
-                #hist = utils.getHistogramFromTree(, c, , bins, -1, 1, , True)
-                #hist = utils.getHistogramFromTree(deltaM + "_1t_" + lep, c, "MET", bins, 0, 500, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 *  Weight * BranchingRatio * (exclusiveTrack" + jetIsos[lep] + " == 1 && MHT >= 220 && exTrack_invMass" + jetIsos[lep] + " < 12 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour" + jetIsos[lep] + " == \"" + lep + "\")", True)
-                print("For 1t", lep, "got histogram with", hist.Integral())
-                hist.Sumw2()
-                print("Scaling historgram with", lumi_weight_for_data)
-                hist.Scale(lumi_weight_for_data)
-                utils.scaleHistogram(hist, sfs["1t"][lep][0], sfs["1t"][lep][1])
+                obs = analysis_selections.exTrackSameSignDilepBDTString[wanted_year] + analysis_selections.jetIsos[lep]
+                conditions = analysis_selections.sc_ex_track_full_range_selections
+                if lep == "Electrons":
+                    conditions = analysis_selections.sc_ex_track_full_range_selections_electrons
+                drawString = analysis_selections.getDataString(wanted_year, lep, conditions)
+                hist = None
+                if use_uniform_binning:
+                    hist = utils.getHistogramFromTree(histName, c, obs, analysis_selections.uniform_binning_number, -1, 1, drawString, False)
+                else:
+                    hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, obs, analysis_selections.binning["1t"][lep], drawString, False)
+                new_sum = hist.Integral()
+                print("new number", new_sum)
+                #print("dif", new_sum-old_sum)
+                
+                #print("Scaling historgram with", lumi_weight_for_data)
+                #hist.Scale(lumi_weight_for_data)
+                utils.scaleHistogram(hist, analysis_selections.sfs["tracks"][wanted_year][lep][0], analysis_selections.sfs["tracks"][wanted_year][lep][1])
                 if bg_1t_hist.get(histName) is None:
                     bg_1t_hist[histName] = hist
                 else:
                     bg_1t_hist[histName].Add(hist)
             
-            
-            orthOpt = [True, False] if lep == "Muons" else [False]
-            orth_cond = " && (leptons" + jetIsos[lep] + "[1].Pt() <= 3.5 || deltaR" + jetIsos[lep] + " <= 0.3)"
-            for orth in orthOpt:
-                c1.cd()
-                print("2l",lep,orth)
-                drawString = "(passedMhtMet6pack == 1 && passesUniversalSelection == 1 && twoLeptons%%% == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour%%% == \"" + lep + "\" && sameSign%%% == 0 && isoCr%%% >= 1 " + (mtautauveto if veto_tautau else "") + ")"
-                drawString = drawString.replace("%%%", jetIsos[lep])
-                histName = "bg_2l_" + lep + ("_orth" if orth else "")
-                hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, "dilepBDT" + jetIsos[lep], binning["2l"][lep], drawString, False)
-                hist.Sumw2()
-                hist.Scale(lumi_weight_for_data)
-                utils.scaleHistogram(hist, sfs["2l"][lep][0], sfs["2l"][lep][1])
+            if required_category != "tracks":
+                orthOpt = [True, False] if lep == "Muons" else [False]
+                #orth_cond = " && (leptons" + analysis_selections.jetIsos[lep] + "[1].Pt() <= 3.5 || deltaR" + analysis_selections.jetIsos[lep] + " <= 0.3)"
+                for orth in orthOpt:
+                    c1.cd()
+                    print("2l",lep,orth)
+                    #drawString = "(passedMhtMet6pack == 1 && passesUniversalSelection == 1 && twoLeptons%%% == 1 "  + (orth_cond if orth else "") +  " && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour%%% == \"" + lep + "\" && sameSign%%% == 0 && isoCr%%% >= 1 " + (mtautauveto if veto_tautau else "") + ")"
+                    #drawString = drawString.replace("%%%", analysis_selections.jetIsos[lep])
+                    histName = "bg_2l_" + lep + ("_orth" if orth else "")
+                    #print("\n\nhistName=" + histName)
+                    #print("old drawString="+drawString)
                 
-                if bg_2l_hist.get(histName) is None:
-                    bg_2l_hist[histName] = hist
-                else:
-                    bg_2l_hist[histName].Add(hist)
+                
+                
+                    #hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, "dilepBDT" + analysis_selections.jetIsos[lep], analysis_selections.binning["2l"][lep], drawString, False)
+                    #hist.Sumw2()
+                    #hist.Scale(lumi_weight_for_data)
+                    #old_sum = hist.Integral()
+                    #print("old number", old_sum)
+                
+                    conditions = analysis_selections.two_leptons_full_bdt_iso_sb_outside_mtautau_window
+                    if orth:
+                        conditions = analysis_selections.two_leptons_full_bdt_iso_sb_outside_mtautau_window_sos
+                    drawString = analysis_selections.getDataString(wanted_year, lep, conditions)
+                
+                    observable = analysis_selections.dilepBDTString[wanted_year] + analysis_selections.jetIsos[lep]
+                    
+                    hist = None
+                    if use_uniform_binning:
+                        hist = utils.getHistogramFromTree(histName, c, observable, analysis_selections.uniform_binning_number, -1, 1, drawString, False)
+                    else:
+                        hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, observable, analysis_selections.binning["2l"][lep], drawString, False)
+                    hist.Sumw2() 
+                
+                    #print("\n\nnew drawString="+drawString)
+                    #hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, "dilepBDT" + analysis_selections.jetIsos[lep], analysis_selections.binning["2l"][lep], drawString, False)
+                    #hist.Sumw2()
+                    new_sum = hist.Integral()
+                    print("\n\nnew number", new_sum)
+                    #print("difference", old_sum-new_sum)
+                    print("\n\n")
+                
+                    utils.scaleHistogram(hist, analysis_selections.sfs["leptons"][wanted_year][lep][0], analysis_selections.sfs["leptons"][wanted_year][lep][1])
+                
+                    if bg_2l_hist.get(histName) is None:
+                        bg_2l_hist[histName] = hist
+                    else:
+                        bg_2l_hist[histName].Add(hist)
         
         f.Close()
         #i += 1
@@ -174,19 +242,20 @@ def main():
     
     print("bg_2l_hist", bg_2l_hist)
     
-    print "Getting signals..."
+    print("Getting signals...")
     
     signal_hists = {}
     i = 0
     for filename in glob(signal_dir + "/*"):
-        print "Opening", filename  
+        #continue
+        print("Opening", filename)
         if sam:
             deltaM = utils.getPointFromSamFileName(filename)
         else:
             deltaM = utils.getPointFromFileName(filename)  
         #if deltaM != "mChipm140GeV_dm4p28GeV":
         #    continue
-        print "deltaM=" + deltaM
+        print("deltaM=" + deltaM)
         f = TFile(filename)
         c = f.Get('tEvent')
 
@@ -196,49 +265,92 @@ def main():
             if required_category != "leptons":
             
                 histName = deltaM + "_1t_" + lep
-                #drawString = str(utils.LUMINOSITY) + " * passedMhtMet6pack * tEffhMetMhtRealXMht2016 *  Weight * BranchingRatio * (exclusiveTrack" + jetIsos[lep] + " == 1 && MET >= 140 && MHT >= 220 && exTrack_invMass" + jetIsos[lep] + " < 12 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour" + jetIsos[lep] + " == \"" + lep + "\")"
-                drawString = str(utils.LUMINOSITY) + " * FastSimWeightPR31285To36122 * passesUniversalSelection * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (MinDeltaPhiMhtJets > 0.4 && MHT >= 220 &&  MET >= 140 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && exclusiveTrack" + jetIsos[lep] + " == 1 && exTrack_invMass" + jetIsos[lep] + " < 12 && exclusiveTrackLeptonFlavour" + jetIsos[lep] + " == \"" + lep + "\"" + (" && exTrack_deltaR" + jetIsos[lep] + " > 0.05" if lep == "Electrons" else "") +  " && trackBDT" + jetIsos[lep] + " > 0)"
-                hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, "exTrack_dilepBDT" + jetIsos[lep], binning["1t"][lep], drawString, False)
-                #hist = utils.getHistogramFromTree(, c, , bins, -1, 1, , True)
-                #hist = utils.getHistogramFromTree(deltaM + "_1t_" + lep, c, "MET", bins, 0, 500, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 *  Weight * BranchingRatio * (exclusiveTrack" + jetIsos[lep] + " == 1 && MHT >= 220 && exTrack_invMass" + jetIsos[lep] + " < 12 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour" + jetIsos[lep] + " == \"" + lep + "\")", True)
-            
-                hist.Sumw2()
+                #drawString = str(utils.LUMINOSITY) + " * passedMhtMet6pack * tEffhMetMhtRealXMht2016 *  Weight * BranchingRatio * (exclusiveTrack" + analysis_selections.jetIsos[lep] + " == 1 && MET >= 140 && MHT >= 220 && exTrack_invMass" + analysis_selections.jetIsos[lep] + " < 12 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour" + analysis_selections.jetIsos[lep] + " == \"" + lep + "\")"
+                
+                # drawString = "{:.2f}".format(analysis_selections.luminosities[wanted_year]*1000) + " * FastSimWeightPR31285To36122 * passesUniversalSelection * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (MinDeltaPhiMhtJets > 0.4 && MHT >= 220 &&  MET >= 140 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && exclusiveTrack" + analysis_selections.jetIsos[lep] + " == 1 && exTrack_invMass" + analysis_selections.jetIsos[lep] + " < 12 && exclusiveTrackLeptonFlavour" + analysis_selections.jetIsos[lep] + " == \"" + lep + "\"" + (" && exTrack_deltaR" + analysis_selections.jetIsos[lep] + " > 0.05" if lep == "Electrons" else "") +  " && trackBDT" + analysis_selections.jetIsos[lep] + " > 0)"
+#                 hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, "exTrack_dilepBDT" + analysis_selections.jetIsos[lep], analysis_selections.binning["1t"][lep], drawString, False)
+#                 #hist = utils.getHistogramFromTree(, c, , bins, -1, 1, , True)
+#                 #hist = utils.getHistogramFromTree(deltaM + "_1t_" + lep, c, "MET", bins, 0, 500, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 *  Weight * BranchingRatio * (exclusiveTrack" + analysis_selections.jetIsos[lep] + " == 1 && MHT >= 220 && exTrack_invMass" + analysis_selections.jetIsos[lep] + " < 12 && BTagsDeepMedium == 0 && exclusiveTrackLeptonFlavour" + analysis_selections.jetIsos[lep] + " == \"" + lep + "\")", True)
+#                 hist.Sumw2()
+#                 
+#                 old_sum = hist.Integral()
+#                 print("old number", old_sum)
+                
+                obs = analysis_selections.exTrackDilepBDTString[wanted_year] + analysis_selections.jetIsos[lep]
+                conditions = analysis_selections.ex_track_full_range_selections
+                if lep == "Electrons":
+                    conditions = analysis_selections.ex_track_full_range_selections_electrons
+                drawString = analysis_selections.getFastSimString(wanted_year, lep, conditions)
+                hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, obs, analysis_selections.binning["1t"][lep], drawString, False)
+                new_sum = hist.Integral()
+                print("new_sum", new_sum)
+                #print("difference", old_sum-new_sum)
                 if signal_hists.get(histName) is None:
                     signal_hists[histName] = hist
                 else:
                     signal_hists[histName].Add(hist)
             
-            
-            orthOpt = [True, False] if lep == "Muons" else [False]
-            orth_cond = " && (leptons%%%[1].Pt() <= 3.5 || deltaR%%% <= 0.3)"
-            for orth in orthOpt:
-                c1.cd()
+            if required_category != "tracks":
+                orthOpt = [True, False] if lep == "Muons" else [False]
+                orth_cond = " && (leptons%%%[1].Pt() <= 3.5 || deltaR%%% <= 0.3)"
+                for orth in orthOpt:
+                    c1.cd()
+                
+                    histName = deltaM + "_2l_" + lep + ("_orth" if orth else "")
+                    #drawString = "{:.2f}".format(analysis_selections.luminosities[wanted_year]*1000) + " * FastSimWeightPR31285To36122* passesUniversalSelection * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (twoLeptons%%% == 1 " + (orth_cond if orth else "") + " && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour%%% == \"" + lep + "\" && sameSign%%% == 0 && isoCr%%% == 0 " + (mtautauveto if veto_tautau else "") + "  )"
+                    #drawString = drawString.replace("%%%", analysis_selections.jetIsos[lep])
                 
                 
-                drawString = str(utils.LUMINOSITY) + " * FastSimWeightPR31285To36122* passesUniversalSelection * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (twoLeptons%%% == 1 " + (orth_cond if orth else "") + " && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour%%% == \"" + lep + "\" && sameSign%%% == 0 && isoCr%%% == 0 " + (mtautauveto if veto_tautau else "") + "  )"
-                drawString = drawString.replace("%%%", jetIsos[lep])
-                histName = deltaM + "_2l_" + lep + ("_orth" if orth else "")
-                hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, "dilepBDT" + jetIsos[lep], binning["2l"][lep], drawString, False)
-                #hist = utils.getHistogramFromTree(deltaM + "_2l_" + ("orth_" if orth else "") + lep , c, "dilepBDT" + jetIsos[lep], bins, -1, 1, cond, True)
-                #hist = utils.getHistogramFromTree(, c, , bins, -1, 1, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (twoLeptons" + jetIsos[lep] + " == 1 " + (orth_cond if orth else "") + " && MET >= 140 && MHT >= 220 && invMass" + jetIsos[lep] + " < 12  && invMass" + jetIsos[lep] + " > 0.4 && !(invMass" + jetIsos[lep] + " > 3 && invMass" + jetIsos[lep] + " < 3.2) && !(invMass" + jetIsos[lep] + " > 0.75 && invMass" + jetIsos[lep] + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && @leptons" + jetIsos[lep] + ".size() == 2 && leptonFlavour" + jetIsos[lep] + " == \"" + lep + "\" && sameSign" + jetIsos[lep] + " == 0 && isoCr" + jetIsos[lep] + " == 0)", True)
-                #hist = utils.getHistogramFromTree(deltaM + "_2l_" + ("orth_" if orth else "") + lep, c, "MET", bins, 0, 500, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (twoLeptons" + jetIsos[lep] + " == 1 " + (orth_cond if orth else "") + " && MHT >= 220 && invMass" + jetIsos[lep] + " < 12  && invMass" + jetIsos[lep] + " > 0.4 && !(invMass" + jetIsos[lep] + " > 3 && invMass" + jetIsos[lep] + " < 3.2) && !(invMass" + jetIsos[lep] + " > 0.75 && invMass" + jetIsos[lep] + " < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && @leptons" + jetIsos[lep] + ".size() == 2 && leptonFlavour" + jetIsos[lep] + " == \"" + lep + "\" && sameSign" + jetIsos[lep] + " == 0 && isoCr" + jetIsos[lep] + " == 0)", True)
-                #non-orth
-                #hist = utils.getHistogramFromTree(deltaM + "_2l", c, "dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (MHT >= 220 &&  MET >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1)", True)
-                if signal_hists.get(histName) is None:
-                    signal_hists[histName] = hist
-                else:
-                    signal_hists[histName].Add(hist)
+                    #print("\n\nhistName=" + histName)
+                    #print("old drawString="+drawString)
+                
+
+                    #hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, "dilepBDT" + analysis_selections.jetIsos[lep], analysis_selections.binning["2l"][lep], drawString, False)
+                    #hist.Sumw2()
+                    #hist.Scale(lumi_weight_for_data)
+                    #old_sum = hist.Integral()
+                    #print("old number", old_sum)
+                
+                    conditions = analysis_selections.two_leptons_full_bdt_conditions_outside_mtautau_window
+                    if orth:
+                        conditions = analysis_selections.two_leptons_full_bdt_conditions_outside_mtautau_window_sos
+                    drawString = analysis_selections.getFastSimString(wanted_year, lep, conditions)
+                
+                    observable = analysis_selections.dilepBDTString[wanted_year] + analysis_selections.jetIsos[lep]
+                    
+                    hist = None
+                    if use_uniform_binning:
+                        hist = utils.getHistogramFromTree(histName, c, observable, analysis_selections.uniform_binning_number, -1, 1, drawString, False)
+                    else:
+                        hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, observable, analysis_selections.binning["2l"][lep], drawString, False)
+                    hist.Sumw2() 
+                
+                
+                    #hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, "dilepBDT" + analysis_selections.jetIsos[lep], analysis_selections.binning["2l"][lep], drawString, False)
+                    #hist.Sumw2() 
+
+                    new_sum = hist.Integral()
+                    print("\n\nnew sum", new_sum)
+                    #print("difference", old_sum-new_sum)
+                    #print("\n\n")
+                
+                    #non-orth
+                    #hist = utils.getHistogramFromTree(deltaM + "_2l", c, "dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (MHT >= 220 &&  MET >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1)", True)
+                    if signal_hists.get(histName) is None:
+                        signal_hists[histName] = hist
+                    else:
+                        signal_hists[histName].Add(hist)
         f.Close()
         #i += 1
         #if i > 5:
         #    break
     
-    if required_category != "track":
+    if required_category != "tracks":
     
-        print "Getting Mtautau BG..."
-        bg_slim_files = [slim_bg_file]
+        print("Getting Mtautau BG...")
+        bg_slim_files = glob(bg_dir + "/*")
         for filename in bg_slim_files:
-            print "Opening", filename
+            print("Opening", filename)
             f = TFile(filename)
             c = f.Get('tEvent')
         
@@ -251,12 +363,36 @@ def main():
                     c1.cd()
                     print("2l",lep,orth)
                 
-                    drawString = str(utils.LUMINOSITY) + " * passesUniversalSelection * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (twoLeptons%%% == 1 " + (orth_cond if orth else "") + " && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour%%% == \"" + lep + "\" && sameSign%%% == 0 && isoCr%%% == 0 && tautau%%%" + (mtautauveto if veto_tautau else "") + " )"
-                    drawString = drawString.replace("%%%", jetIsos[lep])
+                    #drawString = "{:.2f}".format(analysis_selections.luminosities[wanted_year]*1000) + " * passesUniversalSelection * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (twoLeptons%%% == 1 " + (orth_cond if orth else "") + " && MinDeltaPhiMhtJets > 0.4 && MET >= 140 && MHT >= 220 && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && leptonFlavour%%% == \"" + lep + "\" && sameSign%%% == 0 && isoCr%%% == 0 && tautau%%%" + (mtautauveto if veto_tautau else "") + " )"
+                    #drawString = drawString.replace("%%%", analysis_selections.jetIsos[lep])
                     histName = "bg_2l_" + lep + ("_orth" if orth else "")
-                    hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, "dilepBDT" + jetIsos[lep], binning["2l"][lep], drawString, False)
-                    hist.Sumw2()
-                    utils.scaleHistogram(hist, tautauSf[lep][0], tautauSf[lep][1])
+                    #hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, "dilepBDT" + analysis_selections.jetIsos[lep], analysis_selections.binning["2l"][lep], drawString, False)
+                    #hist.Sumw2()
+                    
+                    #old_sum = hist.Integral()
+                    #print("old number", old_sum)
+                    
+                    
+                    conditions = analysis_selections.two_leptons_full_bdt_tautau_outside_mtautau_window_prediction
+                    if orth:
+                        conditions = analysis_selections.two_leptons_full_bdt_tautau_outside_mtautau_window_prediction_sos
+                    drawString = analysis_selections.getFullSimString(wanted_year, lep, conditions)
+                    
+                    observable = analysis_selections.dilepBDTString[wanted_year] + analysis_selections.jetIsos[lep]
+                    
+                    hist = None
+                    if use_uniform_binning:
+                        hist = utils.getHistogramFromTree(histName, c, observable, analysis_selections.uniform_binning_number, -1, 1, drawString, False)
+                    else:
+                        hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, observable, analysis_selections.binning["2l"][lep], drawString, False)
+                    hist.Sumw2() 
+
+                    new_sum = hist.Integral()
+                    print("\n\nnew sum", new_sum)
+                    #print("difference", old_sum-new_sum)
+                    
+                    
+                    utils.scaleHistogram(hist, analysis_selections.tautau_factors[wanted_year][lep][0], analysis_selections.tautau_factors[wanted_year][lep][1])
                     if bg_2l_hist.get(histName) is None:
                         print("WTF!! histName", histName)
                         bg_2l_hist[histName] = hist

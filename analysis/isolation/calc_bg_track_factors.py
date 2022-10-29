@@ -15,6 +15,7 @@ sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/"))
 sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
 import utils
 import analysis_ntuples
+import analysis_selections
 
 gROOT.SetBatch(True)
 gStyle.SetOptStat(0)
@@ -77,6 +78,8 @@ def main():
     if wanted_year == "2017" or wanted_year == "2018":
         pattern = "/Run" + wanted_year + "*"
     
+    print "WANTED YEAR", wanted_year
+    
     data_files = glob(data_dir + pattern)
     i=1
     for filename in data_files:#glob(bg_dir + "/*"):
@@ -93,19 +96,45 @@ def main():
         #for lep in ["Muons"]:
             for sc in [False, True]:
                 
-                base_cond = "(" + data_filters[wanted_year] + "passedMhtMet6pack == 1 && passesUniversalSelection == 1 && MinDeltaPhiMhtJets > 0.4 && MHT >= 220 &&  MET >= 140 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)"
-                sc_cond =  "(" + ("sc_exTrack_deltaR > 0.05 && " if lep == "Electrons" else "") + "sc_exclusiveTrack%%% == 1 && sc_trackBDT%%% > 0 && sc_exTrack_invMass%%% < 12 && sc_exTrack_dilepBDT%%% < 0 && sc_exclusiveTrackLeptonFlavour%%% == \""+lep+"\")"  if sc else "(" + ("exTrack_deltaR > 0.05 && " if lep == "Electrons" else "") + "exclusiveTrack%%% == 1 && trackBDT%%% > 0 && exTrack_invMass%%% < 12  && exTrack_dilepBDT%%% < 0 && exclusiveTrackLeptonFlavour%%% == \""+lep+"\")"
-                cond = base_cond + " && " + sc_cond
-                condition = cond.replace("%%%", jetiso[lep])
-
+                # base_cond = "(" + data_filters[wanted_year] + "passedMhtMet6pack == 1 && passesUniversalSelection == 1 && MinDeltaPhiMhtJets > 0.4 && MHT >= 220 &&  MET >= 140 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)"
+#                 sc_cond =  "(" + ("sc_exTrack_deltaR%%% > 0.05 && " if lep == "Electrons" else "") + "sc_exclusiveTrack%%% == 1 && sc_trackBDT%%% > 0 && sc_exTrack_invMass%%% < 12 && sc_exTrack_dilepBDT%%% < 0 && sc_exclusiveTrackLeptonFlavour%%% == \""+lep+"\")"  if sc else "(" + ("exTrack_deltaR%%% > 0.05 && " if lep == "Electrons" else "") + "exclusiveTrack%%% == 1 && trackBDT%%% > 0 && exTrack_invMass%%% < 12  && exTrack_dilepBDT%%% < 0 && exclusiveTrackLeptonFlavour%%% == \""+lep+"\")"
+#                 cond = base_cond + " && " + sc_cond
+#                 condition = cond.replace("%%%", jetiso[lep])
+                
                 c1.cd()
-
+                
+                
+                
                 histName = "1t_" + lep + ("_sc" if sc else "")
-                obs = (("sc_" if sc else "") + "exTrack_dilepBDT%%%").replace("%%%", jetiso[lep])
+                print "histName", histName
+                obs = None
+                if sc:
+                    obs = analysis_selections.exTrackSameSignDilepBDTString[wanted_year] + analysis_selections.jetIsos[lep]
+                else:
+                    obs = analysis_selections.exTrackDilepBDTString[wanted_year] + analysis_selections.jetIsos[lep]
 
+                #hist = utils.getHistogramFromTree(histName, c, obs, 1, -1, 1, condition, False)
+                #hist.Sumw2()
+                
+                #old_sum = hist.Integral()
+                #print("old number", old_sum)
+                
+                conditions = analysis_selections.ex_track_cr_selections
+                if sc:
+                    conditions = analysis_selections.sc_ex_track_cr_selections
+                if lep == "Electrons":
+                    conditions = analysis_selections.ex_track_cr_electrons_selections
+                    if sc:
+                        conditions = analysis_selections.sc_ex_track_cr_electrons_selections
+                
+                condition = analysis_selections.getDataString(wanted_year, lep, conditions)
+                print "new condition=" + condition
                 hist = utils.getHistogramFromTree(histName, c, obs, 1, -1, 1, condition, False)
                 hist.Sumw2()
-            
+                new_sum = hist.Integral()
+                print("new number", new_sum)
+                #print("diff", old_sum-new_sum)
+                print("\n\n")
                 
                 if data_1t_hist.get(histName) is None:
                     data_1t_hist[histName] = hist

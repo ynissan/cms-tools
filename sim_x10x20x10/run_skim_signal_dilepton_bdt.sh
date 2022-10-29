@@ -61,6 +61,9 @@ if [ -n "$SAM" ]; then
     echo "GOT SAM"
     echo "HERE: $@"
     INPUT_DIR=$SKIM_SIG_SAM_OUTPUT_DIR
+    if [ -n "$ONPHASE0" ]; then
+        BDT_DIR=$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt_phase1
+    fi
     #OUTPUT_DIR=$SKIM_SAM_SIG_BDT_OUTPUT_DIR
 elif [ -n "$SC" ]; then
     echo "GOT SC"

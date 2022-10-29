@@ -67,8 +67,6 @@ if wanted_year != "2016":
 def main():
     print "Start: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S')
     
-    
-    
     c1 = TCanvas("c1", "c1", 800, 800)
     c1.cd()
        
