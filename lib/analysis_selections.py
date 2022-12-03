@@ -1,4 +1,4 @@
-
+import copy
 
 non_iso_2l_factors = {
     '2016' : {
@@ -15,9 +15,48 @@ non_iso_2l_factors = {
     },
     "phase1" : {
         "Electrons" : [0.322580635548,0.117313876994],
-        "Muons" : [0.530651330948,0.0394464132051],
+        "Muons" : [0.532567024231,0.0395422736191],
     }
 }
+
+non_iso_2l_factors_closure_line_fit = {
+    '2016' : {
+        "Muons" : [0.548381507397,0.0784842709934],
+    },
+    '2017' : {
+        "Muons" : [0.538011014462,0.0638548734525],
+    },
+    '2018' : {  
+        "Muons" : [0.44481164217,0.0423700934689],
+    },
+    'phase1' : {  
+        "Muons" : [0.46783977747,0.0347372253605],
+    },
+}
+
+non_iso_2l_factors_closure_line_fit_sigma_m = {
+    '2016' : {
+        "Muons" : [0.528906583786,0.0757227023209],
+    },
+    '2017' : {
+        "Muons" : [0.50672185421,0.0601354942269],
+    },
+    '2018' : {  
+        "Muons" : [0.450082242489,0.0428743577446],
+    },
+    'phase1' : {  
+        "Muons" : [0.473201811314,0.0351371700556],
+    },
+}
+
+non_iso_2l_factors_base = copy.deepcopy(non_iso_2l_factors)
+non_iso_2l_factors_sigma = copy.deepcopy(non_iso_2l_factors)
+
+non_iso_2l_factors_base['2016']['Muons'] = non_iso_2l_factors_closure_line_fit['2016']['Muons']
+non_iso_2l_factors_sigma['2016']['Muons'] = non_iso_2l_factors_closure_line_fit_sigma_m['2016']['Muons']
+non_iso_2l_factors_sigma['2017']['Muons'] = non_iso_2l_factors_closure_line_fit['2017']['Muons']
+non_iso_2l_factors_sigma['2018']['Muons'] = non_iso_2l_factors_closure_line_fit['2018']['Muons']
+non_iso_2l_factors_sigma['phase1']['Muons'] = non_iso_2l_factors_closure_line_fit['phase1']['Muons']
 
 non_iso_1t_factors = {
     '2016' : {
@@ -31,6 +70,10 @@ non_iso_1t_factors = {
     '2018' : {
         "Electrons" : [1.02030456066,0.102291659779],
         "Muons" : [1.11734688282,0.0491334201941],
+    },
+    'phase1' : {
+        "Electrons" : [1.03977274895,0.0776227043954],
+        "Muons" : [1.04843473434,0.0356166678274],
     },
 }
 
@@ -50,7 +93,10 @@ tautau_factors = {
     },
     "2018" : {
         "Electrons" : [0.710534274578,0.549813163105],
-        "Muons" : [0.093785084784,0.316509052096],
+        "Muons" : [0.0870423987508,0.317163025325],
+    },
+    "phase1" : {
+        "Muons" : [0.283469319344,0.259255921768],
     },
 }
 
@@ -61,16 +107,14 @@ tautau_windows = {
 
 binning = {
     "1t" : {
-        "Electrons" : [0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,1],
+        "Electrons" : [0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,1],
         "Muons" : [0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,1]
     },
     "2l" : {
-        #"Electrons" : [0,0.1,0.2,0.3,0.35,1],
-        #"Muons" : [0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,1]
+
         "Electrons" : [0,0.1,0.2,0.3,1],
-        #"Muons" : [0,0.05,0.15,0.25,0.35,0.45,0.6,1]
         #new 
-        "Muons" : [0,0.1,0.2,0.3,0.4,0.45,0.5,1]        
+        "Muons" : [0,0.1,0.2,0.3,0.4,0.5,1] 
     }
 }
 
@@ -133,6 +177,51 @@ jetIsos = {
     "Muons" : "CorrJetNoMultIso10Dr0.6"
 }
 
+########## EXTRA WEIGHTS ##########
+
+muonsClosureLineFitWeight = "muonsClosureLineFitWeight%%%"
+muonsClosureLineFitSigmaMWeight = "muonsClosureLineFitSigmaMWeight%%%"
+
+extra_filters_2l_main_prediction =  {
+    '2016' : {
+        "Electrons" : [],
+        "Muons" : [muonsClosureLineFitWeight],
+    },
+    '2017' : {
+        "Electrons" : [],
+        "Muons" : [],
+    },
+    '2018' : {
+        "Electrons" : [],
+        "Muons" : [],
+    },
+    'phase1' : {
+        "Electrons" : [],
+        "Muons" : [],
+    },
+}
+
+extra_filters_2l_sigma_prediction =  {
+    '2016' : {
+        "Electrons" : [],
+        "Muons" : [muonsClosureLineFitSigmaMWeight],
+    },
+    '2017' : {
+        "Electrons" : [],
+        "Muons" : [muonsClosureLineFitWeight],
+    },
+    '2018' : {
+        "Electrons" : [],
+        "Muons" : [muonsClosureLineFitWeight],
+    },
+    'phase1' : {
+        "Electrons" : [],
+        "Muons" : [muonsClosureLineFitWeight],
+    },
+}
+
+########## SELECTIONS ##########
+
 common_preselection = "passedMhtMet6pack && passesUniversalSelection && MinDeltaPhiMhtJets > 0.4 && MHT >= 220 &&  MET >= 140 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0"
 
 two_leptons_condition = "twoLeptons%%% == 1 && leptonFlavour%%% == \"$$$\""
@@ -167,7 +256,6 @@ tautau_mc = "tautau%%%"
 not_tautau_mc = "!tautau%%%"
 
 ###### PRE MADE LISTS ###### 
-
 
 two_leptons_full_bdt_conditions = [common_preselection, two_leptons_condition, two_leptons_condition_zoo_removal, two_leptons_iso_condition, two_leptons_opposite_sign]
 two_leptons_sr_conditions = two_leptons_full_bdt_conditions + [two_leptons_bdt_sr]
@@ -231,7 +319,6 @@ two_leptons_bdt_cr_not_tautau_outside_mtautau_window_sos = two_leptons_bdt_cr_no
 two_leptons_bdt_cr_not_tautau_outside_mtautau_window_iso_sb = [common_preselection, two_leptons_condition, two_leptons_condition_zoo_removal, two_leptons_iso_sb_condition, two_leptons_opposite_sign, two_leptons_bdt_cr, mtautau_veto, not_tautau_mc]
 two_leptons_bdt_cr_not_tautau_outside_mtautau_window_iso_sb_sos = two_leptons_bdt_cr_not_tautau_outside_mtautau_window_iso_sb + [sos_orth_condition]
 
-
 ######## EXCLUSIVE TRACKS ##########
 
 ex_track_cond = "exclusiveTrack%%% == 1 && trackBDT%%% > 0 && exTrack_invMass%%% < 12  && exclusiveTrackLeptonFlavour%%% == \"$$$\""
@@ -267,7 +354,7 @@ def getFastSimString(year, flavour, selections):
 def getFullSimString(year, flavour, selections):
     return injectValues("{:.2f}".format(luminosities[year] * 1000) + " * " +full_sim_weights[year] + " * (" + " && ".join(selections) + ")", year, flavour)
 
-def getDataString(year, flavour, selections):
-    return injectValues(data_weights[year] + "(" + " && ".join(selections) + ")", year, flavour)
+def getDataString(year, flavour, selections, extraFilters = []):
+    return injectValues(" * ".join(extraFilters) + (" * " if len(extraFilters) > 0 else "") +  data_weights[year] + "(" + " && ".join(selections) + ")", year, flavour)
 
 

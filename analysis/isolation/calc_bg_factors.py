@@ -41,13 +41,17 @@ output_file = None
 signal_dir = None
 bg_dir = None
 
-wanted_year = "2017"
+wanted_year = "phase1"
 
 required_lepton = "Electrons"
 jetiso = "CorrJetNoMultIso10Dr0.5"
 
 required_lepton = "Muons"
 jetiso = "CorrJetNoMultIso10Dr0.6"
+
+extraWeightsSelection = [analysis_selections.muonsClosureLineFitWeight]
+extraWeightsSelection = [analysis_selections.muonsClosureLineFitSigmaMWeight]
+extraWeightsSelection = []
 
 bg_slim_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum_total/slim_sum_total.root"
 data_slim_file = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/slim_sum/Run2016.root"
@@ -314,9 +318,12 @@ def main():
                         
                         #print "\nold condition=" + condition
                         
+                        extraWeights = []
+                        
                         conditions = copy.deepcopy(analysis_selections.two_leptons_cr_conditions_outside_mtautau_window_basic)
                         if isoCr:
                             conditions += [analysis_selections.two_leptons_iso_sb_condition]
+                            extraWeights += extraWeightsSelection
                         else:
                             conditions += [analysis_selections.two_leptons_iso_condition]
                         
@@ -327,7 +334,7 @@ def main():
                         else:
                             conditions += [analysis_selections.two_leptons_opposite_sign]
                         
-                        condition = analysis_selections.getDataString(wanted_year, lep, conditions)
+                        condition = analysis_selections.getDataString(wanted_year, lep, conditions, extraWeights)
                         print "\nnew cond=" + condition + "---------\n\n"
                         
                         hist = utils.getHistogramFromTree("data_2l_" + lep + ("_orth" if orth else "") + "_" + jetiso + ("_isoCr" if isoCr else "") + ("_sameSign" if sameSign else ""), c, analysis_selections.dilepBDTString[wanted_year] + jetiso, 1, -1, 1, condition, False)
@@ -353,7 +360,7 @@ def main():
                         
                         if orth:
                             conditions += [analysis_selections.sos_orth_condition]
-                        condition = analysis_selections.getDataString(wanted_year, lep, conditions)
+                        condition = analysis_selections.getDataString(wanted_year, lep, conditions, extraWeights)
                         print "\nnew cond=" + condition + "---------\n\n"
                         hist = utils.getHistogramFromTree(histName, c, analysis_selections.dilepBDTString[wanted_year] + jetiso, 1, -1, 1, condition, False)
                         hist.Sumw2()

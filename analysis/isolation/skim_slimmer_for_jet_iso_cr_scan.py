@@ -23,15 +23,19 @@ gStyle.SetOptStat(0)
 
 parser = argparse.ArgumentParser(description='Slim skims for jet iso scan..')
 parser.add_argument('-s', '--signal', dest='signal', help='Signal', action='store_true')
+parser.add_argument('-sam', '--sam', dest='sam', help='Signal', action='store_true')
 parser.add_argument('-bg', '--background', dest='bg', help='Background', action='store_true')
 parser.add_argument('-data', '--data', dest='data', help='Background', action='store_true')
 parser.add_argument('-phase1', '--phase1', dest='phase1', help='Phase 1', action='store_true')
+parser.add_argument('-phase1_2018', '--phase1_2018', dest='phase1_2018', help='phase1_2018', action='store_true')
 args = parser.parse_args()
 
 signal = args.signal
 bg = args.bg
 data = args.data
 phase1 = args.phase1
+phase1_2018 = args.phase1_2018
+sam = args.sam
 
 if not signal and not bg and not data:
     bg = True
@@ -47,6 +51,16 @@ if signal:
         output_dir = base_dir + "/signal/skim_phase1/slim_sum"
         output_dir_stdout = base_dir + "/signal/skim_phase1/stdout"
         output_dir_stderr = base_dir + "/signal/skim_phase1/stderr"
+    elif phase1_2018:
+        input_dir = base_dir + "/signal/skim_phase1_2018/sum"
+        output_dir = base_dir + "/signal/skim_phase1_2018/slim_sum"
+        output_dir_stdout = base_dir + "/signal/skim_phase1_2018/stdout"
+        output_dir_stderr = base_dir + "/signal/skim_phase1_2018/stderr"
+    elif sam:
+        input_dir = base_dir + "/signal/skim_sam/sum"
+        output_dir = base_dir + "/signal/skim_sam/slim_sum"
+        output_dir_stdout = base_dir + "/signal/skim_sam/stdout"
+        output_dir_stderr = base_dir + "/signal/skim_sam/stderr"
     else:
         input_dir = base_dir + "/signal/skim/single"
         output_dir = base_dir + "/signal/skim/slim"

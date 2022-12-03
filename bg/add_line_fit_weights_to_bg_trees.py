@@ -21,7 +21,13 @@ from lib import analysis_observables
 parser = argparse.ArgumentParser(description='Add observables to trees.')
 args = parser.parse_args()
 
+wanted_phase = "phase1"
+
 WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim"
+
+if wanted_phase == "phase1":
+    WORK_DIR = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_phase1"
+
 SINGLE_OUTPUT = WORK_DIR + "/single"
 OUTPUT_SUM = WORK_DIR + "/sum"
 
@@ -69,7 +75,7 @@ notification = Never
     for f in fileList:
         filename = os.path.basename(f).split(".")[0]
 
-        command = add_observable_script + " -i " + f + " -f"
+        command = add_observable_script + " -i " + f + " -f --wanted_phase " + wanted_phase
         print("Perorming:", command)
     
         #system(command)

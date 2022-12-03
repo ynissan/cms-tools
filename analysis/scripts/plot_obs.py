@@ -311,6 +311,8 @@ def createPlotsFast(rootfiles, types, histograms, weight, category, conditions, 
                                 drawWeight += ((str(weight) + " * ") if ("data" not in category and plot_par.use_calculated_lumi_weight)  else "")
                                 if plot_par.object_retag_weights.get(object_retag_name) is not None:
                                     drawWeight += plot_par.object_retag_weights[object_retag_name] + " * "
+                                if special_type == "sc" and cut.get("sc_weights") is not None:
+                                    drawWeight += cut["sc_weights"] + " * "
                                 
                                 drawString = drawWeight + " ( " + conditionStr + " )"
             
@@ -1035,6 +1037,8 @@ def main():
         loadAllHistograms(histograms)
         loaded_from_file = True
     else:
+        print(plot_par.load_histrograms_from_file, plot_par.histrograms_file, os.path.isfile(plot_par.histrograms_file))
+        #exit(0)
         print("Creating histogram from scratch")
         createAllHistograms(histograms, sumTypes)
         

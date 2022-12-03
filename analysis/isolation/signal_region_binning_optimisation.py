@@ -15,6 +15,7 @@ sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/"))
 sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib/classes"))
 import utils
 import analysis_ntuples
+import analysis_selections
 import plotutils
 
 gROOT.SetBatch(True)
@@ -40,41 +41,90 @@ args = parser.parse_args()
 
 output_file = None
 
-lepNum = 2
 
-histograms_file = None
+
+lepNum = 2
+wanted_year = "phase1"
+wanted_lepton = "Electrons"
+wanted_lepton = "Muons"
+
+lepNum = 1
+wanted_year = "phase1"
+wanted_lepton = "Muons"
+wanted_lepton = "Electrons"
+
+
+category = "leptons"
+
+
 if lepNum == 1:
-    histograms_file = "./sig_bg_histograms_for_track_category.root"
-else:
-    #histograms_file = "./sig_bg_histograms_for_jet_iso_scanCorrJetNoMultIso_no_tautau_after_mht_with_data.root"
-    histograms_file = "./sig_bg_histograms_for_jet_iso_scanCorrJetNoMultIso_with_tautau_after_mht_with_data.root"
-    histograms_file = "./sig_bg_histograms_for_jet_iso_scanCorrJetNoMultIso_with_tautau_2016_with_phase1.root"
-#histograms_file = "./met.root"
+    category = "tracks"
+
+
+# output_dir = "./signal_region_plots_2016_with_phase1"
+# if lepNum == 1:
+#     output_dir = "./signal_region_tracks_plots"
+# 
+# if phase1_2017:
+#     output_dir = "./signal_region_plots_0_75_2017"
+#     if lepNum == 1:
+#         output_dir = "./signal_region_tracks_plots_2017"
+
+
+histograms_file = "../scripts/sig_bg_histograms_data_driven_" + wanted_year + "_" + category + "_uniform_binning.root"
+output_dir = "./signal_region_plots_" + wanted_year + "_" + category + "_" + wanted_lepton + "_data_driven"
+
+if not os.path.isdir(output_dir):
+    os.mkdir(output_dir)
+
+# if lepNum == 1:
+#     histograms_file = "../scripts/sig_bg_histograms_for_track_category.root"
+# else:
+#     #histograms_file = "./sig_bg_histograms_for_jet_iso_scanCorrJetNoMultIso_no_tautau_after_mht_with_data.root"
+#     histograms_file = "./sig_bg_histograms_for_jet_iso_scanCorrJetNoMultIso_with_tautau_after_mht_with_data.root"
+#     histograms_file = "./sig_bg_histograms_for_jet_iso_scanCorrJetNoMultIso_with_tautau_2016_with_phase1.root"
+
+
+# signals = [
+#     "mu100_dm4p30",
+#     "mu100_dm3p28",
+#     "mu100_dm2p51",
+#     "mu100_dm1p47",
+#     "mu100_dm1p13"
+# ]
+# 
+# phase1_2017 = False
+# 
+# if phase1_2017:
+#     signals = [
+#         "mChipm100GeV_dm2p259GeV",
+#         "mChipm100GeV_dm1p759GeV",
+#         "mChipm100GeV_dm1p259GeV",
+#         "mChipm100GeV_dm0p759GeV",
+#         "mChipm100GeV_dm0p559GeV"
+#     ]
+#     histograms_file = "./sig_bg_histograms_for_jet_iso_scanCorrJetNoMultIso_with_tautau_2017.root"
 
 signals = [
-    "mu100_dm4p30",
-    "mu100_dm3p28",
-    "mu100_dm2p51",
-    "mu100_dm1p47",
-    "mu100_dm1p13"
+    "mChipm100GeV_dm2p26GeV",
+    "mChipm100GeV_dm1p76GeV",
+    "mChipm100GeV_dm1p26GeV",
+    "mChipm100GeV_dm0p96GeV",
+    "mChipm100GeV_dm0p76GeV",
+    "mChipm100GeV_dm0p56GeV"
 ]
 
-phase1_2017 = False
-
-if phase1_2017:
+if wanted_year != "2016":
     signals = [
         "mChipm100GeV_dm2p259GeV",
         "mChipm100GeV_dm1p759GeV",
         "mChipm100GeV_dm1p259GeV",
+        "mChipm100GeV_dm0p959GeV",
         "mChipm100GeV_dm0p759GeV",
         "mChipm100GeV_dm0p559GeV"
     ]
-    histograms_file = "./sig_bg_histograms_for_jet_iso_scanCorrJetNoMultIso_with_tautau_2017.root"
-
 
 index_to_optimise = 3
-if phase1_2017:
-    index_to_optimise = 3
 
 # index_to_optimise = 1
 # ===========
@@ -114,25 +164,35 @@ if phase1_2017:
 
 
 
-sam = False
-
-output_dir = "./signal_region_plots_2016_with_phase1"
-if lepNum == 1:
-    output_dir = "./signal_region_tracks_plots"
-
-if phase1_2017:
-    output_dir = "./signal_region_plots_0_75_2017"
-    if lepNum == 1:
-        output_dir = "./signal_region_tracks_plots_2017"
+#jetiso = analysis_selections.jetIsos
 
 
-if not os.path.isdir(output_dir):
-    os.mkdir(output_dir)
+#29/10 data driven values
 
-jetiso = {
-    "Muons" : "CorrJetNoMultIso10Dr0.6",
-    "Electrons" : "CorrJetNoMultIso11Dr0.5"
-}
+# 2016
+# ===========
+# 2l_orth_Muons
+# ['-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-0.15', '0.35', '0.45']
+# ===========
+# 2l_Muons
+# ['-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-0.15', '0.35', '0.45']
+
+
+# 2017
+# 2l_orth_Muons
+# ['-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '0.10', '0.30', '0.45']
+# ===========
+# 2l_Muons
+# ['-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '0.10', '0.30', '0.50']
+
+# 2018
+
+# ===========
+# 2l_orth_Muons
+# ['-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '0.00', '0.25', '0.30', '0.40']
+# ===========
+# 2l_Muons
+# ['-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '-1.00', '0.00', '0.25', '0.30', '0.40']
 
 ######## END OF CMDLINE ARGUMENTS ########
 
@@ -148,18 +208,17 @@ def main():
     
     histograms = TFile(histograms_file, 'read')
     
-    for lep in ["Muons", "Electrons"]:
-        
-        if lep != "Muons":
-           continue
+    for lep in [wanted_lepton]:
         
         orthOpt = [True, False] if (lepNum == 2 and lep == "Muons") else [False]
         for orth in orthOpt:
             
-            if orth:
-                continue
+            #if orth:
+            #    continue
             #"bg_2l_" + ("orth_" if orth else "") + lep + "_" + jetiso[lep]
-            histname = "bg_" + ("1t" if lepNum == 1 else "2l") + "_" + ("orth_" if orth else "") + lep + "_" + jetiso[lep]
+            #histname = "bg_" + ("1t" if lepNum == 1 else "2l") + "_" + ("orth_" if orth else "") + lep + "_" + jetiso[lep]
+            histname = "bg_" + ("1t" if lepNum == 1 else "2l") + "_" + lep + ("_orth" if orth else "")
+            histname = "bg" + ("1t" if lepNum == 1 else "2l") + lep + ("Orth" if orth else "")
             print("Getting", histname) 
             bg_hist = histograms.Get(histname)
         
@@ -168,7 +227,9 @@ def main():
             signal_histograms = []
             for signal in signals:
                 
-                histname = signal + "_" + ("1t" if lepNum == 1 else "2l") + "_" + ("orth_" if orth else "") + lep + "_" + jetiso[lep]
+                #histname = signal + "_" + ("1t" if lepNum == 1 else "2l") + "_" + ("orth_" if orth else "") + lep + "_" + jetiso[lep]
+                histname = signal + "_" + ("1t" if lepNum == 1 else "2l") + "_" + lep + ("_orth" if orth else "") # + "_" + jetiso[lep]
+                histname = signal + ("1t" if lepNum == 1 else "2l") + lep + ("Orth" if orth else "") # + "_" + jetiso[lep]
                 print("Getting", histname) 
                 hist = histograms.Get(histname)
                 maximum = max(maximum, hist.GetMaximum())
@@ -229,7 +290,7 @@ def main():
             ############# DRAW SIGNIFICANCES ##############
             
             categories = 10
-            cut_values[lep] = []
+            cut_values[lep+ ("_orth" if orth else "")] = []
             binMax = -1
             
             for category in range(categories):
@@ -284,7 +345,7 @@ def main():
                 
                 print("binMax", binMax, "maxValue", "{:0.2f}".format(maxValue))
                 
-                cut_values[lep].append("{:0.2f}".format(maxValue))
+                cut_values[lep+ ("_orth" if orth else "")].append("{:0.2f}".format(maxValue))
             
                 sigLine = TLine(maxValue, 0, maxValue, maximum + 1)
                 sigLine.Draw("SAME")
@@ -299,18 +360,15 @@ def main():
                 legend.Draw("SAME")
         
                 c1.Print(output_dir + "/sr" + str(category + 1) + "_significance_" + ("1t" if lepNum == 1 else "2l") + "_" + ("orth_" if orth else "") + lep + ".pdf")
-    for lep in ["Muons", "Electrons"]:
-        
-        if lep != "Muons":
-           continue
+    for lep in [wanted_lepton]:
         
         orthOpt = [True, False] if (lepNum == 2 and lep == "Muons") else [False]
         for orth in orthOpt:
             
-            if orth:
-                continue        
+            #if orth:
+            #    continue        
             print("===========")
             print(("1t" if lepNum == 1 else "2l") + "_" + ("orth_" if orth else "") + lep)
-            print(list(reversed(cut_values[lep])))  
+            print(list(reversed(cut_values[lep+ ("_orth" if orth else "")])))  
 
 main()

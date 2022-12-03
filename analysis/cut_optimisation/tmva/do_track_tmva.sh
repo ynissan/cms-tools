@@ -75,16 +75,18 @@ for group in $SIM_GROUP_KEYS; do
         input="$input $SPLIT_DIR/single/*$pattern*_sig.root"
         background="$background $SPLIT_DIR/single/*$pattern*_bg.root"
     done
-    dir="$SPLIT_DIR/cut_optimisation/tmva/${group}"
-    mkdir $dir
-    cmd="$CONDOR_WRAPPER $CUT_OPTIMISATION_SCRIPTS/track_tmva.py -i $input -bg  $background --no_norm -o $dir/${group}.root"
-    echo $cmd
+    for lep in Electrons Muons; do
+        dir="$SPLIT_DIR/cut_optimisation/tmva/${lep}"
+        mkdir $dir
+        cmd="$CONDOR_WRAPPER $CUT_OPTIMISATION_SCRIPTS/track_tmva.py -i $input -bg  $background --no_norm -o $dir/${lep}.root -lep $lep"
+        echo $cmd
 cat << EOM >> $output_file
 arguments = $cmd
-error = ${dir}/${group}.err
-output = ${dir}/${group}.output
+error = ${dir}/${lep}.err
+output = ${dir}/${lep}.output
 Queue
 EOM
+    done
 done
 
 # for sig in $LEPTON_TRACK_SPLIT_DIR/single/*_sig.root; do

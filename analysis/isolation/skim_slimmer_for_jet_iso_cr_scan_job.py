@@ -67,6 +67,8 @@ variablesUsed.append("hemFailureVetoJets")
 variablesUsed.append("hemFailureVetoMuons")
 variablesUsed.append("hemFailureVetoTracks")
 
+variablesUsed.append("FastSimWeightPR31285To36122")
+
 
 variablesUsed.append("passesUniversalSelection")
 

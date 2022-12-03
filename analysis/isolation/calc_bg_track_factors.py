@@ -39,29 +39,10 @@ output_file = None
 
 data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/sum"
 
-wanted_year = "2018"
+wanted_year = "phase1"
 
 if wanted_year != "2016":
     data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_phase1/sum"
-
-jetiso = {
-    "Electrons": "CorrJetNoMultIso10Dr0.5",
-    "Muons" : "CorrJetNoMultIso10Dr0.6"
-}
-
-data_filters = {
-    '2016' : "",
-    '2017' : "",
-    '2018' : "hemFailureVetoElectrons && hemFailureVetoJets && hemFailureVetoMuons && ",
-    "phase1" : "hemFailureVetoElectrons && hemFailureVetoJets && hemFailureVetoMuons && " 
-}
-
-# dilepBDTString = {
-#     '2016' : "dilepBDTphase1",
-#     '2017' : "dilepBDT",
-#     '2018' : "dilepBDT",
-#     "phase1" : "dilepBDT",
-# }
 
 
 ######## END OF CMDLINE ARGUMENTS ########

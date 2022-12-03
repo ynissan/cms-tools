@@ -43,6 +43,8 @@ def injectJetIsoToCuts(cuts, jetIso):
             cut["baseline"] = cut["baseline"].replace("%%%", jetIso)
         if cut.get("sc") is not None:
             cut["sc"] = cut["sc"].replace("%%%", jetIso)
+        if cut.get("sc_weights") is not None:
+            cut["sc_weights"] = cut["sc_weights"].replace("%%%", jetIso)
         
 def injectJetIsoToHistograms(hists, jetIso):
     for hist in hists:
