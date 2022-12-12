@@ -206,12 +206,12 @@ for sim in ${FILES[@]}; do
         filename=`echo $(basename $sim .root)`
     fi
     echo $filename
-    tb=all
+    #tb=all
     echo "Will run:"
     #echo $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_univ_bdt_track_bdt.py -i $sim -o ${OUTPUT_DIR}/single/${filename}.root -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$tb  -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@
-    echo $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -i $sim -tb $TRACK_SPLIT_DIR/cut_optimisation/tmva/$tb --signal $@
+    echo $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -i $sim -tb $TRACK_SPLIT_DIR/cut_optimisation/tmva --signal $@
 cat << EOM >> $output_file
-arguments = $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -i $sim -tb $TRACK_SPLIT_DIR/cut_optimisation/tmva/$tb --signal $@
+arguments = $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -i $sim -tb $TRACK_SPLIT_DIR/cut_optimisation/tmva --signal $@
 error = ${INPUT_DIR}/stderr/${filename}_track_bdt.err
 output = ${INPUT_DIR}/stdout/${filename}_track_bdt.output
 log = ${INPUT_DIR}/stdout/${filename}_track_bdt.log

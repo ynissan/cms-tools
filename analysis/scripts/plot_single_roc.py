@@ -15,6 +15,8 @@ import utils
 import analysis_ntuples
 import analysis_tools
 import cut_optimisation
+import plotutils
+import analysis_selections
 
 gROOT.SetBatch(True)
 gStyle.SetOptStat(0)
@@ -24,10 +26,9 @@ gStyle.SetOptStat(0)
 parser = argparse.ArgumentParser(description='Plot observealbes for tracks.')
 parser.add_argument('-i', '--input', nargs=1, help='Input Range', required=False)
 parser.add_argument('-m', '--method', nargs=1, help='Method', required=False)
-parser.add_argument('-o', '--output_file', nargs=1, help='Output Filename', required=True)
+parser.add_argument('-o', '--output_file', nargs=1, help='Output Filename', required=False)
 parser.add_argument('-w', '--weight', dest='weight', help='Plot With Weight', action='store_true')
 args = parser.parse_args()
-
 
 output_file = None
 method = ""
@@ -46,14 +47,63 @@ print "method", method
 
 print "Running for input: " + input
 
+
+phase = "Phase 0"
+phase = "Phase 1"
+
+category = "Tracks"
+
+
+lepton = "Electrons"
+lepton = "Muons"
+
+
+track_muon_2016_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track/cut_optimisation/tmva/Muons"
+track_muon_phase1_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track_phase1/cut_optimisation/tmva/Muons"
+
+track_electrons_2016_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track/cut_optimisation/tmva/Electrons"
+track_electrons_phase1_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track_phase1/cut_optimisation/tmva/Electrons"
+
+track_muon_method = "Muons" + analysis_selections.jetIsos["Muons"]
+track_electron_method = "Electrons" + analysis_selections.jetIsos["Electrons"]
+
+method = track_muon_method
+
+if lepton == "Electrons":
+    method = track_electron_method
+
+stamp_txt = lepton + " " + phase
+
+input = track_muon_2016_input
+
+if lepton == "Electrons":
+    input = track_electrons_2016_input
+    
+y_axis_label = category
+
+if phase == "Phase 1":
+    if category == "Tracks":
+        if lepton == "Muons":
+            input = track_muon_phase1_input
+        else:
+            input = track_electrons_phase1_input
+
+mva_cut = analysis_selections.track_mva_cut[lepton]
+
+if not output_file:
+    output_file = "roc_" + category + "_" + lepton + "_" + phase.replace(" ", "_") + ".pdf"
+
+
+
 def main():
 
     print "Plotting observable"
     c2 = TCanvas("c2")
-    c1 = TCanvas("c1", "c1", 800, 800)
-    c1.SetBottomMargin(0.16)
-    c1.SetLeftMargin(0.16)
-    #c1 = utils.mkcanvas()
+    plotting = plotutils.Plotting()
+    currStyle = plotting.setStyle()
+    
+    c1 = plotting.createCanvas("c1")
+
     #memory = []
     
     global method
@@ -71,37 +121,65 @@ def main():
     c1.Print(output_file+"[");
     
     hist = TH1F("hroc", "", 1000, 0, 1)
+    hist.UseCurrentStyle()
     hist.SetMinimum(0)
     hist.SetMaximum(1)
-    hist.GetXaxis().SetTitle("#font[12]{#epsilon_{S}}")
-    hist.GetYaxis().SetTitle("background rejection (1 - #font[12]{#epsilon_{B}})")
-    utils.histoStyler(hist)
-    hist.GetYaxis().SetTitleOffset(1.20)
-    hist.GetXaxis().SetLabelSize(0.055)
+    #hist.GetXaxis().SetTitle("#font[12]{#varepsilon_{S}}")
+    hist.GetXaxis().SetTitle("#varepsilon_{S}")
+    #hist.GetYaxis().SetTitle("background rejection (1 - #font[12]{#varepsilon_{B}})")
+    hist.GetYaxis().SetTitle("background rejection (1 - #varepsilon_{B})")
+    #utils.histoStyler(hist)
+    
+    hist.GetYaxis().SetTitleOffset(1.0)
+    #hist.GetXaxis().SetLabelSize(0.055)
     hist.Draw()
     
-    legend = TLegend(0.2, 0.2, 0.7, 0.45)
+    legend = TLegend(0.18, 0.7, 0.3, 0.8)
+    legend.UseCurrentStyle()
     legend.SetBorderSize(0)
     legend.SetTextFont(42)
     legend.SetTextSize(0.05)
+    legend.SetTextAlign(12)
     
     for inx in range(len(testBGHists)):
     
         testBGHist, trainBGHist, testSignalHist, trainSignalHist, method, name = testBGHists[inx], trainBGHists[inx], testSignalHists[inx], trainSignalHists[inx], methods[inx], names[inx]
-        
         h = TGraph()
-        highestZ, highestS, highestB, highestMVA, ST, BT = cut_optimisation.getHighestZ(trainSignalHist, trainBGHist, testSignalHist, testBGHist, h)
+        S, B, ST, BT = cut_optimisation.getRocWithMvaCut(trainSignalHist, trainBGHist, testSignalHist, testBGHist, mva_cut, h)
         h.SetTitle(name)
-        h.SetLineColor(kBlack)
-        h.SetMarkerSize(0.2)
+        h.SetLineColor(kBlue)
+        h.SetLineWidth(1)
+        #h.SetMarkerSize(0.2)
         #hbdt.SetFillColor(kRed)
 
         h.Draw("same")
+        #legend.Draw("same")
+        
+        
+        mvaCutPoint = TGraph()
+        print "x=",S/ST,"y=",1-B/BT
+        mvaCutPoint.SetPoint(0, S/ST, 1-B/BT)
+        #mvaCutPoint.SetPoint(0, 0.5, 0.5)
+        #color = colors[colorInx]
+        #colorInx += 1
+        #mvaCutPoint.SetLineColor(kBlack)
+        mvaCutPoint.SetMarkerColor(kRed)
+        mvaCutPoint.SetMarkerSize(1)
+        mvaCutPoint.SetMarkerStyle(20)
+        mvaCutPoint.Draw("p same")
+        
+        legend.AddEntry(mvaCutPoint, "BDT > " + str(mva_cut), 'p')
         legend.Draw("same")
-
+        
+        # tl = TLatex()
+#         tl.SetNDC()
+#         tl.SetTextSize(0.03) 
+#         tl.SetTextFont(42)
+#         tl.DrawLatex(0.9, 0.8, "BDT > 0")
+#         
     
     #legend.Draw("SAME")
-    utils.stamp_plot()
+    plotting.stampPlot(c1, stamp_txt, plotutils.StampStr.SIM, "", True, False)
     #utils.stampFab("35.9")
     c1.Print(output_file);
     c1.Print(output_file+"]");

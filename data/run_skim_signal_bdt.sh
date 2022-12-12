@@ -98,10 +98,10 @@ EOM
 
 #FILES=(Run2016E-17Jul2018-v1.METAOD_17.root Run2016E-17Jul2018-v1.METAOD_18.root Run2016E-17Jul2018-v1.METAOD_20.root Run2016F-17Jul2018-v1.METAOD_21.root Run2016G-17Jul2018-v1.METAOD_28.root)
 
-for sim in $LEPTON_TRACK_DIR/cut_optimisation/tmva/*; do
-    echo $sim
-    filename=$(basename $sim)
-    echo $filename
+#for sim in $LEPTON_TRACK_DIR/cut_optimisation/tmva/*; do
+#    echo $sim
+#    filename=$(basename $sim)
+#    echo $filename
     # if [ ! -d "$OUTPUT_DIR/$filename" ]; then
 #       mkdir $OUTPUT_DIR/$filename
 #     fi
@@ -120,23 +120,23 @@ for sim in $LEPTON_TRACK_DIR/cut_optimisation/tmva/*; do
 #     fi
 
     #for bg_file in $SKIM_OUTPUT_DIR/sum/type_sum/*ZJetsToNuNu_HT-100To200*; do
-    for data_file in $INPUT_DIR/sum/*; do
-        data_file_name=$(basename $data_file .root)
+for data_file in $INPUT_DIR/sum/*; do
+    data_file_name=$(basename $data_file .root)
         # out_file=${OUTPUT_DIR}/$filename/single/${data_file_name}.root
 #         if [ -f "$out_file" ]; then
 #             echo "$out_file exist. Skipping..."
 #             continue
 #         fi
         echo "Will run:"
-        echo $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -i $data_file -tb $LEPTON_TRACK_DIR/cut_optimisation/tmva/$filename $@
+        echo $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -i $data_file -tb $LEPTON_TRACK_DIR/cut_optimisation/tmva $@
 cat << EOM >> $output_file
-arguments = $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -i $data_file -tb $LEPTON_TRACK_DIR/cut_optimisation/tmva/$filename $@
+arguments = $CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -i $data_file -tb $LEPTON_TRACK_DIR/cut_optimisation/tmva $@
 error = ${INPUT_DIR}/stderr/${data_file_name}_track_bdt.err
 output = ${INPUT_DIR}/stdout/${data_file_name}_track_bdt.output
 log = ${INPUT_DIR}/stdout/${data_file_name}_track_bdt.log
 Queue
 EOM
-    done
+    #done
 done
 
 condor_submit $output_file

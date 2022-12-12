@@ -15,6 +15,8 @@ import utils
 import analysis_ntuples
 import analysis_tools
 import cut_optimisation
+import plotutils
+import analysis_selections
 
 gROOT.SetBatch(True)
 gStyle.SetOptStat(0)
@@ -24,7 +26,7 @@ gStyle.SetOptStat(0)
 parser = argparse.ArgumentParser(description='Plot observealbes for tracks.')
 parser.add_argument('-i', '--input', nargs=1, help='Input Range', required=False)
 parser.add_argument('-m', '--method', nargs=1, help='Method', required=False)
-parser.add_argument('-o', '--output_file', nargs=1, help='Output Filename', required=True)
+parser.add_argument('-o', '--output_file', nargs=1, help='Output Filename', required=False)
 parser.add_argument('-w', '--weight', dest='weight', help='Plot With Weight', action='store_true')
 parser.add_argument('-n', '--normalise', dest='normalise', help='Normalise', action='store_true')
 args = parser.parse_args()
@@ -43,19 +45,70 @@ if args.method:
     method = args.method[0]
 print "input", input
 print "method", method
+
 ######## END OF CMDLINE ARGUMENTS ########
 
 print "Running for input: " + input
+
+
+phase = "Phase 0"
+phase = "Phase 1"
+
+
+category = "Tracks"
+
+lepton = "Electrons"
+lepton = "Muons"
+
+
+
+track_muon_2016_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track/cut_optimisation/tmva/Muons"
+track_muon_phase1_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track_phase1/cut_optimisation/tmva/Muons"
+
+track_electrons_2016_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track/cut_optimisation/tmva/Electrons"
+track_electrons_phase1_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track_phase1/cut_optimisation/tmva/Electrons"
+
+track_muon_method = "Muons" + analysis_selections.jetIsos["Muons"]
+track_electron_method = "Electrons" + analysis_selections.jetIsos["Electrons"]
+
+method = track_muon_method
+
+if lepton == "Electrons":
+    method = track_electron_method
+
+stamp_txt = lepton + " " + phase
+
+input = track_muon_2016_input
+
+if lepton == "Electrons":
+    input = track_electrons_2016_input
+    
+y_axis_label = category
+
+if phase == "Phase 1":
+    if category == "Tracks":
+        if lepton == "Muons":
+            input = track_muon_phase1_input
+        else:
+            input = track_electrons_phase1_input
+
+if not output_file:
+    output_file = "overtraining_" + category + "_" + lepton + "_" + phase.replace(" ", "_") + ".pdf"
 
 def main():
 
     print "Plotting observable"
     c2 = TCanvas("c2")
-    c1 = TCanvas("c1", "c1", 800, 800)
-    c1.SetBottomMargin(0.16)
-    c1.SetLeftMargin(0.18)
-    #c1 = utils.mkcanvas()
-    #memory = []
+    plotting = plotutils.Plotting()
+    currStyle = plotting.setStyle()
+    
+    c1 = plotting.createCanvas("c1")
+    
+    
+    
+    #c1.SetBottomMargin(0.16)
+    #c1.SetLeftMargin(0.18)
+    
     
     global method
     global normalise
@@ -69,9 +122,10 @@ def main():
     
     c1.Print(output_file+"[");
     
-    c1.SetLogy()
+    #c1.SetLogy()
     
-    legend = TLegend(0.65, 0.70, 0.87, 0.875)
+    legend = TLegend(0.55, 0.70, 0.77, 0.875)
+    legend.UseCurrentStyle()
     legend.SetBorderSize(0)
     legend.SetTextFont(42)
     legend.SetTextSize(0.05)
@@ -91,34 +145,42 @@ def main():
             
         maxY = max(trainSignalHist.GetMaximum(), testSignalHist.GetMaximum(), testBGHist.GetMaximum(), trainBGHist.GetMaximum())
         
-        cpBlue = utils.colorPalette[2]
-        cpRed = utils.colorPalette[7]
-        utils.histoStyler(trainBGHist)
+        cpBlue = plotutils.bdtColors[0]
+        cpRed = plotutils.bdtColors[1]
+        #utils.histoStyler(trainBGHist)
+        trainBGHist.UseCurrentStyle()
+        
         trainBGHist.SetTitle("")
         trainBGHist.GetXaxis().SetTitle("BDT Output")
-        trainBGHist.GetYaxis().SetTitle("Number of events")
-        trainBGHist.GetYaxis().SetTitleOffset(1.4)
-        trainBGHist.GetXaxis().SetLabelSize(0.055)
-        #trainBGHist.SetMaximum(maxY + 0.02)
-
-        fillC = TColor.GetColor(cpRed["fillColor"])
-        lineC = TColor.GetColor(cpRed["lineColor"])
-        trainBGHist.SetFillStyle(cpRed["fillStyle"])
-        trainBGHist.SetFillColorAlpha(fillC, 0.35)
-        trainBGHist.SetLineColor(lineC)
-        trainBGHist.SetLineWidth(1)
+        trainBGHist.GetYaxis().SetTitle(y_axis_label)
+        
+        #trainBGHist.GetYaxis().SetTitleOffset(1.4)
+        #trainBGHist.GetXaxis().SetLabelSize(0.055)
+        trainBGHist.SetMaximum(maxY + 1000)
+        
+        plotutils.setHistColorFillLine(trainBGHist, cpRed)
+        
+        #fillC = TColor.GetColor(cpRed["fillColor"])
+        #lineC = TColor.GetColor(cpRed["lineColor"])
+        
+        # trainBGHist.SetFillStyle(cpRed["fillStyle"])
+#         trainBGHist.SetFillColorAlpha(fillC, 0.35)
+#         trainBGHist.SetLineColor(lineC)
+#         trainBGHist.SetLineWidth(1)
         trainBGHist.SetOption("HIST")
         
         trainBGHist.Draw("HIST")
 
         legend.AddEntry(trainBGHist, "B (train)", 'F')
 
-        fillC = TColor.GetColor(cpBlue["fillColor"])
-        lineC = TColor.GetColor(cpBlue["lineColor"])
-        trainSignalHist.SetFillStyle(cpBlue["fillStyle"])
-        trainSignalHist.SetFillColorAlpha(fillC, 0.35)
-        trainSignalHist.SetLineColor(lineC)
-        trainSignalHist.SetLineWidth(1)
+        plotutils.setHistColorFillLine(trainSignalHist, cpBlue)
+
+        # fillC = TColor.GetColor(cpBlue["fillColor"])
+#         lineC = TColor.GetColor(cpBlue["lineColor"])
+#         trainSignalHist.SetFillStyle(cpBlue["fillStyle"])
+#         trainSignalHist.SetFillColorAlpha(fillC, 0.35)
+#         trainSignalHist.SetLineColor(lineC)
+#         trainSignalHist.SetLineWidth(1)
         trainSignalHist.SetOption("HIST")
         trainSignalHist.Draw("HIST SAME")
         
@@ -144,7 +206,8 @@ def main():
     
         legend.Draw("SAME")
 
-    utils.stamp_plot()
+    #utils.stamp_plot()
+    plotting.stampPlot(c1, stamp_txt, plotutils.StampStr.SIM, "", True, False)
     #gPad.SetLogy();
     #utils.stampFab("35.9")
     c1.Print(output_file);

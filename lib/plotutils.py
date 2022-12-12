@@ -28,13 +28,13 @@ class Plotting():
     def createCanvas(self, name):
         return TCanvas(name, name, self.W, self.H)
 
-    def stampPlot(self,canvas, lumiStr, labelText, cmsLocation, showLumi):
+    def stampPlot(self,canvas, lumiStr, labelText, cmsLocation, showLumi, addLumiUnits = True):
         iPeriod = 0
         if showLumi:
             iPeriod = 4
         iPos = 10
         CMS_lumi.extraText = labelText
-        CMS_lumi.lumi_13TeV = lumiStr + " fb^{-1}"
+        CMS_lumi.lumi_13TeV = lumiStr + (" fb^{-1}" if addLumiUnits else "")
         CMS_lumi.CMS_lumi(canvas, iPeriod, iPos)
 
 
@@ -80,6 +80,11 @@ signalCp = [
     { "name" : "pink", "fillColor" : kRed+3, "lineColor" : kRed+3, "fillStyle" : 0, "lineStyle" : 6 },
     { "name" : "grey", "fillColor" : kRed+4, "lineColor" : kRed+4, "fillStyle" : 0, "lineStyle" : 4 },
     { "name" : "red", "fillColor" : kRed-1, "lineColor" : kRed-1, "fillStyle" : 0, "lineStyle" : 3 },
+]
+
+bdtColors = [
+    { "name" : "blue", "fillColor" : kBlue, "lineColor" : kBlue, "fillStyle" : 1001, "lineStyle" : 1 },
+    { "name" : "red", "fillColor" : kRed, "lineColor" : kRed, "fillStyle" : 1001, "lineStyle" : 1 },
 ]
 
 # For signal with only lines - only first two arguments relevant (alpha is only for the fill)

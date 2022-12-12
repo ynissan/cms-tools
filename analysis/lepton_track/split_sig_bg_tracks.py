@@ -16,6 +16,7 @@ sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools"))
 from lib import utils
 from lib import analysis_ntuples
 from lib import analysis_tools
+from lib import analysis_selections
 
 # gSystem.Load('LumiSectMap_C')
 # from ROOT import LumiSectMap
@@ -92,9 +93,15 @@ def main():
                     if len(str(ptRange)) > 0:
                         cuts = str(ptRange) + "Dr" + str(drCut)
                     postfix = iso + cuts + cat
+                    save_file = False
                     for lep in ["Electrons", "Muons"]:
+                        if postfix != analysis_selections.jetIsos[lep]:
+                            continue
+                        save_file = True
                         signalTrees[lep + postfix] = TTree(lep + postfix, lep + postfix)
                         utils.barchTreeFromVarsDef(signalTrees[lep + postfix], vars)
+                    if not save_file:
+                        continue
                     bgTrees[postfix] = TTree(postfix, postfix)
                     utils.barchTreeFromVarsDef(bgTrees[postfix], vars)
 
@@ -119,7 +126,7 @@ def main():
         #    continue
         rightProcess = analysis_ntuples.isX1X2X1Process(c)
         if not rightProcess:
-            print "No"
+            #print "No"
             notCorrect += 1
             continue
         
@@ -154,8 +161,11 @@ def main():
                             cuts = str(ptRange) + "Dr" + str(drCut)
                         postfix = iso + cuts + cat
                         
+                        if postfix not in  [analysis_selections.jetIsos["Muons"], analysis_selections.jetIsos["Electrons"]]:
+                            continue
+                        
                         ll, leptonIdx, leptonCharge, leptonFlavour = analysis_ntuples.getSingleLeptonAfterSelection(c.Electrons, getattr(c, "Electrons_pass" + postfix), c.Electrons_deltaRLJ, c.Electrons_charge, c.Muons, getattr(c, "Muons_pass" + postfix), c.Muons_mediumID, c.Muons_deltaRLJ, c.Muons_charge, utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], c.Muons_tightID)
-                    
+                        
                         if ll is None:
                             leptons, leptonsIdx, leptonsCharge, leptonFlavour, same_sign, isoCr, isoCrMinDr = analysis_ntuples.getTwoLeptonsAfterSelection(c.Electrons, getattr(c, "Electrons_pass" + postfix), c.Electrons_deltaRLJ, c.Electrons_charge, c.Muons, getattr(c, "Muons_pass" + postfix), c.Muons_mediumID, c.Muons_deltaRLJ, c.Muons_charge, utils.leptonIsolationCategories[cat]["muonPt"], utils.leptonIsolationCategories[cat]["lowPtTightMuons"], c.Muons_tightID, False)
                             if isoCr > 0: 
@@ -241,10 +251,16 @@ def main():
                         
                             tree = None
                             if result == "Zl":
+                                
+                                if postfix != analysis_selections.jetIsos[genFlavour]:
+                                    continue
+                                
                                 tree = signalTrees[genFlavour + postfix]
+                                
                                 sigTrack += 1
                                 #print "Pt=" + str(vars[varsDict["track"]]["var"].Pt())
                             else:
+                                
                                 tree = bgTrees[postfix]
         
                             tree.SetBranchAddress('track', vars[varsDict["track"]]["var"])
@@ -272,6 +288,10 @@ def main():
                         if len(str(ptRange)) > 0:
                             cuts = str(ptRange) + "Dr" + str(drCut)
                         postfix = iso + cuts + cat
+                        
+                        if postfix != analysis_selections.jetIsos[lep]:
+                            continue
+                        
                         signalTrees[lep + postfix].Write()
                     
     fnew.Close()
@@ -290,6 +310,8 @@ def main():
                     if len(str(ptRange)) > 0:
                         cuts = str(ptRange) + "Dr" + str(drCut)
                     postfix = iso + cuts + cat
+                    if postfix not in  [analysis_selections.jetIsos["Muons"], analysis_selections.jetIsos["Electrons"]]:
+                        continue
                     bgTrees[postfix].Write()
     fnew.Close()
     

@@ -99,8 +99,8 @@ EOM
 FILES=$INPUT_DIR/sum/type_sum/*
 
 
-for sim in $TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
-    filename=$(basename $sim .root)
+#for sim in $TRACK_SPLIT_DIR/cut_optimisation/tmva; do
+#    filename=$(basename $sim .root)
 
     # if [ ! -d "$OUTPUT_DIR/$filename" ]; then
 #       mkdir $OUTPUT_DIR/$filename
@@ -122,7 +122,7 @@ for sim in $TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
     #for bg_file in $SKIM_OUTPUT_DIR/sum/type_sum/*ZJetsToNuNu_HT-100To200*; do
     #for bg_file in $SKIM_OUTPUT_DIR/sum/type_sum/WW_TuneCUETP8M1*; do
     #
-    for bg_file_name in ${FILES[@]}; do
+for bg_file_name in ${FILES[@]}; do
     #for bg_file in $INPUT_DIR/sum/type_sum/*; do
         #bg_file=$INPUT_DIR/sum/type_sum/$bg_file_name
         bg_file=$bg_file_name
@@ -134,7 +134,7 @@ for sim in $TRACK_SPLIT_DIR/cut_optimisation/tmva/*; do
             continue
         fi
         #cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_univ_bdt_track_bdt.py -i $bg_file -o $out_file -tb $LEPTON_TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename -ub $OUTPUT_WD/cut_optimisation/tmva/total_bdt $@"
-        cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -bg -i $bg_file -tb $TRACK_SPLIT_DIR/cut_optimisation/tmva/$filename $@"
+        cmd="$CONDOR_WRAPPER $SCRIPTS_WD/skimmer_x1x2x1_track_bdt.py -bg -i $bg_file -tb $TRACK_SPLIT_DIR/cut_optimisation/tmva $@"
         echo $cmd
 cat << EOM >> $output_file
 arguments = $cmd
@@ -142,8 +142,8 @@ error = ${INPUT_DIR}/stderr/${bg_file_name}_track_bdt.err
 output = ${INPUT_DIR}/stdoutput/${bg_file_name}_track_bdt.output
 Queue
 EOM
-    done
 done
+#done
 
 condor_submit $output_file
 rm $output_file

@@ -18,6 +18,7 @@ from lib import analysis_tools
 from lib import utils
 from lib import cut_optimisation
 from lib import analysis_observables
+from lib import analysis_selections
 
 gROOT.SetBatch(True)
 gStyle.SetOptStat(0)
@@ -145,13 +146,17 @@ def main():
                     cuts = ""
                     if len(str(ptRange)) > 0:
                         cuts = str(ptRange) + "Dr" + str(drCut)
-
+                    
                     postfixi = [iso + cuts + cat]
                     
                     if iso + cuts + cat == utils.defaultJetIsoSetting:
                         postfixi = [iso + cuts + cat, ""]
                 
                     for postfix in postfixi:
+                        
+                        if postfix not in [analysis_selections.jetIsos["Muons"], analysis_selections.jetIsos["Electrons"]]:
+                            continue
+                        
                         for sameCharge in [False, True]:
                             prefix = "sc_" if sameCharge else ""
                             for stringObs in analysis_observables.exclusiveTrackObservablesStringList:
@@ -202,7 +207,11 @@ def main():
                                     c.SetBranchAddress(prefix + CTypeObs + postfix, exTrackVars[prefix + CTypeObs + postfix])
                     if not jpsi:
                         for lep in ["Muons", "Electrons"]:
-                            track_bdt_weights = track_bdt + "/dataset/weights/TMVAClassification_" + lep + iso + cuts + cat + ".weights.xml"
+                            
+                            if iso + cuts + cat != analysis_selections.jetIsos[lep]:
+                                continue
+                            
+                            track_bdt_weights = track_bdt + "/" + lep + "/dataset/weights/TMVAClassification_" + lep + iso + cuts + cat + ".weights.xml"
                             track_bdt_vars = cut_optimisation.getVariablesFromXMLWeightsFile(track_bdt_weights)
                             track_bdt_vars_map = cut_optimisation.getVariablesMemMap(track_bdt_vars)
                             track_bdt_specs = cut_optimisation.getSpecSpectatorFromXMLWeightsFile(track_bdt_weights)
@@ -257,6 +266,10 @@ def main():
                             postfixi = [iso + cuts + cat, ""]
                     
                         for postfix in postfixi:
+                            
+                            if postfix not in [analysis_selections.jetIsos["Muons"], analysis_selections.jetIsos["Electrons"]]:
+                                continue
+                            
                             for sameCharge in [False, True]:
                             
                                 prefix = "sc_" if sameCharge else ""
@@ -284,7 +297,10 @@ def main():
                         
                                 if leptonCharge == 0:
                                     print("WHAT?! leptonCharge=0")
-                        
+                                
+                                if postfix != analysis_selections.jetIsos[leptonFlavour]:
+                                    continue
+                                
                                 exTrackVars[prefix + "lepton_charge" + postfix][0] = leptonCharge
                                 exTrackVars[prefix + "exclusiveTrackLeptonFlavour" + postfix] = cppyy.gbl.std.string(leptonFlavour)
     

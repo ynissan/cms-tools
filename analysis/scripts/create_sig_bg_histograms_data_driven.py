@@ -34,7 +34,7 @@ args = parser.parse_args()
 
 sam = True
 
-wanted_year = "2016"
+wanted_year = "phase1"
 
 print("WANTED YEAR " + wanted_year)
 
@@ -42,7 +42,6 @@ required_category = "all"
 
 required_category = "leptons"
 required_category = "tracks"
-
 
 skip_electrons = True
 
@@ -159,7 +158,7 @@ def main():
                 if use_uniform_binning:
                     hist = utils.getHistogramFromTree(histName, c, obs, analysis_selections.uniform_binning_number, -1, 1, drawString, False)
                 else:
-                    hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, obs, analysis_selections.binning["1t"][lep], drawString, False)
+                    hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, obs, analysis_selections.binning["1t"][wanted_year][lep], drawString, False)
                 new_sum = hist.Integral()
                 print("new number", new_sum)
                 #print("dif", new_sum-old_sum)
@@ -376,6 +375,7 @@ def main():
     signal_hists = {}
     i = 0
     wanted_years = [wanted_year]
+    binning_phase = wanted_year
     if wanted_year == "phase1":
         wanted_years = ["2017","2018"]
     print("\n\nwanted_year", wanted_year, "wanted_years", wanted_years)
@@ -421,7 +421,7 @@ def main():
                     if use_uniform_binning:
                         hist = utils.getHistogramFromTree(histName, c, obs, analysis_selections.uniform_binning_number, -1, 1, drawString, False)
                     else:
-                        hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, obs, analysis_selections.binning["1t"][lep], drawString, False)
+                        hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, obs, analysis_selections.binning["1t"][binning_phase][lep], drawString, False)
                     new_sum = hist.Integral()
                     print("new_sum", new_sum)
                     #print("difference", old_sum-new_sum)

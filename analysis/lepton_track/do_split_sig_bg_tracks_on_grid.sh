@@ -19,6 +19,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --phase1_2018)
+        PHASE1_2018=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -38,6 +43,9 @@ if [ -n "$JPSI" ]; then
     COMMAND=$LEPTON_TRACK_DIR/split_jpsi_events.py
 elif [ -n "$PHASE1" ]; then
     INPUT_DIR=$SKIM_SIG_PHASE1_OUTPUT_DIR/sum/
+    OUTPUT_DIR=$LEPTON_TRACK_PHASE1_SPLIT_DIR
+elif [ -n "$PHASE1_2018" ]; then
+    INPUT_DIR=$SKIM_SIG_PHASE1_2018_OUTPUT_DIR/sum/
     OUTPUT_DIR=$LEPTON_TRACK_PHASE1_SPLIT_DIR
 fi
 
@@ -76,11 +84,14 @@ EOM
 
 for f in $INPUT_DIR/*; do
     filename=$(basename $f .root)
+    if [ -n "$PHASE1_2018" ]; then
+        filename=$(basename $f 1.root)2
+    fi
     if [[ $filename == *"dm13p"* || $filename == *"dm12p"* || $filename == *"dm9p"* || $filename == *"dm7p"* || $filename == *"dm5p"* ]]; then
         echo $filename contains large dm... Skipping...
         continue
     fi
-    if [ -n "$PHASE1" ]; then
+    if [[ -n "$PHASE1" || -n "$PHASE1_2018" ]]; then
         if [[ $filename == *"dm4p"* || $filename == *"dm3p"* ]]; then
             echo $filename contains large dm... Skipping...
             continue

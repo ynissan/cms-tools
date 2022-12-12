@@ -134,6 +134,28 @@ def getHighestZ(trainSignalHist, trainBGHist, testSignalHist, testBGHist, h=None
 
     return highestZ, highestS, highestB, highestMVA, ST, BT
 
+def getRocWithMvaCut(trainSignalHist, trainBGHist, testSignalHist, testBGHist, mvaCut=0, h=None,cs=1):
+    S = 0
+    B = 0
+
+    numOfBins = testBGHist.GetNbinsX()
+
+    ST = (trainSignalHist.Integral() + testSignalHist.Integral())*cs
+    BT = (trainBGHist.Integral() + testBGHist.Integral())*cs
+    print("==================")
+    print("Signal: " + str(ST))
+    print("Background: " + str(BT))
+
+    for i in range(numOfBins):
+        s = (trainSignalHist.Integral(i,numOfBins+1) + testSignalHist.Integral(i,numOfBins+1))*cs
+        b = (trainBGHist.Integral(i,numOfBins+1) + testBGHist.Integral(i,numOfBins+1))*cs
+        if h is not None:
+            h.SetPoint(i,s/ST, 1 - b/BT)
+        if trainSignalHist.GetBinCenter(i) <= mvaCut:
+            S = s
+            B = b
+    return S, B, ST, BT
+
 def getVariablesFromXMLWeightsFile(file):
     tree = ET.parse(file)
     root = tree.getroot()
