@@ -83,8 +83,8 @@ signalCp = [
 ]
 
 bdtColors = [
-    { "name" : "blue", "fillColor" : kBlue, "lineColor" : kBlue, "fillStyle" : 1001, "lineStyle" : 1 },
-    { "name" : "red", "fillColor" : kRed, "lineColor" : kRed, "fillStyle" : 1001, "lineStyle" : 1 },
+    { "name" : "red", "fillColor" : kRed, "lineColor" : kRed, "fillStyle" : 1001, "lineStyle" : 1, "alpha" : 0.35 },
+    { "name" : "blue", "fillColor" : kBlue, "lineColor" : kBlue, "fillStyle" : 1001, "lineStyle" : 1, "alpha" : 0.35 },
 ]
 
 # For signal with only lines - only first two arguments relevant (alpha is only for the fill)
@@ -111,7 +111,7 @@ def setHistColorFillLine(hist, cP, alpha=0.35, lineWidth = 1):
     hist.SetLineWidth(lineWidth)
     hist.SetOption("HIST")
 
-def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, noFillStyle=False, plotPoint = False, legendNames = {}, noStack=False, colorPalette=defaultColorPalette):
+def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, noFillStyle=False, plotPoint = False, legendNames = {}, colorPalette=defaultColorPalette):
     newStack = THStack(bgHist.GetName(), title)
     newStack.UseCurrentStyle()
     memory.append(newStack)
@@ -132,9 +132,11 @@ def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, n
         if colorInx is not None:
             colorI = colorInx[i]
         print(colorI, colorInx)
-        setHistColorFillLine(newHist, colorPalette[colorI], 0.75, noFillStyle)
-        if noStack:
-            newHist.SetFillStyle(0)
+        alpha = colorPalette[colorI]["alpha"] if colorPalette[colorI].get("alpha") is not None else 0.75
+        setHistColorFillLine(newHist, colorPalette[colorI], alpha, noFillStyle)
+        # we remove it from here - if you want fill style 0 - put it in the colorpalette
+        #if noStack:
+        #    newHist.SetFillStyle(0)
         lineC = TColor.GetColor(colorPalette[colorI]["fillColor"])
         
         #newHist.SetMarkerColorAlpha(colorPalette[colorI]["markerColor"], 0.9)
@@ -155,8 +157,10 @@ def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, n
                 legendName = legendNames[hist.GetName().split("_")[-1]]
             if plotPoint:
                 legend.AddEntry(newHist, legendName, 'p')
-            elif noStack:
-                legend.AddEntry(newHist, legendName, 'l')
+            elif colorPalette[colorI].get("legendOption"):
+                #legendOption should be either l p or f
+                # this used to be no stack and set to l
+                legend.AddEntry(newHist, legendName, colorPalette[colorI]["legendOption"])
             else:
                 legend.AddEntry(newHist, legendName, 'F')
 

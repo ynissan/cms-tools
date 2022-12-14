@@ -162,6 +162,8 @@ def createPlots(rootfiles, type, histograms, weight=1):
             print(("File", f, "in ignore list. Skipping..."))
             continue
         rootFile = TFile(f)
+        print("HERE!")
+        exit(0)
         c = rootFile.Get('tEvent')
 
         nentries = c.GetEntries()
@@ -210,17 +212,42 @@ def createPlotsFast(rootfiles, types, histograms, weight, category, conditions, 
         if os.path.basename(f) in plot_par.ignore_bg_files:
             print(("File", f, "in ignore list. Skipping..."))
             continue
-        print(("\n\n\n\n\nopening", f))
+        print("\n\n\n\n\nopening", f)
         print("=============================================================")
-        rootFile = TFile(f)
+        rootFile = None
         if not_full and i > 0:
             break
         i += 1
         #if i > 300:
         #    break
         print(f)
-        c = rootFile.Get('tEvent')
-
+        c = None
+        if plot_par.use_bdt_file_as_input:
+        
+            #rootFile = TFile(f)
+            #c = rootFile.Get('dataset/TestTree')
+            #trainTree = rootFile.Get('dataset/TrainTree')
+            #print("test tree has", c.GetEntries())
+            #print("train tree has", trainTree.GetEntries())
+            
+            c = TChain()
+            c.AddFile(f,-1,'dataset/TestTree')
+            c.AddFile(f,-1,'dataset/TrainTree')
+            
+            #chain.Add(c)
+            #chain.Add(trainTree)
+            #trainTree.SetDirectory(0)
+           
+            print("chain tree has", c.GetEntries())
+            #collection = TList()
+            #collection.Add(trainTree)
+            #c.Merge(collection)
+            #print("after merge", c.GetEntries())
+            
+        else:
+            rootFile = TFile(f)
+            c = rootFile.Get('tEvent')
+        print("After block", c.GetEntries())
         if plot_par.turnOnOnlyUsedObsInTree:
             c.SetBranchStatus("*",0);
             print("plot_par.usedObs", plot_par.usedObs)
@@ -349,8 +376,8 @@ def createPlotsFast(rootfiles, types, histograms, weight, category, conditions, 
                             else:
                                 histograms[histName].Add(hist)
                 
-        
-        rootFile.Close()
+        if rootFile is not None:
+            rootFile.Close()
     
 def createRandomHist(name):
     h = utils.UOFlowTH1F(name, "", 100, -5, 5)
@@ -685,10 +712,12 @@ def createAllHistograms(histograms, sumTypes):
         
         if plot_par.plot_bg or plot_par.plot_data_for_bg_estimation:
             
-            allBgFiles = glob(plot_par.bg_dir + "/*.root")
-            #dataFiles = None
-            #if plot_par.plot_data_for_bg_estimation:
-            #    dataFiles = glob(plot_par.data_dir + "/*")
+            allBgFiles = None
+            
+            if plot_par.use_bdt_file_as_input:
+                allBgFiles = [plot_par.bg_dir]
+            else:
+                allBgFiles = glob(plot_par.bg_dir + "/*.root")
             print(sumTypes)
             
             if plot_par.bg_retag:
@@ -1341,8 +1370,12 @@ def main():
             
             
             if foundBg:
+                tmpbgHists = hs.GetHists()
+
+                for i, hist in enumerate(tmpbgHists):
+                    print(hist, hist.GetMaximum())
                 bgMax = hs.GetMaximum()
-                print(("Bg max:", bgMax))
+                print("Bg max:", hist_def["obs"], bgMax)
                 maximum = max(bgMax, sigMax)
             if plot_par.plot_data:
                 dataHist = histograms[dataHistName]
@@ -1468,8 +1501,8 @@ def main():
                         else:
                             legend.AddEntry(newBgHist, "SM Background", 'F')
                 else:
-                    newBgHist = plotutils.styledStackFromStack(hs, memory, legend, "", typesInx, True, plot_par.plot_point, plot_par.bgReTaggingNames, plot_par.nostack, plot_par.colorPalette)
-
+                    newBgHist = plotutils.styledStackFromStack(hs, memory, legend, "", typesInx, True, plot_par.plot_point, plot_par.bgReTaggingNames, plot_par.colorPalette)
+                    
                     #Will hang otherwise!
                     SetOwnership(newBgHist, False)
                     #newBgHist.SetFillColorAlpha(fillC, 0.35)
@@ -1486,7 +1519,6 @@ def main():
                     linearYspace = maximum*1.1
                     if hist_def.get("linearYspace") is not None:
                         linearYspace = maximum * hist_def["linearYspace"]
-                    
                     newBgHist.SetMaximum(linearYspace)
                 if not (linear and plot_single):
                     newBgHist.SetMinimum(0.0001)
@@ -1505,6 +1537,9 @@ def main():
                 
                 print((utils.bcolors.BOLD + utils.bcolors.RED + "newBgHist.Draw(" + plotStr + errorStr + ")" + utils.bcolors.ENDC))
                 newBgHist.Draw(plotStr + errorStr)
+                
+                if plot_par.plot_overflow:
+                    utils.setOverflowBinsStack(newBgHist)
                 
                 if newBgHist is not None and (plot_par.solid_bg or newBgHist.GetNhists() > 0):
                     if not plot_par.plot_ratio:
@@ -1526,6 +1561,8 @@ def main():
                         y_title_offset = hist_def["y_title_offset"]
                     newBgHist.GetYaxis().SetTitle(y_title)
                     newBgHist.GetYaxis().SetTitleOffset(y_title_offset)
+                    
+                    
 
                 #newBgHist.GetXaxis().SetLabelSize(0.055)
                 c1.Modified()
@@ -2447,6 +2484,9 @@ def main():
             
             
             linearYspace = maximum*1.1
+            
+            print(hist_def["obs"], "maximum", maximum)
+            
             print(hist_def)
             if hist_def.get("linearYspace") is not None:
                 print("HERE linearYspace", linearYspace)
@@ -2458,6 +2498,7 @@ def main():
                 if not (hist_def.get("2D") is not None and hist_def.get("2D")):
                     linBgHist.SetMaximum(linearYspace)
                     linBgHist.SetMinimum(0)
+                    
             else:
                 if plot_par.plot_data:
                     print("HERE")

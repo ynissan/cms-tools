@@ -126,7 +126,7 @@ binning = {
 }
 
 track_mva_cut = {
-    "Electrons" : 0.05,
+    "Electrons" : 0.0,
     "Muons" : 0.0
 }
 

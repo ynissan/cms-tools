@@ -107,8 +107,6 @@ class BaseParams:
     bg_dir = None
     data_dir = None
     
-    
-    
     sc_bg_dir = None
     sc_data_dir = None
     
@@ -120,6 +118,8 @@ class BaseParams:
         'SingleMuon' : "1"
     }
     applyWeightsToData = False
+    
+    bg_retag = False
     bgReTagging = {}
     bgReTaggingOrder = {}
     bgReTaggingNames = utils.bgReTaggingNames
@@ -200,8 +200,6 @@ class BaseParams:
     load_histrograms_from_file = False
     histrograms_file = ""
     
-    bg_retag = False
-    
     object_retag = False
     object_retag_map = {}
     object_retag_labels = {}
@@ -248,6 +246,8 @@ class BaseParams:
     
     #Write the scale factor into the plot
     stamp_scale_factor = False
+    
+    use_bdt_file_as_input = False
     
     transfer_factor = -1
     transfer_factor_error = -1

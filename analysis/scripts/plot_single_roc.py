@@ -51,11 +51,13 @@ print "Running for input: " + input
 phase = "Phase 0"
 phase = "Phase 1"
 
+
+
 category = "Tracks"
 
-
-lepton = "Electrons"
 lepton = "Muons"
+lepton = "Electrons"
+
 
 
 track_muon_2016_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track/cut_optimisation/tmva/Muons"

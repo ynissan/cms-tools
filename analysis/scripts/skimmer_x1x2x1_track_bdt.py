@@ -342,12 +342,14 @@ def main():
                                         else:
                                             if tcharge * leptonCharge > 0:
                                                 continue
-            
-                                        totalTracks +=1
-        
+                                        
+                                        if (t + ll).M() < 0:
+                                            continue
+                                        
                                         deltaRLL = abs(t.DeltaR(ll))
                                         if deltaRLL < 0.01:
                                             continue
+                                        totalTracks +=1
                                         ntracks += 1
                         
                                         track_bdt_vars_maps[leptonFlavour + iso + cuts + cat]["deltaEtaLJ"][0] = abs(t.Eta() - c.LeadingJet.Eta())

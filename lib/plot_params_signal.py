@@ -178,7 +178,7 @@ class signal_production_comparison_muons(BaseParams):
     injectJetIsoToHistograms(histograms_defs, jetIsoStr)
     usedObs = usedObs = ["BranchingRatio","Weight","passedMhtMet6pack","tEffhMetMhtRealXMht2016","puWeight","MinDeltaPhiMhtJets","BTagsDeepMedium","twoLeptons%%%","MHT","MET","leptonFlavour%%%","invMass%%%","vetoElectronsPassIso","vetoMuonsPassIso","isoCr%%%","sameSign%%%", "leptons%%%", "deltaR%%%"]
     injectJetIsoToList(usedObs, jetIsoStr)
-    print("usedObs", usedObs)
+    #print("usedObs", usedObs)
     #exit(0)
 
 class signal_common_distributions_fixed_mu(BaseParams):

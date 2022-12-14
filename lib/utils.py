@@ -562,10 +562,12 @@ def foldOverflowBins(hist):
     if under:
         hist.Fill(hist.GetXaxis().GetBinCenter(1), under)
 
-def setOverflowBins(hist):
+def getOverflowBinsRange(hist):
     maxRange = hist.GetXaxis().GetNbins()
     shouldChange = False
     over = hist.GetBinContent(hist.GetXaxis().GetNbins() + 1)
+    print("overflow", over, hist.GetName())
+
     if over:
         maxRange = hist.GetXaxis().GetNbins() + 1
         shouldChange = True
@@ -575,8 +577,37 @@ def setOverflowBins(hist):
     if under:
         minRange = 0
         shouldChange = True
+    return shouldChange, minRange, maxRange
+
+def setOverflowBins(hist):
+
+    shouldChange, minRange, maxRange = getOverflowBinsRange(hist)
+
     if shouldChange:
+        print("setting range", minRange, maxRange)
         hist.GetXaxis().SetRange(minRange, maxRange)
+
+def setOverflowBinsStack(stack):
+    if stack is None or stack.GetNhists() == 0:
+        return 
+   
+    hists = stack.GetHists()
+    
+    shouldChange, minRange, maxRange = False, 1, 0
+    
+    for i, hist in enumerate(hists):
+        shouldChangeH, minRangeH, maxRangeH = getOverflowBinsRange(hist)
+        if shouldChangeH:
+            shouldChange = True
+            if minRangeH < minRange:
+                minRange = minRangeH
+            if maxRangeH > maxRange:
+                maxRange = maxRangeH
+    if shouldChange:
+        for i, hist in enumerate(hists):
+            print("here setting overflow", minRange, maxRange)
+            hist.GetXaxis().SetRange(minRange, maxRange)
+        stack.GetXaxis().SetRange(minRange, maxRange)
 
 def getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=True, tmpName="hsqrt", predefBins = False, twoD = False, binsY = None, minBinsY = None, maxBinsY = None):
     if tree.GetEntries() == 0:

@@ -174,7 +174,9 @@ def main():
                             #    continue
                             if leptons is not None:
                                 ll = leptons[0]
-                    
+                        
+                        if ll is None:
+                            continue
                         #if leptonFlavour != getattr(c, "leptonFlavour" + iso + str(ptRange)):
                         #    continue
                     
@@ -198,6 +200,10 @@ def main():
             
                             #if (llMin is not None and llMin < 0.01):
                             #    continue
+                            
+                            if abs(t.DeltaR(ll)) < 0.01:
+                                continue
+                            
                             clean += 1
                             minZ, minCanZ = analysis_ntuples.minDeltaRGenParticles(t, genZL, c.GenParticles)
                             minNZ, minCanNZ = analysis_ntuples.minDeltaRGenParticles(t, genNonZL, c.GenParticles)
@@ -237,6 +243,9 @@ def main():
                                 vars[varsDict["deltaEtaLL"]]["var"][0] = abs(t.Eta()-ll.Eta()) 
                                 vars[varsDict["deltaRLL"]]["var"][0] = abs(t.DeltaR(ll))
                                 vars[varsDict["invMass"]]["var"][0] = (ll + t).M()
+                                if (ll + t).M() < 0:
+                                    print "Negative invMass continue", (ll + t).M()
+                                    continue
                             else:
                                 ll = TLorentzVector()
                                 vars[varsDict["deltaEtaLL"]]["var"][0] = -1 

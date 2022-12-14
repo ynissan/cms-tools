@@ -33,7 +33,7 @@ done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 #---------- END OPTIONS ------------
 
-INPUT_DIR=$SKIM_SIG_OUTPUT_DIR/sum
+INPUT_DIR=$SKIM_SIG_OUTPUT_DIR/single
 OUTPUT_DIR=$LEPTON_TRACK_SPLIT_DIR
 COMMAND=$LEPTON_TRACK_DIR/split_sig_bg_tracks.py
 

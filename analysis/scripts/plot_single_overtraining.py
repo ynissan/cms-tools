@@ -51,15 +51,14 @@ print "method", method
 print "Running for input: " + input
 
 
+
 phase = "Phase 0"
 phase = "Phase 1"
 
-
 category = "Tracks"
 
-lepton = "Electrons"
 lepton = "Muons"
-
+lepton = "Electrons"
 
 
 track_muon_2016_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track/cut_optimisation/tmva/Muons"
@@ -124,7 +123,7 @@ def main():
     
     #c1.SetLogy()
     
-    legend = TLegend(0.55, 0.70, 0.77, 0.875)
+    legend = TLegend(0.75, 0.70, 0.90, 0.875)
     legend.UseCurrentStyle()
     legend.SetBorderSize(0)
     legend.SetTextFont(42)
@@ -145,8 +144,8 @@ def main():
             
         maxY = max(trainSignalHist.GetMaximum(), testSignalHist.GetMaximum(), testBGHist.GetMaximum(), trainBGHist.GetMaximum())
         
-        cpBlue = plotutils.bdtColors[0]
-        cpRed = plotutils.bdtColors[1]
+        cpRed = plotutils.bdtColors[0]
+        cpBlue = plotutils.bdtColors[1]
         #utils.histoStyler(trainBGHist)
         trainBGHist.UseCurrentStyle()
         
