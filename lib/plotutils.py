@@ -87,6 +87,8 @@ bdtColors = [
     { "name" : "blue", "fillColor" : kBlue, "lineColor" : kBlue, "fillStyle" : 1001, "lineStyle" : 1, "alpha" : 0.35 },
 ]
 
+rocCurvesColors = [kBlue, kRed, kYellow, kGreen]
+
 # For signal with only lines - only first two arguments relevant (alpha is only for the fill)
 # then the fill is set to 0 by "fillStyle" : 0  in the signalCp
 # For a filled histogram normally alpha is given and noFillStyle=True (so that 1001 is picked)

@@ -170,9 +170,9 @@ for iso in utils.leptonIsolationList:
                 dataloader = dataloaders[lep + postfix]
             
                 # Variables
-                dataloader.AddVariable('track.Eta()', 'F')
-                dataloader.AddVariable('track.Pt()', 'F')
-                dataloader.AddVariable('track.Phi()', 'F')
+                dataloader.AddVariable('abs(track.Eta())', 'F')
+                
+                #dataloader.AddVariable('track.Phi()', 'F')
                 #dataloader.AddVariable('log(dxyVtx)', 'F')
                 #dataloader.AddVariable('log(dzVtx)', 'F')
                 #dataloader.AddVariable('log(trkMiniRelIso)', 'F')
@@ -183,15 +183,20 @@ for iso in utils.leptonIsolationList:
 
                 ## FULL
                 dataloader.AddVariable('deltaEtaLL', 'F')
+                dataloader.AddVariable('deltaPhiLL', 'F')
+                
                 dataloader.AddVariable('deltaRLL', 'F')
-                dataloader.AddVariable('mtt', 'F')
+                
                 #dataloader.AddVariable('deltaRMet', 'F')
                 dataloader.AddVariable('deltaPhiMht', 'F')
-                dataloader.AddVariable('lepton.Eta()', 'F')
-                dataloader.AddVariable('lepton.Phi()', 'F')
+                dataloader.AddVariable('abs(lepton.Eta())', 'F')
+                #dataloader.AddVariable('lepton.Phi()', 'F')
                 dataloader.AddVariable('lepton.Pt()', 'F')
                 dataloader.AddVariable('invMass', 'F')
 
+                #no significance
+                #dataloader.AddVariable('track.Pt()', 'F')
+                #dataloader.AddVariable('mtt', 'F')
                 if no_norm:
                     dataloader.PrepareTrainingAndTestTree(preselectionLeptonCut, "SplitMode=random:!V:NormMode=None")
                 else:

@@ -48,17 +48,18 @@ print "method", method
 print "Running for input: " + input
 
 
-phase = "Phase 0"
+
+
 phase = "Phase 1"
-
-
+phase = "Phase 0"
 
 category = "Tracks"
 
-lepton = "Muons"
 lepton = "Electrons"
+lepton = "Muons"
 
-
+postfix_to_plot = "_new_training_compare"
+postfix_to_plot = ""
 
 track_muon_2016_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track/cut_optimisation/tmva/Muons"
 track_muon_phase1_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track_phase1/cut_optimisation/tmva/Muons"
@@ -93,9 +94,7 @@ if phase == "Phase 1":
 mva_cut = analysis_selections.track_mva_cut[lepton]
 
 if not output_file:
-    output_file = "roc_" + category + "_" + lepton + "_" + phase.replace(" ", "_") + ".pdf"
-
-
+    output_file = "roc_" + category + "_" + lepton + "_" + phase.replace(" ", "_") + postfix_to_plot + ".pdf"
 
 def main():
 
@@ -114,6 +113,15 @@ def main():
     c2.cd()
     #(testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names) = cut_optimisation.get_bdt_hists(file, None, None, None, None, None, None, 40)
     (testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names) = cut_optimisation.get_method_hists(file, method, None, None, None, None, None, None, 40, "", weight)
+    
+    #get_method_hists(folders, method, gtestBGHists=None, gtrainBGHists=None, gtestSignalHists=None, gtrainSignalHists=None, gmethods=None, gnames=None, bins=10000, condition="", weight=False):
+    #file = ["/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track/cut_optimisation/tmva_before_removal_of_vars/Muons" ]
+    #cut_optimisation.get_method_hists(file, method, testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names, 40, "", weight)
+    
+    #file = ["/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track_before_var_fix/cut_optimisation/tmva/Muons" ]
+    #cut_optimisation.get_method_hists(file, method, testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names, 40, "", weight)
+    
+    
     #cut_optimisation.get_mlp_hists(file, testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names)
     #def get_bdt_hists(folders, testBGHists=None, trainBGHists=None, testSignalHists=None, trainSignalHists=None, methods=None, names=None, bins=10000,  condition=""):
     #    return get_method_hists(folders, "BDT", testBGHists, trainBGHists, testSignalHists, trainSignalHists, methods, names, bins, condition)
@@ -127,9 +135,9 @@ def main():
     hist.SetMinimum(0)
     hist.SetMaximum(1)
     #hist.GetXaxis().SetTitle("#font[12]{#varepsilon_{S}}")
-    hist.GetXaxis().SetTitle("#varepsilon_{S}")
+    hist.GetXaxis().SetTitle("#varepsilon_{s}")
     #hist.GetYaxis().SetTitle("background rejection (1 - #font[12]{#varepsilon_{B}})")
-    hist.GetYaxis().SetTitle("background rejection (1 - #varepsilon_{B})")
+    hist.GetYaxis().SetTitle("background rejection (1 - #varepsilon_{b})")
     #utils.histoStyler(hist)
     
     hist.GetYaxis().SetTitleOffset(1.0)
@@ -143,35 +151,39 @@ def main():
     legend.SetTextSize(0.05)
     legend.SetTextAlign(12)
     
+    memory = []
+    
     for inx in range(len(testBGHists)):
     
         testBGHist, trainBGHist, testSignalHist, trainSignalHist, method, name = testBGHists[inx], trainBGHists[inx], testSignalHists[inx], trainSignalHists[inx], methods[inx], names[inx]
         h = TGraph()
+        memory.append(h)
         S, B, ST, BT = cut_optimisation.getRocWithMvaCut(trainSignalHist, trainBGHist, testSignalHist, testBGHist, mva_cut, h)
         h.SetTitle(name)
-        h.SetLineColor(kBlue)
+        h.SetLineColor(plotutils.rocCurvesColors[inx])
         h.SetLineWidth(1)
         #h.SetMarkerSize(0.2)
         #hbdt.SetFillColor(kRed)
-
+        #if inx == 0:
         h.Draw("same")
         #legend.Draw("same")
         
         
         mvaCutPoint = TGraph()
+        memory.append(mvaCutPoint)
         print "x=",S/ST,"y=",1-B/BT
         mvaCutPoint.SetPoint(0, S/ST, 1-B/BT)
         #mvaCutPoint.SetPoint(0, 0.5, 0.5)
         #color = colors[colorInx]
         #colorInx += 1
         #mvaCutPoint.SetLineColor(kBlack)
-        mvaCutPoint.SetMarkerColor(kRed)
+        mvaCutPoint.SetMarkerColor(plotutils.rocCurvesColors[inx+1])
         mvaCutPoint.SetMarkerSize(1)
         mvaCutPoint.SetMarkerStyle(20)
         mvaCutPoint.Draw("p same")
         
-        legend.AddEntry(mvaCutPoint, "BDT > " + str(mva_cut), 'p')
-        legend.Draw("same")
+        legend.AddEntry(mvaCutPoint, "BDT > " + str(mva_cut) + " (#varepsilon_{s}, #varepsilon_{b})=(" + "{:.2f}".format(S/ST) + "," + "{:.2f}".format( B/BT ) + ")", 'p')
+    legend.Draw("same")
         
         # tl = TLatex()
 #         tl.SetNDC()

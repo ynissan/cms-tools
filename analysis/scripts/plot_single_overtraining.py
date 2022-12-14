@@ -51,15 +51,15 @@ print "method", method
 print "Running for input: " + input
 
 
-
-phase = "Phase 0"
 phase = "Phase 1"
+phase = "Phase 0"
 
 category = "Tracks"
 
-lepton = "Muons"
 lepton = "Electrons"
+lepton = "Muons"
 
+postfix_to_plot = "_new_training"
 
 track_muon_2016_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track/cut_optimisation/tmva/Muons"
 track_muon_phase1_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track_phase1/cut_optimisation/tmva/Muons"
@@ -92,7 +92,7 @@ if phase == "Phase 1":
             input = track_electrons_phase1_input
 
 if not output_file:
-    output_file = "overtraining_" + category + "_" + lepton + "_" + phase.replace(" ", "_") + ".pdf"
+    output_file = "overtraining_" + category + "_" + lepton + "_" + phase.replace(" ", "_") + postfix_to_plot + ".pdf"
 
 def main():
 

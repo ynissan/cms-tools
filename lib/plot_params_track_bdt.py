@@ -134,7 +134,7 @@ class track_bdt_inputs_muons(BaseParams):
     histrograms_file = BaseParams.histograms_root_files_dir + "/track_bdt_inputs_muons.root"
     
     save_histrograms_to_file = True
-    load_histrograms_from_file = False 
+    load_histrograms_from_file = True 
     
     show_lumi = False
     use_calculated_lumi_weight = False

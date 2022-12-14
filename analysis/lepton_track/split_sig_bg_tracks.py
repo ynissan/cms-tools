@@ -57,6 +57,7 @@ def main():
     otherVars = (
         {"name":"track", "type2":'TLorentzVector'},
         {"name":"deltaEtaLL", "type":"D"},
+        {"name":"deltaPhiLL", "type":"D"},
         {"name":"deltaEtaLJ", "type":"D"},
         {"name":"deltaRLL", "type":"D"},
         {"name":"deltaRLJ", "type":"D"},
@@ -243,6 +244,7 @@ def main():
                                 vars[varsDict["deltaEtaLL"]]["var"][0] = abs(t.Eta()-ll.Eta()) 
                                 vars[varsDict["deltaRLL"]]["var"][0] = abs(t.DeltaR(ll))
                                 vars[varsDict["invMass"]]["var"][0] = (ll + t).M()
+                                vars[varsDict["deltaPhiLL"]]["var"][0] = t.DeltaPhi(ll)
                                 if (ll + t).M() < 0:
                                     print "Negative invMass continue", (ll + t).M()
                                     continue
@@ -251,6 +253,7 @@ def main():
                                 vars[varsDict["deltaEtaLL"]]["var"][0] = -1 
                                 vars[varsDict["deltaRLL"]]["var"][0] = -1
                                 vars[varsDict["invMass"]]["var"][0] = -1
+                                vars[varsDict["deltaPhiLL"]]["var"][0] = -1
                             vars[varsDict["deltaEtaLJ"]]["var"][0] = abs(t.Eta() - c.LeadingJet.Eta())
                             vars[varsDict["deltaRLJ"]]["var"][0] = abs(t.DeltaR(c.LeadingJet))
                             vars[varsDict["mtt"]]["var"][0] = analysis_tools.MT2(c.MET, c.METPhi, t)

@@ -354,19 +354,20 @@ def main():
                         
                                         track_bdt_vars_maps[leptonFlavour + iso + cuts + cat]["deltaEtaLJ"][0] = abs(t.Eta() - c.LeadingJet.Eta())
                                         track_bdt_vars_maps[leptonFlavour + iso + cuts + cat]["deltaRLJ"][0] = abs(t.DeltaR(c.LeadingJet))
-                                        track_bdt_vars_maps[leptonFlavour + iso + cuts + cat]["track.Phi()"][0] = t.Phi()
-                                        track_bdt_vars_maps[leptonFlavour + iso + cuts + cat]["track.Pt()"][0] = t.Pt()
-                                        track_bdt_vars_maps[leptonFlavour + iso + cuts + cat]["track.Eta()"][0] = t.Eta()
+                                        #track_bdt_vars_maps[leptonFlavour + iso + cuts + cat]["track.Phi()"][0] = t.Phi()
+                                        #track_bdt_vars_maps[leptonFlavour + iso + cuts + cat]["track.Pt()"][0] = t.Pt()
+                                        track_bdt_vars_maps[leptonFlavour + iso + cuts + cat]["abs(track.Eta())"][0] = abs(t.Eta())
             
             
                                         track_bdt_vars_maps[leptonFlavour + iso + cuts + cat]["deltaEtaLL"][0] = abs(t.Eta()-ll.Eta()) 
+                                        track_bdt_vars_maps[leptonFlavour + iso + cuts + cat]["deltaPhiLL"][0] = t.DeltaPhi(ll) 
                                         track_bdt_vars_maps[leptonFlavour + iso + cuts + cat]["deltaRLL"][0] = abs(t.DeltaR(ll))
-                                        track_bdt_vars_maps[leptonFlavour + iso + cuts + cat]["mtt"][0] = analysis_tools.MT2(c.MET, c.METPhi, t)
+                                        #track_bdt_vars_maps[leptonFlavour + iso + cuts + cat]["mtt"][0] = analysis_tools.MT2(c.MET, c.METPhi, t)
                                         #track_bdt_vars_map["deltaRMet"][0] = abs(t.DeltaR(metvec))
                                         track_bdt_vars_maps[leptonFlavour + iso + cuts + cat]["deltaPhiMht"][0] = abs(t.DeltaPhi(mhtvec))
             
-                                        track_bdt_vars_maps[leptonFlavour + iso + cuts + cat]["lepton.Eta()"][0] = ll.Eta()
-                                        track_bdt_vars_maps[leptonFlavour + iso + cuts + cat]["lepton.Phi()"][0] = ll.Phi()
+                                        track_bdt_vars_maps[leptonFlavour + iso + cuts + cat]["abs(lepton.Eta())"][0] = abs(ll.Eta())
+                                        #track_bdt_vars_maps[leptonFlavour + iso + cuts + cat]["lepton.Phi()"][0] = ll.Phi()
                                         track_bdt_vars_maps[leptonFlavour + iso + cuts + cat]["lepton.Pt()"][0] = ll.Pt()
                                         track_bdt_vars_maps[leptonFlavour + iso + cuts + cat]["invMass"][0] = (t + ll).M()
             
