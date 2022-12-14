@@ -57,9 +57,9 @@ phase = "Phase 0"
 
 category = "Tracks"
 
-lepton = "Muons"
-lepton = "Electrons"
 
+lepton = "Electrons"
+lepton = "Muons"
 
 postfix_to_plot = "_new_training"
 postfix_to_plot = ""
