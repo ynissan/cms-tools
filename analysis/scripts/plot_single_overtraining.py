@@ -54,12 +54,15 @@ print "Running for input: " + input
 phase = "Phase 1"
 phase = "Phase 0"
 
+
 category = "Tracks"
 
-lepton = "Electrons"
 lepton = "Muons"
+lepton = "Electrons"
+
 
 postfix_to_plot = "_new_training"
+postfix_to_plot = ""
 
 track_muon_2016_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track/cut_optimisation/tmva/Muons"
 track_muon_phase1_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track_phase1/cut_optimisation/tmva/Muons"

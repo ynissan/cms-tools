@@ -360,7 +360,7 @@ def main():
             
             
                                         track_bdt_vars_maps[leptonFlavour + iso + cuts + cat]["deltaEtaLL"][0] = abs(t.Eta()-ll.Eta()) 
-                                        track_bdt_vars_maps[leptonFlavour + iso + cuts + cat]["deltaPhiLL"][0] = t.DeltaPhi(ll) 
+                                        track_bdt_vars_maps[leptonFlavour + iso + cuts + cat]["abs(deltaPhiLL)"][0] = abs(t.DeltaPhi(ll))
                                         track_bdt_vars_maps[leptonFlavour + iso + cuts + cat]["deltaRLL"][0] = abs(t.DeltaR(ll))
                                         #track_bdt_vars_maps[leptonFlavour + iso + cuts + cat]["mtt"][0] = analysis_tools.MT2(c.MET, c.METPhi, t)
                                         #track_bdt_vars_map["deltaRMet"][0] = abs(t.DeltaR(metvec))

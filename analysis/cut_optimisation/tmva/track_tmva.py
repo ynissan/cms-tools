@@ -183,7 +183,7 @@ for iso in utils.leptonIsolationList:
 
                 ## FULL
                 dataloader.AddVariable('deltaEtaLL', 'F')
-                dataloader.AddVariable('deltaPhiLL', 'F')
+                dataloader.AddVariable('abs(deltaPhiLL)', 'F')
                 
                 dataloader.AddVariable('deltaRLL', 'F')
                 

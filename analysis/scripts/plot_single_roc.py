@@ -48,15 +48,16 @@ print "method", method
 print "Running for input: " + input
 
 
-
-
 phase = "Phase 1"
 phase = "Phase 0"
 
+
+
 category = "Tracks"
 
-lepton = "Electrons"
 lepton = "Muons"
+lepton = "Electrons"
+
 
 postfix_to_plot = "_new_training_compare"
 postfix_to_plot = ""
