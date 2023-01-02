@@ -43,20 +43,14 @@ if args.input:
     input = args.input[0]
 if args.method:
     method = args.method[0]
-print "input", input
-print "method", method
 
 ######## END OF CMDLINE ARGUMENTS ########
 
-print "Running for input: " + input
-
-
-phase = "Phase 1"
 phase = "Phase 0"
-
+phase = "Phase 1"
 
 category = "Tracks"
-
+category = "Event_Dilepton"
 
 lepton = "Electrons"
 lepton = "Muons"
@@ -70,8 +64,17 @@ track_muon_phase1_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton
 track_electrons_2016_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track/cut_optimisation/tmva/Electrons"
 track_electrons_phase1_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/lepton_track_phase1/cut_optimisation/tmva/Electrons"
 
+event_dilepton_muon_2016_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/cut_optimisation/tmva/dilepton_bdt/recoMuons" +  analysis_selections.jetIsos["Muons"]
+event_dilepton_muon_phase1_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/cut_optimisation/tmva/dilepton_bdt_phase1/recoMuons" +  analysis_selections.jetIsos["Muons"]
+
+#event_dilepton_electron_2016_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/cut_optimisation/tmva/dilepton_bdt/recoMuons" +  analysis_selections.jetIsos["Muons"]
+#event_dilepton_electron_phase1_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/cut_optimisation/tmva/dilepton_bdt_phase1/recoMuons" +  analysis_selections.jetIsos["Muons"]
+
+
 track_muon_method = "Muons" + analysis_selections.jetIsos["Muons"]
 track_electron_method = "Electrons" + analysis_selections.jetIsos["Electrons"]
+
+event_dilepton_muon_method = "recoMuons" + analysis_selections.jetIsos["Muons"]
 
 method = track_muon_method
 
@@ -82,10 +85,16 @@ stamp_txt = lepton + " " + phase
 
 input = track_muon_2016_input
 
+y_axis_label = category
+
 if lepton == "Electrons":
     input = track_electrons_2016_input
-    
-y_axis_label = category
+elif lepton == "Muons":
+    if category == "Event_Dilepton":
+        input = event_dilepton_muon_phase1_input
+        method = event_dilepton_muon_method
+        y_axis_label = "Events"
+
 
 if phase == "Phase 1":
     if category == "Tracks":
@@ -96,6 +105,12 @@ if phase == "Phase 1":
 
 if not output_file:
     output_file = "overtraining_" + category + "_" + lepton + "_" + phase.replace(" ", "_") + postfix_to_plot + ".pdf"
+
+print "===================="
+print "Running for input: " + input
+print "method", method
+print "category", category
+print "===================="
 
 def main():
 

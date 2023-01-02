@@ -168,12 +168,12 @@ EOM
 echo $INPUT_DIR/sum/
 
 FILES=$INPUT_DIR/sum/*
-FILES=(Run2018A-17Sep2018-v1.METAOD_1843.root)
+#FILES=(Run2018A-17Sep2018-v1.METAOD_1843.root)
 #FILES=(Run2018D-PromptReco-v2.METAOD_2235.root Run2018D-PromptReco-v2.METAOD_2236.root)
 
 for data_file in ${FILES[@]}; do
 #for data_file in $INPUT_DIR/sum/*; do
-    data_file=$INPUT_DIR/sum/$data_file
+    #data_file=$INPUT_DIR/sum/$data_file
     echo "Will run:"
     data_file_name=$(basename $data_file .root)
         #out_file=${OUTPUT_DIR}/$tb/single/${data_file_name}.root

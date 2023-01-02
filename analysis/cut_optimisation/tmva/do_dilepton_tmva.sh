@@ -16,6 +16,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --extrack)
+        EX_TRACK=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
          --phase1)
         PHASE1=true
         POSITIONAL+=("$1")
@@ -30,6 +35,7 @@ done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 #---------- END OPTIONS ------------
 
+ONLY_SELECTED_ISOS=true
 
 timestamp=$(date +%Y%m%d_%H%M%S%N)
 output_file="${WORK_DIR}/condor_submut.${timestamp}"
@@ -112,6 +118,8 @@ for group in $SIM_GROUP_KEYS; do
     lepTypes=(exTrack reco)
     if [ -n "$TWO_LEPTONS" ]; then
         lepTypes=(reco)
+    elif [ -n "$EX_TRACK" ]; then
+        lepTypes=(exTrack)
     fi
     for lepNum in "${lepTypes[@]}"; do
         echo "Running lepNum=$lepNum"
@@ -134,6 +142,16 @@ for group in $SIM_GROUP_KEYS; do
                             fi
                             
                             echo ${lepNum}${lep}${iso}${category}${cuts}
+                            
+                            if [ -n "$ONLY_SELECTED_ISOS" ]; then
+                                if [[ ( $lep == "Electrons" &&  $ELECTRONS_SELECTED_ISO != "${iso}${category}${cuts}" ) || ( $lep == "Muons" &&  $MUONS_SELECTED_ISO != "${iso}${category}${cuts}" ) ]]; then
+                                    echo We only run on the selected isos and not performing scan. Therefore skipping ${lepNum}${lep}${iso}${category}${cuts}
+                                    continue
+                                fi
+                            fi
+                            
+                            echo Checking "$OUTPUT_DIR/${lepNum}${lep}${iso}${category}${cuts}"
+                            
                             dir="$OUTPUT_DIR/${lepNum}${lep}${iso}${category}${cuts}"
                             if [ ! -d $dir ]; then
                                 mkdir $dir

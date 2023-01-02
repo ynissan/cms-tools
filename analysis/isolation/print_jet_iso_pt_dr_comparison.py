@@ -27,8 +27,8 @@ signals = [
     #"mu100_dm1p13"
 ]
 
-phase1_2017 = True
-get_data = False
+phase1_2017 = False
+get_data = True
 
 if phase1_2017:
     signals = [
@@ -40,8 +40,9 @@ if phase1_2017:
     ]
 
 
-wanted_lepton = "Muons"
 wanted_lepton = "Electrons"
+wanted_lepton = "Muons"
+
 
 wanted_iso = "CorrJetNoMultIso"
 unwanted_iso = "CorrJetIso"
@@ -57,7 +58,7 @@ def main():
     #histogram_file = TFile("sig_bg_histograms_for_jet_iso_scanCorrJetNoMultIso_no_tautau_after_mht.root", "read")
     histogram_file = TFile("sig_bg_histograms_for_jet_iso_scanCorrJetNoMultIso_no_tautau_after_mht_with_data.root", "read")
     
-    histogram_file = TFile("sig_bg_histograms_for_jet_iso_scanCorrJetNoMultIso_with_tautau_2017.root", "read")
+    #histogram_file = TFile("sig_bg_histograms_for_jet_iso_scanCorrJetNoMultIso_with_tautau_2017.root", "read")
     
     
     significance = {}

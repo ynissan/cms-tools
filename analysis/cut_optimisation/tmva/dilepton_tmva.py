@@ -13,6 +13,7 @@ import shutil
 sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools"))
 from lib import utils
 from lib import analysis_observables
+from lib import analysis_selections
 
 ####### CMDLINE ARGUMENTS #########
 
@@ -151,12 +152,13 @@ else:
     # Before 
     #preselection = "exclusiveTrack" + iso + str(ptRange) + cat + ' == 1 && BTagsDeepMedium == 0 &&  trackBDT' + iso + str(ptRange) + cat  +    ' >= 0 && exclusiveTrackLeptonFlavour' + iso + str(ptRange) + cat  + " == \"" + lep + "\""
     # Making new version without trackBDT precut
-    preselection = "exclusiveTrack" + iso + str(ptRange) + cat + ' == 1 && BTagsDeepMedium == 0 && MinDeltaPhiMhtJets > 0.4 && exclusiveTrackLeptonFlavour' + iso + str(ptRange) + cat  + " == \"" + lep + "\""
+    preselection = "exclusiveTrack" + iso + str(ptRange) + cat + ' == 1 && BTagsDeepMedium == 0 &&  trackBDT' + iso + str(ptRange) + cat  +    ' >= 0 && MinDeltaPhiMhtJets > 0.4 && exclusiveTrackLeptonFlavour' + iso + str(ptRange) + cat  + " == \"" + lep + "\""
     variablesUsed.append("exclusiveTrack" + iso + str(ptRange) + cat)
     variablesUsed.append("exclusiveTrackLeptonFlavour" + iso + str(ptRange) + cat)
     variablesUsed.append('mtl' + iso + str(ptRange) + cat)
     variablesUsed.append('lepton' + iso + str(ptRange) + cat)
     variablesUsed.append('track' + iso + str(ptRange) + cat)
+    variablesUsed.append('trackBDT' + iso + str(ptRange) + cat)
 
 print "Variables used", variablesUsed 
 
@@ -377,6 +379,7 @@ else:
     dataloader.AddVariable('track' + iso + str(ptRange) + cat + '.Pt()', 'F')
     dataloader.AddVariable('lepton' + iso + str(ptRange) + cat + '.Phi()', 'F')
     dataloader.AddVariable('track' + iso + str(ptRange) + cat + '.Phi()', 'F')
+    dataloader.AddVariable('trackBDT' + iso + str(ptRange) + cat, 'F')
     #dataloader.AddVariable('Mt2', 'F')
 
 #new removal

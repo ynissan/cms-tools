@@ -105,7 +105,7 @@ for input_file in input_files:
                     cuts = ""
                     if len(str(ptRange)) > 0:
                         cuts = str(ptRange) + "Dr" + str(drCut)
-                    print "Checking " + iso + cuts + cat
+                    #print "Checking " + iso + cuts + cat
                     if iso + cuts + cat != analysis_selections.jetIsos[lep]:
                         continue
                     sTree = fsignal.Get(lep + iso + cuts + cat)

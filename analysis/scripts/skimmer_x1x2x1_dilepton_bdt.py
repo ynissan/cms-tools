@@ -16,6 +16,7 @@ from lib import analysis_tools
 from lib import utils
 from lib import cut_optimisation
 from lib import analysis_observables
+from lib import analysis_selections
 
 gROOT.SetBatch(True)
 gStyle.SetOptStat(0)
@@ -31,6 +32,8 @@ parser.add_argument('-bdt', '--bdt', nargs=1, help='Dilepton BDT Folder', requir
 
 parser.add_argument('-s', '--signal', dest='signal', help='Signal', action='store_true')
 parser.add_argument('-tl', '--tl', dest='two_leptons', help='Two Leptons only', action='store_true')
+parser.add_argument('-ext', '--ext', dest='ex_track_only', help='ex track only', action='store_true')
+parser.add_argument('-no_scan', '--no_scan', dest='no_scan', help='only selected isolations', action='store_true')
 parser.add_argument('-bg', '--background', dest='bg', help='Background', action='store_true')
 parser.add_argument('-data', '--data', dest='data', help='Data', action='store_true')
 parser.add_argument('-dy', '--dy', dest='dy', help='Drell-Yan', action='store_true')
@@ -49,6 +52,8 @@ signal = args.signal
 bg = args.bg
 data = args.data
 two_leptons = args.two_leptons
+ex_track_only = args.ex_track_only
+no_scan = args.no_scan
 onphase0 = args.onphase0
 
 input_file = None
@@ -81,6 +86,8 @@ branches = {}
 
 def main():
     
+    global two_leptons
+    
     if jpsi:
         utils.defaultJetIsoSetting = "NoIso"
     
@@ -94,6 +101,7 @@ def main():
     phaseStr = ""
     if onphase0:
         phaseStr = "phase1"
+        two_leptons = True
     
     for iso in utils.leptonIsolationList:
         for cat in utils.leptonIsolationCategories:
@@ -108,7 +116,10 @@ def main():
                     cuts = ""
                     if len(str(ptRange)) > 0:
                         cuts = str(ptRange) + "Dr" + str(drCut)
-                
+                    
+                    if no_scan and iso + cuts + cat not in [analysis_selections.jetIsos["Muons"], analysis_selections.jetIsos["Electrons"]]:
+                        continue
+                    
                     postfixi = [iso + cuts + cat]
                     
                     #if iso + str(ptRange) + cat == utils.defaultJetIsoSetting:
@@ -118,7 +129,11 @@ def main():
                 
                         for DTypeObs in analysis_observables.commonPostBdtObservablesDTypesList:
                             
-                            analysis_categories = [""] if two_leptons else ["", "exTrack_"]
+                            analysis_categories = ["", "exTrack_"]
+                            if two_leptons:
+                                analysis_categories = [""]
+                            if ex_track_only:
+                                analysis_categories = ["exTrack_"]
                             for prefix in analysis_categories:
                                 sameChargeOptions = [False, True] if prefix == "exTrack_" else [False]
                             
@@ -157,9 +172,17 @@ def main():
                                         tree.SetBranchAddress(observableStr, vars[observableStr])
                 
                     if not jpsi:
-                        prefixes = ["reco"] if two_leptons else ["reco", "exTrack"]
+                        
+                        prefixes = ["reco", "exTrack"]
+                        if two_leptons:
+                            prefixes = ["reco"]
+                        elif ex_track_only:
+                            prefixes = ["exTrack"]
+                        
                         for prefix in prefixes:
                             for lep in ["Muons", "Electrons"]:
+                                #if no_scan and iso + cuts + cat != analysis_selections.jetIsos[lep]:
+                                #    continue
                                 dirname = prefix + lep + iso + cat + cuts
                                 name = prefix + lep + iso + cuts + cat
                                 bdt_weights = bdt + "/" + dirname + "/dataset/weights/TMVAClassification_" + name + ".weights.xml"
@@ -194,14 +217,21 @@ def main():
                         cuts = ""
                         if len(str(ptRange)) > 0:
                             cuts = str(ptRange) + "Dr" + str(drCut)
-                
+                        
+                        if no_scan and iso + cuts + cat  not in [analysis_selections.jetIsos["Muons"], analysis_selections.jetIsos["Electrons"]]:
+                            continue
+                        
                         postfixi = [iso + cuts + cat]
                     
                         #if iso + str(ptRange) + cat == utils.defaultJetIsoSetting:
                         #    postfixi = [iso + cuts + cat, ""]
                 
                         for postfix in postfixi:
-                            prefixes = ["reco"] if two_leptons else ["reco", "exTrack"]
+                            prefixes = ["reco", "exTrack"]
+                            if two_leptons:
+                                prefixes = ["reco"]
+                            elif ex_track_only:
+                                prefixes = ["exTrack"]
                             for prefix in prefixes:
                                 prefixVars = ""
                             
@@ -311,7 +341,11 @@ def main():
                                             vars[sc_prefix + "trackParentPdgId" + phaseStr + postfix][0] = -1
                             
                             for DTypeObs in analysis_observables.commonPostBdtObservablesDTypesList:
-                                analysis_categories = [""] if two_leptons else ["", "exTrack_"]
+                                analysis_categories = ["", "exTrack_"]
+                                if two_leptons:
+                                    analysis_categories = [""]
+                                if ex_track_only:
+                                    analysis_categories = ["exTrack_"]
                                 for prefix in analysis_categories:
                                     sameChargeOptions = [False, True] if prefix == "exTrack_" else [False]
                             
