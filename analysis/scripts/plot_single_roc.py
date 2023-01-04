@@ -47,15 +47,19 @@ print "method", method
 
 print "Running for input: " + input
 
-phase = "Phase 0"
+
+
+
 phase = "Phase 1"
+phase = "Phase 0"
 
 category = "Tracks"
 category = "Event_Dilepton"
+category = "Event_Ex_Track"
 
-lepton = "Electrons"
+
 lepton = "Muons"
-
+lepton = "Electrons"
 
 
 postfix_to_plot = "_new_training_compare"
@@ -69,6 +73,12 @@ track_electrons_phase1_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/l
 
 event_dilepton_muon_2016_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/cut_optimisation/tmva/dilepton_bdt/recoMuons" +  analysis_selections.jetIsos["Muons"]
 event_dilepton_muon_phase1_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/cut_optimisation/tmva/dilepton_bdt_phase1/recoMuons" +  analysis_selections.jetIsos["Muons"]
+
+event_ex_track_muon_2016_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/cut_optimisation/tmva/dilepton_bdt/exTrackMuons" +  analysis_selections.jetIsos["Muons"]
+event_ex_track_muon_phase1_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/cut_optimisation/tmva/dilepton_bdt_phase1/exTrackMuons" +  analysis_selections.jetIsos["Muons"]
+
+event_ex_track_electron_2016_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/cut_optimisation/tmva/dilepton_bdt/exTrackElectrons" +  analysis_selections.jetIsos["Electrons"]
+event_ex_track_electron_phase1_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/cut_optimisation/tmva/dilepton_bdt_phase1/exTrackElectrons" +  analysis_selections.jetIsos["Electrons"]
 
 #event_dilepton_electron_2016_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/cut_optimisation/tmva/dilepton_bdt/recoMuons" +  analysis_selections.jetIsos["Muons"]
 #event_dilepton_electron_phase1_input = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/cut_optimisation/tmva/dilepton_bdt_phase1/recoMuons" +  analysis_selections.jetIsos["Muons"]
@@ -92,10 +102,18 @@ y_axis_label = category
 
 if lepton == "Electrons":
     input = track_electrons_2016_input
+    if category == "Event_Ex_Track":
+        input = event_ex_track_electron_2016_input
+        method = "exTrackElectrons" + analysis_selections.jetIsos["Electrons"]
+        y_axis_label = "Events"
 elif lepton == "Muons":
     if category == "Event_Dilepton":
         input = event_dilepton_muon_phase1_input
         method = event_dilepton_muon_method
+        y_axis_label = "Events"
+    elif category == "Event_Ex_Track":
+        input = event_ex_track_muon_2016_input
+        method = "exTrackMuons" + analysis_selections.jetIsos["Muons"]
         y_axis_label = "Events"
 
 
@@ -105,6 +123,11 @@ if phase == "Phase 1":
             input = track_muon_phase1_input
         else:
             input = track_electrons_phase1_input
+    elif category == "Event_Ex_Track":
+        if lepton == "Muons":
+            input = event_ex_track_muon_phase1_input
+        else:
+            input = event_ex_track_electron_phase1_input
 
 mva_cut = analysis_selections.track_mva_cut[lepton]
 
