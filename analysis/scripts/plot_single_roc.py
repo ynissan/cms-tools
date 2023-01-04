@@ -47,9 +47,6 @@ print "method", method
 
 print "Running for input: " + input
 
-
-
-
 phase = "Phase 1"
 phase = "Phase 0"
 
