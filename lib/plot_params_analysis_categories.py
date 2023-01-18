@@ -12,12 +12,12 @@ from plot_params_base import *
 
 common_histograms = [
     
-    { "obs" : "MET", "minX" : 0, "maxX" : 800, "bins" : 30 },
+    { "obs" : "MET", "minX" : 120, "maxX" : 800, "bins" : 30 },
     #{ "obs" : "MT2", "minX" : 0, "maxX" : 100, "bins" : 30 },
     { "obs" : "MHT", "minX" : 220, "maxX" : 500, "bins" : 30, "units" : "H_{T}^{Miss} [GeV]" },
-    { "obs" : "HT", "minX" : 0, "maxX" : 700, "bins" : 30 },
+    { "obs" : "HT", "minX" : 0, "maxX" : 700, "bins" : 30, "logYspace" : 10000 },
     #{ "obs" : "MetDHt", "minX" : 0, "maxX" : 700, "bins" : 30 },
-    { "obs" : "leptonFlavour%%%", "minX" : 0, "maxX" : 2, "bins" : 2 },
+    #{ "obs" : "leptonFlavour%%%", "minX" : 0, "maxX" : 2, "bins" : 2 },
     #{ "obs" : "int(genFlavour == \"Muons\")", "minX" : 0, "maxX" : 2, "bins" : 2, "usedObs" : ["genFlavour"] },
     #{ "obs" : "int(genFlavour == \"Electrons\")", "minX" : 0, "maxX" : 2, "bins" : 2, "usedObs" : ["genFlavour"] },
     
@@ -25,24 +25,24 @@ common_histograms = [
     #{ "obs" : "BTagsLoose", "minX" : 0, "maxX" : 7, "bins" : 7 },
     #{ "obs" : "BTagsMedium", "minX" : 0, "maxX" : 7, "bins" : 7 },
     #{ "obs" : "BTagsDeepLoose", "minX" : 0, "maxX" : 7, "bins" : 7 },
-    { "obs" : "BTagsDeepMedium", "minX" : 0, "maxX" : 7, "bins" : 7 },
+    #{ "obs" : "BTagsDeepMedium", "minX" : 0, "maxX" : 7, "bins" : 7 },
     
     #{ "obs" : "LeadingJetQgLikelihood", "minX" : 0, "maxX" : 1, "bins" : 30 },
-    { "obs" : "MinDeltaPhiMhtJets", "minX" : 0, "maxX" : 6.3, "bins" : 20, "units" : "Min\Delta_{}\phi(H_{T}^{Miss}, Jets)" },
-    { "obs" : "MinDeltaPhiMetJets", "minX" : 0, "maxX" : 6.3, "bins" : 20, "units" : "Min\Delta_{}\phi(E_{T}^{Miss}, Jets)" },
+    { "obs" : "MinDeltaPhiMhtJets", "minX" : 0, "maxX" : 3.2, "bins" : 20, "units" : "Min\Delta_{}\phi(H_{T}^{Miss}, Jets)" },
+    #{ "obs" : "MinDeltaPhiMetJets", "minX" : 0, "maxX" : 3.2, "bins" : 20, "units" : "Min\Delta_{}\phi(E_{T}^{Miss}, Jets)" },
     
-    { "obs" : "LeadingJetPt", "minX" : 0, "maxX" : 800, "bins" : 30, "units" : "p_{T}(j_{1})" },
+    { "obs" : "LeadingJetPt", "minX" : 0, "maxX" : 800, "bins" : 30, "units" : "p_{T}(j_{1}) [GeV]" },
     { "obs" : "abs(LeadingJet.Eta())", "minX" : 0, "maxX" : 2.5, "bins" : 30, "usedObs" : ["LeadingJet"], "units" : "|\eta_{j_{1}}|" },
     #{ "obs" : "MaxCsv25", "minX" : 0, "maxX" : 1, "bins" : 30 },
     #{ "obs" : "MaxDeepCsv25", "minX" : 0, "maxX" : 1, "bins" : 30 },
     #{ "obs" : "LeadingJetMinDeltaRElectrons", "minX" : 0, "maxX" : 5, "bins" : 30 },
     #{ "obs" : "LeadingJetMinDeltaRMuons", "minX" : 0, "maxX" : 5, "bins" : 30 },
-    { "obs" : 'int(vetoElectronsPassIso)', "minX" : 0, "maxX" : 2, "bins" : 2, "usedObs" : ["vetoElectronsPassIso"]},
+    #{ "obs" : 'int(vetoElectronsPassIso)', "minX" : 0, "maxX" : 2, "bins" : 2, "usedObs" : ["vetoElectronsPassIso"]},
     #{ "obs" : 'int(vetoElectronsCorrJetIso10)', "minX" : 0, "maxX" : 2, "bins" : 2},
     #{ "obs" : 'int(vetoElectronsMediumID)', "minX" : 0, "maxX" : 2, "bins" : 2},
     #{ "obs" : 'int(vetoElectronsTightID)', "minX" : 0, "maxX" : 2, "bins" : 2},
     #{ "obs" : 'int(vetoElectrons)', "minX" : 0, "maxX" : 2, "bins" : 2},
-    { "obs" : 'int(vetoMuonsPassIso)', "minX" : 0, "maxX" : 2, "bins" : 2, "usedObs" : ["vetoMuonsPassIso"]},
+    #{ "obs" : 'int(vetoMuonsPassIso)', "minX" : 0, "maxX" : 2, "bins" : 2, "usedObs" : ["vetoMuonsPassIso"]},
     #{ "obs" : 'int(vetoMuonsCorrJetIso10)', "minX" : 0, "maxX" : 2, "bins" : 2},
     #{ "obs" : 'int(vetoMuonoMediumID)', "minX" : 0, "maxX" : 2, "bins" : 2},
     #{ "obs" : 'int(vetoMuonsTightID)', "minX" : 0, "maxX" : 2, "bins" : 2},
@@ -52,10 +52,10 @@ common_histograms = [
 
 two_leps_histograms = [
     
-    { "obs" : "invMass%%%_coarse", "formula" : "invMass%%%","minX" : 0, "maxX" : 13, "bins" : 6, "blind" : [4,None],"units" : "M_{ll} [GeV]" },
-    { "obs" : "invMass%%%", "minX" : 0, "maxX" : 12, "bins" : 20, "blind" : [4,None],"units" : "M_{ll} [GeV]", "linearYspace" : 1.5 },
-    { "obs" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 60, "blind" : [None,0.1],"units" : "BDT" },
-    { "obs" : "custom_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 60, "blind" : [None,0.1],"units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,1] },
+    #{ "obs" : "invMass%%%_coarse", "formula" : "invMass%%%","minX" : 0, "maxX" : 13, "bins" : 6, "blind" : [4,None],"units" : "M_{ll} [GeV]" },
+    { "obs" : "invMass%%%", "minX" : 0, "maxX" : 12, "bins" : 30, "blind" : [4,None],"units" : "M_{ll} [GeV]", "linearYspace" : 1.5 },
+    { "obs" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 60, "blind" : [None,0.1],"units" : "BDT", "linearYspace" : 1.6 },
+    { "obs" : "custom_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 60, "linearYspace" : 1.6, "blind" : [None,0.1],"units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,1] },
     { "obs" : "dileptonPt%%%", "minX" : 0, "maxX" : 30, "bins" : 30, "units" : "p_{T}(ll) [GeV]" },
     #{ "obs" : "deltaPhi%%%", "minX" : 0, "maxX" : 3.2, "bins" : 30 },
     { "obs" : "deltaEta%%%", "minX" : 0, "maxX" : 4, "bins" : 30, "units" : "\Delta_{}\eta" },
@@ -71,8 +71,8 @@ two_leps_histograms = [
     { "obs" : "leptons%%%[1].Pt()", "minX" : 2, "maxX" : 15, "bins" : 30, "usedObs" : ["leptons%%%"], "units" : "p_{T}(l_{2}) [GeV]" },
     { "obs" : "abs(leptons%%%[0].Eta())", "minX" : 0, "maxX" : 2.4, "bins" : 30, "usedObs" : ["leptons%%%"] },
     { "obs" : "abs(leptons%%%[1].Eta())", "minX" : 0, "maxX" : 2.4, "bins" : 30, "usedObs" : ["leptons%%%"] },
-    { "obs" : "deltaPhiMetLepton1%%%", "minX" : 0, "maxX" : 3.5, "bins" : 30, "units" : "\Delta\phi(H_{T}^{Miss},l_{1})" },
-    { "obs" : "deltaPhiMetLepton2%%%", "minX" : 0, "maxX" : 3.5, "bins" : 30, "units" : "\Delta\phi(H_{T}^{Miss},l_{1})" },
+    { "obs" : "deltaPhiMhtLepton1%%%", "minX" : 0, "maxX" : 3.5, "bins" : 30, "units" : "\Delta\phi(H_{T}^{Miss},l_{1})" },
+    { "obs" : "deltaPhiMhtLepton2%%%", "minX" : 0, "maxX" : 3.5, "bins" : 30, "units" : "\Delta\phi(H_{T}^{Miss},l_{1})" },
     #{ "obs" : "leptons_ParentPdgId%%%[0]", "minX" : 0, "maxX" : 40, "bins" : 40, "usedObs" : ["leptons_ParentPdgId%%%"] },
     #{ "obs" : "leptons_ParentPdgId%%%[1]", "minX" : 0, "maxX" : 40, "bins" : 40, "usedObs" : ["leptons_ParentPdgId%%%"] },
     
@@ -246,6 +246,16 @@ signals = [
               
               ]
 
+signals_mini = [
+              #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim_sum/higgsino_mu100_dm0p86Chi20Chipm*.root",
+              #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim_sum/higgsino_mu100_dm1p13Chi20Chipm*.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim_sum/higgsino_mu100_dm1p92Chi20Chipm*.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim_sum/higgsino_mu100_dm3p28Chi20Chipm*.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim_sum/higgsino_mu100_dm4p30Chi20Chipm*.root",
+              #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim_sum/higgsino_mu100_dm5p63Chi20Chipm*.root"
+              
+              ]
+
 signalNames = [
     "\Delta_{}m 0.8 GeV",
     "\Delta_{}m 1.1 GeV",
@@ -253,6 +263,15 @@ signalNames = [
     "\Delta_{}m 3.2 GeV",
     "\Delta_{}m 4.3 GeV",
     "\Delta_{}m 5.6 GeV",
+]
+
+signalNames_mini = [
+    #"\Delta_{}m 0.8 GeV",
+    #"\Delta_{}m 1.1 GeV",
+    "\Delta_{}m 1.9 GeV",
+    "\Delta_{}m 3.2 GeV",
+    "\Delta_{}m 4.3 GeV",
+    #"\Delta_{}m 5.6 GeV",
 ]
 
 signals_2017 = [
@@ -342,7 +361,7 @@ class dilepton_muons_CorrJetIso10_5Dr0_55(dilepton_muons):
 
 class dilepton_muons_CorrJetIso10Dr0_6(dilepton_muons_CorrJetIso10_5Dr0_55):
     save_histrograms_to_file = True
-    load_histrograms_from_file = False  
+    load_histrograms_from_file = True  
     plot_signal = True
     jetIsoStr = "CorrJetNoMultIso10Dr0.6"
     histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons" + jetIsoStr + ".root"
@@ -355,8 +374,21 @@ class dilepton_muons_CorrJetIso10Dr0_6(dilepton_muons_CorrJetIso10_5Dr0_55):
     injectJetIsoToList(usedObs, jetIsoStr)
     #print("after", usedObs)
     #exit(0)
-    sig_line_width = 3
+    sig_line_width = 2
     plot_error = False
+    
+    signal_dir = signals_mini
+    signal_names = signalNames_mini
+    signalCp = plotutils.categorySignalCp
+    label_text = plotutils.StampStr.SIM
+    
+    #legend_columns = 3
+    
+    calculatedLumi = {
+        'MET' : 36,
+    }
+    legend_border = 0
+    legend_coordinates = {"x1" : .43, "y1" : .62, "x2" : .94, "y2" : .91}
 
 class dilepton_muons_CorrJetIso10Dr0_6_phase1_2017(dilepton_muons_CorrJetIso10Dr0_6):
     histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_CorrJetIso10Dr0_6_phase1_2017.root"

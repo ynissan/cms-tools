@@ -39,13 +39,13 @@ class Plotting():
 
 
 defaultColorPalette = [
-    { "name" : "yellow", "fillColor" : kYellow-4, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 5,  "markerStyle" : kOpenCircle},
-    { "name" : "red", "fillColor" : kRed-4, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
-    { "name" : "azure", "fillColor" : kAzure-4, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 4,  "markerStyle" : kOpenTriangleUp },
-    { "name" : "cyan", "fillColor" : kCyan-7, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 3,  "markerStyle" : kOpenSquare },
-    { "name" : "spring", "fillColor" : kSpring-1, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 3,  "markerStyle" : kOpenSquare },
-    { "name" : "gray", "fillColor" : kGray+1, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 6,  "markerStyle" : kOpenDiamond },
-    { "name" : "teal", "fillColor" : kTeal-9, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "Rare", "fillColor" : kCyan-3, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 5,  "markerStyle" : kOpenCircle},
+    { "name" : "DiBoson", "fillColor" : kRed-4, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "DYJetsToLL", "fillColor" : kGray, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 4,  "markerStyle" : kOpenTriangleUp },
+    { "name" : "TTJets", "fillColor" : kGreen-6, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 3,  "markerStyle" : kOpenSquare },
+    { "name" : "ZJetsToNuNu", "fillColor" : kYellow, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 3,  "markerStyle" : kOpenSquare },
+    { "name" : "QCD", "fillColor" : kGray, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 6,  "markerStyle" : kOpenDiamond },
+    { "name" : "WJetsToLNu", "fillColor" : kAzure+1, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
     { "name" : "orange", "fillColor" : "#ffbb00", "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
     { "name" : "lightgreen", "fillColor" : "#42f498", "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
     
@@ -59,6 +59,29 @@ defaultColorPalette = [
     
     { "name" : "black", "fillColor" : kBlack, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
 ]
+
+defaultOrigColorPalette = [
+    { "name" : "Rare", "fillColor" : kYellow-4, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 5,  "markerStyle" : kOpenCircle},
+    { "name" : "DiBoson", "fillColor" : kRed-4, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "DYJetsToLL", "fillColor" : kAzure-4, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 4,  "markerStyle" : kOpenTriangleUp },
+    { "name" : "TTJets", "fillColor" : kCyan-7, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 3,  "markerStyle" : kOpenSquare },
+    { "name" : "ZJetsToNuNu", "fillColor" : kSpring-1, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 3,  "markerStyle" : kOpenSquare },
+    { "name" : "QCD", "fillColor" : kGray+1, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 6,  "markerStyle" : kOpenDiamond },
+    { "name" : "WJetsToLNu", "fillColor" : kTeal-9, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "orange", "fillColor" : "#ffbb00", "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "lightgreen", "fillColor" : "#42f498", "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    
+    { "name" : "velvet", "fillColor" : "#ff00c9", "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "darkblue", "fillColor" : "#1B00DC", "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    
+    { "name" : "maroon", "fillColor" : "#800000", "lineColor" : "#A52A2A", "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "darkslategray", "fillColor" : "#2F4F4F", "lineColor" : "#708090", "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "wheat", "fillColor" : "#F5DEB3", "lineColor" : "#FFDEAD", "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "lightgray", "fillColor" : "#D3D3D3", "lineColor" : "#DCDCDC", "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    
+    { "name" : "black", "fillColor" : kBlack, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+]
+
 
 #For solid fill use fillStyle=1001
 # signalCp = [
@@ -81,6 +104,18 @@ signalCp = [
     { "name" : "grey", "fillColor" : kRed+4, "lineColor" : kRed+4, "fillStyle" : 0, "lineStyle" : 4 },
     { "name" : "red", "fillColor" : kRed-1, "lineColor" : kRed-1, "fillStyle" : 0, "lineStyle" : 3 },
 ]
+
+categorySignalCp = [
+    { "name" : "blue", "fillColor" : kRed, "lineColor" : kRed, "fillStyle" : 0, "lineStyle" : 1 },
+    { "name" : "blue", "fillColor" : kYellow, "lineColor" : kMagenta, "fillStyle" : 0, "lineStyle" : 1 },
+    { "name" : "red", "fillColor" : kAzure+2, "lineColor" : kOrange+1, "fillStyle" : 0, "lineStyle" : 1 },
+    { "name" : "cyan", "fillColor" : kRed+1, "lineColor" : kRed+1, "fillStyle" : 0, "lineStyle" : 2 },
+    { "name" : "orange", "fillColor" : kRed+2, "lineColor" : kRed+2, "fillStyle" : 0, "lineStyle" : 5 },
+    { "name" : "pink", "fillColor" : kRed+3, "lineColor" : kRed+3, "fillStyle" : 0, "lineStyle" : 6 },
+    { "name" : "grey", "fillColor" : kRed+4, "lineColor" : kRed+4, "fillStyle" : 0, "lineStyle" : 4 },
+    { "name" : "red", "fillColor" : kRed-1, "lineColor" : kRed-1, "fillStyle" : 0, "lineStyle" : 3 },
+]
+
 
 bdtColors = [
     { "name" : "red", "fillColor" : kRed, "lineColor" : kRed, "fillStyle" : 1001, "lineStyle" : 1, "alpha" : 0.35 },
@@ -133,7 +168,7 @@ def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, n
         colorI = i
         if colorInx is not None:
             colorI = colorInx[i]
-        print(colorI, colorInx)
+        print("-----",colorI, colorInx,colorPalette[colorI])
         alpha = colorPalette[colorI]["alpha"] if colorPalette[colorI].get("alpha") is not None else 0.75
         setHistColorFillLine(newHist, colorPalette[colorI], alpha, noFillStyle)
         # we remove it from here - if you want fill style 0 - put it in the colorpalette

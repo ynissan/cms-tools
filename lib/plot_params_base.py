@@ -93,6 +93,7 @@ def injectJetIsoToMapValues(obsMap, jetIso):
 # cmsLocation - where to put the CMS label
 # showLumi - bool
 # linearYspace - how much space to leave for legend
+# logYspace - how much space to leave for legend in case of log scale
 # blind - blind a specific interval
 # usedObs - used to tell which observables were in order to turn them on in the tree
 # ratio1max - max value for ratio1

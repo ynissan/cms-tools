@@ -1514,7 +1514,8 @@ def main():
                    
                     
                 if not (linear and plot_single):
-                    newBgHist.SetMaximum(maximum*1000)
+                    logFactor = hist_def["logYspace"] if hist_def.get("logYspace") is not None else 1000
+                    newBgHist.SetMaximum(maximum*logFactor)
                 else:
                     linearYspace = maximum*1.1
                     if hist_def.get("linearYspace") is not None:
@@ -1595,9 +1596,10 @@ def main():
                 histToStyle.GetYaxis().SetTitleOffset(y_title_offset)
 
                 if not (linear and plot_single):
-                    print(("Setting max", maximum*1000))
+                    logFactor = hist_def["logYspace"] if hist_def.get("logYspace") is not None else 1000
+                    print(("Setting max", maximum*logFactor))
                     if not (hist_def.get("2D") is not None and hist_def.get("2D")):
-                        histToStyle.SetMaximum(maximum*1000)
+                        histToStyle.SetMaximum(maximum*logFactor)
                 else:
                     linearYspace = maximum*1.1
                     if hist_def.get("linearYspace") is not None:
