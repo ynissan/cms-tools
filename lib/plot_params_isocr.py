@@ -203,8 +203,9 @@ class dilepton_muons_bg_isocr_no_retag(BaseParams):
     normalise = True
     normalise_each_bg = False
     plot_error = True
-    sc_label = "Jet Iso #Delta_{}R CR"
-    sc_ratio_label = "CR"
+    sc_label = "jet isolation sideband"
+    ratio_label = "main"
+    sc_ratio_label = "side"
     weightString = {
         #'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight * BranchingRatio",
         'MET' : "Weight * passesUniversalSelection * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * BranchingRatio",
@@ -382,7 +383,7 @@ class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_2016_no_norm_sf_lin
 class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_2017(dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_2016):
     histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_2017.root"
     save_histrograms_to_file = True
-    load_histrograms_from_file = False  
+    load_histrograms_from_file = True  
     bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_phase1/sum/slim_sum/type_sum"
     weightString = {
         'MET' : "Weight * passesUniversalSelection * passedMhtMet6pack * tEffhMetMhtRealXMht2017 * BranchingRatio",
@@ -390,18 +391,18 @@ class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_2017(dilepton_muons
     
     histograms_defs = [
         
-        { "obs" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 20, "units" : "BDT"},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
+        { "obs" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 20, "units" : "BDT output", "linearYspace" : 1.6},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
         #{ "obs" : "closure_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,0,0.15,0.25,0.35,0.45,0.6,1]},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
         #{ "obs" : "closure_new_bin_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,0,0.1,0.2,0.3,0.4,0.5,1]},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
         
-        { "obs" : "closure_dilepBDTphase1%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,0,0.1,0.2,0.3,0.4,0.5,1]},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
-        { "obs" : "closure_2017_binning_even_dilepBDTphase1%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,1]},
+        { "obs" : "closure_dilepBDTphase1%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT output", "linearYspace" : 1.6, "customBins"  : [-1,0,0.1,0.2,0.3,0.4,0.5,1], "ratio1max" : 2.5}
+        #{ "obs" : "closure_2017_binning_even_dilepBDTphase1%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,1]},
         #{ "obs" : "closure_2017_binning_even_tight_dilepBDTphase1%%%", "formula" : "dilepBDTphase1%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,1]},
-        { "obs" : "closure_2017_binning_even_wider_dilepBDTphase1%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,0,0.1,0.2,0.3,0.4,0.45,1]},
-        { "obs" : "closure_2017_binning_reversed_dilepBDTphase1%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,0,0.05,0.15,0.25,0.35,0.45,1]},
+        #{ "obs" : "closure_2017_binning_even_wider_dilepBDTphase1%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,0,0.1,0.2,0.3,0.4,0.45,1]},
+        #{ "obs" : "closure_2017_binning_reversed_dilepBDTphase1%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,0,0.05,0.15,0.25,0.35,0.45,1]},
         #{ "obs" : "closure_2017_binning_even_wider_tighter_dilepBDTphase1%%%", "formula" : "dilepBDTphase1%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,0,0.1,0.2,0.3,0.4,0.5,1]},
         #{ "obs" : "closure_2017_binning_even_wider_tighter_2_dilepBDTphase1%%%", "formula" : "dilepBDTphase1%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,0,0.1,0.2,0.3,0.4,0.45,0.55,1]},
-        { "obs" : "closure_2017_binning_dilepBDTphase1%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,0,0.1,0.3,0.4,0.45,1]},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
+        #{ "obs" : "closure_2017_binning_dilepBDTphase1%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,0,0.1,0.3,0.4,0.45,1]},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
         
         
     ]
@@ -414,6 +415,8 @@ class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_2017(dilepton_muons
     
     transfer_factor = 0.588
     transfer_factor_error = 0
+    label_text = plotutils.StampStr.SIM
+    stamp_scale_factor = False
 
 class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_2017_no_norm_sf_line_fit_line_weights(dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_2017):
     histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_2017_no_norm_sf_line_fit_line_weights.root"

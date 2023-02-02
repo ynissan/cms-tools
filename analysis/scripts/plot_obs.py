@@ -577,7 +577,7 @@ def plotRatio(c1, pad, memory, numHist, denHist, hist_def, numLabel = "Data", de
         tl.SetNDC()
         tl.SetTextSize(0.15) 
         tl.SetTextFont(42)
-        tl.DrawLatex(.15,.4, "m = " + "{:.2f}".format(fLine.GetParameter(1)) + " +- " +  "{:.2f}".format(fLine.GetParError(1)) + " b = " + "{:.2f}".format(fLine.GetParameter(0)) + " +- " + "{:.2f}".format(fLine.GetParError(0)))
+        tl.DrawLatex(.18,.4, "m = " + "{:.2f}".format(fLine.GetParameter(1)) + " +- " +  "{:.2f}".format(fLine.GetParError(1)) + " b = " + "{:.2f}".format(fLine.GetParameter(0)) + " +- " + "{:.2f}".format(fLine.GetParError(0)))
         #"ch2/ndof = " + "{:.2f}".format(chi2perndof)
 
 def createSumTypes(sumTypes):
@@ -2323,7 +2323,7 @@ def main():
                         #plotRatio(c1, pad, memory, numHist, denHist, hist_def, numLabel = "Data", denLabel = "BG",setXtitle = True, revRatio = False, styleRefHist = numHist)
                         
                         
-                        plotRatio(c1, histRPad, memory, stackSum, scBgHist, hist_def,  "Sim", plot_par.sc_ratio_label, True, plot_par.plot_reverse_ratio)
+                        plotRatio(c1, histRPad, memory, stackSum, scBgHist, hist_def,  plot_par.ratio_label, plot_par.sc_ratio_label, True, plot_par.plot_reverse_ratio)
                         if plot_par.plot_data:
                             plotRatio(c1, histR2Pad, memory, dataHist, scDataHist, hist_def, "data", plot_par.sc_ratio_label, False, plot_par.plot_reverse_ratio)
                     elif plot_par.plot_data:
@@ -2642,7 +2642,7 @@ def main():
                             memory.append(stackSum)
                         #plotRatio(c1, histRPad, memory, stackSum, scBgHist, hist_def, "sim / " + plot_par.sc_ratio_label)
                         
-                        plotRatio(c1, histRPad, memory, stackSum, scBgHist, hist_def, "Sim", plot_par.sc_ratio_label, True, plot_par.plot_reverse_ratio)
+                        plotRatio(c1, histRPad, memory, stackSum, scBgHist, hist_def, plot_par.ratio_label, plot_par.sc_ratio_label, True, plot_par.plot_reverse_ratio)
                         if plot_par.plot_data:
                             plotRatio(c1, histR2Pad, memory, dataHist, scDataHist, hist_def, "data", plot_par.sc_ratio_label, False, plot_par.plot_reverse_ratio)
                     elif plot_par.plot_data:

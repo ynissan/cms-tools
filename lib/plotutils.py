@@ -44,7 +44,7 @@ defaultColorPalette = [
     { "name" : "DYJetsToLL", "fillColor" : kGray, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 4,  "markerStyle" : kOpenTriangleUp },
     { "name" : "TTJets", "fillColor" : kGreen-6, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 3,  "markerStyle" : kOpenSquare },
     { "name" : "ZJetsToNuNu", "fillColor" : kYellow, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 3,  "markerStyle" : kOpenSquare },
-    { "name" : "QCD", "fillColor" : kGray, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 6,  "markerStyle" : kOpenDiamond },
+    { "name" : "QCD", "fillColor" : kBlue+3, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 6,  "markerStyle" : kOpenDiamond },
     { "name" : "WJetsToLNu", "fillColor" : kAzure+1, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
     { "name" : "orange", "fillColor" : "#ffbb00", "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
     { "name" : "lightgreen", "fillColor" : "#42f498", "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },

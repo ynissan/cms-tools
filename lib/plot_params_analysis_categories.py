@@ -9,6 +9,8 @@ import utils
 
 from plot_params_base import *
 
+import analysis_selections
+
 
 common_histograms = [
     
@@ -55,11 +57,11 @@ two_leps_histograms = [
     #{ "obs" : "invMass%%%_coarse", "formula" : "invMass%%%","minX" : 0, "maxX" : 13, "bins" : 6, "blind" : [4,None],"units" : "M_{ll} [GeV]" },
     { "obs" : "invMass%%%", "minX" : 0, "maxX" : 12, "bins" : 30, "blind" : [4,None],"units" : "M_{ll} [GeV]", "linearYspace" : 1.5 },
     { "obs" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 60, "blind" : [None,0.1],"units" : "BDT", "linearYspace" : 1.6 },
-    { "obs" : "custom_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 60, "linearYspace" : 1.6, "blind" : [None,0.1],"units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,1] },
-    { "obs" : "dileptonPt%%%", "minX" : 0, "maxX" : 30, "bins" : 30, "units" : "p_{T}(ll) [GeV]" },
+    { "obs" : "custom_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 60, "logYspace" : 8000, "linearYspace" : 1.6, "blind" : [None,0.1],"units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,1] },
+    { "obs" : "dileptonPt%%%", "minX" : 0, "maxX" : 30, "bins" : 30, "units" : "p_{T}(ll) [GeV]", "linearYspace" : 1.4 },
     #{ "obs" : "deltaPhi%%%", "minX" : 0, "maxX" : 3.2, "bins" : 30 },
     { "obs" : "deltaEta%%%", "minX" : 0, "maxX" : 4, "bins" : 30, "units" : "\Delta_{}\eta" },
-    { "obs" : "deltaR%%%", "minX" : 0, "maxX" : 4, "bins" : 30, "units" : "\Delta_{}R_{ll}", "linearYspace" : 1.5 },
+    { "obs" : "deltaR%%%", "minX" : 0, "maxX" : 4, "bins" : 30, "units" : "\Delta_{}R_{ll}", "linearYspace" : 1.7 },
     { "obs" : "dilepHt%%%", "minX" : 200, "maxX" : 400, "bins" : 30 },
     #{ "obs" : "pt3%%%", "minX" : 0, "maxX" : 1000, "bins" : 30 },
     #{ "obs" : "mtautau%%%", "minX" : 0, "maxX" : 200, "bins" : 30 },
@@ -160,11 +162,11 @@ ex_track_histograms = [
     { "obs" : "mtt", "minX" : 0, "maxX" : 200, "bins" : 30 },
     { "obs" : "NTracks", "minX" : 0, "maxX" : 7, "bins" : 7 },
     
-    { "obs" : "deltaRMetTrack", "minX" : 0, "maxX" : 4, "bins" : 30 },
-    { "obs" : "deltaPhiMetTrack", "minX" : 0, "maxX" : 3.2, "bins" : 30 },
-    { "obs" : "deltaRMetLepton", "minX" : 0, "maxX" : 4, "bins" : 30 },
-    { "obs" : "deltaPhiMetLepton", "minX" : 0, "maxX" : 3.2, "bins" : 30 },
-    
+    # { "obs" : "deltaRMetTrack", "minX" : 0, "maxX" : 4, "bins" : 30 },
+#     { "obs" : "deltaPhiMetTrack", "minX" : 0, "maxX" : 3.2, "bins" : 30 },
+#     { "obs" : "deltaRMetLepton", "minX" : 0, "maxX" : 4, "bins" : 30 },
+#     { "obs" : "deltaPhiMetLepton", "minX" : 0, "maxX" : 3.2, "bins" : 30 },
+#     
     { "obs" : "exTrack_deltaEtaLeadingJetDilepton", "minX" : 0, "maxX" : 4, "bins" : 30 },
     { "obs" : "exTrack_deltaPhiLeadingJetDilepton", "minX" : 0, "maxX" : 4, "bins" : 30 },
 ]
@@ -255,6 +257,7 @@ signals_mini = [
               #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim/slim_sum/higgsino_mu100_dm5p63Chi20Chipm*.root"
               
               ]
+              
 
 signalNames = [
     "\Delta_{}m 0.8 GeV",
@@ -275,22 +278,32 @@ signalNames_mini = [
 ]
 
 signals_2017 = [
-              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim_sum/mChipm100GeV_dm0p759GeV_1.root",
+              #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim_sum/mChipm100GeV_dm0p759GeV_1.root",
               "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim_sum/mChipm100GeV_dm0p959GeV_1.root",
-              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim_sum/mChipm100GeV_dm1p259GeV_1.root",
+              #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim_sum/mChipm100GeV_dm1p259GeV_1.root",
               "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim_sum/mChipm100GeV_dm1p759GeV_1.root",
               "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim_sum/mChipm100GeV_dm2p259GeV_1.root",
-              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim_sum/mChipm100GeV_dm3p259GeV_1.root"
+              #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim_sum/mChipm100GeV_dm3p259GeV_1.root"
+              
+              ]
+
+signals_2017_full = [
+              #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim_sum/mChipm100GeV_dm0p759GeV_1.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/sum/mChipm100GeV_dm0p959GeV_1.root",
+              #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim_sum/mChipm100GeV_dm1p259GeV_1.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/sum/mChipm100GeV_dm1p759GeV_1.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/sum/mChipm100GeV_dm2p259GeV_1.root",
+              #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim_sum/mChipm100GeV_dm3p259GeV_1.root"
               
               ]
 
 signalNames_2017 = [
-    "\Delta_{}m^{\pm} 0.75 GeV",
+    #"\Delta_{}m^{\pm} 0.75 GeV",
     "\Delta_{}m^{\pm} 0.95 GeV",
-    "\Delta_{}m^{\pm} 1.25 GeV",
+    #"\Delta_{}m^{\pm} 1.25 GeV",
     "\Delta_{}m^{\pm} 1.75 GeV",
     "\Delta_{}m^{\pm} 2.25 GeV",
-    "\Delta_{}m^{\pm} 3.25 GeV",
+    #"\Delta_{}m^{\pm} 3.25 GeV",
 ]
 
 # For this SC we need baseline cuts and sc cuts
@@ -341,25 +354,7 @@ class dilepton_muons(BaseParams):
     plot_signal = True
     glob_signal = True
 
-class dilepton_muons_CorrJetIso10_5Dr0_55(dilepton_muons):
-    save_histrograms_to_file = True
-    load_histrograms_from_file = True   
-    jetIsoStr = "CorrJetIso10.5Dr0.55"
-    histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons" + jetIsoStr + ".root"
-    #"/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools/analysis/scripts/dilepton_muons" + jetIsoStr + ".root"
-    cuts = copy.deepcopy(dilepton_muons.cuts)
-    injectJetIsoToCuts(cuts, jetIsoStr)
-    histograms_defs = copy.deepcopy(dilepton_muons.histograms_defs)
-    injectJetIsoToHistograms(histograms_defs, jetIsoStr)
-    usedObs = copy.deepcopy(dilepton_muons.usedObs)
-    #print("before", usedObs)
-    injectJetIsoToList(usedObs, jetIsoStr)
-    #print("after", usedObs)
-    #exit(0)
-    sig_line_width = 3
-    plot_error = False
-
-class dilepton_muons_CorrJetIso10Dr0_6(dilepton_muons_CorrJetIso10_5Dr0_55):
+class dilepton_muons_CorrJetIso10Dr0_6(dilepton_muons):
     save_histrograms_to_file = True
     load_histrograms_from_file = True  
     plot_signal = True
@@ -397,8 +392,17 @@ class dilepton_muons_CorrJetIso10Dr0_6_phase1_2017(dilepton_muons_CorrJetIso10Dr
     bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_phase1/sum/slim_sum/type_sum"
     signal_dir = signals_2017
     signal_names = signalNames_2017
+    calculatedLumi = {
+        'MET' : 41,
+    }
+    legend_coordinates = {"x1" : .42, "y1" : .62, "x2" : .93, "y2" : .91}
+    weightString = {
+        #'MET' : "BranchingRatio * Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight",
+        'MET' : "BranchingRatio * Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2017 * passesUniversalSelection",
+        #'MET' : "BranchingRatio * Weight",
+    }
     
-class dilepton_muons_CorrJetIso10_5Dr0_55_bdt_only(dilepton_muons_CorrJetIso10_5Dr0_55):
+class dilepton_muons_CorrJetIso10_5Dr0_55_bdt_only(dilepton_muons_CorrJetIso10Dr0_6):
     bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum/type_sum"
     #data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/sum/"
     jetIsoStr = "CorrJetIso10.5Dr0.55"
@@ -471,25 +475,33 @@ class dilepton_electrons(dilepton_muons):
     ]
     histrograms_file = "/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools/analysis/scripts/dilepton_electrons.root"
 
-class track_electron(dilepton_muons):
-    #
+class track_electron(dilepton_muons_CorrJetIso10Dr0_6_phase1_2017):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/track_electron_2017.root"
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True
     cuts = [
-        {"name":"none", "title": "None", "condition" : "(MinDeltaPhiMhtJets > 0.4 && MHT >= 220 &&  MET >= 140 && BTagsDeepMedium == 0 )", "baseline" : "exclusiveTrack == 1 && trackBDT > 0 && exTrack_invMass < 30 && exclusiveTrackLeptonFlavour == \"Electrons\"  && exTrack_deltaR > 0.05", "sc" : "sc_exclusiveTrack == 1 && sc_trackBDT > 0 && sc_exTrack_invMass < 30 && sc_exclusiveTrackLeptonFlavour == \"Electrons\" && sc_exTrack_deltaR > 0.05"}
+        {"name":"none", "title": "None", "condition" : "(MinDeltaPhiMhtJets > 0.4 && MHT >= 220 &&  MET >= 140 && BTagsDeepMedium == 0 )", "baseline" : "exclusiveTrack == 1 && trackBDT > 0 && exTrack_invMass < 12 && exclusiveTrackLeptonFlavour == \"Electrons\"  && exTrack_deltaR > 0.05", "sc" : "sc_exclusiveTrack == 1 && sc_trackBDT > 0 && sc_exTrack_invMass < 30 && sc_exclusiveTrackLeptonFlavour == \"Electrons\" && sc_exTrack_deltaR > 0.05"}
     ]
     histograms_defs = []
     histograms_defs.extend(common_histograms)
     histograms_defs.extend(ex_track_histograms)
     histograms_defs.extend(extra_study_obs)
-    histrograms_file = "/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools/analysis/scripts/track_electron.root"
+    
     plot_error = True
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_phase1/sum/type_sum"
 
 class track_muon(track_electron):
-    #
+
+    histrograms_file = BaseParams.histograms_root_files_dir + "/track_muon_2017.root"
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True
+    baseConitions = analysis_selections.injectValues(analysis_selections.ex_track_cond, "2017", "Muons")
     cuts = [
-        {"name":"none", "title": "None", "condition" : "(MinDeltaPhiMhtJets > 0.4 && MHT >= 220 &&  MET >= 140 && BTagsDeepMedium == 0 )", "baseline" : "exclusiveTrack == 1 && trackBDT > 0 && exTrack_invMass < 30 && exclusiveTrackLeptonFlavour == \"Muons\"", "sc" : "sc_exclusiveTrack == 1 && sc_trackBDT > 0 && sc_exTrack_invMass < 30 && sc_exclusiveTrackLeptonFlavour == \"Muons\"" },
-        {"name":"sr", "title": "sr", "condition" : "(MinDeltaPhiMhtJets > 0.4 && MHT >= 220 &&  MET >= 140 && BTagsDeepMedium == 0 )", "baseline" : "exclusiveTrack == 1 && trackBDT > 0 && exTrack_invMass < 30 && exclusiveTrackLeptonFlavour == \"Muons\" && exTrack_dilepBDT > 0.1", "sc" : "sc_exclusiveTrack == 1 && sc_trackBDT > 0 && sc_exTrack_invMass < 30 && sc_exclusiveTrackLeptonFlavour == \"Muons\"" }
+        {"name":"none", "title": "None", "condition" : analysis_selections.common_preselection, "baseline" : baseConitions, "sc" : "1" },
+        #{"name":"sr", "title": "sr", "condition" : "(MinDeltaPhiMhtJets > 0.4 && MHT >= 220 &&  MET >= 140 && BTagsDeepMedium == 0 )", "baseline" : "exclusiveTrack == 1 && trackBDT > 0 && exTrack_invMass < 30 && exclusiveTrackLeptonFlavour == \"Muons\" && exTrack_dilepBDT > 0.1", "sc" : "sc_exclusiveTrack == 1 && sc_trackBDT > 0 && sc_exTrack_invMass < 30 && sc_exclusiveTrackLeptonFlavour == \"Muons\"" }
     ]
     histrograms_file = "/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools/analysis/scripts/track_muon.root"
+    signal_dir = signals_2017_full
     
     #plot_sc = True
     

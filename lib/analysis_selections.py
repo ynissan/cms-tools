@@ -249,18 +249,6 @@ two_leptons_bdt_cr = "***%%% < 0"
 
 sos_orth_condition = "(leptons%%%[1].Pt() <= 3.5 || deltaR%%% <= 0.3)"
 
-exclusive_track_category =  "exclusiveTrack%%% == 1 && exTrack_invMass%%% < 12 && exclusiveTrackLeptonFlavour%%% ==\"$$$\" && trackBDT%%% > 0"
-exclusive_track_category_sr = "exTrack_dilepBDT%%% > 0"
-exclusive_track_category_cr = "exTrack_dilepBDT%%% < 0"
-
-electrons_extra_exclusive_track_category = "exclusive_track_category%%% > 0.05"
-
-sc_exclusive_track_category = "sc_exclusiveTrack%%% == 1 && sc_exTrack_invMass%%% < 12 && sc_exclusiveTrackLeptonFlavour%%% == \"$$$\" && sc_trackBDT%%% > 0 &&"
-sc_exclusive_track_category_sr = "sc_exTrack_dilepBDT%%% > 0"
-sc_exclusive_track_category_cr = "sc_exTrack_dilepBDT%%% < 0"
-
-sc_electrons_extra_exclusive_track_category = "sc_exTrack_deltaR%%% > 0.05"
-
 mtautau_veto = "(nmtautau%%% < ^^^ || nmtautau%%% > @@@)"
 inside_mtautau_window = "nmtautau%%% > ^^^ && nmtautau%%% < @@@"
 
@@ -347,6 +335,19 @@ ex_track_cr_electrons_selections = ex_track_cr_selections + [ex_track_electrons_
 
 sc_ex_track_cr_selections = [common_preselection, sc_ex_track_cond, sc_ex_track_cr]
 sc_ex_track_cr_electrons_selections = sc_ex_track_cr_selections + [sc_ex_track_electrons_filter]
+
+
+#exclusive_track_category =  "exclusiveTrack%%% == 1 && exTrack_invMass%%% < 12 && exclusiveTrackLeptonFlavour%%% ==\"$$$\" && trackBDT%%% > 0"
+#exclusive_track_category_sr = "exTrack_dilepBDT%%% > 0"
+#exclusive_track_category_cr = "exTrack_dilepBDT%%% < 0"
+
+#electrons_extra_exclusive_track_category = "exclusive_track_category%%% > 0.05"
+
+#sc_exclusive_track_category = "sc_exclusiveTrack%%% == 1 && sc_exTrack_invMass%%% < 12 && sc_exclusiveTrackLeptonFlavour%%% == \"$$$\" && sc_trackBDT%%% > 0 &&"
+#sc_exclusive_track_category_sr = "sc_exTrack_dilepBDT%%% > 0"
+#sc_exclusive_track_category_cr = "sc_exTrack_dilepBDT%%% < 0"
+
+#sc_electrons_extra_exclusive_track_category = "sc_exTrack_deltaR%%% > 0.05"
 
 ####### FOR CREATING PREDICTIONS AND SIGNALS ####### 
 

@@ -227,6 +227,7 @@ class BaseParams:
     
     subtract_same_charge = False
     
+    ratio_label = "Sim"
     sc_label = "same-sign"
     sc_ratio_label = "sc"
     sc_color = 6
