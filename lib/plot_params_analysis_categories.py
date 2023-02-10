@@ -503,11 +503,7 @@ class track_muon(track_electron):
     histrograms_file = "/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools/analysis/scripts/track_muon.root"
     signal_dir = signals_2017_full
     
-    #plot_sc = True
     
-    #histograms_defs = [
-    #    { "obs" : "exTrack_invMass", "minX" : 0, "maxX" : 13, "bins" : 30, "sc_obs" : "sc_exTrack_invMass"  },
-    #]
     
 
 

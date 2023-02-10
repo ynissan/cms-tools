@@ -92,6 +92,7 @@ def injectJetIsoToMapValues(obsMap, jetIso):
 # labelText - work in progress or other text next to CMS
 # cmsLocation - where to put the CMS label
 # showLumi - bool
+# lumiStringPrefix - a string to prefix the lumi string
 # linearYspace - how much space to leave for legend
 # logYspace - how much space to leave for legend in case of log scale
 # blind - blind a specific interval
@@ -216,7 +217,7 @@ class BaseParams:
     legend_text_size = -1
     signal_legend_string = "l"
     
-    y_title_offset = 1
+    y_title_offset = 0.8
     y_title = "Events"
     
     label_text = plotutils.StampStr.SIMWIP

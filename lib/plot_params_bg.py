@@ -247,33 +247,94 @@ class dilepton_muons_bg_coarse_retag(dilepton_muons_bg_coarse):
     bgReTaggingNames = bgReTaggingNamesFull
 
 class track_muon_sc_comparison(BaseParams):
-    histrograms_file = BaseParams.histograms_root_files_dir + "/track_muon_sc_comparison.root"
+    histrograms_file = BaseParams.histograms_root_files_dir + "/track_muon_sc_comparison_new_training.root"
     bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum"
     save_histrograms_to_file = True
     load_histrograms_from_file = True 
-    
+    baseConditions = analysis_selections.injectValues(analysis_selections.ex_track_cond, "2016", "Muons")
+    scConditions = analysis_selections.injectValues(analysis_selections.sc_ex_track_cond, "2016", "Muons")
     cuts = [
-        {"name":"none", "title": "None", "condition" : "(MinDeltaPhiMhtJets > 0.4 && MHT >= 220 &&  MET >= 140 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "exclusiveTrack%%% == 1 && trackBDT%%% > 0 && exTrack_invMass%%% < 12 && exclusiveTrackLeptonFlavour%%% == \"Muons\"", "sc" : "sc_exclusiveTrack%%% == 1 && sc_trackBDT%%% > 0 && sc_exTrack_invMass%%% < 12 && sc_exclusiveTrackLeptonFlavour%%% == \"Muons\"" },
+        {"name":"none", "title": "None", "condition" : analysis_selections.common_preselection, "baseline" : baseConditions, "sc" : scConditions },
         #{"name":"sr", "title": "sr", "condition" : "(MHT >= 220 &&  MET >= 200 && BTagsDeepMedium == 0 )", "baseline" : "exclusiveTrack == 1 && trackBDT > 0 && exTrack_invMass < 30 && exclusiveTrackLeptonFlavour == \"Muons\" && exTrack_dilepBDT > 0.1", "sc" : "sc_exclusiveTrack == 1 && sc_trackBDT > 0 && sc_exTrack_invMass < 30 && sc_exclusiveTrackLeptonFlavour == \"Muons\"" }
     ]
-    injectJetIsoToCuts(cuts, "CorrJetNoMultIso10Dr0.6")
+    #injectJetIsoToCuts(cuts, "CorrJetNoMultIso10Dr0.6")
     
     histograms_defs = [
-        { "obs" : "exTrack_dilepBDT%%%", "units" : "BDT", "minX" : -1, "maxX" : 1, "bins" : 30, "blind" : [None,0.1], "sc_obs" : "sc_exTrack_dilepBDT%%%", "linearYspace" : 1.5},
+        { "obs" : "exTrack_dilepBDT%%%", "units" : "BDT", "minX" : -1, "maxX" : 1, "bins" : 30,  "sc_obs" : "sc_exTrack_dilepBDT%%%", "linearYspace" : 1.9, "lumiStringPrefix" : "Muons Phase 0"},
     ]
     
-    injectJetIsoToHistograms(histograms_defs, "CorrJetNoMultIso10Dr0.6")  
+    injectJetIsoToHistograms(histograms_defs, analysis_selections.jetIsos["Muons"])  
     
     weightString = {
-        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * BranchingRatio",
+        'MET' : analysis_selections.full_sim_weights["2016"],
+    }
+    
+    calculatedLumi = {
+        'MET' : analysis_selections.recommended_luminosities["2016"],
     }
     
     plot_data = False
     plot_sc = True
     plot_ratio = True
     plot_signal = False
+    plot_error = True
     sc_color = kOrange + 1
-    label_text = plotutils.StampStr.SIMWIP
+    label_text = plotutils.StampStr.SIM
+    ratio_label = "oc"
+    
+    legend_coordinates = {"x1" : .40, "y1" : .60, "x2" : .92, "y2" : .89}
+
+class track_muon_sc_comparison_phase1(track_muon_sc_comparison):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/track_muon_sc_comparison_phase1_new_training.root"
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_phase1/sum/type_sum"
+    weightString = {
+        'MET' : analysis_selections.full_sim_weights["phase1"],
+    }
+    
+    calculatedLumi = {
+        'MET' : analysis_selections.recommended_luminosities["phase1"],
+    }
+    
+    histograms_defs = [
+        { "obs" : "exTrack_dilepBDT%%%", "units" : "BDT", "minX" : -1, "maxX" : 1, "bins" : 30,  "sc_obs" : "sc_exTrack_dilepBDT%%%", "linearYspace" : 1.5, "lumiStringPrefix" : "Muons Phase 1"},
+    ]
+    
+    injectJetIsoToHistograms(histograms_defs, analysis_selections.jetIsos["Muons"])  
+    y_title_offset = 0.9
+
+class track_electron_sc_comparison(track_muon_sc_comparison):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/track_electron_sc_comparison.root"
+    baseConditions = analysis_selections.injectValues(analysis_selections.ex_track_cond + " && " + analysis_selections.ex_track_electrons_filter, "2016", "Electrons")
+    scConditions = analysis_selections.injectValues(analysis_selections.sc_ex_track_cond + " && " + analysis_selections.sc_ex_track_electrons_filter , "2016", "Electrons")
+    cuts = [
+        {"name":"none", "title": "None", "condition" : analysis_selections.common_preselection, "baseline" : baseConditions, "sc" : scConditions },
+        #{"name":"sr", "title": "sr", "condition" : "(MHT >= 220 &&  MET >= 200 && BTagsDeepMedium == 0 )", "baseline" : "exclusiveTrack == 1 && trackBDT > 0 && exTrack_invMass < 30 && exclusiveTrackLeptonFlavour == \"Muons\" && exTrack_dilepBDT > 0.1", "sc" : "sc_exclusiveTrack == 1 && sc_trackBDT > 0 && sc_exTrack_invMass < 30 && sc_exclusiveTrackLeptonFlavour == \"Muons\"" }
+    ]
+    
+    histograms_defs = [
+        { "obs" : "exTrack_dilepBDT%%%", "units" : "BDT", "minX" : -1, "maxX" : 1, "bins" : 30,  "sc_obs" : "sc_exTrack_dilepBDT%%%", "linearYspace" : 1.5, "lumiStringPrefix" : "Electrons Phase 0"},
+    ]
+    
+    injectJetIsoToHistograms(histograms_defs, analysis_selections.jetIsos["Electrons"]) 
+    
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True 
+
+class track_electron_sc_comparison_phase1(track_muon_sc_comparison_phase1):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/track_electron_sc_comparison_phase1_new_training.root"
+    baseConditions = analysis_selections.injectValues(analysis_selections.ex_track_cond + " && " + analysis_selections.ex_track_electrons_filter, "2016", "Electrons")
+    scConditions = analysis_selections.injectValues(analysis_selections.sc_ex_track_cond + " && " + analysis_selections.sc_ex_track_electrons_filter , "2016", "Electrons")
+    cuts = [
+        {"name":"none", "title": "None", "condition" : analysis_selections.common_preselection, "baseline" : baseConditions, "sc" : scConditions },
+        #{"name":"sr", "title": "sr", "condition" : "(MHT >= 220 &&  MET >= 200 && BTagsDeepMedium == 0 )", "baseline" : "exclusiveTrack == 1 && trackBDT > 0 && exTrack_invMass < 30 && exclusiveTrackLeptonFlavour == \"Muons\" && exTrack_dilepBDT > 0.1", "sc" : "sc_exclusiveTrack == 1 && sc_trackBDT > 0 && sc_exTrack_invMass < 30 && sc_exclusiveTrackLeptonFlavour == \"Muons\"" }
+    ]
+    histograms_defs = [
+        { "obs" : "exTrack_dilepBDT%%%", "units" : "BDT", "minX" : -1, "maxX" : 1, "bins" : 30,  "sc_obs" : "sc_exTrack_dilepBDT%%%", "linearYspace" : 1.6, "lumiStringPrefix" : "Electrons Phase 1"},
+    ]
+    
+    injectJetIsoToHistograms(histograms_defs, analysis_selections.jetIsos["Electrons"]) 
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True 
 
 # We don't really need to scan this category - because we use the 2 Muons category to decide this one out.
 class track_muon_sc_comparison_scan_muons(BaseParams):

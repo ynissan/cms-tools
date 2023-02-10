@@ -40,6 +40,7 @@ output_file = None
 data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/sum"
 
 wanted_year = "phase1"
+#wanted_year = "2016"
 
 if wanted_year != "2016":
     data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_phase1/sum"

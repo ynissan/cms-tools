@@ -394,7 +394,7 @@ def createCRPads(pId, ratioPads, twoRations = False):
     if twoRations:
         histLowY = 0.30
     histCPad = TPad("pad" + str(pId),"pad" + str(pId),0,histLowY,1,1)
-    histCPad.SetBottomMargin(0.015)
+    histCPad.SetBottomMargin(0.03)
     #24/2
     #histCPad.SetLeftMargin(0.13)
     
@@ -409,7 +409,7 @@ def createCRPads(pId, ratioPads, twoRations = False):
         histRPad = TPad("rpad" + str(pId),"rpad" + str(pId),0,0,1,0.3)
         #24/2
         histRPad.SetTopMargin(0)
-        histRPad.SetBottomMargin( 0.3 )
+        histRPad.SetBottomMargin( 0.35 )
         #histRPad.SetLeftMargin(0.13)
     ratioPads[pId] = []
     ratioPads[pId].append(histCPad)
@@ -479,13 +479,41 @@ def plotRatio(c1, pad, memory, numHist, denHist, hist_def, numLabel = "Data", de
     rdataHist.SetMarkerSize(0)
     rdataHist.SetMarkerColor(styleRefHist.GetLineColor())
     #rdataHist.UseCurrentStyle()
-    rdataHist.GetXaxis().SetLabelSize(0.05*factor)
-    rdataHist.GetYaxis().SetLabelSize(0.05*factor)
-    rdataHist.GetXaxis().SetTitleSize(0.06*factor)
-    rdataHist.GetYaxis().SetTitleSize(0.06*factor)
-    rdataHist.GetYaxis().SetTitleOffset(0.9 / factor)
+    rdataHist.GetXaxis().SetLabelSize(0.065*factor)
+    rdataHist.GetYaxis().SetLabelSize(0.065*factor)
+    rdataHist.GetXaxis().SetTitleSize(0.08*factor)
+    rdataHist.GetYaxis().SetTitleSize(0.08*factor)
+    rdataHist.GetYaxis().SetTitleOffset(0.8 / factor)
     rdataHist.GetYaxis().CenterTitle()
-   
+    
+#    tdrtyle.SetTitleColor(1, "XYZ")
+#   tdrStyle.SetTitleFont(42, "XYZ")
+#   tdrStyle.SetTitleSize(0.08, "XYZ")
+#   # tdrStyle.SetTitleXSize(Float_t size = 0.02) # Another way to set the size?
+#   # tdrStyle.SetTitleYSize(Float_t size = 0.02)
+#   tdrStyle.SetTitleXOffset(0.9)
+#   tdrStyle.SetTitleYOffset(1.25)
+#   #tdrStyle.SetTitleYOffset(1.0)
+#   #tdrStyle.SetTitleOffset(1.0, "Y") # Another way to set the Offset
+# 
+# # For the axis labels: (meaning - the numbers themselves)
+# 
+#   tdrStyle.SetLabelColor(1, "XYZ")
+#   tdrStyle.SetLabelFont(42, "XYZ")
+#   tdrStyle.SetLabelOffset(0.007, "XYZ")
+#   tdrStyle.SetLabelSize(0.06, "XYZ")
+# 
+# # For the axis:
+# 
+#   tdrStyle.SetAxisColor(1, "XYZ")
+#   tdrStyle.SetStripDecimals(True)
+#   tdrStyle.SetTickLength(0.03, "XYZ")
+#   tdrStyle.SetNdivisions(510, "XYZ")
+#   tdrStyle.SetPadTickX(1)  # To get tick marks on the opposite side of the frame
+#   tdrStyle.SetPadTickY(1)
+    
+    
+    
     #
     memory.append(rdataHist)
     
@@ -2434,6 +2462,8 @@ def main():
                 cmsLocation = hist_def["cmsLocation"]
             if hist_def.get("showLumi") is not None:
                 showLumi = hist_def["showLumi"]
+            if hist_def.get("lumiStringPrefix") is not None:
+                lumiStr = hist_def["lumiStringPrefix"] + " " + lumiStr
             
             if large_version:
                 if plot_par.plot_ratio:
@@ -2752,6 +2782,8 @@ def main():
                 cmsLocation = hist_def["cmsLocation"]
             if hist_def.get("showLumi") is not None:
                 showLumi = hist_def["showLumi"]
+            if hist_def.get("lumiStringPrefix") is not None:
+                lumiStr = hist_def["lumiStringPrefix"] + " " + lumiStr
             
             if large_version:
                 if plot_par.plot_ratio:

@@ -181,8 +181,8 @@ def main():
                         
                         for prefix in prefixes:
                             for lep in ["Muons", "Electrons"]:
-                                #if no_scan and iso + cuts + cat != analysis_selections.jetIsos[lep]:
-                                #    continue
+                                if no_scan and iso + cuts + cat != analysis_selections.jetIsos[lep]:
+                                    continue
                                 dirname = prefix + lep + iso + cat + cuts
                                 name = prefix + lep + iso + cuts + cat
                                 bdt_weights = bdt + "/" + dirname + "/dataset/weights/TMVAClassification_" + name + ".weights.xml"
@@ -199,7 +199,7 @@ def main():
     print 'Analysing', nentries, "entries"
     
     iFile.cd()
-
+    counting = 0
     for ientry in range(nentries):
         if ientry % 1000 == 0:
             print "Processing " + str(ientry) + " out of " + str(nentries)
@@ -258,6 +258,9 @@ def main():
                                     elif prefix == "exTrack" and getattr(tree, sc_prefix + "exclusiveTrack"  + postfix) == 1 and tree.BTagsDeepMedium == 0:
                                         eventPassed = True
                                         leptonFlavour = getattr(tree, sc_prefix + "exclusiveTrackLeptonFlavour"  + postfix)
+                                        leptonFlavour = str(leptonFlavour)
+                                        if no_scan and postfix != analysis_selections.jetIsos[leptonFlavour]:
+                                            eventPassed = False
                                     if not jpsi and eventPassed:
                                         leptonFlavour = str(leptonFlavour)
                                         name = prefix + leptonFlavour + postfix
@@ -311,11 +314,18 @@ def main():
                                                 v[0] = getattr(tree, k)
                                         
                                         vars[sc_prefix + prefixVars + "dilepBDT" + phaseStr + postfix][0] = bdt_readers[prefix + leptonFlavour+ iso + cuts + cat].EvaluateMVA("BDT")
+                                        #if vars[sc_prefix + prefixVars + "dilepBDT" + phaseStr + postfix][0] == -1:
+                                        #    print "Got a BDT score of -1...", 
+                                            #exit(1)
+                                        #if sc_prefix + prefixVars + "dilepBDT" + phaseStr + postfix == "exTrack_dilepBDTCorrJetNoMultIso10Dr0.6" and leptonFlavour == "Muons":
+                                            #counting +=1
+                                        
                                         #if sc_prefix == "sc_" and postfix == "" and prefixVars == "exTrack_":
                                         #    print "Getting BDT score", sc_prefix + prefixVars + "dilepBDT" + postfix, vars[sc_prefix + prefixVars + "dilepBDT" + postfix][0]
                                             #print bdt_vars_maps
                                     else:
                                         vars[sc_prefix + prefixVars + "dilepBDT" + phaseStr + postfix][0] = -1
+                                        #counting +=1
                                     if not two_leptons:
                                         if signal and getattr(tree, sc_prefix + "exclusiveTrack"  + postfix) == 1:
                                             gens = [i for i in range(tree.GenParticles.size())]
@@ -363,7 +373,7 @@ def main():
             
     tree.Write("tEvent",TObject.kOverwrite)
         
-    print "DONE SKIMMING"
+    print "DONE SKIMMING counting=" + str(counting)
     iFile.Close()
 
 main()

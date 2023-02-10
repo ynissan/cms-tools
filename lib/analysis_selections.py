@@ -142,6 +142,13 @@ luminosities = {
     "phase1" : 99.226209715
 }
 
+recommended_luminosities = {
+    '2016' : 36.31,
+    '2017' : 41.48,
+    '2018' : 59.83,
+    "phase1" : 101.31
+}
+
 fast_sim_weights = {
     '2016' : "Weight * BranchingRatio * tEffhMetMhtRealXMht2016 * FastSimWeightPR31285To36122",
     '2017' : "Weight * BranchingRatio * tEffhMetMhtRealXMht2017",

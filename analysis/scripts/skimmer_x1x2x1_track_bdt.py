@@ -84,8 +84,15 @@ track_bdt_specs_maps = {}
 track_bdt_readers = {}
 branches = {}
 
+filledEvents = 0
+filledBlankEvents = 0
 
 def fillInNonTrackInfo(c, postfix, prefix):
+    global filledEvents
+    global filledBlankEvents
+    if prefix == "" and postfix == analysis_selections.jetIsos["Muons"]:
+        filledEvents += 1
+        filledBlankEvents += 1
     for stringObs in analysis_observables.exclusiveTrackObservablesStringList:
         exTrackVars[prefix + stringObs + postfix] = cppyy.gbl.std.string("")
         #print "*"
@@ -209,6 +216,7 @@ def main():
                         for lep in ["Muons", "Electrons"]:
                             
                             if iso + cuts + cat != analysis_selections.jetIsos[lep]:
+                            #if iso + cuts + cat not in [analysis_selections.jetIsos["Muons"], analysis_selections.jetIsos["Electrons"]]:
                                 continue
                             
                             track_bdt_weights = track_bdt + "/" + lep + "/dataset/weights/TMVAClassification_" + lep + iso + cuts + cat + ".weights.xml"
@@ -235,7 +243,7 @@ def main():
     noSurvivingTracks = 0
     
     file.cd()
-    
+    generalEvents = 0
     for ientry in range(nentries):
         if ientry % 100 == 0:
             print("Processing " + str(ientry) + " out of " + str(nentries))
@@ -269,7 +277,8 @@ def main():
                             
                             if postfix not in [analysis_selections.jetIsos["Muons"], analysis_selections.jetIsos["Electrons"]]:
                                 continue
-                            
+                            if postfix == analysis_selections.jetIsos["Muons"]:
+                                generalEvents += 1
                             for sameCharge in [False, True]:
                             
                                 prefix = "sc_" if sameCharge else ""
@@ -299,6 +308,7 @@ def main():
                                     print("WHAT?! leptonCharge=0")
                                 
                                 if postfix != analysis_selections.jetIsos[leptonFlavour]:
+                                    fillInNonTrackInfo(c, postfix, prefix)
                                     continue
                                 
                                 exTrackVars[prefix + "lepton_charge" + postfix][0] = leptonCharge
@@ -475,8 +485,9 @@ def main():
                                 
                                 exTrackVars[prefix + "deltaPhiMhtTrack" + postfix][0] = abs(c.tracks[oppositeChargeTrack].DeltaPhi(mhtvec))
                                 exTrackVars[prefix + "deltaPhiMhtLepton" + postfix][0] = abs(ll.DeltaPhi(mhtvec))
-                                
-                                
+                                global filledEvents
+                                if prefix == "" and postfix == analysis_selections.jetIsos["Muons"]:
+                                    filledEvents += 1
                                 #print "HERE!!!"
                                 for stringObs in analysis_observables.exclusiveTrackObservablesStringList:
                                     c.SetBranchAddress(prefix + stringObs + postfix, exTrackVars[prefix + stringObs + postfix])
@@ -505,5 +516,10 @@ def main():
     print("afterMonoLepton=" + str(afterMonoLepton))
     print("afterUniversalBdt=" + str(afterUniversalBdt))
     print("afterMonoTrack=" + str(afterMonoTrack))
+    print("filledEvents=" + str(filledEvents))
+    print("filledBlankEvents=" + str(filledBlankEvents))
+    print("generalEvents=" + str(generalEvents))
+    
+    
 
 main()
