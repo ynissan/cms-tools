@@ -151,6 +151,7 @@ file_num_per_type = {
 "ZZ_TuneCUETP8M1_13TeV-pythia8" : 1000,
 "ZZ_TuneCUETP8M1_13TeV-pythia8" : 1000,
 "WW_TuneCUETP8M1_13TeV-pythia8" : 50,
+"WZTo3LNu_mllmin01_13TeV-powheg-pythia8" : 200
 }
 
 file_num_per_type_phase1 = {

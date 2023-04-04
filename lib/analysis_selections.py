@@ -60,8 +60,8 @@ non_iso_2l_factors_sigma['phase1']['Muons'] = non_iso_2l_factors_closure_line_fi
 
 non_iso_1t_factors = {
     '2016' : {
-        "Electrons" : [0.952606618404,0.0938907814687],
-        "Muons" : [1.00821352005,0.0644787681262],
+        "Electrons" : [1.037,0.05],
+        "Muons" : [1.12, 0.044],
     },
     '2017' : {
         "Electrons" : [1.06451618671,0.119074677517],
@@ -72,8 +72,8 @@ non_iso_1t_factors = {
         "Muons" : [1.11734688282,0.0491334201941],
     },
     'phase1' : {
-        "Electrons" : [1.03977274895,0.0776227043954],
-        "Muons" : [1.04843473434,0.0356166678274],
+        "Electrons" : [1.049,0.03],
+        "Muons" : [1.066,0.024],
     },
 }
 
@@ -109,12 +109,12 @@ binning = {
     #Add more binning for the phase1
     "1t" : {
         "2016":{
-            "Electrons" : [0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,1],
+            "Electrons" : [0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,1],
             "Muons" : [0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,1]
         },
         "phase1":{
-            "Electrons" : [0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,1],
-            "Muons" : [0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,0.65,1]
+            "Electrons" : [0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,1],
+            "Muons" : [0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,1]
         }
     },
     "2l" : {
@@ -369,12 +369,13 @@ def injectValues(toReplace, year, flavour):
     return toReplace.replace("%%%", jetIsos[flavour]).replace("^^^", str(tautau_windows[flavour][0])).replace("@@@", str(tautau_windows[flavour][1])).replace("$$$", flavour).replace("***", dilepBDTString[year])
 
 def getFastSimString(year, flavour, selections):
-    return injectValues("{:.2f}".format(luminosities[year] * 1000) + " * " + fast_sim_weights[year] + " * (" + " && ".join(selections) + ")", year, flavour)
+    return injectValues("{:.2f}".format(luminosities[year] * 1000) + " * " + fast_sim_weights[year] + " * (" + andStringSelections(selections) + ")", year, flavour)
 
 def getFullSimString(year, flavour, selections):
-    return injectValues("{:.2f}".format(luminosities[year] * 1000) + " * " +full_sim_weights[year] + " * (" + " && ".join(selections) + ")", year, flavour)
+    return injectValues("{:.2f}".format(luminosities[year] * 1000) + " * " +full_sim_weights[year] + " * (" + andStringSelections(selections) + ")", year, flavour)
 
 def getDataString(year, flavour, selections, extraFilters = []):
-    return injectValues(" * ".join(extraFilters) + (" * " if len(extraFilters) > 0 else "") +  data_weights[year] + "(" + " && ".join(selections) + ")", year, flavour)
+    return injectValues(" * ".join(extraFilters) + (" * " if len(extraFilters) > 0 else "") +  data_weights[year] + "(" + andStringSelections(selections) + ")", year, flavour)
 
-
+def andStringSelections(selections):
+    return " && ".join(selections)

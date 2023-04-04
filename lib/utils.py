@@ -103,6 +103,7 @@ trainGroupsOrder = ["dm1", "low", "dm7", "dm9", "high"]
 
 #Normal
 bgOrder = {
+    "WZTo3LNu" : -1,
     "Rare" : 0,
     "DiBoson" : 1,
     "DYJetsToLL" : 2,
@@ -114,6 +115,7 @@ bgOrder = {
 }
 
 bgReTaggingNames = {
+    "WZTo3LNu" : "WZTo3LNu",
     "Rare" : "Rare",
     "DiBoson" : "VV",
     "DYJetsToLL" : "DY+jets",

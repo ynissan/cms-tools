@@ -43,7 +43,7 @@ parser.add_argument('-jpsi_muons', '--jpsi_muons', dest='jpsi_muons', help='JPSI
 parser.add_argument('-jpsi_electrons', '--jpsi_electrons', dest='jpsi_electrons', help='JPSI Electrons Skim', action='store_true')
 parser.add_argument('-testing', '--testing', dest='testing', help='testing', action='store_true')
 parser.add_argument('-phase1', '--phase1', dest='phase1', help='phase1', action='store_true')
-parser.add_argument('-phase1_2018', '--phase1_2018', dest='phase1', help='phase1', action='store_true')
+parser.add_argument('-phase1_2018', '--phase1_2018', dest='phase1_2018', help='phase1_2018', action='store_true')
 
 args = parser.parse_args()
 
@@ -526,6 +526,10 @@ def main():
         print("Checking DY CS for", fileBasename)
         crossSection = utils.dyCrossSections.get(fileBasename)
         print("Got cs", crossSection)
+    elif bg and "Summer16ForYuval.WZTo3LNu_mllmin01" in input_file:
+        crossSection = 62.78
+        replace_lepton_collection = False
+        print("It's Summer16ForYuval.WZTo3LNu_mllmin01!!!")
     
     currLeptonCollectionMap = None
     currLeptonCollectionFileMapFile = None
@@ -542,7 +546,7 @@ def main():
         if signal and not sam:
             rightProcess = analysis_ntuples.isX1X2X1Process(c)
         elif bg:
-            if "DYJetsToLL_M-5to50_" not in input_file:
+            if "DYJetsToLL_M-5to50_" not in input_file and "Summer16ForYuval.WZTo3LNu_mllmin01" not in input_file:
                 crossSection = c.CrossSection
             rightProcess = utils.madHtCheck(baseFileName, c.madHT)
         elif data:

@@ -39,6 +39,7 @@ class Plotting():
 
 
 defaultColorPalette = [
+    { "name" : "WZTo3LNu", "fillColor" : kBlack, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 5,  "markerStyle" : kOpenCircle},
     { "name" : "Rare", "fillColor" : kCyan-3, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 5,  "markerStyle" : kOpenCircle},
     { "name" : "DiBoson", "fillColor" : kRed-4, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
     { "name" : "DYJetsToLL", "fillColor" : kGray, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 4,  "markerStyle" : kOpenTriangleUp },
@@ -46,16 +47,16 @@ defaultColorPalette = [
     { "name" : "ZJetsToNuNu", "fillColor" : kYellow, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 3,  "markerStyle" : kOpenSquare },
     { "name" : "QCD", "fillColor" : kBlue+3, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 6,  "markerStyle" : kOpenDiamond },
     { "name" : "WJetsToLNu", "fillColor" : kAzure+1, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
-    { "name" : "orange", "fillColor" : "#ffbb00", "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
-    { "name" : "lightgreen", "fillColor" : "#42f498", "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "orange", "fillColor" : kOrange, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "lightgreen", "fillColor" :kGreen, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
     
-    { "name" : "velvet", "fillColor" : "#ff00c9", "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
-    { "name" : "darkblue", "fillColor" : "#1B00DC", "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "velvet", "fillColor" : kViolet, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "darkblue", "fillColor" : kMagenta, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
     
-    { "name" : "maroon", "fillColor" : "#800000", "lineColor" : "#A52A2A", "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
-    { "name" : "darkslategray", "fillColor" : "#2F4F4F", "lineColor" : "#708090", "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
-    { "name" : "wheat", "fillColor" : "#F5DEB3", "lineColor" : "#FFDEAD", "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
-    { "name" : "lightgray", "fillColor" : "#D3D3D3", "lineColor" : "#DCDCDC", "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "maroon", "fillColor" : kCyan, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "darkslategray", "fillColor" : kGray-10, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "wheat", "fillColor" :kCyan-10, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
+    { "name" : "lightgray", "fillColor" : "#D3D3D3", "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
     
     { "name" : "black", "fillColor" : kBlack, "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 38,  "markerStyle" : kOpenCross },
 ]
@@ -152,6 +153,8 @@ def styledStackFromStack(bgHist, memory, legend=None, title="", colorInx=None, n
     newStack = THStack(bgHist.GetName(), title)
     newStack.UseCurrentStyle()
     memory.append(newStack)
+    
+    print("bgHist.GetNhists()", bgHist.GetNhists(), "len(colorPalette)", len(colorPalette))
     
     if bgHist is None or bgHist.GetNhists() == 0:
         return newStack

@@ -120,18 +120,25 @@ class dilepton_muons_data_control_region_met_filters(dilepton_muons_data_control
     sc_ratio_label = "US"
     plot_ratio = True
 
-class dilepton_muons_data_control_region_phase1(dilepton_muons_data_control_region):
+class dilepton_muons_data_control_region_phase1_new(dilepton_muons_data_control_region):
     histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_data_control_region_phase1_new.root"
-    load_histrograms_from_file = False
+    load_histrograms_from_file = True
     bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_phase1/sum/slim_sum/type_sum"
     data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_phase1/slim_sum/"
+    baseConditions = analysis_selections.injectValues(analysis_selections.andStringSelections(analysis_selections.two_leptons_cr_conditions), "phase1", "Muons")
     cuts = [
-        {"name":"none", "title": "None", "condition" : "(MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 140 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && isoCr%%% == 0 && sameSign%%% == 0 && dilepBDT%%% < 0 && passesUniversalSelection == 1)", "baseline" : "", "sc" : ""},
-        {"name":"met", "title": "MET > 200", "condition" : "(MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && isoCr%%% == 0 && sameSign%%% == 0 && dilepBDT%%% < 0 && passesUniversalSelection == 1)", "baseline" : "", "sc" : ""},
+        {"name":"none", "title": "None", "condition" : baseConditions, "baseline" : "", "sc" : ""},
+        #{"name":"met", "title": "MET > 200", "condition" : "(MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 200 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && isoCr%%% == 0 && sameSign%%% == 0 && dilepBDT%%% < 0 && passesUniversalSelection == 1)", "baseline" : "", "sc" : ""},
     ]
     normalise = False
-    jetIsoStr = "CorrJetNoMultIso10Dr0.6"
-    injectJetIsoToCuts(cuts, jetIsoStr)
+    jetIsoStr = analysis_selections.jetIsos["Muons"]
+    #injectJetIsoToCuts(cuts, jetIsoStr)
+    
+    print("BaseConditions", baseConditions)
+    print("BaseConditions orig", "(MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium == 0 && twoLeptons%%% == 1 && MHT >= 220 &&  MET >= 140 && leptonFlavour%%% == \"Muons\" && invMass%%% < 12  && invMass%%% > 0.4 && !(invMass%%% > 3 && invMass%%% < 3.2) && !(invMass%%% > 0.75 && invMass%%% < 0.81) && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0 && isoCr%%% == 0 && sameSign%%% == 0 && dilepBDT%%% < 0 && passesUniversalSelection == 1)")
+    
+    y_title_offset = 0.8
+    
     histograms_defs = []
     histograms_defs.extend(copy.deepcopy(plot_params_analysis_categories.common_histograms))
     histograms_defs.extend(copy.deepcopy(plot_params_analysis_categories.two_leps_histograms))
@@ -142,11 +149,13 @@ class dilepton_muons_data_control_region_phase1(dilepton_muons_data_control_regi
     #$injectJetIsoToList(usedObs, jetIsoStr)
     
     calculatedLumi = {
-        'MET' : 99.226209715
+        #'MET' : 99.226209715
+        'MET' : analysis_selections.luminosities["phase1"]
     }
     
     weightString = {
-        'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2017 * BranchingRatio",
+        #'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2017 * BranchingRatio",
+        'MET' : analysis_selections.full_sim_weights["phase1"]
     }
     
     

@@ -159,8 +159,13 @@ def createPlots(rootfiles, type, histograms, weight=1):
     for f in rootfiles:
         print(f)
         if os.path.basename(f) in plot_par.ignore_bg_files:
-            print(("File", f, "in ignore list. Skipping..."))
+            print("File", f, "in ignore list. Skipping...")
             continue
+        for ignore_file in plot_par.ignore_bg_files:
+            print("**Checking " + ignore_file + " against " +  os.path.basename(f))
+            if ignore_file in os.path.basename(f):
+                print("File", f, "in ignore list. Skipping...")
+                continue
         rootFile = TFile(f)
         print("HERE!")
         exit(0)
@@ -212,6 +217,11 @@ def createPlotsFast(rootfiles, types, histograms, weight, category, conditions, 
         if os.path.basename(f) in plot_par.ignore_bg_files:
             print(("File", f, "in ignore list. Skipping..."))
             continue
+        for ignore_file in plot_par.ignore_bg_files:
+            print("**Checking " + ignore_file + " against " +  os.path.basename(f))
+            if ignore_file in os.path.basename(f):
+                print("File", f, "in ignore list. Skipping...")
+                continue
         print("\n\n\n\n\nopening", f)
         print("=============================================================")
         rootFile = None
@@ -347,7 +357,7 @@ def createPlotsFast(rootfiles, types, histograms, weight, category, conditions, 
 
                             #print "conditionStr", conditionStr
             
-                            if plot_par.plot_log_x and plot_par.plot_real_log_x and hist_def["obs"] == "invMass":
+                            if plot_par.plot_log_x and plot_par.plot_real_log_x and "invMass" in hist_def["obs"]:
                                 print("Using getRealLogxHistogramFromTree")
                                 #exit(0)
                                 hist = utils.getRealLogxHistogramFromTree(histName, c, formula, hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), drawString, False)
@@ -433,7 +443,7 @@ def createCRPads(pId, ratioPads, twoRations = False):
         return histCPad, histRPad, histR2Pad
     return histCPad, histRPad
 
-def plotRatio(c1, pad, memory, numHist, denHist, hist_def, numLabel = "Data", denLabel = "BG",setXtitle = True, revRatio = False, styleRefHist = None):
+def plotRatio(c1, pad, memory, numHist, denHist, hist_def, numLabel = "Data", denLabel = "Sim",setXtitle = True, revRatio = False, styleRefHist = None):
     print("Plotting ratio!")
     
     if styleRefHist is None:
@@ -481,9 +491,9 @@ def plotRatio(c1, pad, memory, numHist, denHist, hist_def, numLabel = "Data", de
     #rdataHist.UseCurrentStyle()
     rdataHist.GetXaxis().SetLabelSize(0.065*factor)
     rdataHist.GetYaxis().SetLabelSize(0.065*factor)
-    rdataHist.GetXaxis().SetTitleSize(0.08*factor)
-    rdataHist.GetYaxis().SetTitleSize(0.08*factor)
-    rdataHist.GetYaxis().SetTitleOffset(0.8 / factor)
+    rdataHist.GetXaxis().SetTitleSize(0.075*factor)
+    rdataHist.GetYaxis().SetTitleSize(0.063*factor)
+    rdataHist.GetYaxis().SetTitleOffset(1.0 / factor)
     rdataHist.GetYaxis().CenterTitle()
     
 #    tdrtyle.SetTitleColor(1, "XYZ")
@@ -1629,7 +1639,7 @@ def main():
                     if not (hist_def.get("2D") is not None and hist_def.get("2D")):
                         histToStyle.SetMaximum(maximum*logFactor)
                 else:
-                    linearYspace = maximum*1.1
+                    linearYspace = maximum*1.4
                     if hist_def.get("linearYspace") is not None:
                         linearYspace = maximum * hist_def["linearYspace"]
                     if not (hist_def.get("2D") is not None and hist_def.get("2D")):
@@ -1766,7 +1776,8 @@ def main():
                     print((utils.bcolors.BOLD + utils.bcolors.RED + "scDataHist.Draw(P SAME)" + utils.bcolors.ENDC))
                     scDataHist.Draw("P SAME")
                     if legend is not None:
-                        legend.AddEntry(scDataHist, plot_par.sc_label  + " data", 'p')
+                        #legend.AddEntry(scDataHist, plot_par.sc_label  + " data", 'p')
+                        legend.AddEntry(scDataHist, plot_par.sc_label, 'p')
                 
                 if plot_par.plot_bg:
                     scBgHistName = "sc_" + cut["name"] + "_" + hist_def["obs"] + "_bg"
@@ -2353,9 +2364,9 @@ def main():
                         
                         plotRatio(c1, histRPad, memory, stackSum, scBgHist, hist_def,  plot_par.ratio_label, plot_par.sc_ratio_label, True, plot_par.plot_reverse_ratio)
                         if plot_par.plot_data:
-                            plotRatio(c1, histR2Pad, memory, dataHist, scDataHist, hist_def, "data", plot_par.sc_ratio_label, False, plot_par.plot_reverse_ratio)
+                            plotRatio(c1, histR2Pad, memory, dataHist, scDataHist, hist_def, plot_par.ratio_label, plot_par.sc_ratio_label, False, plot_par.plot_reverse_ratio)
                     elif plot_par.plot_data:
-                        plotRatio(c1, histRPad, memory, dataHist, scDataHist, hist_def, "data", plot_par.sc_ratio_label, True, plot_par.plot_reverse_ratio)
+                        plotRatio(c1, histRPad, memory, dataHist, scDataHist, hist_def, plot_par.ratio_label, plot_par.sc_ratio_label, True, plot_par.plot_reverse_ratio)
                     #print "-------", pId, ratioPads
                 else:
                     if plot_par.plot_custom_ratio > 0:
@@ -2464,6 +2475,9 @@ def main():
                 showLumi = hist_def["showLumi"]
             if hist_def.get("lumiStringPrefix") is not None:
                 lumiStr = hist_def["lumiStringPrefix"] + " " + lumiStr
+            if len(plot_par.lumi_string_prefix) > 0:
+                lumiStr = plot_par.lumi_string_prefix + " " + lumiStr
+                
             
             if large_version:
                 if plot_par.plot_ratio:
@@ -2674,9 +2688,9 @@ def main():
                         
                         plotRatio(c1, histRPad, memory, stackSum, scBgHist, hist_def, plot_par.ratio_label, plot_par.sc_ratio_label, True, plot_par.plot_reverse_ratio)
                         if plot_par.plot_data:
-                            plotRatio(c1, histR2Pad, memory, dataHist, scDataHist, hist_def, "data", plot_par.sc_ratio_label, False, plot_par.plot_reverse_ratio)
+                            plotRatio(c1, histR2Pad, memory, dataHist, scDataHist, hist_def, plot_par.ratio_label, plot_par.sc_ratio_label, False, plot_par.plot_reverse_ratio)
                     elif plot_par.plot_data:
-                        plotRatio(c1, histRPad, memory, dataHist, scDataHist, hist_def, "data", plot_par.sc_ratio_label, True, plot_par.plot_reverse_ratio)
+                        plotRatio(c1, histRPad, memory, dataHist, scDataHist, hist_def, plot_par.ratio_label, plot_par.sc_ratio_label, True, plot_par.plot_reverse_ratio)
                 else:
                     if plot_par.plot_custom_ratio > 0:
                         bgHists = hs.GetHists()
@@ -2784,6 +2798,8 @@ def main():
                 showLumi = hist_def["showLumi"]
             if hist_def.get("lumiStringPrefix") is not None:
                 lumiStr = hist_def["lumiStringPrefix"] + " " + lumiStr
+            if len(plot_par.lumi_string_prefix) > 0:
+                lumiStr = plot_par.lumi_string_prefix + " " + lumiStr
             
             if large_version:
                 if plot_par.plot_ratio:

@@ -44,6 +44,8 @@ BG_TYPES=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_
 BG_TYPES_17=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays DYJetsToLL WJetsToLNu ZJetsToNuNu WZZ WWZ WWW ZZZ ZZTo2L2Q WZTo1L1Nu2Q WZTo1L3Nu WWTo1L1Nu2Q )
 #BG_TYPES=(QCD)
 
+#BG_TYPES=(WZTo3LNu_mllmin01)
+
 # 10 jobs per file for this list
 #BG_TYPES=(QCD TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays)
 #continue with 8 of these

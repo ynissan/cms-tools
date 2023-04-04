@@ -50,13 +50,14 @@ print "Running for input: " + input
 phase = "Phase 1"
 phase = "Phase 0"
 
+
 category = "Tracks"
 category = "Event_Dilepton"
 category = "Event_Ex_Track"
 
-
-lepton = "Muons"
 lepton = "Electrons"
+lepton = "Muons"
+
 
 
 postfix_to_plot = "_new_training_compare"
@@ -179,7 +180,7 @@ def main():
     #hist.GetXaxis().SetLabelSize(0.055)
     hist.Draw()
     
-    legend = TLegend(0.18, 0.7, 0.3, 0.8)
+    legend = TLegend(0.18, 0.6, 0.3, 0.7)
     legend.UseCurrentStyle()
     legend.SetBorderSize(0)
     legend.SetTextFont(42)

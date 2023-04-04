@@ -9,20 +9,20 @@ import plotutils
 import analysis_selections
 
 bgReTaggingFull = {
-    "tc" : "tc * (!tautau)",
-    "tautau" : "tautau",
-    "other" : "other * (!tautau) * (!omega) * (!rho_0) * (!eta) * (!phi) * (!eta_prime) * (!j_psi) * (!upsilon_1) * (!upsilon_2)",
-    "omega" : "omega",
-    "rho" : "rho_0",
-    "eta" : "eta",
-    "phi" : "phi",
-    "etaprime" : "eta_prime",
-    "jpsi" : "j_psi",
-    "upsilon1" : "upsilon_1",
-    "upsilon2" : "upsilon_2",
-    "nbody" : "n_body * (!tautau)",
-    "scother" : "sc * (!tautau) * (!omega) * (!rho_0) * (!eta) * (!phi) * (!eta_prime) * (!j_psi) * (!upsilon_1) * (!upsilon_2)",
-    "fake" : "(rf || ff)",
+    "tc" : "tc%%% * (!tautau%%%)",
+    "tautau" : "tautau%%%",
+    "other" : "other%%% * (!tautau%%%) * (!omega%%%) * (!rho_0%%%) * (!eta%%%) * (!phi%%%) * (!eta_prime%%%) * (!j_psi%%%) * (!upsilon_1%%%) * (!upsilon_2%%%)",
+    "omega" : "omega%%%",
+    "rho" : "rho_0%%%",
+    "eta" : "eta%%%",
+    "phi" : "phi%%%",
+    "etaprime" : "eta_prime%%%",
+    "jpsi" : "j_psi%%%",
+    "upsilon1" : "upsilon_1%%%",
+    "upsilon2" : "upsilon_2%%%",
+    "nbody" : "n_body%%% * (!tautau%%%)",
+    "scother" : "sc%%% * (!tautau%%%) * (!omega%%%) * (!rho_0%%%) * (!eta%%%) * (!phi%%%) * (!eta_prime%%%) * (!j_psi%%%) * (!upsilon_1%%%) * (!upsilon_2%%%)",
+    "fake" : "(rf%%% || ff%%%)",
 }
 
 bgReTaggingCollected = {
@@ -42,22 +42,21 @@ bgReTaggingCollectedNoTauTau = {
     "fake" : "(rf || ff)",
 }
 
-
 bgReTaggingResonances = {
-    #"tc" : "tc * (!tautau)",
-    #"tautau" : "tautau",
-    #"other" : "other * (!tautau) * (!omega) * (!rho_0) * (!eta) * (!phi) * (!eta_prime) * (!j_psi) * (!upsilon_1) * (!upsilon_2)",
-    "omega" : "omega",
-    "rho" : "rho_0",
-    "eta" : "eta",
-    "phi" : "phi",
-    "etaprime" : "eta_prime",
-    "jpsi" : "j_psi",
-    "upsilon1" : "upsilon_1",
-    "upsilon2" : "upsilon_2",
-    "nbody" : "n_body * (!tautau)",
-    "scother" : "sc * (!tautau) * (!omega) * (!rho_0) * (!eta) * (!phi) * (!eta_prime) * (!j_psi) * (!upsilon_1) * (!upsilon_2)",
-    #"fake" : "(rf || ff)",
+    #"tc" : "tc%%% * (!tautau%%%)",
+    #"tautau" : "tautau%%%",
+    #"other" : "other%%% * (!tautau%%%) * (!omega%%%) * (!rho_0%%%) * (!eta%%%) * (!phi%%%) * (!eta_prime%%%) * (!j_psi%%%) * (!upsilon_1%%%) * (!upsilon_2%%%)",
+    "omega" : "omega%%%",
+    "rho" : "rho_0%%%",
+    "eta" : "eta%%%",
+    "phi" : "phi%%%",
+    "etaprime" : "eta_prime%%%",
+    "jpsi" : "j_psi%%%",
+    "upsilon1" : "upsilon_1%%%",
+    "upsilon2" : "upsilon_2%%%",
+    "nbody" : "n_body%%% * (!tautau%%%)",
+    "scother" : "sc%%% * (!tautau%%%) * (!omega%%%) * (!rho_0%%%) * (!eta%%%) * (!phi%%%) * (!eta_prime%%%) * (!j_psi%%%) * (!upsilon_1%%%) * (!upsilon_2%%%)",
+    #"fake" : "(rf%%% || ff%%%)",
 }
 
 bgReTaggingOrderFull = {
@@ -106,31 +105,51 @@ class full_zoo(BaseParams):
     weightString = {
         'MET' : "Weight",
     }
+    ignore_bg_files = ["TT_TuneCUETP8M2T4_13TeV-powheg-pythia8.root", "TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root", "QCD"]
+    histrograms_file = BaseParams.histograms_root_files_dir + "/full_zoo.root"
+    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum/type_sum"
+    save_histrograms_to_file = True
+    load_histrograms_from_file = False 
     
-    bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum"
     plot_signal = False
     
     plot_log_x = True
     plot_real_log_x = True
     plot_overflow = False
     
-    # calculatedLumi = {
-#         'MET' : 135.778598358,
-#     }
+    jetIso = analysis_selections.jetIsos["Muons"]
+    jetIso = "NoIso"
+    
+    calculatedLumi = {
+        'MET' : analysis_selections.recommended_luminosities["2016"],
+    }
+
+    weightString = {
+        'MET' : analysis_selections.full_sim_weights["2016"],
+    }
+    baseConditionsArr = [analysis_selections.common_preselection, analysis_selections.two_leptons_condition]
+    #baseConditions = analysis_selections.injectValues(" && ".join(baseConditionsArr), "2016", "Muons")
+    baseConditions = " && ".join(baseConditionsArr).replace("%%%", jetIso).replace("$$$", "Muons")
+
     
     cuts = [
-        {"name":"none", "title": "None", "condition" : "(twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Muons\" && invMass < 12 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSign == 0", "sc" : "sameSign == 1"},
-        {"name":"bdt", "title": "BDT>0.1", "condition" : "(dilepBDT > 0.1 && twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Muons\" && invMass < 12 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSign == 0", "sc" : "sameSign == 1"},
+        {"name":"none", "title": "None", "condition" : baseConditions, "baseline" : analysis_selections.two_leptons_opposite_sign, "sc" : analysis_selections.two_leptons_same_sign },
+        #{"name":"bdt", "title": "BDT>0.1", "condition" : "(dilepBDT > 0.1 && twoLeptons == 1 && MHT >= 220 &&  MET >= 200 && @leptons.size() == 2 && leptonFlavour == \"Muons\" && invMass < 12 && BTagsDeepMedium == 0 && vetoElectronsPassIso == 0 && vetoMuonsPassIso == 0)", "baseline" : "sameSign == 0", "sc" : "sameSign == 1"},
     ]
     
+    injectJetIsoToCuts(cuts, jetIso)
+    
     histograms_defs = [
-        { "obs" : "invMass", "minX" : 0.1, "maxX" : 12, "bins" : 100, "blind" : [4,None] },
-        { "obs" : "dilepBDT", "minX" : -1, "maxX" : 1, "bins" : 6, "blind" : [None,0.1] },
+        { "obs" : "invMass%%%", "minX" : 0.1, "maxX" : 6, "bins" : 100 },
+        #{ "obs" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 6 },
     ]
+    
+    injectJetIsoToHistograms(histograms_defs, jetIso)  
     
     bg_retag = True
     
-    bgReTagging = bgReTaggingFull
+    bgReTagging = bgReTaggingResonances
+    injectJetIsoToMapValues(bgReTagging, jetIso)
     bgReTaggingOrder = bgReTaggingOrderFull
     bgReTaggingNames = bgReTaggingNamesFull
     plot_error = True
@@ -478,7 +497,7 @@ class dimuon_background_tautau_vs_bdt_signal(dimuon_background_tautau_vs_bdt):
 class dimuon_background_estimation_non_isolated_and_tautau_2016(BaseParams):
     histrograms_file = BaseParams.histograms_root_files_dir + "/dimuon_background_estimation_non_isolated_and_tautau_2016.root"
     save_histrograms_to_file = True
-    load_histrograms_from_file = False
+    load_histrograms_from_file = True
     bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/slim_sum_total"
     data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/slim_sum/"
     
@@ -520,16 +539,16 @@ class dimuon_background_estimation_non_isolated_and_tautau_2016(BaseParams):
         #{ "obs" : "dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
         #{ "obs" : "tautau", "formula" : "nmtautau%%%:dilepBDT%%%", "minX" : -1, "maxX" : 1, "minY" : -100, "mixY" : 200, "units" : "BDT", "bins" : 50, "binsY" : 50, "2D" : True},
         #{ "obs" : "dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.05,0.15,0.25,0.35,0.45,0.6,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
-        { "obs" : "dilepBDTphase1%%%", "formula" : "dilepBDTphase1%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.05,0.15,0.25,0.35,0.45,0.6,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
+        #{ "obs" : "dilepBDTphase1%%%", "formula" : "dilepBDTphase1%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.05,0.15,0.25,0.35,0.45,0.6,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
         #{ "obs" : "new_bin_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
         #{ "obs" : "newer_bin_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.45,0.5,0.55,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
-        { "obs" : "newer_bin_dilepBDTphase1%%%", "formula" : "dilepBDTphase1%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.45,0.5,0.55,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
+        #{ "obs" : "newer_bin_dilepBDTphase1%%%", "formula" : "dilepBDTphase1%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.45,0.5,0.55,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
         
         #{ "obs" : "newest_bin_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.45,0.5,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
-        { "obs" : "newest_bin_dilepBDTphase1%%%", "formula" : "dilepBDTphase1%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.45,0.5,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
-        { "obs" : "newestest_bin_dilepBDTphase1%%%", "formula" : "dilepBDTphase1%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.45,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
+        #{ "obs" : "newest_bin_dilepBDTphase1%%%", "formula" : "dilepBDTphase1%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.45,0.5,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
+        #{ "obs" : "newestest_bin_dilepBDTphase1%%%", "formula" : "dilepBDTphase1%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.45,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
         
-        { "obs" : "newestestest_bin_dilepBDTphase1%%%", "formula" : "dilepBDTphase1%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
+        { "obs" : "newestestest_bin_dilepBDTphase1%%%", "formula" : "dilepBDTphase1%%%", "minX" : -1, "maxX" : 1, "units" : "BDT output", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,1], "legendCol" : 1, "legendCoor" : {"x1" : .63, "y1" : .63, "x2" : .99, "y2" : .89}, "linearYspace" : 1.6, "logYspace" : 3000 },
         #{ "obs" : "fine_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 40, "units" : "BDT", "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
         { "obs" : "fine_dilepBDTphase1%%%", "formula" : "dilepBDTphase1%%%", "minX" : -1, "maxX" : 1, "bins" : 40, "units" : "BDT phase1", "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}}
     ]
@@ -575,7 +594,7 @@ class dimuon_background_estimation_non_isolated_and_tautau_2016(BaseParams):
     #    "tautau" : [1.44864,0.46772],
     #    "non-iso" : [0.4604,0.06955]
     #}
-    
+    y_title_offset = 0.8
     
     colorPalette = [
         { "name" : "yellow", "fillColor" : TColor.GetColor("#ffd700"), "lineColor" : kBlack, "fillStyle" : 1001, "markerColor" : 5,  "markerStyle" : kOpenCircle},
@@ -585,7 +604,7 @@ class dimuon_background_estimation_non_isolated_and_tautau_2016(BaseParams):
 class dimuon_background_estimation_non_isolated_and_tautau_2017(dimuon_background_estimation_non_isolated_and_tautau_2016):
     histrograms_file = BaseParams.histograms_root_files_dir + "/dimuon_background_estimation_non_isolated_and_tautau_2017.root"
     save_histrograms_to_file = True
-    load_histrograms_from_file = False
+    load_histrograms_from_file = True
     bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_phase1/sum/slim_sum_total"
     data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_phase1/slim_2017/"
     
@@ -609,16 +628,16 @@ class dimuon_background_estimation_non_isolated_and_tautau_2017(dimuon_backgroun
         #{ "obs" : "dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
         #{ "obs" : "tautau", "formula" : "nmtautau%%%:dilepBDT%%%", "minX" : -1, "maxX" : 1, "minY" : -100, "mixY" : 200, "units" : "BDT", "bins" : 50, "binsY" : 50, "2D" : True},
         #{ "obs" : "dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.05,0.15,0.25,0.35,0.45,0.6,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
-        { "obs" : "dilepBDTphase1%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.05,0.15,0.25,0.35,0.45,0.6,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
+        #{ "obs" : "dilepBDTphase1%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.05,0.15,0.25,0.35,0.45,0.6,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
         #{ "obs" : "new_bin_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
         #{ "obs" : "newer_bin_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.45,0.5,0.55,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
-        { "obs" : "newer_bin_dilepBDTphase1%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.45,0.5,0.55,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
+        #{ "obs" : "newer_bin_dilepBDTphase1%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.45,0.5,0.55,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
         
         #{ "obs" : "newest_bin_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.45,0.5,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
-        { "obs" : "newest_bin_dilepBDTphase1%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.45,0.5,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
-        { "obs" : "newestest_bin_dilepBDTphase1%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.45,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
+        #{ "obs" : "newest_bin_dilepBDTphase1%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.45,0.5,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
+        #{ "obs" : "newestest_bin_dilepBDTphase1%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.45,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
         
-        { "obs" : "newestestest_bin_dilepBDTphase1%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT phase1", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,1], "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
+        { "obs" : "newestestest_bin_dilepBDTphase1%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT output", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,1], "legendCol" : 1, "legendCoor" : {"x1" : .63, "y1" : .63, "x2" : .99, "y2" : .89}, "linearYspace" : 1.6, "logYspace" : 3000 },
         
         
         #{ "obs" : "fine_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 40, "units" : "BDT", "legendCol" : 1, "legendCoor" : {"x1" : .72, "y1" : .60, "x2" : .99, "y2" : .89}},
@@ -663,7 +682,7 @@ class dimuon_background_estimation_non_isolated_and_tautau_2018(dimuon_backgroun
 class dimuon_background_estimation_non_isolated_and_tautau_phase1(dimuon_background_estimation_non_isolated_and_tautau_2018):
     histrograms_file = BaseParams.histograms_root_files_dir + "/dimuon_background_estimation_non_isolated_and_tautau_phase1.root"
     save_histrograms_to_file = True
-    load_histrograms_from_file = False
+    load_histrograms_from_file = True
     calculatedLumi = {
         'MET' : analysis_selections.luminosities["phase1"],   
     }
@@ -711,10 +730,38 @@ signalNames = [
 class dimuon_background_estimation_non_isolated_and_tautau_and_signal(dimuon_background_estimation_non_isolated_and_tautau_2016):
     histrograms_file = BaseParams.histograms_root_files_dir + "/dimuon_background_estimation_non_isolated_and_tautau_and_signal.root"
     save_histrograms_to_file = True
-    load_histrograms_from_file = False
+    load_histrograms_from_file = True
     plot_signal = True
     signal_dir = signals
     signal_names = signalNames
+
+signals_2017 = [
+              #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim_sum/mChipm100GeV_dm0p759GeV_1.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim_sum/mChipm100GeV_dm0p959GeV_1.root",
+              #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim_sum/mChipm100GeV_dm1p259GeV_1.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim_sum/mChipm100GeV_dm1p759GeV_1.root",
+              "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim_sum/mChipm100GeV_dm2p259GeV_1.root",
+              #"/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_phase1/slim_sum/mChipm100GeV_dm3p259GeV_1.root"
+              
+              ]
+
+signalNames_2017 = [
+    #"\Delta_{}m^{\pm} 0.75 GeV",
+    "\Delta_{}m^{\pm} 0.95 GeV",
+    #"\Delta_{}m^{\pm} 1.25 GeV",
+    "\Delta_{}m^{\pm} 1.75 GeV",
+    "\Delta_{}m^{\pm} 2.25 GeV",
+    #"\Delta_{}m^{\pm} 3.25 GeV",
+]
+
+
+class dimuon_background_estimation_non_isolated_and_tautau_phase1_and_signal(dimuon_background_estimation_non_isolated_and_tautau_phase1):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/dimuon_background_estimation_non_isolated_and_tautau_phase1_and_signal.root"
+    save_histrograms_to_file = True
+    load_histrograms_from_file = True
+    plot_signal = True
+    signal_dir = signals_2017
+    signal_names = signalNames_2017
 
 class dimuon_background_estimation_non_isolated_and_tautau_simulation_only(dimuon_background_estimation_non_isolated_and_tautau_2016):
     histrograms_file = BaseParams.histograms_root_files_dir + "/dimuon_background_estimation_non_isolated_and_tautau_simulation_only.root"

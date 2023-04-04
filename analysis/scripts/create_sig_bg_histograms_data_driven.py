@@ -43,7 +43,7 @@ required_category = "all"
 required_category = "leptons"
 required_category = "tracks"
 
-skip_electrons = True
+skip_electrons = False
 
 use_uniform_binning = True
 add_systematics = False
@@ -51,6 +51,7 @@ seperate_bg_methods = False
 use_line_fits_predictions = False
 use_line_fits_predictions_tf = False
 ignore_tf_errors = False
+max_files = -1
 
 final_prediction = True
 if final_prediction:
@@ -59,7 +60,7 @@ if final_prediction:
     seperate_bg_methods = True
     use_line_fits_predictions = True
     ignore_tf_errors = True
-    
+    max_files = -1
 
 # required_lepton = "Muons"
 # jetiso = "CorrJetNoMultIso10Dr0.6"
@@ -73,7 +74,7 @@ output_file = None
 if args.output_file:
     output_file = args.output_file[0]
 else:
-    output_file = "sig_bg_histograms_data_driven_" + wanted_year + "_" + required_category + ("_uniform_binning" if use_uniform_binning else "") + ".root"
+    output_file = "sig_bg_histograms_data_driven_" + wanted_year + "_" + required_category + ("_uniform_binning" if use_uniform_binning else "") + "_new.root"
 
 print("output_file=" + output_file)
 
@@ -290,9 +291,9 @@ def main():
                                 bg_2l_hist[tfHistName].Add(tfHist)
         
         f.Close()
-        #i += 1
-        #if i > 5:
-        #    break
+        i += 1
+        if max_files > 0 and i >= max_files:
+            break
     
     print("bg_2l_hist", bg_2l_hist)
     
@@ -485,19 +486,26 @@ def main():
                         else:
                             signal_hists[histName].Add(hist)
             f.Close()
-    
+            i += 1
+            if max_files > 0 and i >= max_files:
+                break
     fnew.cd()
-    
+    print("\n\n\n=======================")
+    print("signal_hists", signal_hists)
+    print("bg_1t_hist", bg_1t_hist)
+    print("bg_2l_hist", bg_2l_hist)
     for hist in signal_hists:
+        print("Writing histogram signal_hists", hist)
         signal_hists[hist].Write()
     for hist in bg_1t_hist:
+        print("Writing histogram bg_1t_hist", hist)
         bg_1t_hist[hist].Write()
     for hist in bg_2l_hist:
-        print("Writing", hist)
+        print("Writing bg_2l_hist", hist)
         bg_2l_hist[hist].Write()
     
     fnew.Close()
-    
+    print("End: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S'))
     exit(0)
     
 main()

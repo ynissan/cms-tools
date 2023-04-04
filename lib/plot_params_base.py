@@ -6,6 +6,7 @@ sys.path.append(os.path.expandvars("$CMSSW_BASE/src/cms-tools/lib"))
 import crystal_ball_params
 import utils
 import plotutils
+import analysis_selections
 
 low_3_signals = [
               "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/signal/skim_dilepton_signal_bdt_all/single/higgsino_mu100_dm1p92Chi20Chipm.root",
@@ -112,13 +113,16 @@ class BaseParams:
     sc_bg_dir = None
     sc_data_dir = None
     
-    # This is in fb-1
-    calculatedLumi = {}
     weightString = {
-        'MET' : "passedMhtMet6pack * tEffhMetMhtRealXMht2016",
-        #'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * puWeight * BranchingRatio",
-        'SingleMuon' : "1"
+        'MET' : analysis_selections.full_sim_weights["2016"],
     }
+    
+    # This is in fb-1
+    calculatedLumi = {
+        'MET' : analysis_selections.recommended_luminosities["2016"],
+    }
+    
+    
     applyWeightsToData = False
     
     bg_retag = False
@@ -210,7 +214,7 @@ class BaseParams:
     sig_line_width = 2
     
     plot_legend = True
-    legend_coordinates = {"x1" : .35, "y1" : .60, "x2" : .89, "y2" : .89}
+    legend_coordinates = {"x1" : .40, "y1" : .60, "x2" : .94, "y2" : .89}
     legend_columns = 2
     legend_border = 0
     legend_align = -1
@@ -220,9 +224,10 @@ class BaseParams:
     y_title_offset = 0.8
     y_title = "Events"
     
-    label_text = plotutils.StampStr.SIMWIP
+    label_text = plotutils.StampStr.SIM
     cms_location = plotutils.StampCoor.ABOVE_PLOT
     show_lumi = True
+    lumi_string_prefix = ""
     
     use_calculated_lumi_weight = True
     

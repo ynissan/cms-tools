@@ -44,15 +44,16 @@ output_file = None
 
 
 lepNum = 2
-wanted_year = "phase1"
+wanted_year = "2016"
 wanted_lepton = "Electrons"
 wanted_lepton = "Muons"
 
 lepNum = 1
-wanted_year = "phase1"
-wanted_lepton = "Muons"
-wanted_lepton = "Electrons"
+wanted_year = "2016"
 
+
+wanted_lepton = "Electrons"
+wanted_lepton = "Muons"
 
 category = "leptons"
 
@@ -71,8 +72,8 @@ if lepNum == 1:
 #         output_dir = "./signal_region_tracks_plots_2017"
 
 
-histograms_file = "../scripts/sig_bg_histograms_data_driven_" + wanted_year + "_" + category + "_uniform_binning.root"
-output_dir = "./signal_region_plots_" + wanted_year + "_" + category + "_" + wanted_lepton + "_data_driven"
+histograms_file = "../scripts/sig_bg_histograms_data_driven_" + wanted_year + "_" + category + "_uniform_binning_new.root"
+output_dir = "./signal_region_plots_" + wanted_year + "_" + category + "_" + wanted_lepton + "_data_driven_fixed"
 
 if not os.path.isdir(output_dir):
     os.mkdir(output_dir)
@@ -124,7 +125,7 @@ if wanted_year != "2016":
         "mChipm100GeV_dm0p559GeV"
     ]
 
-index_to_optimise = 3
+index_to_optimise = 2
 
 # index_to_optimise = 1
 # ===========
@@ -218,7 +219,7 @@ def main():
             #"bg_2l_" + ("orth_" if orth else "") + lep + "_" + jetiso[lep]
             #histname = "bg_" + ("1t" if lepNum == 1 else "2l") + "_" + ("orth_" if orth else "") + lep + "_" + jetiso[lep]
             histname = "bg_" + ("1t" if lepNum == 1 else "2l") + "_" + lep + ("_orth" if orth else "")
-            histname = "bg" + ("1t" if lepNum == 1 else "2l") + lep + ("Orth" if orth else "")
+            histname = "bg" + ("1t" if lepNum == 1 else "2l") + lep + ("Orth" if orth else "") + ("ChargeSymmetric" if lepNum == 1 else "")
             print("Getting", histname) 
             bg_hist = histograms.Get(histname)
         

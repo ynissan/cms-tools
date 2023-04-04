@@ -14,27 +14,27 @@ import analysis_selections
 
 common_histograms = [
     
-    { "obs" : "MET", "minX" : 120, "maxX" : 800, "bins" : 30 },
+    { "obs" : "MET", "minX" : 120, "maxX" : 800, "bins" : 30, "linearYspace" : 1.6 },
     #{ "obs" : "MT2", "minX" : 0, "maxX" : 100, "bins" : 30 },
-    { "obs" : "MHT", "minX" : 220, "maxX" : 500, "bins" : 30, "units" : "H_{T}^{Miss} [GeV]" },
-    { "obs" : "HT", "minX" : 0, "maxX" : 700, "bins" : 30, "logYspace" : 10000 },
+    { "obs" : "MHT", "minX" : 220, "maxX" : 500, "bins" : 30, "units" : "H_{T}^{Miss} [GeV]", "linearYspace" : 1.4 },
+    { "obs" : "HT", "minX" : 0, "maxX" : 700, "bins" : 30, "logYspace" : 10000, "linearYspace" : 1.6 },
     #{ "obs" : "MetDHt", "minX" : 0, "maxX" : 700, "bins" : 30 },
     #{ "obs" : "leptonFlavour%%%", "minX" : 0, "maxX" : 2, "bins" : 2 },
     #{ "obs" : "int(genFlavour == \"Muons\")", "minX" : 0, "maxX" : 2, "bins" : 2, "usedObs" : ["genFlavour"] },
     #{ "obs" : "int(genFlavour == \"Electrons\")", "minX" : 0, "maxX" : 2, "bins" : 2, "usedObs" : ["genFlavour"] },
     
-    { "obs" : "NJets", "minX" : 0, "maxX" : 7, "bins" : 7 },
+    { "obs" : "NJets", "minX" : 0, "maxX" : 7, "bins" : 7, "linearYspace" : 1.6 },
     #{ "obs" : "BTagsLoose", "minX" : 0, "maxX" : 7, "bins" : 7 },
     #{ "obs" : "BTagsMedium", "minX" : 0, "maxX" : 7, "bins" : 7 },
     #{ "obs" : "BTagsDeepLoose", "minX" : 0, "maxX" : 7, "bins" : 7 },
     #{ "obs" : "BTagsDeepMedium", "minX" : 0, "maxX" : 7, "bins" : 7 },
     
     #{ "obs" : "LeadingJetQgLikelihood", "minX" : 0, "maxX" : 1, "bins" : 30 },
-    { "obs" : "MinDeltaPhiMhtJets", "minX" : 0, "maxX" : 3.2, "bins" : 20, "units" : "Min\Delta_{}\phi(H_{T}^{Miss}, Jets)" },
+    { "obs" : "MinDeltaPhiMhtJets", "minX" : 0, "maxX" : 3.2, "bins" : 20, "units" : "Min\Delta_{}\phi(H_{T}^{Miss}, Jets)", "linearYspace" : 1.7 },
     #{ "obs" : "MinDeltaPhiMetJets", "minX" : 0, "maxX" : 3.2, "bins" : 20, "units" : "Min\Delta_{}\phi(E_{T}^{Miss}, Jets)" },
     
-    { "obs" : "LeadingJetPt", "minX" : 0, "maxX" : 800, "bins" : 30, "units" : "p_{T}(j_{1}) [GeV]" },
-    { "obs" : "abs(LeadingJet.Eta())", "minX" : 0, "maxX" : 2.5, "bins" : 30, "usedObs" : ["LeadingJet"], "units" : "|\eta_{j_{1}}|" },
+    { "obs" : "LeadingJetPt", "minX" : 0, "maxX" : 800, "bins" : 30, "units" : "p_{T}(j_{1}) [GeV]", "linearYspace" : 1.5 },
+    { "obs" : "abs(LeadingJet.Eta())", "minX" : 0, "maxX" : 2.5, "bins" : 30, "usedObs" : ["LeadingJet"], "units" : "|\eta_{j_{1}}|", "linearYspace" : 1.8 },
     #{ "obs" : "MaxCsv25", "minX" : 0, "maxX" : 1, "bins" : 30 },
     #{ "obs" : "MaxDeepCsv25", "minX" : 0, "maxX" : 1, "bins" : 30 },
     #{ "obs" : "LeadingJetMinDeltaRElectrons", "minX" : 0, "maxX" : 5, "bins" : 30 },
@@ -56,12 +56,12 @@ two_leps_histograms = [
     
     #{ "obs" : "invMass%%%_coarse", "formula" : "invMass%%%","minX" : 0, "maxX" : 13, "bins" : 6, "blind" : [4,None],"units" : "M_{ll} [GeV]" },
     { "obs" : "invMass%%%", "minX" : 0, "maxX" : 12, "bins" : 30, "blind" : [4,None],"units" : "M_{ll} [GeV]", "linearYspace" : 1.5 },
-    { "obs" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 60, "blind" : [None,0.1],"units" : "BDT", "linearYspace" : 1.6 },
+    { "obs" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 60,"units" : "BDT", "linearYspace" : 1.8 },
     { "obs" : "custom_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 60, "logYspace" : 8000, "linearYspace" : 1.6, "blind" : [None,0.1],"units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,1] },
-    { "obs" : "dileptonPt%%%", "minX" : 0, "maxX" : 30, "bins" : 30, "units" : "p_{T}(ll) [GeV]", "linearYspace" : 1.4 },
+    { "obs" : "dileptonPt%%%", "minX" : 0, "maxX" : 30, "bins" : 30, "units" : "p_{T}(ll) [GeV]", "linearYspace" : 1.6 },
     #{ "obs" : "deltaPhi%%%", "minX" : 0, "maxX" : 3.2, "bins" : 30 },
-    { "obs" : "deltaEta%%%", "minX" : 0, "maxX" : 4, "bins" : 30, "units" : "\Delta_{}\eta" },
-    { "obs" : "deltaR%%%", "minX" : 0, "maxX" : 4, "bins" : 30, "units" : "\Delta_{}R_{ll}", "linearYspace" : 1.7 },
+    { "obs" : "deltaEta%%%", "minX" : 0, "maxX" : 4, "bins" : 30, "units" : "\Delta_{}\eta", "linearYspace" : 1.6 },
+    { "obs" : "deltaR%%%", "minX" : 0, "maxX" : 4, "bins" : 30, "units" : "\Delta_{}R_{ll}", "linearYspace" : 1.8 },
     { "obs" : "dilepHt%%%", "minX" : 200, "maxX" : 400, "bins" : 30 },
     #{ "obs" : "pt3%%%", "minX" : 0, "maxX" : 1000, "bins" : 30 },
     #{ "obs" : "mtautau%%%", "minX" : 0, "maxX" : 200, "bins" : 30 },
@@ -73,8 +73,16 @@ two_leps_histograms = [
     { "obs" : "leptons%%%[1].Pt()", "minX" : 2, "maxX" : 15, "bins" : 30, "usedObs" : ["leptons%%%"], "units" : "p_{T}(l_{2}) [GeV]" },
     { "obs" : "abs(leptons%%%[0].Eta())", "minX" : 0, "maxX" : 2.4, "bins" : 30, "usedObs" : ["leptons%%%"] },
     { "obs" : "abs(leptons%%%[1].Eta())", "minX" : 0, "maxX" : 2.4, "bins" : 30, "usedObs" : ["leptons%%%"] },
-    { "obs" : "deltaPhiMhtLepton1%%%", "minX" : 0, "maxX" : 3.5, "bins" : 30, "units" : "\Delta\phi(H_{T}^{Miss},l_{1})" },
-    { "obs" : "deltaPhiMhtLepton2%%%", "minX" : 0, "maxX" : 3.5, "bins" : 30, "units" : "\Delta\phi(H_{T}^{Miss},l_{1})" },
+    
+    
+    #{ "obs" : "deltaPhiMhtLepton1%%%", "minX" : 0, "maxX" : 3.5, "bins" : 30, "units" : "\Delta\phi(H_{T}^{Miss},l_{1})" },
+    #{ "obs" : "deltaPhiMhtLepton2%%%", "minX" : 0, "maxX" : 3.5, "bins" : 30, "units" : "\Delta\phi(H_{T}^{Miss},l_{1})" },
+    
+    
+    
+    
+    
+    
     #{ "obs" : "leptons_ParentPdgId%%%[0]", "minX" : 0, "maxX" : 40, "bins" : 40, "usedObs" : ["leptons_ParentPdgId%%%"] },
     #{ "obs" : "leptons_ParentPdgId%%%[1]", "minX" : 0, "maxX" : 40, "bins" : 40, "usedObs" : ["leptons_ParentPdgId%%%"] },
     
@@ -138,37 +146,37 @@ extra_study_obs = [
 ex_track_histograms = [
     #     #TRACK ONLY
 
-    { "obs" : "exTrack_invMass", "minX" : 0, "maxX" : 13, "bins" : 30, "blind" : [4,None] },
-    { "obs" : "exTrack_dilepBDT", "minX" : -1, "maxX" : 1, "bins" : 60, "blind" : [None,0.1] },
-    { "obs" : "exTrack_dileptonPt", "minX" : 0, "maxX" : 100, "bins" : 30 },
-    { "obs" : "exTrack_deltaPhi", "minX" : 0, "maxX" : 3.2, "bins" : 30 },
-    { "obs" : "exTrack_deltaEta", "minX" : 0, "maxX" : 4, "bins" : 30 },
-    { "obs" : "exTrack_deltaR", "minX" : 0, "maxX" : 4, "bins" : 30 },
-    { "obs" : "exTrack_dilepHt", "minX" : 0, "maxX" : 400, "bins" : 30 },
-    { "obs" : "exTrack_pt3", "minX" : 0, "maxX" : 1000, "bins" : 30 },
-    { "obs" : "exTrack_mtautau", "minX" : 0, "maxX" : 200, "bins" : 30 },
+    { "obs" : "exTrack_invMass%%%", "minX" : 0, "maxX" : 13, "bins" : 30, "linearYspace" : 1.4, "units" : "M_{ll} [GeV]" },
+    { "obs" : "exTrack_dilepBDT%%%", "minX" : -1, "maxX" : 1, "bins" : 30, "linearYspace" : 1.6, "units" : "Event BDT", "logYspace" : 16000 },
+    { "obs" : "exTrack_dileptonPt%%%", "minX" : 0, "maxX" : 100, "bins" : 30, "linearYspace" : 1.6, "units" : "p_{T}(ll) [GeV]" },
+    { "obs" : "exTrack_deltaPhi%%%", "minX" : 0, "maxX" : 3.2, "bins" : 30, "linearYspace" : 1.4, "units" : "\Delta_{}\phi" },
+    { "obs" : "exTrack_deltaEta%%%", "minX" : 0, "maxX" : 4, "bins" : 30, "linearYspace" : 1.4, "units" : "\Delta_{}\eta" },
+    { "obs" : "exTrack_deltaR%%%", "minX" : 0, "maxX" : 4, "bins" : 30, "linearYspace" : 1.4, "units" : "\Delta_{}R_{ll}" },
+    #{ "obs" : "exTrack_dilepHt", "minX" : 0, "maxX" : 400, "bins" : 30 },
+    #{ "obs" : "exTrack_pt3", "minX" : 0, "maxX" : 1000, "bins" : 30 },
+    #{ "obs" : "exTrack_mtautau", "minX" : 0, "maxX" : 200, "bins" : 30 },
     
-    { "obs" : "trackBDT", "minX" : 0, "maxX" : 1, "bins" : 30 },
-    { "obs" : "secondTrackBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
-    { "obs" : "abs(track.Eta())", "minX" : 0, "maxX" : 3, "bins" : 60, "sc_obs" : "abs(sc_track.Eta())" },
-    { "obs" : "abs(lepton.Eta())", "minX" : 0, "maxX" : 3, "bins" : 60, "sc_obs" : "abs(sc_lepton.Eta())" },
-    { "obs" : "track.Pt()", "minX" : 0, "maxX" : 30, "bins" : 60 },
-    { "obs" : "lepton.Pt()", "minX" : 2, "maxX" : 25, "bins" : 60 },
-    { "obs" : "secondTrack.Pt()", "minX" : 0, "maxX" : 30, "bins" : 60 },
-    { "obs" : "abs(secondTrack.Eta())", "minX" : 0, "maxX" : 3, "bins" : 60, "sc_obs" : "abs(sc_secondTrack.Eta())" },
-    { "obs" : "abs(track.Phi())", "minX" : 0, "maxX" : 6, "bins" : 60, "sc_obs" : "abs(sc_track.Phi())" },
-    { "obs" : "abs(lepton.Phi())", "minX" : 0, "maxX" : 6, "bins" : 60, "sc_obs" : "abs(sc_lepton.Phi())" },
-    { "obs" : "mtl", "minX" : 0, "maxX" : 200, "bins" : 30 },
-    { "obs" : "mtt", "minX" : 0, "maxX" : 200, "bins" : 30 },
-    { "obs" : "NTracks", "minX" : 0, "maxX" : 7, "bins" : 7 },
+    { "obs" : "trackBDT%%%", "minX" : 0, "maxX" : 1, "bins" : 30, "linearYspace" : 1.2, "units" : "track BDT", "logYspace" : 8000 },
+    #{ "obs" : "secondTrackBDT", "minX" : -1, "maxX" : 1, "bins" : 30 },
+    { "obs" : "abs(track%%%.Eta())", "minX" : 0, "maxX" : 2.4, "bins" : 30, "sc_obs" : "abs(sc_track.Eta())", "linearYspace" : 1.6, "units" : "|\eta_{t}|" },
+    { "obs" : "abs(lepton%%%.Eta())", "minX" : 0, "maxX" : 2.4, "bins" : 30, "sc_obs" : "abs(sc_lepton.Eta())", "linearYspace" : 1.6, "units" : "|\eta_{l}|" },
+    { "obs" : "track%%%.Pt()", "minX" : 1.9, "maxX" : 10, "bins" : 30, "units" : "p_{T}(t) [GeV]" },
+    { "obs" : "lepton%%%.Pt()", "minX" : 2, "maxX" : 15, "bins" : 30, "units" : "p_{T}(l) [GeV]" },
+    #{ "obs" : "secondTrack%%%.Pt()", "minX" : 0, "maxX" : 30, "bins" : 60 },
+    #{ "obs" : "abs(secondTrack.Eta())", "minX" : 0, "maxX" : 3, "bins" : 60, "sc_obs" : "abs(sc_secondTrack.Eta())" },
+    { "obs" : "abs(track%%%.Phi())", "minX" : 0, "maxX" : 3.2, "bins" : 30, "sc_obs" : "abs(sc_track.Phi())", "linearYspace" : 1.4 },
+    { "obs" : "abs(lepton%%%.Phi())", "minX" : 0, "maxX" : 3.2, "bins" : 30, "sc_obs" : "abs(sc_lepton.Phi())", "linearYspace" : 1.4 },
+    { "obs" : "mtl%%%", "minX" : 0, "maxX" : 120, "bins" : 30, "linearYspace" : 1.4, "units" : "m_{T}(l) [GeV]" },
+    { "obs" : "mtt%%%", "minX" : 0, "maxX" : 120, "bins" : 30, "linearYspace" : 1.4, "units" : "m_{T}(t) [GeV]" },
+    #{ "obs" : "NTracks", "minX" : 0, "maxX" : 7, "bins" : 7 },
     
     # { "obs" : "deltaRMetTrack", "minX" : 0, "maxX" : 4, "bins" : 30 },
 #     { "obs" : "deltaPhiMetTrack", "minX" : 0, "maxX" : 3.2, "bins" : 30 },
 #     { "obs" : "deltaRMetLepton", "minX" : 0, "maxX" : 4, "bins" : 30 },
 #     { "obs" : "deltaPhiMetLepton", "minX" : 0, "maxX" : 3.2, "bins" : 30 },
 #     
-    { "obs" : "exTrack_deltaEtaLeadingJetDilepton", "minX" : 0, "maxX" : 4, "bins" : 30 },
-    { "obs" : "exTrack_deltaPhiLeadingJetDilepton", "minX" : 0, "maxX" : 4, "bins" : 30 },
+    { "obs" : "exTrack_deltaEtaLeadingJetDilepton%%%", "minX" : 0, "maxX" : 4, "bins" : 30, "linearYspace" : 1.4 },
+    { "obs" : "exTrack_deltaPhiLeadingJetDilepton%%%", "minX" : 0, "maxX" : 3.2, "bins" : 30, "linearYspace" : 1.6 },
 ]
 
 for hist in ex_track_histograms:
@@ -490,9 +498,8 @@ class track_electron(dilepton_muons_CorrJetIso10Dr0_6_phase1_2017):
     plot_error = True
     bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim_phase1/sum/type_sum"
 
-class track_muon(track_electron):
+class track_muon_bg_signal(track_electron):
 
-    histrograms_file = BaseParams.histograms_root_files_dir + "/track_muon_2017.root"
     save_histrograms_to_file = True
     load_histrograms_from_file = True
     baseConitions = analysis_selections.injectValues(analysis_selections.ex_track_cond, "2017", "Muons")
@@ -500,9 +507,17 @@ class track_muon(track_electron):
         {"name":"none", "title": "None", "condition" : analysis_selections.common_preselection, "baseline" : baseConitions, "sc" : "1" },
         #{"name":"sr", "title": "sr", "condition" : "(MinDeltaPhiMhtJets > 0.4 && MHT >= 220 &&  MET >= 140 && BTagsDeepMedium == 0 )", "baseline" : "exclusiveTrack == 1 && trackBDT > 0 && exTrack_invMass < 30 && exclusiveTrackLeptonFlavour == \"Muons\" && exTrack_dilepBDT > 0.1", "sc" : "sc_exclusiveTrack == 1 && sc_trackBDT > 0 && sc_exTrack_invMass < 30 && sc_exclusiveTrackLeptonFlavour == \"Muons\"" }
     ]
-    histrograms_file = "/afs/desy.de/user/n/nissanuv/CMSSW_10_1_0/src/cms-tools/analysis/scripts/track_muon.root"
+    histrograms_file = BaseParams.histograms_root_files_dir + "/track_muon.root"
     signal_dir = signals_2017_full
     
+    histograms_defs = []
+    histograms_defs.extend(common_histograms)
+    histograms_defs.extend(ex_track_histograms)
+    injectJetIsoToHistograms(histograms_defs, analysis_selections.jetIsos["Muons"])
+    
+    
+    y_title_offset = 1.0
+    plot_error = True
     
     
 
