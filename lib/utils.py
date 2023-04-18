@@ -165,13 +165,12 @@ leptonsCorrJetVecList = {
     "NoIso" : "bool",
 }
 
-leptonCorrJetIsoPtRange = [0, 1, 5, 6, 7, 8, 9, 10, 10.5, 11, 11.5, 12, 12.5, 13, 15, 20]
-# Old list
-#leptonCorrJetIsoPtRange = [0, 1, 5, 10, 10.5, 11, 11.5, 12, 12.5, 13, 15, 20]
-leptonCorrJetIsoDrCuts = [0.4,0.45,0.5,0.55,0.6]
+#Original list - for full scan
+#leptonCorrJetIsoPtRange = [0, 1, 5, 6, 7, 8, 9, 10, 10.5, 11, 11.5, 12, 12.5, 13, 15, 20]
+#leptonCorrJetIsoDrCuts = [0.4,0.45,0.5,0.55,0.6]
 
-#leptonCorrJetIsoPtRange = [0, 10]
-
+leptonCorrJetIsoPtRange = [10]
+leptonCorrJetIsoDrCuts = [0.5,0.6]
 defaultJetIsoSetting = "NoIso"
 
 #leptonIsolationList = [ "JetIso", "CorrJetIso", "NonJetIso" ]
