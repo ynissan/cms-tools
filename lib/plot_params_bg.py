@@ -266,10 +266,10 @@ class dilepton_muons_bg_coarse_retag(dilepton_muons_bg_coarse):
     bgReTaggingNames = bgReTaggingNamesFull
 
 class track_muon_sc_comparison(BaseParams):
-    histrograms_file = BaseParams.histograms_root_files_dir + "/track_muon_sc_comparison_new_training.root"
+    histrograms_file = BaseParams.histograms_root_files_dir + "/track_muon_sc_comparison.root"
     bg_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/bg/skim/sum/type_sum"
     save_histrograms_to_file = True
-    load_histrograms_from_file = True 
+    load_histrograms_from_file = False 
     baseConditions = analysis_selections.injectValues(analysis_selections.ex_track_cond, "2016", "Muons")
     scConditions = analysis_selections.injectValues(analysis_selections.sc_ex_track_cond, "2016", "Muons")
     cuts = [
@@ -280,6 +280,7 @@ class track_muon_sc_comparison(BaseParams):
     
     histograms_defs = [
         { "obs" : "exTrack_dilepBDT%%%", "units" : "BDT", "minX" : -1, "maxX" : 1, "bins" : 30,  "sc_obs" : "sc_exTrack_dilepBDT%%%", "linearYspace" : 1.9, "lumiStringPrefix" : "Muons Phase 0"},
+        { "obs" : "exTrack_dilepBDT_bins%%%", "formula": "exTrack_dilepBDT%%%", "units" : "BDT", "minX" : -1, "maxX" : 1, "bins" : 30,  "sc_obs" : "sc_exTrack_dilepBDT%%%", "linearYspace" : 1.9, "lumiStringPrefix" : "Muons Phase 0", "customBins"  : [-1,0,0.05,0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.5,0.55,0.6,1]},
     ]
     
     injectJetIsoToHistograms(histograms_defs, analysis_selections.jetIsos["Muons"])  
@@ -300,6 +301,7 @@ class track_muon_sc_comparison(BaseParams):
     sc_color = kOrange + 1
     label_text = plotutils.StampStr.SIM
     ratio_label = "oc"
+    stamp_scale_factor = True
     
     legend_coordinates = {"x1" : .40, "y1" : .60, "x2" : .92, "y2" : .89}
 

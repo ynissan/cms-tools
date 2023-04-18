@@ -52,8 +52,11 @@ non_iso_2l_factors_closure_line_fit_sigma_m = {
 non_iso_2l_factors_base = copy.deepcopy(non_iso_2l_factors)
 non_iso_2l_factors_sigma = copy.deepcopy(non_iso_2l_factors)
 
-non_iso_2l_factors_base['2016']['Muons'] = non_iso_2l_factors_closure_line_fit['2016']['Muons']
-non_iso_2l_factors_sigma['2016']['Muons'] = non_iso_2l_factors_closure_line_fit_sigma_m['2016']['Muons']
+# The comments here are because we don't treat 2016 as different now...
+#non_iso_2l_factors_base['2016']['Muons'] = non_iso_2l_factors_closure_line_fit['2016']['Muons']
+#non_iso_2l_factors_sigma['2016']['Muons'] = non_iso_2l_factors_closure_line_fit_sigma_m['2016']['Muons']
+
+non_iso_2l_factors_sigma['2016']['Muons'] = non_iso_2l_factors_closure_line_fit['2016']['Muons']
 non_iso_2l_factors_sigma['2017']['Muons'] = non_iso_2l_factors_closure_line_fit['2017']['Muons']
 non_iso_2l_factors_sigma['2018']['Muons'] = non_iso_2l_factors_closure_line_fit['2018']['Muons']
 non_iso_2l_factors_sigma['phase1']['Muons'] = non_iso_2l_factors_closure_line_fit['phase1']['Muons']
@@ -204,7 +207,9 @@ muonsClosureLineFitSigmaMWeight = "muonsClosureLineFitSigmaMWeight%%%"
 extra_filters_2l_main_prediction =  {
     '2016' : {
         "Electrons" : [],
-        "Muons" : [muonsClosureLineFitWeight],
+        # we don't treat it as different anymore
+        #"Muons" : [muonsClosureLineFitWeight],
+        "Muons" : []
     },
     '2017' : {
         "Electrons" : [],
@@ -223,7 +228,9 @@ extra_filters_2l_main_prediction =  {
 extra_filters_2l_sigma_prediction =  {
     '2016' : {
         "Electrons" : [],
-        "Muons" : [muonsClosureLineFitSigmaMWeight],
+        # we don't treat it as different anymore
+        #"Muons" : [muonsClosureLineFitSigmaMWeight],
+        "Muons" : [muonsClosureLineFitWeight],
     },
     '2017' : {
         "Electrons" : [],
@@ -280,7 +287,6 @@ two_leptons_bdt_sr_iso_sb_outside_mtautau_window = two_leptons_bdt_sr_iso_sb + [
 two_leptons_full_bdt_iso_sb = [common_preselection, two_leptons_condition, two_leptons_condition_zoo_removal, two_leptons_iso_sb_condition, two_leptons_opposite_sign]
 two_leptons_full_bdt_iso_sb_outside_mtautau_window = two_leptons_full_bdt_iso_sb + [mtautau_veto]
 two_leptons_full_bdt_iso_sb_outside_mtautau_window_sos = two_leptons_full_bdt_iso_sb_outside_mtautau_window + [sos_orth_condition]
-
 
 two_leptons_sr_conditions_sos = two_leptons_sr_conditions + [sos_orth_condition]
 two_leptons_cr_conditions_sos = two_leptons_cr_conditions + [sos_orth_condition]

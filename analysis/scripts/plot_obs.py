@@ -257,7 +257,7 @@ def createPlotsFast(rootfiles, types, histograms, weight, category, conditions, 
         else:
             rootFile = TFile(f)
             c = rootFile.Get('tEvent')
-        print("After block", c.GetEntries())
+        #print("After block", c.GetEntries())
         if plot_par.turnOnOnlyUsedObsInTree:
             c.SetBranchStatus("*",0);
             print("plot_par.usedObs", plot_par.usedObs)
@@ -323,6 +323,10 @@ def createPlotsFast(rootfiles, types, histograms, weight, category, conditions, 
                                 conditionStr += " && ( " + cut["sc"] + " )"
                             elif cut.get("baseline") is not None and len(cut["baseline"]) > 0:
                                 conditionStr += " && ( " + cut["baseline"] + " )"
+                            
+                            if category == "data" and cut.get("data_only") is not None:
+                                print("plotting data!!!")
+                                conditionStr += " && ( " + cut["data_only"] + " )"
                                 
                             if hist_def.get("condition") is not None:
                                 conditionStr += " && ( " + hist_def["condition"] + " )"
@@ -350,7 +354,8 @@ def createPlotsFast(rootfiles, types, histograms, weight, category, conditions, 
                                     drawWeight += plot_par.object_retag_weights[object_retag_name] + " * "
                                 if special_type == "sc" and cut.get("sc_weights") is not None:
                                     drawWeight += cut["sc_weights"] + " * "
-                                
+                                if (category == "data" or category == "data-bg") and plot_par.dataWeights.get(plot_par.plot_kind) is not None and len(plot_par.dataWeights[plot_par.plot_kind]) > 0:
+                                    drawWeight += plot_par.dataWeights[plot_par.plot_kind] + " * "
                                 drawString = drawWeight + " ( " + conditionStr + " )"
             
                             #print(("drawString", drawString))
@@ -947,7 +952,7 @@ def applyFactors(plot_par, histograms):
         for hist_def in plot_par.histograms_defs:
             for bgType in plot_par.bgReTaggingNames:
                 histname = cut["name"] + "_" + hist_def["obs"] + "_" + bgType
-                if histograms.get(histname) is not None and plot_par.bgReTaggingFactors.get(bgType) is not None and len(plot_par.bgReTaggingFactors[bgType]) > 0:
+                if histograms.get(histname) is not None and plot_par.bgReTaggingFactors.get(bgType) is not None and len(plot_par.bgReTaggingFactors[bgType]) > 0 and plot_par.bgReTaggingFactors[bgType][0] > 0:
                     print("Rescaling", histname, "factor", plot_par.bgReTaggingFactors[bgType][0], "err", plot_par.bgReTaggingFactors[bgType][1])
                     utils.scaleHistogram(histograms[histname], plot_par.bgReTaggingFactors[bgType][0], plot_par.bgReTaggingFactors[bgType][1])
 

@@ -46,6 +46,8 @@ def injectJetIsoToCuts(cuts, jetIso):
             cut["sc"] = cut["sc"].replace("%%%", jetIso)
         if cut.get("sc_weights") is not None:
             cut["sc_weights"] = cut["sc_weights"].replace("%%%", jetIso)
+        if cut.get("data_only") is not None:
+            cut["data_only"] = cut["data_only"].replace("%%%", jetIso)
         
 def injectJetIsoToHistograms(hists, jetIso):
     for hist in hists:
@@ -122,6 +124,7 @@ class BaseParams:
         'MET' : analysis_selections.recommended_luminosities["2016"],
     }
     
+    dataWeights = {}
     
     applyWeightsToData = False
     
@@ -177,7 +180,7 @@ class BaseParams:
     choose_bg_categories_list = []
     #choose_bg_files_list = ["WJetsToLNu"]
     choose_bg_files_for_sc = False
-    ignore_bg_files = ["TT_TuneCUETP8M2T4_13TeV-powheg-pythia8.root", "TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root"]
+    ignore_bg_files = ["TT_TuneCUETP8M2T4_13TeV-powheg-pythia8.root", "TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root", "WZTo3LNu_mllmin01_13TeV-powheg-pythia8"]
     #ignore_bg_files = []
     blind_data = False
     plot_log_x = False

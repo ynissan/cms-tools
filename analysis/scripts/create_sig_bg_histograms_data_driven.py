@@ -34,24 +34,28 @@ args = parser.parse_args()
 
 sam = True
 
+
 wanted_year = "phase1"
+wanted_year = "2016"
+
 
 print("WANTED YEAR " + wanted_year)
 
 required_category = "all"
 
-required_category = "leptons"
 required_category = "tracks"
+required_category = "leptons"
 
-skip_electrons = False
+skip_electrons = True
 
-use_uniform_binning = True
+use_uniform_binning = False
 add_systematics = False
 seperate_bg_methods = False
 use_line_fits_predictions = False
 use_line_fits_predictions_tf = False
 ignore_tf_errors = False
 max_files = -1
+no_track_tf = False
 
 final_prediction = True
 if final_prediction:
@@ -60,7 +64,11 @@ if final_prediction:
     seperate_bg_methods = True
     use_line_fits_predictions = True
     ignore_tf_errors = True
+    no_track_tf = True
     max_files = -1
+
+partial_unblinding = True
+partial_unblinding_portion = 10
 
 # required_lepton = "Muons"
 # jetiso = "CorrJetNoMultIso10Dr0.6"
@@ -74,7 +82,7 @@ output_file = None
 if args.output_file:
     output_file = args.output_file[0]
 else:
-    output_file = "sig_bg_histograms_data_driven_" + wanted_year + "_" + required_category + ("_uniform_binning" if use_uniform_binning else "") + "_new.root"
+    output_file = "sig_bg_histograms_data_driven_" + wanted_year + "_" + required_category + ("_uniform_binning" if use_uniform_binning else "") + ("_partial_unblinding" if partial_unblinding else "") + ".root"
 
 print("output_file=" + output_file)
 
@@ -126,6 +134,9 @@ def main():
     bg_1t_hist = {}
     bg_2l_hist = {}
     
+    data_1t_hist = {}
+    data_2l_hist = {}
+    
     fnew = TFile(output_file,'recreate')
     
     c1 = TCanvas("c1", "c1", 800, 800)
@@ -169,15 +180,20 @@ def main():
                 
                 tfHist = None
                 tfHistName = histName + "_tfError"
-                if ignore_tf_errors:
-                    if add_systematics:
-                        tfHist = hist.Clone(tfHistName)
-                        tfHist.Sumw2()
-                        tfHist.SetDirectory(0)
-                        utils.scaleHistogram(tfHist, analysis_selections.sfs["tracks"][wanted_year][lep][0] + analysis_selections.sfs["tracks"][wanted_year][lep][1], 0)
-                    utils.scaleHistogram(hist, analysis_selections.sfs["tracks"][wanted_year][lep][0], 0)
-                else:
-                    utils.scaleHistogram(hist, analysis_selections.sfs["tracks"][wanted_year][lep][0], analysis_selections.sfs["tracks"][wanted_year][lep][1])
+                if not no_track_tf:
+                    if ignore_tf_errors:
+                        if add_systematics:
+                            tfHist = hist.Clone(tfHistName)
+                            tfHist.Sumw2()
+                            tfHist.SetDirectory(0)
+                            utils.scaleHistogram(tfHist, analysis_selections.sfs["tracks"][wanted_year][lep][0] + analysis_selections.sfs["tracks"][wanted_year][lep][1], 0)
+                        utils.scaleHistogram(hist, analysis_selections.sfs["tracks"][wanted_year][lep][0], 0)
+                    else:
+                        utils.scaleHistogram(hist, analysis_selections.sfs["tracks"][wanted_year][lep][0], analysis_selections.sfs["tracks"][wanted_year][lep][1])
+                
+                if partial_unblinding:
+                    utils.scaleHistogram(hist, 1./partial_unblinding_portion, 0)
+                
                 if bg_1t_hist.get(histName) is None:
                     bg_1t_hist[histName] = hist
                 else:
@@ -188,6 +204,35 @@ def main():
                         bg_1t_hist[tfHistName] = tfHist
                     else:
                         bg_1t_hist[tfHistName].Add(tfHist)
+                
+                
+                ########### GET UNBLINDED RESULTS ################
+                
+                if not partial_unblinding:
+                    continue
+                dataHistName = "data1t" + lep
+                
+                conditions = analysis_selections.ex_track_full_range_selections
+                if lep == "Electrons":
+                    conditions = analysis_selections.ex_track_full_range_selections_electrons
+                if partial_unblinding:
+                    conditions = conditions + ["Entry$ % 10==0"]
+                
+                drawString = analysis_selections.getDataString(wanted_year, lep, conditions)
+                
+                obs = analysis_selections.exTrackDilepBDTString[wanted_year] + analysis_selections.jetIsos[lep]
+                
+                if use_uniform_binning:
+                    hist = utils.getHistogramFromTree(dataHistName, c, obs, analysis_selections.uniform_binning_number, -1, 1, drawString, False)
+                else:
+                    hist = utils.getHistogramFromTreeCutsomBinsX(dataHistName, c, obs, analysis_selections.binning["1t"][wanted_year][lep], drawString, False)
+                
+                if data_1t_hist.get(dataHistName) is None:
+                    data_1t_hist[dataHistName] = hist
+                else:
+                    data_1t_hist[dataHistName].Add(hist)
+                
+                
             
             if required_category != "tracks":
                 if skip_electrons:
@@ -236,7 +281,11 @@ def main():
                         else:
                             hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, observable, analysis_selections.binning["2l"][lep], drawString, False)
                         hist.Sumw2() 
-                
+                        
+                        if partial_unblinding:
+                            utils.scaleHistogram(hist, 1./partial_unblinding_portion, 0)
+                        
+                        
                         #print("\n\nnew drawString="+drawString)
                         #hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, "dilepBDT" + analysis_selections.jetIsos[lep], analysis_selections.binning["2l"][lep], drawString, False)
                         #hist.Sumw2()
@@ -289,6 +338,40 @@ def main():
                                 bg_2l_hist[tfHistName] = tfHist
                             else:
                                 bg_2l_hist[tfHistName].Add(tfHist)
+                    
+                    ########### GET UNBLINDED RESULTS ################
+                
+                    if not partial_unblinding:
+                        continue
+                    
+                    histName = "data2l" + lep + ("Orth" if orth else "")
+                    
+                    conditions = analysis_selections.two_leptons_full_bdt_conditions_outside_mtautau_window
+                    if orth:
+                        conditions = analysis_selections.two_leptons_full_bdt_conditions_outside_mtautau_window_sos
+                    
+                    if partial_unblinding:
+                        conditions = conditions + ["Entry$ % 10==0"]
+                    extra_filters = []
+                    if use_line_fits_predictions:
+                         extra_filters = analysis_selections.extra_filters_2l_main_prediction[wanted_year][lep]
+                    
+                    print("extra_filters", extra_filters)
+                    drawString = analysis_selections.getDataString(wanted_year, lep, conditions, extra_filters)
+            
+                    observable = analysis_selections.dilepBDTString[wanted_year] + analysis_selections.jetIsos[lep]
+                
+                    hist = None
+                    if use_uniform_binning:
+                        hist = utils.getHistogramFromTree(histName, c, observable, analysis_selections.uniform_binning_number, -1, 1, drawString, False)
+                    else:
+                        hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, observable, analysis_selections.binning["2l"][lep], drawString, False)
+                    hist.Sumw2() 
+                    
+                    if data_2l_hist.get(histName) is None:
+                        data_2l_hist[histName] = hist
+                    else:
+                        data_2l_hist[histName].Add(hist)
         
         f.Close()
         i += 1
@@ -342,7 +425,10 @@ def main():
                     else:
                         hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, observable, analysis_selections.binning["2l"][lep], drawString, False)
                     hist.Sumw2() 
-
+                    
+                    if partial_unblinding:
+                        utils.scaleHistogram(hist, 1./partial_unblinding_portion, 0)
+                    
                     new_sum = hist.Integral()
                     print("\n\nnew sum", new_sum)
                     #print("difference", old_sum-new_sum)
@@ -425,6 +511,8 @@ def main():
                         hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, obs, analysis_selections.binning["1t"][binning_phase][lep], drawString, False)
                     new_sum = hist.Integral()
                     print("new_sum", new_sum)
+                    if partial_unblinding:
+                        utils.scaleHistogram(hist, 1./partial_unblinding_portion, 0)
                     #print("difference", old_sum-new_sum)
                     if signal_hists.get(histName) is None:
                         signal_hists[histName] = hist
@@ -481,6 +569,10 @@ def main():
                 
                         #non-orth
                         #hist = utils.getHistogramFromTree(deltaM + "_2l", c, "dilepBDT", 30, -0.6, 0.6, str(utils.LUMINOSITY) + "* passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * (MHT >= 220 &&  MET >= 200 && invMass < 12  && invMass > 0.4 && !(invMass > 3 && invMass < 3.2) && !(invMass > 0.75 && invMass < 0.81) && dilepBDT > 0.1)", True)
+                        
+                        if partial_unblinding:
+                            utils.scaleHistogram(hist, 1./partial_unblinding_portion, 0)
+                        
                         if signal_hists.get(histName) is None:
                             signal_hists[histName] = hist
                         else:
@@ -494,6 +586,7 @@ def main():
     print("signal_hists", signal_hists)
     print("bg_1t_hist", bg_1t_hist)
     print("bg_2l_hist", bg_2l_hist)
+    print("data_1t_hist", data_1t_hist)
     for hist in signal_hists:
         print("Writing histogram signal_hists", hist)
         signal_hists[hist].Write()
@@ -503,6 +596,12 @@ def main():
     for hist in bg_2l_hist:
         print("Writing bg_2l_hist", hist)
         bg_2l_hist[hist].Write()
+    for hist in data_1t_hist:
+        print("Writing data_1t_hist", hist)
+        data_1t_hist[hist].Write()
+    for hist in data_2l_hist:
+        print("Writing data_2l_hist", hist)
+        data_2l_hist[hist].Write()
     
     fnew.Close()
     print("End: " + datetime.now().strftime('%d-%m-%Y %H:%M:%S'))
