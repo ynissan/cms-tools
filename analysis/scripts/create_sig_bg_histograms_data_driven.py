@@ -34,7 +34,6 @@ args = parser.parse_args()
 
 sam = True
 
-
 wanted_year = "phase1"
 wanted_year = "2016"
 
