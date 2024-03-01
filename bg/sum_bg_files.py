@@ -155,6 +155,7 @@ notification = Never
         filename = os.path.basename(f).split(".")[1]
 
         types = filename.split("_")
+#         print("types", types)
         type = types[0]
         
         if type not in sumTypes:

@@ -9,7 +9,7 @@ sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/lib"))
 from plot_params_base import *
 import plotutils
 
-skim_dir = "/afs/desy.de/user/n/nissanuv/q_nfs/x1x2x1/signal/skim/single/"
+skim_dir = "/afs/desy.de/user/d/diepholq/nfs/x1x2x1/signal/skim/sum/"
 
 bgReTaggingOrderFull = {
     "resonances" : -3,
@@ -96,44 +96,44 @@ signals = [
 
 ]
 
-signalNames = [
-    "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 0.6 Gev",
-    "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.0 Gev",
-    "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.4 Gev",
-    "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 0.6 Gev",
-    "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 1.0 Gev",
-    "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 1.4 Gev",
-    "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 0.6 Gev",
-    "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 1.0 Gev",
-    "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 1.4 Gev",
-    "m_{#tilde{t}} 600 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 0.6 Gev",
-    "m_{#tilde{t}} 600 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.0 Gev",
-    "m_{#tilde{t}} 600 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.4 Gev",
-    "m_{#tilde{t}} 600 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 0.6 Gev",
-    "m_{#tilde{t}} 600 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 1.0 Gev",
-    "m_{#tilde{t}} 600 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 1.4 Gev",
-    "m_{#tilde{t}} 600 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 0.6 Gev",
-    "m_{#tilde{t}} 600 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 1.0 Gev",
-    "m_{#tilde{t}} 600 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 1.4 Gev",
-    "m_{#tilde{t}} 700 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 0.6 Gev",
-    "m_{#tilde{t}} 700 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.0 Gev",
-    "m_{#tilde{t}} 700 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.4 Gev",
-    "m_{#tilde{t}} 700 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 0.6 Gev",
-    "m_{#tilde{t}} 700 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 1.0 Gev",
-    "m_{#tilde{t}} 700 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 1.4 Gev",
-    "m_{#tilde{t}} 700 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 0.6 Gev",
-    "m_{#tilde{t}} 700 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 1.0 Gev",
-    "m_{#tilde{t}} 700 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 1.4 Gev",
-    "m_{#tilde{t}} 800 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 0.6 Gev",
-    "m_{#tilde{t}} 800 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.0 Gev",
-    "m_{#tilde{t}} 800 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.4 Gev",
-    "m_{#tilde{t}} 800 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 0.6 Gev",
-    "m_{#tilde{t}} 800 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 1.0 Gev",
-    "m_{#tilde{t}} 800 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 1.4 Gev",
-    "m_{#tilde{t}} 800 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 0.6 Gev",
-    "m_{#tilde{t}} 800 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 1.0 Gev",
-    "m_{#tilde{t}} 800 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 1.4 Gev"
-]
+# signalNames = [
+#     "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 0.6 Gev",
+#     "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.0 Gev",
+#     "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.4 Gev",
+#     "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 0.6 Gev",
+#     "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 1.0 Gev",
+#     "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 1.4 Gev",
+#     "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 0.6 Gev",
+#     "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 1.0 Gev",
+#     "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 1.4 Gev",
+#     "m_{#tilde{t}} 600 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 0.6 Gev",
+#     "m_{#tilde{t}} 600 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.0 Gev",
+#     "m_{#tilde{t}} 600 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.4 Gev",
+#     "m_{#tilde{t}} 600 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 0.6 Gev",
+#     "m_{#tilde{t}} 600 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 1.0 Gev",
+#     "m_{#tilde{t}} 600 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 1.4 Gev",
+#     "m_{#tilde{t}} 600 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 0.6 Gev",
+#     "m_{#tilde{t}} 600 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 1.0 Gev",
+#     "m_{#tilde{t}} 600 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 1.4 Gev",
+#     "m_{#tilde{t}} 700 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 0.6 Gev",
+#     "m_{#tilde{t}} 700 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.0 Gev",
+#     "m_{#tilde{t}} 700 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.4 Gev",
+#     "m_{#tilde{t}} 700 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 0.6 Gev",
+#     "m_{#tilde{t}} 700 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 1.0 Gev",
+#     "m_{#tilde{t}} 700 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 1.4 Gev",
+#     "m_{#tilde{t}} 700 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 0.6 Gev",
+#     "m_{#tilde{t}} 700 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 1.0 Gev",
+#     "m_{#tilde{t}} 700 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 1.4 Gev",
+#     "m_{#tilde{t}} 800 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 0.6 Gev",
+#     "m_{#tilde{t}} 800 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.0 Gev",
+#     "m_{#tilde{t}} 800 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.4 Gev",
+#     "m_{#tilde{t}} 800 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 0.6 Gev",
+#     "m_{#tilde{t}} 800 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 1.0 Gev",
+#     "m_{#tilde{t}} 800 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 1.4 Gev",
+#     "m_{#tilde{t}} 800 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 0.6 Gev",
+#     "m_{#tilde{t}} 800 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 1.0 Gev",
+#     "m_{#tilde{t}} 800 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 1.4 Gev"
+# ]
 
 
 bdt_input_signal = [
@@ -141,25 +141,48 @@ bdt_input_signal = [
     skim_dir + "higgsino_Summer16_stopstop_600GeV_mChipm200GeV_dm1p0GeV_pu35_part*of25_RA2AnalysisTree.root"
 ]
 bdt_input_signal_name = [
-"m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.4 GeV",
-"m_{#tilde{t}} 600 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 1.0 GeV"
+    "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.4 GeV",
+    
+    "m_{#tilde{t}} 600 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 1.0 GeV",
 ]
-# signals = [
-#       skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm400GeV_dm0p6GeV_pu35_part*of25_RA2AnalysisTree.root",
+
+unblinding_signal = [
+    skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm115GeV_dm1p4GeV_1.root",# pu35_part*of25_RA2AnalysisTree.root",
+    skim_dir + "higgsino_Summer16_stopstop_700GeV_mChipm115GeV_dm1p4GeV_1.root",# pu35_part*of25_RA2AnalysisTree.root",
+    skim_dir + "higgsino_Summer16_stopstop_600GeV_mChipm115GeV_dm1p0GeV_1.root",# pu35_part*of25_RA2AnalysisTree.root",
+    skim_dir + "higgsino_Summer16_stopstop_800GeV_mChipm400GeV_dm0p6GeV_1.root",# pu35_part*of25_RA2AnalysisTree.root",
+    
+]
+
+unblinding_signal_names = [
+    "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.4 Gev",
+    "m_{#tilde{t}} 700 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.4 Gev",
+    "m_{#tilde{t}} 600 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.0 Gev",
+    "m_{#tilde{t}} 800 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 0.6 Gev",
+]
+
+
+signals = [
+#      skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm400GeV_dm0p6GeV_pu35_part*of25_RA2AnalysisTree.root",
 #      skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm115GeV_dm1p4GeV_pu35_part*of25_RA2AnalysisTree.root",
-#      skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm115GeV_dm1p0GeV_1.root",
-#      skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm200GeV_dm1p4GeV_1.root",
-#      skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm400GeV_dm1p4GeV_1.root",
-# ]
-#signals = glob("/nfs/dust/cms/user/diepholq/x1x2x1/signal/skim/single/higgsino_Summer16_stopstop_800GeV_mChipm400GeV_dm1p0GeV_pu35_part*of25_RA2AnalysisTree.root")
+     skim_dir + "higgsino_Summer16_stopstop_500GeV_mChipm115GeV_dm1p4GeV_1.root",
+     skim_dir + "higgsino_Summer16_stopstop_600GeV_mChipm200GeV_dm1p0GeV_1.root",
+]
+
+signalNames = [
+    "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.4 Gev",
+    "m_{#tilde{t}} 600 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 1.0 Gev"
+]
+# signals = glob("/nfs/dust/cms/user/diepholq/x1x2x1/signal/skim/single/higgsino_Summer16_stopstop_800GeV_mChipm400GeV_dm1p0GeV_pu35_part*of25_RA2AnalysisTree.root")
 
 # higgsino_Summer16_stopstop_800GeV_mChipm400GeV_dm1p0GeV_pu35_part14of25_RA2AnalysisTree.root
 # signalNames = [
-#      "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 0.6 Gev",
-#      "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.4 Gev",
+#     #  "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 0.6 Gev",
+# #      "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.4 Gev",
 #     "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 115GeV \Delta_{}m 1.0 Gev",
 #     "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 200GeV \Delta_{}m 1.4 Gev",
 #     "m_{#tilde{t}} 500 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 1.4 Gev",
+# #     "m_{#tilde{t}} 800 GeV m_{#tilde{#chi}^{#pm}_{1}} 400GeV \Delta_{}m 1.0 Gev",
 # ]
 
 
@@ -228,8 +251,8 @@ two_leps_histograms = [
     { "obs" : "leptons%%%[1].Pt()", "minX" : 2, "maxX" : 15, "bins" : 30, "usedObs" : ["leptons%%%"], "units" : "p_{T}(l_{2}) [GeV]" },
     { "obs" : "abs(leptons%%%[0].Eta())", "minX" : 0, "maxX" : 2.4, "bins" : 30, "usedObs" : ["leptons%%%"] },
     { "obs" : "abs(leptons%%%[1].Eta())", "minX" : 0, "maxX" : 2.4, "bins" : 30, "usedObs" : ["leptons%%%"] },
-    { "obs" : "deltaPhiMetLepton1%%%", "minX" : 0, "maxX" : 3.5, "bins" : 30, "units" : "\Delta\phi(H_{T}^{Miss},l_{1})" },
-    { "obs" : "deltaPhiMetLepton2%%%", "minX" : 0, "maxX" : 3.5, "bins" : 30, "units" : "\Delta\phi(H_{T}^{Miss},l_{1})" },
+    { "obs" : "deltaPhiMhtLepton1%%%", "minX" : 0, "maxX" : 3.5, "bins" : 30, "units" : "\Delta\phi(H_{T}^{Miss},l_{1})" },
+    { "obs" : "deltaPhiMhtLepton2%%%", "minX" : 0, "maxX" : 3.5, "bins" : 30, "units" : "\Delta\phi(H_{T}^{Miss},l_{1})" },
     #{ "obs" : "leptons_ParentPdgId%%%[0]", "minX" : 0, "maxX" : 40, "bins" : 40, "usedObs" : ["leptons_ParentPdgId%%%"] },
     #{ "obs" : "leptons_ParentPdgId%%%[1]", "minX" : 0, "maxX" : 40, "bins" : 40, "usedObs" : ["leptons_ParentPdgId%%%"] },
     
@@ -274,8 +297,8 @@ bdt_inputs_histograms = [                                                 #BDT I
     { "obs" : "leptons%%%[0].Pt()", "minX" : 2, "maxX" : 15, "bins" : 30, "usedObs" : ["leptons%%%"], "units" : "p_{T}(l_{1}) [GeV]", "linearYspace" : 1.5 },
     { "obs" : "leptons%%%[1].Pt()", "minX" : 2, "maxX" : 15, "bins" : 30, "usedObs" : ["leptons%%%"], "units" : "p_{T}(l_{2}) [GeV]" },
     { "obs" : "abs(leptons%%%[0].Eta())", "minX" : 0, "maxX" : 2.4, "bins" : 30, "usedObs" : ["leptons%%%"], "units": "|\eta_{ll}|" },
-    { "obs" : "deltaPhiMetLepton1%%%", "minX" : 0, "maxX" : 3.5, "bins" : 30, "units" : "\Delta\phi(H_{T}^{Miss},l_{1})" },
-    { "obs" : "deltaPhiMetLepton2%%%", "minX" : 0, "maxX" : 3.5, "bins" : 30, "units" : "\Delta\phi(H_{T}^{Miss},l_{1})" },
+    { "obs" : "deltaPhiMhtLepton1%%%", "minX" : 0, "maxX" : 3.5, "bins" : 30, "units" : "\Delta\phi(H_{T}^{Miss},l_{1})" },
+    { "obs" : "deltaPhiMhtLepton2%%%", "minX" : 0, "maxX" : 3.5, "bins" : 30, "units" : "\Delta\phi(H_{T}^{Miss},l_{2})" },
     { "obs" : "dileptonPt%%%", "minX" : 0, "maxX" : 15, "bins" : 30, "units" : "dilepton p_{T}" },
     ] 
 
@@ -353,21 +376,22 @@ class stops_bg_vs_signal_Iso(BaseParams):
     bg_dir = "/nfs/dust/cms/user/diepholq/x1x2x1/bg/skim/sum/type_sum"
 
     weightString = {
-    'MET' : "passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio",# * puWeight",
+    'MET' : "passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * puWeight",
     }
 
     calculatedLumi = {
     'MET' : utils.LUMINOSITY/1000.0,
     }
 
-    plot_bg = False
+    plot_bg = True
     plot_data = False
     plot_signal = True
+    
     glob_signal = True
 
     no_weights = False
 
-    plot_overflow = True
+    plot_overflow = False
     plot_error = True
     plot_significance = True
 
@@ -376,7 +400,7 @@ class stops_bg_vs_signal_Iso(BaseParams):
 
     histrograms_file = BaseParams.histograms_root_files_dir + "/stops_bg_vs_signal_Iso.root"
     save_histrograms_to_file = True
-    load_histrograms_from_file = False
+    load_histrograms_from_file = False 
 
     #  histograms_defs = [
     #         { "obs" : "MET", "minX" : 0, "maxX" : 800, "bins" : 30 },
@@ -388,15 +412,18 @@ class stops_bg_vs_signal_Iso(BaseParams):
 
     #histograms_defs = copy.deepcopy(common_histograms + two_leps_histograms)
     histograms_defs = [
-    #{ "obs" : "dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT",  "bins" : 50},
+    { "obs" : "dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT",  "bins" : 50},
+    { "obs" : "NSelectionMuons%%%", "minX" : -1, "maxX" : 1, "units" : "NMuons",  "bins" : 6, "minX" : 0, "maxX" : 6},
     { "obs" : "custom_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT",  "bins" : 50, "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.05,0.1,0.2,0.3,1]},
-  #   { "obs" : "BTagsDeepMedium", "minX" : 0, "maxX" : 7, "bins" : 7, "legendCoor" : {"x1" : 0.65, "y1" : .2, "x2" : .95, "y2" : .89}, "legendCol" : 1 },
-#     { "obs" : "NJets", "minX" : 0, "maxX" : 7, "bins" : 7 , "legendCoor" : {"x1" : .35, "y1" : .75, "x2" : .98, "y2" : .95}},
+    { "obs" : "BTagsDeepMedium", "minX" : 0, "maxX" : 7, "bins" : 7, "legendCoor" : {"x1" : 0.65, "y1" : .2, "x2" : .95, "y2" : .89}, "legendCol" : 1 },
+    { "obs" : "NJets", "minX" : 0, "maxX" : 7, "bins" : 7 , "legendCoor" : {"x1" : .35, "y1" : .75, "x2" : .98, "y2" : .95}},
     ] #16
     cuts = [
     #{"name":"none", "title": "MET > 140 && MinDeltaPhiMhtJets > 0.4", "condition" : "MET > 140 && MinDeltaPhiMhtJets > 0.4 && twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "baseline" : "1", "sc" : "1"}, #sc?
-    {"name":"nmtautau", "title": "preselection baseline","condition" : "MET > 140 && MHT > 220 && twoLeptons%%% == 1 && MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium >= 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0 && dilepBDT%%% < -0.1 && (nmtautau%%% > 160 || nmtautau%%% < 0) && passesUniversalSelection == 1 && NJets > 1", "baseline" : "1", "sc" : "1"}  ,
-   # {"name":"bdt", "title": "BDT","condition" : "MET > 140 && MHT > 220 && twoLeptons%%% == 1 && MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium >= 1 && leptonFlavour%%% == \"Muons\"  && sameSign%%% == 0", "baseline" : "1", "sc" : "1"},
+#     {"name":"nmtautau", "title": "preselection baseline","condition" : "MET > 140 && MHT > 220 && twoLeptons%%% == 1 && MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium >= 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0 && dilepBDT%%% < -0.1 && (nmtautau%%% > 160 || nmtautau%%% < 0) && passesUniversalSelection == 1 && NJets > 1", "baseline" : "1", "sc" : "1"}  ,
+#     {"name":"nmtautau", "title": "preselection baseline","condition" : "MET > 140 && MHT > 220 && twoLeptons%%% == 1 && MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium >= 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0 && (nmtautau%%% > 160 || nmtautau%%% < 0) && passesUniversalSelection == 1 && NJets > 1", "baseline" : "1", "sc" : "1"}  ,
+#    {"name":"bdt", "title": "BDT","condition" : "MET > 140 && MHT > 220 && twoLeptons%%% == 1 && MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium >= 1 && leptonFlavour%%% == \"Muons\"  && sameSign%%% == 0", "baseline" : "1", "sc" : "1"},
+    {"name":"finalcut", "title": "finalcut","condition" : "MET > 140 && MHT > 220 && twoLeptons%%% == 1 && MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium >= 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0 && (nmtautau%%% > 160 || nmtautau%%% < 0) && passesUniversalSelection == 1 && NJets > 1", "baseline" : "1", "sc" : "1"}  
     #{"name":"bjetsgreaterone", "title": "BTagsDeepMedium >= 2","condition" : "MET > 140 && MHT > 220 && twoLeptons%%% == 1 && MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium >= 2 && leptonFlavour%%% == \"Muons\"  && sameSign%%% == 0", "baseline" : "1", "sc" : "1"}
     ]
 
@@ -452,18 +479,21 @@ class all_bg(bg_retag):
    #  histograms_defs = [
 #     { "obs" : "custom_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT",  "bins" : 50, "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.05,0.1,0.2,0.3,1]},
 #     ]
-    histograms_defs = [{ "obs" : "custom_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT",  "bins" : 50, "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.05,0.1,0.2,0.3,1]}]
-#     signal_dir = signals
-# 
-#     signal_names = signalNames
-    signal_dir = bdt_input_signal
-    signal_names = bdt_input_signal_name 
-    plot_signal = False
+    histograms_defs = [
+      { "obs" : "custom_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT",  "bins" : 50, "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.05,0.1,0.2,0.3,1]}
+      ]
+    signal_dir = signals
+
+    signal_names = signalNames
+#     histograms_defs = bdt_inputs_histograms
+#     signal_dir = bdt_input_signal
+#     signal_names = bdt_input_signal_name 
+    plot_signal = True
     plot_bg = True
     
-#     bgReTagging = {                               #uncomment for all bg in blue
-#     "all" : "1"
-#     }
+    bgReTagging = {                               #uncomment for all bg in blue
+    "all" : "1"
+    }
     
     weightString = {
     'MET' : "passedMhtMet6pack * tEffhMetMhtRealXMht2016 * Weight * BranchingRatio * puWeight",
@@ -478,25 +508,24 @@ class all_bg(bg_retag):
 #     }
 
 
-    bgReTagging = copy.deepcopy(bgReTagging)        #uncomment for split in jetty and tau
-    bgReTaggingOrder = bgReTaggingOrderFull
-    bgReTaggingNames = bgReTaggingNamesFull
+    # bgReTagging = copy.deepcopy(bgReTagging)        #uncomment for split in jetty and tau
+#     bgReTaggingOrder = bgReTaggingOrderFull
+#      bgReTaggingNames = bgReTaggingNamesFull
     plot_overflow = False
     cuts = [
     #{"name":"none", "title": "MET > 140 && MinDeltaPhiMhtJets > 0.4", "condition" : "MET > 140 && MinDeltaPhiMhtJets > 0.4 && twoLeptons%%% == 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0", "baseline" : "1", "sc" : "1"}, #sc?
 
-    {"name":"final_preselection_without_tautau", "title": "final preselection without tautau","condition" : "MET > 140 && MHT > 220 && twoLeptons%%% == 1 && MinDeltaPhiMhtJets > 0.4 && leptonFlavour%%% == \"Muons\"  && sameSign%%% == 0 && BTagsDeepMedium >= 1 && passesUniversalSelection == 1 && NJets > 1 && dilepBDT%%% < -0.1 ", "baseline" : "1", "sc" : "1"},
-    {"name":"final_preselection", "title": "final preselection","condition" : "MET > 140 && MHT > 220 && twoLeptons%%% == 1 && MinDeltaPhiMhtJets > 0.4 && leptonFlavour%%% == \"Muons\"  && sameSign%%% == 0 && BTagsDeepMedium >= 1 && (nmtautau%%% > 160 || nmtautau%%% < 0) && passesUniversalSelection == 1 && NJets > 1 && dilepBDT%%% < -0.1", "baseline" : "1", "sc" : "1"}
+   #  {"name":"final_preselection_without_tautau", "title": "final preselection without tautau","condition" : "MET > 140 && MHT > 220 && twoLeptons%%% == 1 && MinDeltaPhiMhtJets > 0.4 && leptonFlavour%%% == \"Muons\"  && sameSign%%% == 0 && BTagsDeepMedium >= 1 && passesUniversalSelection == 1 && NJets > 1 && dilepBDT%%% < -0.1 ", "baseline" : "1", "sc" : "1"},
+    {"name":"final_preselection", "title": "final preselection","condition" : "MET > 140 && MHT > 220 && twoLeptons%%% == 1 && MinDeltaPhiMhtJets > 0.4 && leptonFlavour%%% == \"Muons\"  && sameSign%%% == 0 && BTagsDeepMedium >= 1 && (nmtautau%%% > 160 || nmtautau%%% < 0) && passesUniversalSelection == 1 && NJets > 1", "baseline" : "1", "sc" : "1"}
 #     {"name":"directly post bdt", "title": "BDT","condition" : "MHT > 200 && twoLeptons%%% == 1 && MinDeltaPhiMhtJets > 0.4 && leptonFlavour%%% == \"Muons\"  && sameSign%%% == 0 && BTagsDeepMedium >= 1", "baseline" : "1", "sc" : "1"}
     ]
-    
-#     legend_coordinates = {"x1" : .50, "y1" : .7, "x2" : .90, "y2" : .95}                #x1: .40
-    legend_coordinates = {"x1" : .80, "y1" : .8, "x2" : .90, "y2" : .95}                   #for jetty tau
+    legend_coordinates = {"x1" : .50, "y1" : .7, "x2" : .90, "y2" : .95}                #x1: .40
+    # legend_coordinates = {"x1" : .80, "y1" : .8, "x2" : .90, "y2" : .95}                   #for jetty tau
     legend_columns = 1
     
-    histrograms_file = BaseParams.histograms_root_files_dir + "/bg_retag_jetty_tau.root"
-    load_histrograms_from_file = True
-    save_histrograms_to_file = True
+    histrograms_file = BaseParams.histograms_root_files_dir + "/bg_retag_bdt_inputs.root"
+    load_histrograms_from_file = False
+    save_histrograms_to_file = False
     
     jetIsoStr = "CorrJetNoMultIso15Dr0.4"
     injectJetIsoToHistograms(histograms_defs, jetIsoStr)
@@ -549,8 +578,8 @@ class stops_datacontrolregion(stops_bg_vs_signal_Iso):
     { "obs" : "leptons%%%[1].Pt()", "minX" : 2, "maxX" : 15, "bins" : 30, "usedObs" : ["leptons%%%"], "units" : "p_{T}(l_{2}) [GeV]" },
     { "obs" : "abs(leptons%%%[0].Eta())", "minX" : 0, "maxX" : 2.4, "bins" : 30, "usedObs" : ["leptons%%%"] },
 #     { "obs" : "abs(leptons%%%[1].Eta())", "minX" : 0, "maxX" : 2.4, "bins" : 30, "usedObs" : ["leptons%%%"] },
-    { "obs" : "deltaPhiMetLepton1%%%", "minX" : 0, "maxX" : 3.5, "bins" : 30, "units" : "\Delta\phi(H_{T}^{Miss},l_{1})" },
-    { "obs" : "deltaPhiMetLepton2%%%", "minX" : 0, "maxX" : 3.5, "bins" : 30, "units" : "\Delta\phi(H_{T}^{Miss},l_{1})" },
+    { "obs" : "deltaPhiMhtLepton1%%%", "minX" : 0, "maxX" : 3.5, "bins" : 30, "units" : "\Delta\phi(H_{T}^{Miss},l_{1})" },
+    { "obs" : "deltaPhiMhtLepton2%%%", "minX" : 0, "maxX" : 3.5, "bins" : 30, "units" : "\Delta\phi(H_{T}^{Miss},l_{2})" },
     { "obs" : "dileptonPt%%%", "minX" : 0, "maxX" : 15, "bins" : 30, "units" : "dilepton p_{T}" },
     ] #16 custom bins
     
@@ -560,7 +589,9 @@ class stops_datacontrolregion(stops_bg_vs_signal_Iso):
     ]
 
     calculatedLumi = {
-        'MET' : 36.007270741,
+#         'MET' : 36.007270741,
+#         'MET' : 3000.007270741,
+        'MET' : 36.052169110,
     }
        
     weightString = {
@@ -605,7 +636,7 @@ class stops_datacontrolregion_transfer_factor(stops_datacontrolregion):
     legend_columns = 3
     
     histrograms_file = BaseParams.histograms_root_files_dir + "/stops_control_region_TransferFactor.root"
-    load_histrograms_from_file = True
+    load_histrograms_from_file = False
     save_histrograms_to_file = True
     
     jetIsoStr = "CorrJetNoMultIso15Dr0.4"
@@ -614,7 +645,7 @@ class stops_datacontrolregion_transfer_factor(stops_datacontrolregion):
     
     
 class stops_datacontrolregion_rescaled_with_pu(stops_datacontrolregion):
-    histograms_defs = bdt_inputs_histograms
+#     histograms_defs = bdt_inputs_histograms
     cuts = [
     #{"name":"bdt", "title": "Baseline","condition" : "MET > 140 && MHT > 220 && twoLeptons%%% == 1 && MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium >= 1 && leptonFlavour%%% == \"Muons\"  && sameSign%%% == 0 && dilepBDT%%% < -0.1 && passesUniversalSelection == 1", "baseline" : "1", "sc" : "1"},  
     {"name":"nmtautau", "title": "(nmtautau%%% > 160 || nmtautau%%% < 0)","condition" : "MET > 140 && MHT > 220 && twoLeptons%%% == 1 && MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium >= 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0 && dilepBDT%%% < -0.1 && (nmtautau%%% > 160 || nmtautau%%% < 0) && passesUniversalSelection == 1 && NJets > 1", "baseline" : "1", "sc" : "1"}  
@@ -637,26 +668,114 @@ class stops_datacontrolregion_rescaled_with_pu(stops_datacontrolregion):
     }
     
     bgReTaggingFactors = {
-        "all" : [1.024,0.080],
+        "all" : [1.037,0.080],
     }
     
-    load_histrograms_from_file = True
+    load_histrograms_from_file = False
     save_histrograms_to_file = True
     
     jetIsoStr = "CorrJetNoMultIso15Dr0.4"
-    injectJetIsoToHistograms(histograms_defs, jetIsoStr)
+#     injectJetIsoToHistograms(histograms_defs, jetIsoStr)
     injectJetIsoToMapValues(bgReTagging, jetIsoStr)
     injectJetIsoToCuts(cuts, jetIsoStr)
     
 
 
 
+class stops_same_sign_controlregion(stops_datacontrolregion):
+
+    cuts = [
+#     {"name":"nmtautau", "title": "(nmtautau%%% > 160 || nmtautau%%% < 0)","condition" : "MET > 140 && MHT > 220 && twoLeptons%%% == 1 && MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium >= 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 1 && NSelectionMuons%%% == 2 && (nmtautau%%% > 160 || nmtautau%%% < 0) && passesUniversalSelection == 1 && NJets > 1", "baseline" : "1", "sc" : "1"}
+    {"name":"preselection_from_BT", "title": "preselection_from_BT","condition" : "MET > 140 && MHT > 220 && twoLeptons%%% == 1 && MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium >= 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 1 && NSelectionMuons%%% == 2 && passesUniversalSelection == 1 && NJets > 1", "baseline" : "1", "sc" : "1"}
+    ]
+    
+    histrograms_file = BaseParams.histograms_root_files_dir + "/stops_same_sign_control_region.root"
+    load_histrograms_from_file = False
+    save_histrograms_to_file = False
+    
+    bg_retag = True
+    bgReTagging = {
+    "all" : "1"
+    }
+    bgReTaggingOrder = bgReTaggingOrderFull
+    bgReTaggingNames = bgReTaggingNamesFull
+
+    jetIsoStr = "CorrJetNoMultIso15Dr0.4"
+#     injectJetIsoToMapValues(bgReTagging, jetIsoStr)
+    plot_ratio = True
+    injectJetIsoToCuts(cuts, jetIsoStr)
+    injectJetIsoToMapValues(bgReTagging, jetIsoStr)
+
+class stops_same_sign_controlregion_TF(stops_same_sign_controlregion):
+
+    histograms_defs = [
+    { "obs" : "custom_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT",  "bins" : 50, "customBins"  : [-1,-0.2], "linearYspace" : 1.4, "linear_log_space": 100 },
+    ]
+    histrograms_file = BaseParams.histograms_root_files_dir + "/stops_same_signcontrol_region_TF.root"
+    load_histrograms_from_file = False
+    save_histrograms_to_file = False
+    
+    jetIsoStr = "CorrJetNoMultIso15Dr0.4"
+    injectJetIsoToHistograms(histograms_defs, jetIsoStr)
 
 
+class stops_same_sign_controlregion_rescaled_with_TF(stops_same_sign_controlregion):
+#     histograms_defs = [{ "obs" : "custom_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT",  "bins" : 50, "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.05,0.1,0.2,0.3,1]}]
+    histograms_defs = bdt_inputs_histograms
+    #     histograms_defs = [
+    #     { "obs" : "deltaPhiMhtLepton1%%%", "minX" : 0, "maxX" : 3.5, "bins" : 30, "units" : "\Delta\phi(H_{T}^{Miss},l_{1})" },
+    #     { "obs" : "deltaPhiMhtLepton2%%%", "minX" : 0, "maxX" : 3.5, "bins" : 30, "units" : "\Delta\phi(H_{T}^{Miss},l_{2})" }
+    #     ]
+    legend_coordinates = {"x1" : .80, "y1" : .8, "x2" : .90, "y2" : .95}
+    bgReTaggingFactors = {
+        "all" : [1.038,0.08],
+    }
+    histrograms_file = BaseParams.histograms_root_files_dir + "/stops_same_signcontrol_region_rescaled_with_TF.root"
+    load_histrograms_from_file = False
+    save_histrograms_to_file = False
 
+#     fit_linear_ratio_plot = True
+    jetIsoStr = "CorrJetNoMultIso15Dr0.4"
+    injectJetIsoToHistograms(histograms_defs, jetIsoStr)
 
-
-
+class stops_unblinding(stops_datacontrolregion):
+    histrograms_file = BaseParams.histograms_root_files_dir + "/stops_unblinding.root"
+    load_histrograms_from_file = False
+    save_histrograms_to_file = False
+    
+    signal_dir = unblinding_signal
+    signal_names = unblinding_signal_names
+    legend_coordinates = {"x1" : .57, "y1" : .5, "x2" : .90, "y2" : .95}
+    
+    histograms_defs = [{ "obs" : "custom_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "linear_log_space": 100,  "bins" : 50, "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.05,0.1,0.2,0.3,1]}]
+    
+    cuts = [
+    {"name":"unblinding", "title": "unblinding","condition" : "MET > 140 && MHT > 220 && twoLeptons%%% == 1 && MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium >= 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0 && (nmtautau%%% > 160 || nmtautau%%% < 0) && passesUniversalSelection == 1 && NJets > 1", "baseline" : "1", "sc" : "1"}  
+    ]
+    
+    glob_signal = True
+    plot_bg = True
+    plot_data = True
+    plot_signal = True
+    bg_retag = True
+    bgReTagging = {
+        "all" : "1"
+    }
+    bgReTaggingFactors = {
+        "all" : [1.037,0.080],
+    }
+    bgReTaggingOrder = bgReTaggingOrderFull
+    bgReTaggingNames = bgReTaggingNamesFull
+    
+    jetIsoStr = "CorrJetNoMultIso15Dr0.4"
+    injectJetIsoToCuts(cuts, jetIsoStr)
+    injectJetIsoToMapValues(bgReTagging, jetIsoStr)
+    injectJetIsoToHistograms(histograms_defs, jetIsoStr)
+    
+    
+    
+    
+    
 class stops_datacontrolregion_rescaled_without_pu(stops_datacontrolregion_rescaled_with_pu):
 
     weightString = {
@@ -671,6 +790,7 @@ class stops_datacontrolregion_rescaled_without_pu(stops_datacontrolregion_rescal
     bgReTaggingFactors = {
         "all" : [0.781,0.06],
     }
+    
  
 class stops_bg_two_vs_three_muons_bg(stops_bg_vs_signal_Iso):
     histrograms_file = BaseParams.histograms_root_files_dir + "/stops_bg_two_vs_three_muons_bg.root"

@@ -476,14 +476,15 @@ def get_lumi_from_bril(json_file_name, cern_username, retry=False):
     import subprocess
     subprocess.getstatusoutput('ls')
     status, out = subprocess.getstatusoutput('ps axu | grep "itrac5413-v.cern.ch:10121" | grep -v grep')
-    
+    print("status", status, "out", out)
     if status != 0:
         print("Opening SSH tunnel for brilcalc...")
         os.system("ssh -f -N -L 10121:itrac5413-v.cern.ch:10121 %s@lxplus.cern.ch" % cern_username)
     else:
         print("Existing tunnel for brilcalc found")
     print("Getting lumi for %s..." % json_file_name)
-    status, out = subprocess.getstatusoutput("eval `scram unsetenv -sh`; export PATH=$HOME/.local/bin:/cvmfs/cms-bril.cern.ch/brilconda/bin:$PATH; brilcalc lumi --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_PHYSICS.json -u /fb -c offsite -i %s > %s.briloutput; grep '|' %s.briloutput | tail -n1" % (json_file_name, json_file_name, json_file_name))
+    status, out = subprocess.getstatusoutput("eval `scram unsetenv -sh`; export PATH=$HOME/.local/bin:/cvmfs/cms-bril.cern.ch/brilconda/bin:$PATH; brilcalc lumi --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_PHYSICS.json -u /fb -c offsite -i %s > %s.briloutput; grep '|' %s.briloutput | tail -n 1" % (json_file_name, json_file_name, json_file_name))
+    print("command","eval `scram unsetenv -sh`; export PATH=$HOME/.local/bin:/cvmfs/cms-bril.cern.ch/brilconda/bin:$PATH; brilcalc lumi --normtag /cvmfs/cms-bril.cern.ch/cms-lumi-pog/Normtags/normtag_PHYSICS.json -u /fb -c offsite -i %s > %s.briloutput; grep '|' %s.briloutput | tail -n 1" % (json_file_name, json_file_name, json_file_name))
     if status != 0:
         if not retry:
             print("Trying to re-establish the tunnel...")
@@ -495,7 +496,8 @@ def get_lumi_from_bril(json_file_name, cern_username, retry=False):
                 print("Did you set your CERN username with '--cern_username'?")
         lumi = -1
     else:
-        print("Output: " + out)
+#         print("Output: " + out)
+        print("status", status, "out", out)
         lumi = float(out.split("|")[-2])
     
     print("lumi:", lumi)

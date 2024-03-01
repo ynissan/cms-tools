@@ -165,6 +165,7 @@ fi
 # exit
 
 #files=()
+exit
 
 timestamp=$(date +%Y%m%d_%H%M%S%N)
 output_file="${WORK_DIR}/condor_submut.${timestamp}"
@@ -179,7 +180,7 @@ priority = 0
 EOM
 
 file_limit=0
-files_per_job=4 #4
+files_per_job=10 #4
 
 for type in reg madHtFilesGt600 madHtFilesLt600; do
 
@@ -211,7 +212,7 @@ for type in reg madHtFilesGt600 madHtFilesLt600; do
         skip=0
         for ef in ${FILE_EXCLUDE_LIST[@]}; do
             if [[ $name == *"$ef"* ]]; then
-                #echo "Skipping file $name"
+                echo "Skipping file $name"
                 skip=1
             fi
         done
@@ -228,10 +229,10 @@ for type in reg madHtFilesGt600 madHtFilesLt600; do
         input_files="$input_files $fullname"
         ((count+=1))
         if [ $(($count % $files_per_job)) == 0 ]; then
-            cmd="$BG_SCRIPTS/run_bg_analysis_single.sh -i \"$input_files\" $extra_params ${POSITIONAL[@]}"
+            cmd="$BG_SCRIPTS/run_bg_analysis_single.sh -i '$input_files' $extra_params ${POSITIONAL[@]}"
             echo $cmd
 cat << EOM >> $output_file
-arguments = $BG_SCRIPTS/run_bg_analysis_single.sh -i \"$input_files\" $extra_params ${POSITIONAL[@]}
+arguments = "$BG_SCRIPTS/run_bg_analysis_single.sh -i '$input_files' $extra_params ${POSITIONAL[@]}"
 error = $ERR_OUTPUT/$(basename $fullname .root).err
 output = $STD_OUTPUT/$(basename $fullname .root).output
 Queue
@@ -249,10 +250,10 @@ EOM
     done
 
     if [ $(($count % $files_per_job)) != 0 ]; then
-        cmd="$BG_SCRIPTS/run_bg_analysis_single.sh -i \"$input_files\" $extra_params ${POSITIONAL[@]}"
+        cmd="$BG_SCRIPTS/run_bg_analysis_single.sh -i '$input_files' $extra_params ${POSITIONAL[@]}"
         echo $cmd
 cat << EOM >> $output_file
-arguments = $BG_SCRIPTS/run_bg_analysis_single.sh -i \"$input_files\" $extra_params ${POSITIONAL[@]}
+arguments = "$BG_SCRIPTS/run_bg_analysis_single.sh -i '$input_files' $extra_params ${POSITIONAL[@]}"
 error = $ERR_OUTPUT/$(basename $fullname .root).err
 output = $STD_OUTPUT/$(basename $fullname .root).output
 Queue
@@ -262,5 +263,5 @@ done
 
 echo SUBMITTING JOBS....
 
-condor_submit $output_file
-#rm $output_file
+# condor_submit $output_file
+# rm $output_file

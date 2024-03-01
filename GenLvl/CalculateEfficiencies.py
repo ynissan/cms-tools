@@ -22,9 +22,9 @@ import csv
 histogram_dir = "/afs/desy.de/user/d/diepholq/CMSSW_11_3_1/src/stops/analysis/scripts/histograms_root_files/"   #File with all signals and all bg
 #bg_retag_all_file = histogram_dir + "bg_retag_all_2.root"
 #bg_retag_all_file = histogram_dir + "stops_control_region.root"                #File with data control region plots, not actually bg retag all 
-bg_retag_all_file = histogram_dir + "bg_retag_jetty_tau.root"
+root_file = histogram_dir + "stops_unblinding.root"
 def loadHistograms():
-    nFile = TFile(bg_retag_all_file, "read")
+    nFile = TFile(root_file, "read")
     keys = nFile.GetListOfKeys()
     keynames = []
     histograms = []
@@ -53,14 +53,17 @@ keynames, histograms = loadHistograms()
 def calculate_efficiencies(calculation_type = "sosobs"):
     efficiencies = {
     }
+    print("starting calculation")
     for i in range(len(keynames)):
         signal_point_name = keynames[i].split("_")
         if len(signal_point_name) < 12:
             continue
+            print("wha")
         stop_mass = signal_point_name[6].split("G")[0]
         chipm_mass = signal_point_name[7].split("G")[0].split("pm")[1]
         mass_splitting = signal_point_name[8].split("m")[1].split("G")[0]
         signal_point = stop_mass + "_" + chipm_mass + "_" + mass_splitting
+        print(signal_point)
         if calculation_type == "sosobs":                                                         #s/sqrt(b+eb^2)
             sosobs = [] #first entry = first signal region (0.3-1),last entry is squared eff.
             print("Number of Bins:",histograms[i].GetNbinsX())
@@ -99,6 +102,32 @@ def calculate_efficiencies(calculation_type = "sosobs"):
     
     
     
+    
+def calculate_significance_unblinding():
+    significances = {}
+    for i in range(len(keynames)):
+        if keynames[i] == "unblinding_custom_dilepBDTCorrJetNoMultIso15Dr0.4_data":
+            data_idx = i
+            print("data_idx", data_idx)
+        if keynames[i] == "unblinding_custom_dilepBDTCorrJetNoMultIso15Dr0.4_all":
+            bg_idx = i
+            print("bg_idx", bg_idx)
+        number_of_bins = histograms[i].GetNbinsX()
+    sosob = []
+    for bin_nr in [15,14,13]:
+        data = histograms[data_idx].GetBinContent(bin_nr)
+        data_err = histograms[data_idx].GetBinError(bin_nr)
+        print("data", data)
+        background = histograms[bg_idx].GetBinContent(bin_nr)
+        print("background", background)
+        background_err = histograms[bg_idx].GetBinError(bin_nr)
+        print("background_err", background_err)
+        sosob.append([(data-background)/((background+background_err**2+0.3**2)**(1/2)),data,data_err,background,(background_err**2+0.3**2)**(1/2)])
+    return sosob
+        
+        
+        
+        
 def calculate_signal_contamination():
     contaminations = {
     }
@@ -161,12 +190,13 @@ def calculate_tautau_contamination():
 #         print(key,",",efficiencies[key],"\n")
 
 # print(efficiencies)
-# efficiencies = calculate_efficiencies("sosobs")
-#efficiencies = calculate_signal_contamination()
+efficiencies = calculate_efficiencies("sosobs")
+# print(efficiencies)
+# efficiencies = calculate_signal_contamination()
 #contaminations = calculate_signal_contamination()
-contaminations = calculate_tautau_contamination()
-print("without tautau cut:", contaminations)
-exit()
+# contaminations = calculate_tautau_contamination()
+# print("without tautau cut:", contaminations)
+# exit()
 # print(contaminations)
 # for key in contaminations:
 #     print(key,",",contaminations[key],"\n")
@@ -184,8 +214,8 @@ for key in efficiencies:
     if signal_point_characteristics[2] == "1p0":
         dm1p0.update({signal_point_characteristics[0] + "_" + signal_point_characteristics[1]: efficiencies[key]})
     if signal_point_characteristics[2] == "1p4":
-        dm1p4.update({signal_point_characteristics[0] + "_" + signal_point_characteristics[1]: efficiencies[key]})
-
+         dm1p4.update({signal_point_characteristics[0] + "_" + signal_point_characteristics[1]: efficiencies[key]})
+# 
 csv_file = open("efficiencies_file.csv","w")
 csvwriter = csv.writer(csv_file)
 for dm in [dm0p6,dm1p0,dm1p4]:
@@ -193,3 +223,17 @@ for dm in [dm0p6,dm1p0,dm1p4]:
         row = [*key.split("_"), *dm[key]]
         csvwriter.writerow(row)
         #print(*key.split("_"), *dm[key])
+
+
+
+######################## UNBLINDING #########################
+# unblinding_significances = calculate_significance_unblinding()
+# print(unblinding_significances)
+# 
+# csv_file = open("unblinding_significances.csv","w")
+# csvwriter = csv.writer(csv_file)
+# for sr in range(3):
+#     csvwriter.writerow(unblinding_significances[sr])
+
+
+

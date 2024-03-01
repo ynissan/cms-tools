@@ -155,7 +155,7 @@ for fullname in ${INPUT_DIR}/Run2016*${DATA_PATTERN}*; do
     if [ $(($count % $files_per_job)) == 0 ]; then
         echo $DATA_DIR/run_skim_data_analysis_single.sh -i \"$input_files\" --data ${POSITIONAL[@]}
 cat << EOM >> $output_file
-arguments = $DATA_DIR/run_skim_data_analysis_single.sh -i \"$input_files\" --data ${POSITIONAL[@]}
+arguments = "$DATA_DIR/run_skim_data_analysis_single.sh -i '$input_files' --data ${POSITIONAL[@]}"
 error = ${OUTPUT_DIR}/stderr/$(basename $fullname .root).err
 output = ${OUTPUT_DIR}/stdout/$(basename $fullname .root).output
 Queue
@@ -175,7 +175,7 @@ done
 if [ $(($count % $files_per_job)) != 0 ]; then
     echo $DATA_DIR/run_skim_data_analysis_single.sh -i \"$input_files\" --data ${POSITIONAL[@]}
 cat << EOM >> $output_file
-arguments = $DATA_DIR/run_skim_data_analysis_single.sh -i \"$input_files\" --data ${POSITIONAL[@]}
+arguments = "$DATA_DIR/run_skim_data_analysis_single.sh -i '$input_files' --data ${POSITIONAL[@]}"
 error = ${OUTPUT_DIR}/stderr/$(basename $fullname .root).err
 output = ${OUTPUT_DIR}/stdout/$(basename $fullname .root).output
 Queue

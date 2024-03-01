@@ -26,15 +26,21 @@ print_help() {
 
 #---------- GET OPTIONS ------------
 POSITIONAL=()
+i=0
 while [[ $# -gt 0 ]]
 do
     key="$1"
 
     case $key in
         -i|--input)
-        INPUT_FILES="$2"
-        shift # past argument
-        shift # past value
+#         if [ $i -eq 0 ]; then
+		INPUT_FILES="$2"
+#         	i+=1
+#         else
+#         INPUT_FILES+=$2
+		shift # past argument
+		shift # past value
+#         fi
         ;;
         -h|--help)
         print_help

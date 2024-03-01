@@ -109,5 +109,5 @@ EOM
 done
 
 echo $output_file
-condor_submit $output_file
-rm $output_file
+# condor_submit $output_file
+# rm $output_file

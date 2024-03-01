@@ -181,4 +181,4 @@ done
 
 condor_submit $output_file
 echo $output_file
-#rm $output_file
+rm $output_file

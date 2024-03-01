@@ -210,7 +210,7 @@ def createPlotsFast(rootfiles, types, histograms, weight, category, conditions, 
         if os.path.basename(f) in plot_par.ignore_bg_files:
             print(("File", f, "in ignore list. Skipping..."))
             continue
-        print(("\n\n\n\n\nopening", f))
+        print("\n\n\n\n\nopening", f)
         print("=============================================================")
         rootFile = TFile(f)
         if not_full and i > 0:
@@ -501,7 +501,7 @@ def plotRatio(c1, pad, memory, numHist, denHist, hist_def, numLabel = "Data", de
     tl.SetNDC()
     tl.SetTextSize(0.15) 
     tl.SetTextFont(42)
-#     tl.DrawLatex(.15,.8, "sf = " + "{:.3f}".format(rdataHist.GetBinContent(1)) + " err = " +  "{:.3f}".format(rdataHist.GetBinError(1)))
+#     tl.DrawLatex(.15,.8, "sf = " + "{:.3f}".format(rdataHist.GetBinContent(1)) + " err = " +  "{:.3f}".format(rdataHist.GetBinError(1))) #transfer factor
     
     memory.append(line)
     c1.Modified()
