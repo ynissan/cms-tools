@@ -645,7 +645,7 @@ class stops_datacontrolregion_transfer_factor(stops_datacontrolregion):
     
     
 class stops_datacontrolregion_rescaled_with_pu(stops_datacontrolregion):
-#     histograms_defs = bdt_inputs_histograms
+    histograms_defs = bdt_inputs_histograms
     cuts = [
     #{"name":"bdt", "title": "Baseline","condition" : "MET > 140 && MHT > 220 && twoLeptons%%% == 1 && MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium >= 1 && leptonFlavour%%% == \"Muons\"  && sameSign%%% == 0 && dilepBDT%%% < -0.1 && passesUniversalSelection == 1", "baseline" : "1", "sc" : "1"},  
     {"name":"nmtautau", "title": "(nmtautau%%% > 160 || nmtautau%%% < 0)","condition" : "MET > 140 && MHT > 220 && twoLeptons%%% == 1 && MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium >= 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0 && dilepBDT%%% < -0.1 && (nmtautau%%% > 160 || nmtautau%%% < 0) && passesUniversalSelection == 1 && NJets > 1", "baseline" : "1", "sc" : "1"}  
@@ -685,8 +685,8 @@ class stops_datacontrolregion_rescaled_with_pu(stops_datacontrolregion):
 class stops_same_sign_controlregion(stops_datacontrolregion):
 
     cuts = [
-#     {"name":"nmtautau", "title": "(nmtautau%%% > 160 || nmtautau%%% < 0)","condition" : "MET > 140 && MHT > 220 && twoLeptons%%% == 1 && MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium >= 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 1 && NSelectionMuons%%% == 2 && (nmtautau%%% > 160 || nmtautau%%% < 0) && passesUniversalSelection == 1 && NJets > 1", "baseline" : "1", "sc" : "1"}
-    {"name":"preselection_from_BT", "title": "preselection_from_BT","condition" : "MET > 140 && MHT > 220 && twoLeptons%%% == 1 && MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium >= 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 1 && NSelectionMuons%%% == 2 && passesUniversalSelection == 1 && NJets > 1", "baseline" : "1", "sc" : "1"}
+    {"name":"nmtautau", "title": "(nmtautau%%% > 160 || nmtautau%%% < 0)","condition" : "MET > 140 && MHT > 220 && twoLeptons%%% == 1 && MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium >= 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 1 && NSelectionMuons%%% == 2 && (nmtautau%%% > 160 || nmtautau%%% < 0) && passesUniversalSelection == 1 && NJets > 1", "baseline" : "1", "sc" : "1"}
+#     {"name":"preselection_from_BT", "title": "preselection_from_BT","condition" : "MET > 140 && MHT > 220 && twoLeptons%%% == 1 && MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium >= 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 1 && NSelectionMuons%%% == 2 && passesUniversalSelection == 1 && NJets > 1", "baseline" : "1", "sc" : "1"}
     ]
     
     histrograms_file = BaseParams.histograms_root_files_dir + "/stops_same_sign_control_region.root"
@@ -720,21 +720,21 @@ class stops_same_sign_controlregion_TF(stops_same_sign_controlregion):
 
 
 class stops_same_sign_controlregion_rescaled_with_TF(stops_same_sign_controlregion):
-#     histograms_defs = [{ "obs" : "custom_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT",  "bins" : 50, "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.05,0.1,0.2,0.3,1]}]
-    histograms_defs = bdt_inputs_histograms
+    histograms_defs = [{ "obs" : "custom_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT",  "bins" : 50, "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.05,0.1,0.2,0.3,1]}]
+#     histograms_defs = bdt_inputs_histograms
     #     histograms_defs = [
     #     { "obs" : "deltaPhiMhtLepton1%%%", "minX" : 0, "maxX" : 3.5, "bins" : 30, "units" : "\Delta\phi(H_{T}^{Miss},l_{1})" },
     #     { "obs" : "deltaPhiMhtLepton2%%%", "minX" : 0, "maxX" : 3.5, "bins" : 30, "units" : "\Delta\phi(H_{T}^{Miss},l_{2})" }
     #     ]
     legend_coordinates = {"x1" : .80, "y1" : .8, "x2" : .90, "y2" : .95}
     bgReTaggingFactors = {
-        "all" : [1.038,0.08],
+        "all" : [1.109,0.108],
     }
     histrograms_file = BaseParams.histograms_root_files_dir + "/stops_same_signcontrol_region_rescaled_with_TF.root"
     load_histrograms_from_file = False
     save_histrograms_to_file = False
 
-#     fit_linear_ratio_plot = True
+    fit_linear_ratio_plot = True
     jetIsoStr = "CorrJetNoMultIso15Dr0.4"
     injectJetIsoToHistograms(histograms_defs, jetIsoStr)
 
