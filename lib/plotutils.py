@@ -59,6 +59,28 @@ defaultColorPalette = [
     
     { "name" : "black", "fillColor" : kBlack, "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
 ]
+# defaultColorPalette = [
+#     { "name" : "su", "fillColor" : "#3f90da", "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 4,  "markerStyle" : kOpenTriangleUp },
+#     { "name" : "sy", "fillColor" : "#ffa90e", "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 5,  "markerStyle" : kOpenCircle},
+#     { "name" : "sus", "fillColor" : "#bd1f01", "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+#     { "name" : "y", "fillColor" : "#94a4a2", "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 4,  "markerStyle" : kOpenTriangleUp },
+#     { "name" : "susy", "fillColor" : "#832db6", "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 3,  "markerStyle" : kOpenSquare },
+#     { "name" : "ys", "fillColor" : "#a96b59", "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 3,  "markerStyle" : kOpenSquare },
+#     { "name" : "us", "fillColor" : "#e76300", "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 6,  "markerStyle" : kOpenDiamond },
+#     { "name" : "ysu", "fillColor" : "#b9ac70", "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+#     { "name" : "s", "fillColor" : "#717581", "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+#     { "name" : "ysus", "fillColor" : "#92dadd", "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+#     
+#     { "name" : "velvet", "fillColor" : "#ff00c9", "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+#     { "name" : "darkblue", "fillColor" : "#1B00DC", "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+#     
+#     { "name" : "maroon", "fillColor" : "#800000", "lineColor" : "#A52A2A", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+#     { "name" : "darkslategray", "fillColor" : "#2F4F4F", "lineColor" : "#708090", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+#     { "name" : "wheat", "fillColor" : "#F5DEB3", "lineColor" : "#FFDEAD", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+#     { "name" : "lightgray", "fillColor" : "#D3D3D3", "lineColor" : "#DCDCDC", "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+#     
+#     { "name" : "black", "fillColor" : kBlack, "lineColor" : kBlack, "fillStyle" : 3444, "markerColor" : 38,  "markerStyle" : kOpenCross },
+# ]
 
 #For solid fill use fillStyle=1001
 # signalCp = [

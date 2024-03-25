@@ -41,8 +41,8 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
-        --master)
-        MASTER=true
+        --phase1)
+        PHASE1=true
         POSITIONAL+=("$1")
         shift
         ;;
@@ -75,9 +75,8 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 SCRIPT_PATH=$ANALYZER_PATH
 if [ -n "$SKIM" ]; then
     SCRIPT_PATH=$SKIMMER_PATH
-    if [ -n "$MASTER" ]; then
-        SCRIPT_PATH=$JPSI_SKIMMER_PATH
-        OUTPUT_DIR=$SKIM_MASTER_OUTPUT_DIR
+    if [ -n "$PHASE1" ]; then
+        OUTPUT_DIR=$SKIM_PHASE1_OUTPUT_DIR
     elif [ -n "$Z_PEAK" ]; then
         SCRIPT_PATH=$JPSI_SKIMMER_PATH
         OUTPUT_DIR=$SKIM_Z_PEAK_OUTPUT_DIR
@@ -129,19 +128,27 @@ if [ ! -d "$ERR_OUTPUT" ]; then
 fi
 
 files=()
+TYPES_TO_LOOP=${BG_TYPES[@]}
+PREFIX=Summer16
+if [ -n "$PHASE1" ]; then
+    TYPES_TO_LOOP=${BG_TYPES_17[@]}             #removed _17 for testing
+    PREFIX=RunIIFall17MiniAODv2
+fi
 
 if [ -z "$SELECTION" ]; then
-    for type in ${BG_TYPES[@]}; do 
+    for type in ${TYPES_TO_LOOP[@]}; do 
         echo "Checking type $type"
         if [ "$type" = "DYJetsToLL" ]; then
-            files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_M-50_*)
-            files=("${files[@]}" ${BG_NTUPLES}/RunIISummer16MiniAODv3.DYJetsToLL_M-5to50*)
+            files=("${files[@]}" ${BG_NTUPLES}/$PREFIX.${type}_M-50_*)
+            if [ "$PREFIX" = "Summer16" ]; then
+                files=("${files[@]}" ${BG_NTUPLES}/RunIISummer16MiniAODv3.DYJetsToLL_M-5to50*)
+            fi
         elif [ "$type" = "ZJetsToNuNu" ]; then
-            files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_HT*)
+            files=("${files[@]}" ${BG_NTUPLES}/$PREFIX.${type}_HT*)
         elif [ "$type" = "TTJets" ]; then
-            files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_TuneCUETP8M1*)
+            files=("${files[@]}" ${BG_NTUPLES}/$PREFIX.${type}_TuneCUETP8M1*)
         else
-            files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_*)
+            files=("${files[@]}" ${BG_NTUPLES}/$PREFIX.${type}_*)
         fi
     done
 else
@@ -165,7 +172,7 @@ fi
 # exit
 
 #files=()
-exit
+
 
 timestamp=$(date +%Y%m%d_%H%M%S%N)
 output_file="${WORK_DIR}/condor_submut.${timestamp}"
@@ -180,7 +187,7 @@ priority = 0
 EOM
 
 file_limit=0
-files_per_job=10 #4
+files_per_job=3 #3
 
 for type in reg madHtFilesGt600 madHtFilesLt600; do
 
@@ -263,5 +270,5 @@ done
 
 echo SUBMITTING JOBS....
 
-# condor_submit $output_file
-# rm $output_file
+condor_submit $output_file
+rm $output_file

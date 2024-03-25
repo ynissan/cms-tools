@@ -17,11 +17,6 @@ do
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
         ;;
-        --tl)
-        TWO_LEPTONS=true
-        POSITIONAL+=("$1")
-        shift
-        ;;
         --sam)
         SAM=true
         POSITIONAL+=("$1")
@@ -29,6 +24,11 @@ do
         ;;
         -nlp)
         NLP=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
+        --phase1)
+        PHASE1=true
         POSITIONAL+=("$1")
         shift
         ;;
@@ -48,28 +48,20 @@ module use -a /afs/desy.de/group/cms/modulefiles/
 module load cmssw
 cmsenv
 
-OUTPUT_DIR=$SIM_DIR
+OUTPUT_DIR=$SKIM_SIG_OUTPUT_DIR
 INPUT_DIR=$SIM_NTUPLES_DIR
-if [ -n "$SKIM" ]; then
-    if [ -n "$TWO_LEPTONS" ]; then
-        if [ -n "$SAM" ]; then
-            OUTPUT_DIR=$TWO_LEPTONS_SAM_SKIM_SIG_OUTPUT_DIR
-            INPUT_DIR=$SAM_SIM_NTUPLES_DIR
-        else
-            OUTPUT_DIR=$TWO_LEPTONS_SKIM_SIG_OUTPUT_DIR
-        fi
-    else
-        if [ -n "$SAM" ]; then
-            OUTPUT_DIR=$SKIM_SIG_SAM_OUTPUT_DIR
-            INPUT_DIR=$SAM_SIM_NTUPLES_DIR
-        else
-            OUTPUT_DIR=$SKIM_SIG_OUTPUT_DIR
-        fi
-    fi
-    if [ -n "$NLP" ]; then
-        OUTPUT_DIR=$SKIM_SIG_NLP_OUTPUT_DIR
-    fi
+
+if [ -n "$SAM" ]; then
+    OUTPUT_DIR=$SKIM_SIG_SAM_OUTPUT_DIR
+    INPUT_DIR=$SAM_NEW_SIM_NTUPLES_DIR
+elif [ -n "$PHASE1" ]; then
+    INPUT_DIR=$SAM_SIM_NTUPLES_17_DIR
+    OUTPUT_DIR=$SKIM_SIG_PHASE1_OUTPUT_DIR
 fi
+if [ -n "$NLP" ]; then
+    OUTPUT_DIR=$SKIM_SIG_NLP_OUTPUT_DIR
+fi
+
 
 #check output directory
 if [ ! -d "$OUTPUT_DIR" ]; then
@@ -101,7 +93,7 @@ notification = Never
 EOM
 
 #for sim in ${SIG_DUP_OUTPUT_DIR}/single/*; do
-for sim in ${INPUT_DIR}/*; do
+for sim in ${INPUT_DIR}/higgsino*.root; do
     filename=$(basename $sim .root)
     if [ -f "${OUTPUT_DIR}/single/${filename}.root" ]; then
         echo "${OUTPUT_DIR}/single/${filename}.root exist. Skipping..."

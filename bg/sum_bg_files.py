@@ -49,9 +49,17 @@ def chunker_longest(iterable, chunksize):
 #     print(chunk)
 
 parser = argparse.ArgumentParser(description='Sum histograms and trees.')
+parser.add_argument("-phase1", "--phase1", dest='phase1', help='2017 Background', action='store_true')
 args = parser.parse_args()
 
+phase1 = args.phase1
+print("phase1", phase1)
+
 WORK_DIR = "/afs/desy.de/user/d/diepholq/nfs/x1x2x1/bg/skim"
+if phase1:
+    WORK_DIR = "/afs/desy.de/user/d/diepholq/nfs/x1x2x1/bg/skim_phase1"
+print("WORK_DIR", WORK_DIR)
+
 SINGLE_OUTPUT = WORK_DIR + "/single"
 INPUT_SUM = WORK_DIR + "/sum/input"
 OUTPUT_SUM = WORK_DIR + "/sum"
@@ -138,6 +146,38 @@ file_num_per_type = {
 "WW_TuneCUETP8M1_13TeV-pythia8" : 10000, #50
 }
 
+
+file_num_per_type_phase1 = {
+ "DYJetsToLL_M-50_HT-1200to2500" : 30,
+ "DYJetsToLL_M-50_HT-200to400" : 30,
+ "DYJetsToLL_M-50_HT-2500toInf" : 45,
+ "DYJetsToLL_M-50_HT-400to600" : 20,
+ "DYJetsToLL_M-50_HT-600to800" : 20,
+ "DYJetsToLL_M-50_HT-800to1200" : 20,
+ "DYJetsToLL_M-50_TuneCP5" : 400,
+ "QCD_HT1500to2000_TuneCP5" : 30,
+ "QCD_HT2000toInf_TuneCP5" : 30,
+ "QCD_HT200to300_TuneCP5" : 300,
+ "QCD_HT500to700_TuneCP5" : 200,
+ "TTJets_DiLept_TuneCP5" : 20,
+ "TTJets_SingleLeptFromT_TuneCP5" : 30,
+ "TTJets_SingleLeptFromTbar_TuneCP5" : 30,
+ "WJetsToLNu_HT-100To200_TuneCP5" : 30,
+ "WJetsToLNu_HT-1200To2500_TuneCP5" : 10,
+ "WJetsToLNu_HT-200To400_TuneCP5" : 20,
+ "WJetsToLNu_HT-2500ToInf_TuneCP5" : 10,
+ "WJetsToLNu_HT-400To600_TuneCP5" : 10,
+ "WJetsToLNu_HT-600To800_TuneCP5" : 10,
+ "WJetsToLNu_HT-800To1200_TuneCP5" : 10,
+ "WWTo1L1Nu2Q_13TeV_amcatnloFXFX" : 30,
+ "WZTo1L1Nu2Q_13TeV_amcatnloFXFX" : 30,
+ "WZTo1L3Nu_13TeV_amcatnloFXFX" : 30,
+ "ZJetsToNuNu_HT-200To400_13TeV-madgraph" : 30,
+ "ZJetsToNuNu_HT-400To600_13TeV-madgraph" : 20,
+ "ZJetsToNuNu_HT-600To800_13TeV-madgraph" : 20,
+ "ZJetsToNuNu_HT-800To1200_13TeV-madgraph" : 20,
+}
+ 
 def main():
     
     condor_f = open(condor_file,'w')
@@ -150,9 +190,11 @@ notification = Never
     
     print("Adding histograms.")
     fileList = glob(SINGLE_OUTPUT + "/*");
+    totalFiles = 0
     
     for f in fileList:
         filename = os.path.basename(f).split(".")[1]
+        totalFiles += 1
 
         types = filename.split("_")
 #         print("types", types)
@@ -171,8 +213,8 @@ notification = Never
             sumTypes[type][types[1] + "_" + types[2]] = 1
         else:
             sumTypes[type][types[1] + "_" + types[2]] += 1
-
-    print(sumTypes)
+    print("totalFiles:", totalFiles)
+    print("sumTypes:",sumTypes)
     #exit(0)   
     for type in sumTypes:
         for typeRange in sumTypes[type]:
@@ -191,7 +233,10 @@ notification = Never
                 #command = "hadd -f " + file + " " + files
             else:
                 base_file = type + "_" + typeRange
-                files = sorted(glob(SINGLE_OUTPUT + "/Summer16*." + type + "_" + typeRange + "*.root"))
+                prefix = "Summer16*."
+                if phase1:
+                    prefix = "RunIIFall17MiniAODv2."
+                files = sorted(glob(SINGLE_OUTPUT + "/" + prefix + type + "_" + typeRange + "*.root"))
                 #command = "hadd -f " + file + " " + files
             
             # print(["bla"]*5)
@@ -212,10 +257,16 @@ notification = Never
             i = 1
 
             chunk_size = default_file_num
-            if base_file in file_num_per_type:
-                chunk_size = file_num_per_type[base_file]
+            if phase1:
+                if base_file in file_num_per_type_phase1:
+                    chunk_size = file_num_per_type_phase1[base_file]
+                else:
+                    print("Don't have chunk_size for",base_file)
             else:
-                print("Don't have chunk_size for",base_file)
+                if base_file in file_num_per_type:
+                    chunk_size = file_num_per_type[base_file]
+                else:
+                    print("Don't have chunk_size for",base_file)
             
             for chunk in chunker_longest(files, chunk_size):
                 output_file = OUTPOUT_TYPE_SUM + "/" + base_file + "_" + str(i) + ".root"

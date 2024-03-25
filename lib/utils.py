@@ -647,6 +647,8 @@ def getLeptonCollectionFileMapFile(baseFileName):
         mapNameFile = "Run2016_SingleMuon.root"
     elif "Run2016" in baseFileName and "SingleElectron" in baseFileName:
         mapNameFile = "Run2016_SingleElectron.root"
+    elif "RunIIFall17MiniAODv2" in baseFileName:
+        mapNameFile = "Fall17." + ("_".join(baseFileName.split(".")[1].split("_")[0:3])).split("AOD")[0] + ".root"
     else:
         mapNameFile = ("_".join(baseFileName.split(".")[1].split("_")[0:3])).split("AOD")[0] + ".root"
 

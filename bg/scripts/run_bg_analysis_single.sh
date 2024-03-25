@@ -79,8 +79,8 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
-        --master)
-        MASTER=true
+        --phase1)
+        PHASE1=true
         POSITIONAL+=("$1")
         shift
         ;;
@@ -118,9 +118,8 @@ fi
 SCRIPT_PATH=$ANALYZER_PATH
 if [ -n "$SKIM" ]; then
     SCRIPT_PATH=$SKIMMER_PATH
-    if [ -n "$MASTER" ]; then
-        SCRIPT_PATH=$JPSI_SKIMMER_PATH
-        OUTPUT_DIR=$SKIM_MASTER_OUTPUT_DIR
+    if [ -n "$PHASE1" ]; then
+        OUTPUT_DIR=$SKIM_PHASE1_OUTPUT_DIR
     elif [ -n "$Z_PEAK" ]; then
         SCRIPT_PATH=$JPSI_SKIMMER_PATH
         OUTPUT_DIR=$SKIM_Z_PEAK_OUTPUT_DIR

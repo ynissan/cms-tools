@@ -3,6 +3,7 @@ import os
 from ROOT import *
 import copy 
 from glob import glob
+import utils
 
 sys.path.append(os.path.expandvars("$CMSSW_BASE/src/stops/lib"))
 
@@ -465,7 +466,8 @@ class bdt_check(stops_bg_vs_signal_Iso):
 
 
 class bg_retag(stops_bg_vs_signal_Iso):
-    plot_signal = True
+    bg_dir = "/afs/desy.de/user/d/diepholq/nfs/x1x2x1/bg/skim_phase1/single"
+    plot_signal = False
     bg_retag = True
     bgReTagging = copy.deepcopy(bgReTagging)
     bgReTaggingOrder = bgReTaggingOrderFull
@@ -645,7 +647,19 @@ class stops_datacontrolregion_transfer_factor(stops_datacontrolregion):
     
     
 class stops_datacontrolregion_rescaled_with_pu(stops_datacontrolregion):
+
+    plot_overflow = True
+    plot_data = True
+    
+    plot_signal = True
+    glob_signal = True
+    signal_dir = unblinding_signal
+    signal_names = unblinding_signal_names
+    
+    
     histograms_defs = bdt_inputs_histograms
+#     histograms_defs = [    { "obs" : "custom_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT",  "bins" : 50, "customBins"  : [-1,-0.2], "linearYspace" : 1.4, "linear_log_space": 100 },
+#     ]                               #FOR DEBUGGING
     cuts = [
     #{"name":"bdt", "title": "Baseline","condition" : "MET > 140 && MHT > 220 && twoLeptons%%% == 1 && MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium >= 1 && leptonFlavour%%% == \"Muons\"  && sameSign%%% == 0 && dilepBDT%%% < -0.1 && passesUniversalSelection == 1", "baseline" : "1", "sc" : "1"},  
     {"name":"nmtautau", "title": "(nmtautau%%% > 160 || nmtautau%%% < 0)","condition" : "MET > 140 && MHT > 220 && twoLeptons%%% == 1 && MinDeltaPhiMhtJets > 0.4 && BTagsDeepMedium >= 1 && leptonFlavour%%% == \"Muons\" && sameSign%%% == 0 && dilepBDT%%% < -0.1 && (nmtautau%%% > 160 || nmtautau%%% < 0) && passesUniversalSelection == 1 && NJets > 1", "baseline" : "1", "sc" : "1"}  
@@ -659,24 +673,40 @@ class stops_datacontrolregion_rescaled_with_pu(stops_datacontrolregion):
     bg_retag = True
     bgReTaggingOrder = bgReTaggingOrderFull
     bgReTaggingNames = bgReTaggingNamesFull
+#     bgReTaggingNames = utils.bgReTaggingNames
+#     bgReTaggingOrder = utils.bgOrder
 
     
     legend_coordinates = {"x1" : .80, "y1" : .8, "x2" : .90, "y2" : .95}
     
     bgReTagging = {
         "all" : "1"
+#         "Rare" : "0",
+#         "DiBoson" : "1",
+#         "DYJetsToLL" : "2",
+#         "TTJets" : "3",
+#         "ZJetsToNuNu" : "4",
+#         "QCD" : "5",
+#         "WJetsToLNu" : "6",
     }
     
     bgReTaggingFactors = {
         "all" : [1.037,0.080],
+#         "Rare" : [1.037,0.080],
+#         "DiBoson" : [1.037,0.080],
+#         "DYJetsToLL" : [1.037,0.080],
+#         "TTJets" : [1.037,0.080],
+#         "ZJetsToNuNu" : [1.037,0.080],
+#         "QCD" : [1.037,0.080],
+#         "WJetsToLNu" : [1.037,0.080],
     }
     
     load_histrograms_from_file = False
     save_histrograms_to_file = True
     
     jetIsoStr = "CorrJetNoMultIso15Dr0.4"
-#     injectJetIsoToHistograms(histograms_defs, jetIsoStr)
-    injectJetIsoToMapValues(bgReTagging, jetIsoStr)
+    injectJetIsoToHistograms(histograms_defs, jetIsoStr)
+#     injectJetIsoToMapValues(bgReTagging, jetIsoStr)
     injectJetIsoToCuts(cuts, jetIsoStr)
     
 

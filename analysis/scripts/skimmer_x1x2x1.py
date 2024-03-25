@@ -42,6 +42,7 @@ parser.add_argument('-nlp', '--no_lepton_selection', dest='no_lepton_selection',
 parser.add_argument('-jpsi_muons', '--jpsi_muons', dest='jpsi_muons', help='JPSI Muons Skim', action='store_true')
 parser.add_argument('-jpsi_electrons', '--jpsi_electrons', dest='jpsi_electrons', help='JPSI Electrons Skim', action='store_true')
 parser.add_argument('-testing', '--testing', dest='testing', help='testing', action='store_true')
+parser.add_argument('-phase1', '--phase1', dest='phase1', help='phase1', action='store_true')
 
 args = parser.parse_args()
 
@@ -115,6 +116,11 @@ def main():
     jpsi_electrons = args.jpsi_electrons
     jpsi = False
     testing = args.testing
+    
+    phase1 = args.phase1
+
+    if signal and phase1:
+        sam = True
 
     if dy:
         print("Got Drell-Yan")
@@ -492,16 +498,25 @@ def main():
     nLGenMap = {}
     nLGenMapZ = {}
     baseFileName = os.path.basename(input_file)
+    print(baseFileName)
+    print(baseFileName.split("_")[3])
+
     crossSection = 1
     if signal:
         if sam:
-            chiM = os.path.basename(input_file).split("_")[2]
-            print("Got chiM=" + chiM)
-            crossSection = utils.samCrossSections.get(chiM)
+            print("sam")
+            if phase1:
+                stopMass = os.path.basename(input_file).split("_")[3]
+            else:
+                chiM = os.path.basename(input_file).split("_")[2]
+            print("Got stopMass=" + stopMass)
+#             crossSection = utils.samCrossSections.get(chiM)
+            crossSection = utils.stopsCrossSection[stopMass]
             print("Cross Section is", crossSection)
         else:
+            print("else")
             stopMass = baseFileName.split("_")[3]
-            #filename = (os.path.basename(input_file).split("Chi20Chipm")[0]).replace("p", ".")
+#             filename = (os.path.basename(input_file).split("Chi20Chipm")[0]).replace("p", ".")
             crossSection = utils.stopsCrossSection[stopMass]
             
         if crossSection is None:
