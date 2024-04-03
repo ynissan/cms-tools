@@ -243,7 +243,8 @@ class dilepton_muons_bg_isocr_no_retag_CorrJetNoMultIso10_06_2017_same_sign_phas
         #{ "obs" : "sideband_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 0, "bins" : 1, "blind" : [None,0.1], "units" : "BDT"},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
         #'0.10', '0.30', '0.40', '0.45'
        { "obs" : "custom_dilepBDT%%%", "formula" : "dilepBDT%%%","minX" : -1, "maxX" : 1, "bins" : 6, "units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.30,0.4,0.45,0.5,1] }, 
-       { "obs" : "custom_less_dilepBDT%%%", "formula" : "dilepBDT%%%","minX" : -1, "maxX" : 1, "bins" : 6, "units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.30,0.4,1] }, 
+       { "obs" : "custom_less_dilepBDT%%%", "formula" : "dilepBDT%%%","minX" : -1, "maxX" : 1, "bins" : 6, "units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.30,0.4,1], "linearYspace" : 1.6 }, 
+       { "obs" : "custom_less_dilepBDT2%%%", "formula" : "dilepBDT%%%","minX" : -1, "maxX" : 1, "bins" : 6, "units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,1], "linearYspace" : 1.6 }, 
         #{ "obs" : "mtautau%%%", "linearYspace" : 1.5, "minX" : -300, "maxX" : 300, "bins" : 15},
         #{ "obs" : "nmtautau%%%", "linearYspace" : 1.5, "minX" : -300, "maxX" : 300, "bins" : 15},
         #{ "obs" : "coarse_nmtautau%%%", "formula" : "nmtautau%%%", "linearYspace" : 1.5, "minX" : 0, "maxX" : 160, "bins" : 15},
@@ -367,7 +368,7 @@ class dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign
 class dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_phase1(dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_2017):
     histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_phase1.root"
     data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim_phase1/slim_sum"
-    transfer_factor = 0.464
+    transfer_factor = 0.527
     transfer_factor_error = 0
     
     save_histrograms_to_file = True
@@ -383,13 +384,13 @@ class dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign
 class dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_phase0(dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_phase1):
     histrograms_file = BaseParams.histograms_root_files_dir + "/dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign_phase0.root"
     data_dir = "/afs/desy.de/user/n/nissanuv/nfs/x1x2x1/data/skim/slim_sum"
-    transfer_factor = 0.643
+    transfer_factor = 0.868
     transfer_factor_error = 0
     
     save_histrograms_to_file = True
     load_histrograms_from_file = True
     
-    stamp_scale_factor = True
+    stamp_scale_factor = False
     
     lumi_string_prefix = "[Phase 0]"
     calculatedLumi = {
@@ -399,6 +400,7 @@ class dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign
     histograms_defs = [
         
         { "obs" : "dilepBDT%%%", "formula" : "dilepBDTphase1%%%", "minX" : -1, "maxX" : 1, "bins" : 20, "units" : "BDT", "linearYspace" : 1.8},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
+        { "obs" : "final_binning%%%", "formula" : "dilepBDTphase1%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,1]},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
         { "obs" : "closure_dilepBDT%%%", "formula" : "dilepBDTphase1%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,0,0.1,0.30,0.4,0.45,0.5,1]},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
         { "obs" : "closure_less_dilepBDT%%%", "formula" : "dilepBDTphase1%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,0,0.1,0.30,0.4,1]},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
         #{ "obs" : "closure_new_bin_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 1, "units" : "BDT", "customBins"  : [-1,0,0.1,0.2,0.3,0.4,0.5,1]},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
@@ -410,7 +412,8 @@ class dilepton_muons_data_isocr_no_retag_CorrJetNoMultIso10_06_invmass_same_sign
         #{ "obs" : "sideband_dilepBDT%%%", "formula" : "dilepBDT%%%", "minX" : -1, "maxX" : 0, "bins" : 1, "blind" : [None,0.1], "units" : "BDT"},# "customBins"  : [-1,-0.4,0,0.1,0.2,1] },
         #'0.10', '0.30', '0.40', '0.45'
        { "obs" : "custom_dilepBDT%%%", "formula" : "dilepBDTphase1%%%","minX" : -1, "maxX" : 1, "bins" : 6, "units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.30,0.4,0.45,0.5,1] }, 
-       { "obs" : "custom_less_dilepBDT%%%", "formula" : "dilepBDTphase1%%%","minX" : -1, "maxX" : 1, "bins" : 6, "units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.30,0.4,1] }, 
+       { "obs" : "custom_less_dilepBDT%%%", "formula" : "dilepBDTphase1%%%","minX" : -1, "maxX" : 1, "bins" : 6, "units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.30,0.4,1], "linearYspace" : 1.6 }, 
+       { "obs" : "custom_less_dilepBDT2%%%", "formula" : "dilepBDTphase1%%%","minX" : -1, "maxX" : 1, "bins" : 6, "units" : "BDT", "customBins"  : [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,1], "linearYspace" : 1.6 }, 
         #{ "obs" : "mtautau%%%", "linearYspace" : 1.5, "minX" : -300, "maxX" : 300, "bins" : 15},
         #{ "obs" : "nmtautau%%%", "linearYspace" : 1.5, "minX" : -300, "maxX" : 300, "bins" : 15},
         #{ "obs" : "coarse_nmtautau%%%", "formula" : "nmtautau%%%", "linearYspace" : 1.5, "minX" : 0, "maxX" : 160, "bins" : 15},
