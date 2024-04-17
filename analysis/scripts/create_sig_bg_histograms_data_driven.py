@@ -34,8 +34,8 @@ args = parser.parse_args()
 
 sam = True
 
-wanted_year = "phase1"
 wanted_year = "2016"
+wanted_year = "phase1"
 
 
 print("WANTED YEAR " + wanted_year)
@@ -66,7 +66,7 @@ if final_prediction:
     no_track_tf = True
     max_files = -1
 
-partial_unblinding = True
+partial_unblinding = False
 partial_unblinding_portion = 10
 
 # required_lepton = "Muons"
@@ -81,7 +81,7 @@ output_file = None
 if args.output_file:
     output_file = args.output_file[0]
 else:
-    output_file = "sig_bg_histograms_data_driven_" + wanted_year + "_" + required_category + ("_uniform_binning" if use_uniform_binning else "") + ("_partial_unblinding" if partial_unblinding else "") + ".root"
+    output_file = "check_sig_bg_histograms_data_driven_" + wanted_year + "_" + required_category + ("_uniform_binning" if use_uniform_binning else "") + ("_partial_unblinding" if partial_unblinding else "") + ".root"
 
 print("output_file=" + output_file)
 

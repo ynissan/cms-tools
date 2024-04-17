@@ -367,7 +367,7 @@ def createPlotsFast(rootfiles, types, histograms, weight, category, conditions, 
                                 #exit(0)
                                 hist = utils.getRealLogxHistogramFromTree(histName, c, formula, hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), drawString, False)
                             elif hist_def.get("customBins") is not None:
-                                hist = utils.getHistogramFromTreeCutsomBinsX(histName, c, formula, hist_def.get("customBins"), drawString, False)
+                                hist = utils.getHistogramFromTreeCustomBinsX(histName, c, formula, hist_def.get("customBins"), drawString, False)
                             elif hist_def.get("2D") is not None and hist_def["2D"]:
                                              #getHistogramFromTree(name, tree, obs, bins, minX, maxX, condition, overflow=True, tmpName="hsqrt", predefBins = False, twoD = False, binsY = None, minBinsY = None, maxBinsY = None):
                                 hist = utils.getHistogramFromTree(histName, c, formula, hist_def.get("bins"), hist_def.get("minX"), hist_def.get("maxX"), drawString, False, "hsqrt", False, True, hist_def.get("binsY"), hist_def.get("minY"), hist_def.get("maxY"))
@@ -2466,7 +2466,7 @@ def main():
             
             #print "***", ratioPads
             print(calculated_lumi)
-            lumiStr = "{:.1f}".format(calculated_lumi)
+            lumiStr = "{:.1f}".format(calculated_lumi) if plot_par.labelLumi.get(plot_par.plot_kind) is None else "{:.1f}".format(plot_par.labelLumi[plot_par.plot_kind])
             
             labelText = plot_par.label_text
             cmsLocation = plot_par.cms_location
@@ -2789,7 +2789,7 @@ def main():
                             plotRatio(c1, histRPad, memory, dataHist, stackSum, hist_def)
             
             print(calculated_lumi)
-            lumiStr = "{:.1f}".format(calculated_lumi)
+            lumiStr = "{:.1f}".format(calculated_lumi) if plot_par.labelLumi.get(plot_par.plot_kind) is None else "{:.1f}".format(plot_par.labelLumi[plot_par.plot_kind])
             
             labelText = plot_par.label_text
             cmsLocation = plot_par.cms_location
