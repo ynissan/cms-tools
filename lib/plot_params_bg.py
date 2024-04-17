@@ -628,8 +628,8 @@ class dimuon_background_estimation_non_isolated_and_tautau_2017(dimuon_backgroun
     }
     
     bgReTaggingFactors = {
-        "tautau" : analysis_selections.tautau_factors["2017"]["Muons"],
-        "non-iso" : analysis_selections.non_iso_2l_factors["2017"]["Muons"]
+        "tautau" : analysis_selections.tautau_factors["phase1"]["Muons"],
+        "non-iso" : analysis_selections.non_iso_2l_factors["phase1"]["Muons"]
     }
     
     jetIso = analysis_selections.jetIsos["Muons"]
@@ -680,8 +680,8 @@ class dimuon_background_estimation_non_isolated_and_tautau_2018(dimuon_backgroun
     }
     
     bgReTaggingFactors = {
-        "tautau" : analysis_selections.tautau_factors["2018"]["Muons"],
-        "non-iso" : analysis_selections.non_iso_2l_factors["2018"]["Muons"]
+        "tautau" : analysis_selections.tautau_factors["phase1"]["Muons"],
+        "non-iso" : analysis_selections.non_iso_2l_factors["phase1"]["Muons"]
     }
     
     jetIso = analysis_selections.jetIsos["Muons"]
