@@ -15,5 +15,6 @@ from plot_params_isocr import *
 from plot_params_bg_validation import *
 from plot_params_data_control_regions import *
 from plot_params_stops_bg_vs_signal import *
+from plot_params_phase1 import*
 
 default_params = track_selection

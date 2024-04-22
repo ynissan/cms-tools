@@ -41,6 +41,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --master)
+        MASTER=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         --phase1)
         PHASE1=true
         POSITIONAL+=("$1")
@@ -131,9 +136,11 @@ files=()
 TYPES_TO_LOOP=${BG_TYPES[@]}
 PREFIX=Summer16
 if [ -n "$PHASE1" ]; then
-    TYPES_TO_LOOP=${BG_TYPES_17[@]}             #removed _17 for testing
+    TYPES_TO_LOOP=${BG_TYPES_17[@]}
     PREFIX=RunIIFall17MiniAODv2
 fi
+
+
 
 if [ -z "$SELECTION" ]; then
     for type in ${TYPES_TO_LOOP[@]}; do 
@@ -173,7 +180,6 @@ fi
 
 #files=()
 
-
 timestamp=$(date +%Y%m%d_%H%M%S%N)
 output_file="${WORK_DIR}/condor_submut.${timestamp}"
 echo "output file: $output_file"
@@ -187,7 +193,7 @@ priority = 0
 EOM
 
 file_limit=0
-files_per_job=5 #3
+files_per_job=3 #4
 
 for type in reg madHtFilesGt600 madHtFilesLt600; do
 
@@ -270,5 +276,5 @@ done
 
 echo SUBMITTING JOBS....
 
-condor_submit $output_file
-rm $output_file
+# condor_submit $output_file
+# rm $output_file

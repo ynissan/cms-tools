@@ -145,9 +145,10 @@ variablesUsed.append('deltaPhiMhtLepton2' + iso + str(ptRange) + cat)
 
 print "Variables used", variablesUsed 
 
-tmpDir = mkdtemp(prefix="nissanuv", dir="/tmp") + '/'
+tmpDir = mkdtemp(prefix="diepholq", dir="/tmp") + '/'
 print "tmpDir=",tmpDir
 
+num_sig_events = 0
 for input_file in input_files:
     print "Opening File " + input_file
     fsignal = TFile(input_file)
@@ -172,6 +173,7 @@ for input_file in input_files:
     print "Coping tree with preselection", preselection
     newSTree = sTree.CopyTree(preselection)
     print "new tree has", newSTree.GetEntries()
+    num_sig_events += newSTree.GetEntries()
     
     if newSTree.GetEntries() == 0:
         newfile.Close()
@@ -193,6 +195,11 @@ for input_file in input_files:
     newTrees.append(sTree)
     dataloaders[lepNum + lep + iso + str(ptRange) + cat].AddSignalTree(sTree, 1) 
 
+num_sig_events = int(str(num_sig_events).split("L")[0])
+print("num_sig_events", num_sig_events)
+
+
+num_bg_events = 0
 for bg_file in bg_files:
     if "QCD" in bg_file:
         print "Skipping QCD", bg_file
@@ -204,6 +211,8 @@ for bg_file in bg_files:
     fbackground = TFile(bg_file)
     bTree = fbackground.Get("tEvent")
     
+    
+    
     baseFileName = os.path.basename(bg_file)
     newfile = TFile(tmpDir + baseFileName, "recreate");
     
@@ -212,6 +221,7 @@ for bg_file in bg_files:
         bTree.SetBranchStatus(branch,1);
     newBTree = bTree.CopyTree(preselection)
     print "new tree has", newBTree.GetEntries()
+    num_bg_events += newBTree.GetEntries()
     if newBTree.GetEntries() == 0:
         newfile.Close()
         bTree.Delete()
@@ -230,7 +240,12 @@ for bg_file in bg_files:
     bTree = newfile.Get("tEvent")
     bTrees.append(bTree)
     dataloaders[lepNum + lep + iso + str(ptRange) + cat].AddBackgroundTree(bTree, 1)
-    
+
+num_bg_events = int(str(num_bg_events).split("L")[0])
+print("num_bg_events",num_bg_events)
+
+
+
 
 dataloader = dataloaders[lepNum + lep + iso + str(ptRange) + cat]
 
@@ -258,13 +273,24 @@ dataloader.AddVariable('leptons' + iso + str(ptRange) + cat + '[0].Eta()', 'F')
 dataloader.AddVariable('deltaPhiMhtLepton1' + iso + str(ptRange) + cat, 'F')
 dataloader.AddVariable('deltaPhiMhtLepton2' + iso + str(ptRange) + cat, 'F')
 
+
+#for debugging
+print("preselectionCut:",preselectionCut)
+print("preselection:", preselection)
+
 # Spectators
 dataloader.AddSpectator('Weight','F')
 if no_norm:
-   dataloader.PrepareTrainingAndTestTree(preselectionCut, "SplitMode=random:!V:NormMode=None")
+    print("NO NORM")
+    dataloader.PrepareTrainingAndTestTree(preselectionCut, "SplitMode=random:SplitSeed=1:!V:NormMode=None")
 else:
-   dataloader.PrepareTrainingAndTestTree(preselectionCut, "SplitMode=random:!V")
-factory.BookMethod(dataloader, TMVA.Types.kBDT, lepNum + lep + iso + str(ptRange) + cat, "NTrees=120:MaxDepth=3")
+    print("HERE")
+    n_train_signal = int(0.5 * num_sig_events)
+    n_test_signal = int(0.5 * num_sig_events)
+    n_train_bg = int(0.7 * num_bg_events)
+    n_test_bg = int(0.3 * num_bg_events)
+    dataloader.PrepareTrainingAndTestTree(preselectionCut, "nTrain_Signal=%.1f:nTrain_Background=%.1f:nTest_Signal=%.1f:nTest_Background=%.1f:SplitMode=random:!V" % (n_train_signal, n_train_bg, n_test_signal, n_test_bg))
+factory.BookMethod(dataloader, TMVA.Types.kBDT, lepNum + lep + iso + str(ptRange) + cat, "NTrees=120:MaxDepth=2")
 
 factory.TrainAllMethods()
 factory.TestAllMethods()

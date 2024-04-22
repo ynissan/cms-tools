@@ -16,6 +16,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+         --phase1)
+        PHASE1=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         *)    # unknown option
         POSITIONAL+=("$1") # save it in an array for later
         shift # past argument
@@ -45,8 +50,20 @@ INPUT_DIR=$SKIM_SIG_OUTPUT_DIR/single
 OUTPUT_DIR=$DILEPTON_BDT_DIR
 BG_INPUT=$SKIM_OUTPUT_DIR/sum/type_sum
 
+
+SIM_GROUP_KEYS="${!SIM_GROUP[@]}"
+
+if [ -n "$PHASE1" ]; then
+    INPUT_DIR=$SKIM_SIG_PHASE1_OUTPUT_DIR/single
+    OUTPUT_DIR=$DILEPTON_BDT_PHASE1_DIR
+    BG_INPUT=$SKIM_PHASE1_OUTPUT_DIR/sum/type_sum
+    SIM_GROUP_KEYS="${!SIM_GROUP_PHASE1[@]}"
+fi
+
+
+
 echo INPUT_DIR=$SKIM_SIG_OUTPUT_DIR/single
-echo OUTPUT_DIR=$DILEPTON_BDT_DIR
+echo OUTPUT_DIR=$OUTPUT_DIR
 echo BG_INPUT=$SKIM_OUTPUT_DIR/sum/type_sum
 
 #check output directory
@@ -66,7 +83,7 @@ notification = Never
 +RequestRuntime = 86400
 EOM
 
-for group in "${!SIM_GROUP[@]}"; do
+for group in $SIM_GROUP_KEYS; do
     # if [[ -z "$TWO_LEPTONS" && $group == "all" ]]; then
 #         echo "Skipping ALL!!!!!"
 #         continue
@@ -76,7 +93,12 @@ for group in "${!SIM_GROUP[@]}"; do
 #         continue
 #     fi
     
-    value=${SIM_GROUP[$group]}
+    value=""
+    if [ -n "$PHASE1" ]; then
+        value=${SIM_GROUP_PHASE1[$group]}
+    else
+        value=${SIM_GROUP[$group]}
+    fi
     #echo value=$value
     input=""
     background=""
@@ -179,6 +201,6 @@ done
 # EOM
 # fi
 
-condor_submit $output_file
+ condor_submit $output_file
 echo $output_file
-rm $output_file
+#rm $output_file

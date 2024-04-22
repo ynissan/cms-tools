@@ -20,12 +20,10 @@ SIMS=(["dm051"]="/nfs/dust/cms/user/beinsam/CommonNtuples/MC_BSM/CompressedHiggs
 declare -A SIM_GROUP=(
            ["all"]="dm0p dm1p" \
            )
-
 declare -A SIM_GROUP_PHASE1=(
-           ["all"]="dm0p dm1p" \
+           ["all"]="dm0p dm1p dm2p" \
            )
 
-#removed dm2p
 
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$CMSSW_BASE/src/stops/lib/classes"
 
@@ -37,16 +35,10 @@ SIM_NTUPLES_DIR="/nfs/dust/cms/user/beinsam/CommonSamples/MC_BSM/CompressedHiggs
 #SAM_SIM_NTUPLES_DIR="/pnfs/desy.de/cms/tier2/store/user/sbein/CommonSamples/RadiativeMu_2016Fast/ntuple_sidecar"
 #SAM_SIM_NTUPLES_DIR="/nfs/dust/cms/user/beinsam/CommonSamples/MC_BSM/CompressedHiggsino/RadiativeMu_2016Fast/ntuple_sidecar/"
 #SAM_NEW_SIM_NTUPLES_DIR="/pnfs/desy.de/cms/tier2/store/user/sbein/CommonSamples/RadiativeMu_2016Fast/ntuple_sidecar/"
-
-SAM_NEW_SIM_NTUPLES_DIR="/pnfs/desy.de/cms/tier2/store/user/sbein/CommonSamples/RadiativeMu_2016Fast/ntuple_sidecarv2/"
-# SAM_SIM_NTUPLES_17_DIR="/pnfs/desy.de/cms/tier2/store/user/sbein/CommonSamples/RadiativeMu_2017Fast/ntuple_sidecarv3/"
-SAM_SIM_NTUPLES_17_DIR="/nfs/dust/cms/user/beinsam/CommonSamples/NtupleMaker/3March2020/CMSSW_9_4_11/src/TreeMaker/Production/test/"
-
-
 DATA_NTUPLES_DIR="/pnfs/desy.de/cms/tier2/store/user/*/NtupleHub/ProductionRun2v3*"
 #2 jobs for this list (the full list) 
-# BG_TYPES=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT_ ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays DYJetsToLL WJetsToLNu ZJetsToNuNu WZZ WWZ WW WZ ZZZ ZZ)
-
+BG_TYPES=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT_ ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays DYJetsToLL WJetsToLNu ZJetsToNuNu WZZ WWZ WW WZ ZZZ ZZ)
+BG_TYPES_17=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays DYJetsToLL WJetsToLNu ZJetsToNuNu WZZ WWZ WWW ZZZ ZZTo2L2Q WZTo1L1Nu2Q WZTo1L3Nu WWTo1L1Nu2Q )
 # BG_TYPES=(QCD)
 
 # 10 jobs per file for this list
@@ -58,20 +50,7 @@ DATA_NTUPLES_DIR="/pnfs/desy.de/cms/tier2/store/user/*/NtupleHub/ProductionRun2v
 # BG_TYPES=(ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays DYJetsToLL  WZZ WWZ WW WZ ZZZ ZZ)
 
 #BG_TYPES=(DYJetsToLL)
-BG_TYPES=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays WJetsToLNu ZJetsToNuNu WZZ WWZ WW WZ ZZZ ZZ)
-
-#Full (3)
-BG_TYPES_17=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays DYJetsToLL WJetsToLNu ZJetsToNuNu WZZ WWZ WWW ZZZ ZZTo2L2Q WZTo1L1Nu2Q WZTo1L3Nu WWTo1L1Nu2Q)
-
-#10
-# BG_TYPES_17=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays)
-#8
-# BG_TYPES_17=(DYJetsToLL WJetsToLNu ZJetsToNuNu WZZ WWZ WWW ZZZ ZZTo2L2Q WZTo1L1Nu2Q WZTo1L3Nu WWTo1L1Nu2Q)
-
-#5
-BG_TYPES_17=(TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT)
-
-
+#BG_TYPES=(QCD TTJets_DiLept TTJets_SingleLeptFromTbar TTJets_SingleLeptFromT ST_t-channel_antitop_4f_inclusiveDecays ST_t-channel_top_4f_inclusiveDecays WJetsToLNu ZJetsToNuNu WZZ WWZ WW WZ ZZZ ZZ)
 
 #BG_TYPES=(QCD)
 #BG_TYPES=(TTJets_DiLept)
@@ -124,6 +103,7 @@ BG_DIR="$stops/bg"
 BG_HIST_DIR="$OUTPUT_WD/bg/hist"
 SKIM_OUTPUT_DIR="$OUTPUT_WD/bg/skim_phase1"
 SKIM_PHASE1_OUTPUT_DIR="$OUTPUT_WD/bg/skim_phase1"
+SKIM_MASTER_OUTPUT_DIR="$OUTPUT_WD/bg/skim_master"
 SKIM_JPSI_SINGLE_ELECTRON_OUTPUT_DIR="$OUTPUT_WD/bg/skim_jpsi_single_electron"
 SKIM_Z_PEAK_OUTPUT_DIR="$OUTPUT_WD/bg/skim_z"
 TWO_LEPTONS_SKIM_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/bg/skim"
@@ -135,7 +115,6 @@ LC_OUTPUT_DIR="$OUTPUT_WD/bg/lc"
 LC_DATA_OUTPUT_DIR="$OUTPUT_WD/data/lc"
 SKIM_SIG_OUTPUT_DIR="$OUTPUT_WD/signal/skim"
 SKIM_SIG_SAM_OUTPUT_DIR="$OUTPUT_WD/signal/skim_sam"
-SKIM_SIG_PHASE1_OUTPUT_DIR="$OUTPUT_WD/signal/skim_phase1"
 SKIM_SIG_NLP_OUTPUT_DIR="$OUTPUT_WD/signal/skim_nlp"
 TWO_LEPTONS_SKIM_SIG_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/signal/skim"
 TWO_LEPTONS_SAM_SKIM_SIG_OUTPUT_DIR="$TWO_LEPTONS_OUTPUT_WD/signal/skim_sam"
@@ -172,7 +151,6 @@ SKIM_DATA_SIG_DILEPTON_BDT_SC_OUTPUT_DIR="$OUTPUT_WD/data/skim_dilepton_signal_b
 SKIM_DATA_SIG_DILEPTON_BDT_DY_OUTPUT_DIR="$DY_OUTPUT_WD/data/skim_dilepton_signal_bdt"
 SKIM_DATA_JPSI_MUONS_OUTPUT_DIR="$OUTPUT_WD/data/skim_muons_jpsi"
 SKIM_DATA_MINI_OUTPUT_DIR="$OUTPUT_WD/data/skim_mini"
-SKIM_DATA_PHASE1_OUTPUT_DIR="$OUTPUT_WD/data/skim_phase1"
 SKIM_DATA_MASTER_OUTPUT_DIR="$OUTPUT_WD/data/skim_master"
 SKIM_DATA_JPSI_SINGLE_ELECTRON_OUTPUT_DIR="$OUTPUT_WD/data/skim_jpsi_single_electron"
 SKIM_DATA_Z_PEAK_OUTPUT_DIR="$OUTPUT_WD/data/skim_z"
@@ -185,7 +163,6 @@ SPLIT_JPSI_MASTER_OUTPUT_DIR="$SKIM_MASTER_OUTPUT_DIR/split"
 RGS_DIR="/afs/desy.de/user/n/nissanuv/stops/analysis/cut_optimisation/rgs"
 RESUMMINO_BIN="/afs/desy.de/user/n/nissanuv/local/bin/resummino"
 DILEPTON_BDT_DIR="$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt"
-DILEPTON_BDT_PHASE1_DIR="$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt_phase1"
 DILEPTON_TWO_LEPTONS_BDT_DIR="$TWO_LEPTONS_OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt"
 
 if [[ `hostname` == *".desy.de"* ]]; then

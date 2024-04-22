@@ -93,7 +93,7 @@ notification = Never
 EOM
 
 #for sim in ${SIG_DUP_OUTPUT_DIR}/single/*; do
-for sim in ${INPUT_DIR}/higgsino*.root; do
+for sim in ${INPUT_DIR}higgsino*.root; do
     filename=$(basename $sim .root)
     if [ -f "${OUTPUT_DIR}/single/${filename}.root" ]; then
         echo "${OUTPUT_DIR}/single/${filename}.root exist. Skipping..."

@@ -124,8 +124,8 @@ file_num_per_type = {
 "ST_t-channel_antitop" : 10000,
 "ST_t-channel_top" : 1900,
 "TTJets_DiLept_TuneCUETP8M1" : 514,
-"TTJets_SingleLeptFromT_TuneCUETP8M1" : 620,
-"TTJets_SingleLeptFromTbar_TuneCUETP8M1" : 530, #910
+"TTJets_SingleLeptFromT_TuneCUETP8M1" : 620,#620
+"TTJets_SingleLeptFromTbar_TuneCUETP8M1" : 530,#910
 "WJetsToLNu_HT-1200To2500_TuneCUETP8M1" : 500, #10
 "WJetsToLNu_HT-200To400_TuneCUETP8M1" : 1170, #10
 "WJetsToLNu_HT-2500ToInf_TuneCUETP8M1" : 10000,#10
@@ -148,34 +148,34 @@ file_num_per_type = {
 
 
 file_num_per_type_phase1 = {
- "DYJetsToLL_M-50_HT-1200to2500" : 300, #30
- "DYJetsToLL_M-50_HT-200to400" : 3000, #30
+ "DYJetsToLL_M-50_HT-1200to2500" : 30,
+ "DYJetsToLL_M-50_HT-200to400" : 30,
  "DYJetsToLL_M-50_HT-2500toInf" : 45,
- "DYJetsToLL_M-50_HT-400to600" : 2000, #20
- "DYJetsToLL_M-50_HT-600to800" : 2000, #20
- "DYJetsToLL_M-50_HT-800to1200" : 200, #20
- "DYJetsToLL_M-50_TuneCP5" : 4000, #40
- "QCD_HT1500to2000_TuneCP5" : 500, #30
- "QCD_HT2000toInf_TuneCP5" : 500, #30
- "QCD_HT200to300_TuneCP5" : 30000, #300
- "QCD_HT500to700_TuneCP5" : 20000, #200
- "TTJets_DiLept_TuneCP5" : 350, #20
- "TTJets_SingleLeptFromT_TuneCP5" : 300, #30
- "TTJets_SingleLeptFromTbar_TuneCP5" : 360, #30
- "WJetsToLNu_HT-100To200_TuneCP5" : 100000, #30
- "WJetsToLNu_HT-1200To2500_TuneCP5" : 200, #10
- "WJetsToLNu_HT-200To400_TuneCP5" : 500, #20
- "WJetsToLNu_HT-2500ToInf_TuneCP5" : 180, #10
- "WJetsToLNu_HT-400To600_TuneCP5" : 400, #10
- "WJetsToLNu_HT-600To800_TuneCP5" : 400, #10
- "WJetsToLNu_HT-800To1200_TuneCP5" : 350, #10
- "WWTo1L1Nu2Q_13TeV_amcatnloFXFX" : 550, #30
- "WZTo1L1Nu2Q_13TeV_amcatnloFXFX" : 550, #30
- "WZTo1L3Nu_13TeV_amcatnloFXFX" : 3000, #30
- "ZJetsToNuNu_HT-200To400_13TeV-madgraph" : 1000, #30
- "ZJetsToNuNu_HT-400To600_13TeV-madgraph" : 550, #30
- "ZJetsToNuNu_HT-600To800_13TeV-madgraph" : 550, #30
- "ZJetsToNuNu_HT-800To1200_13TeV-madgraph" : 550, #30
+ "DYJetsToLL_M-50_HT-400to600" : 20,
+ "DYJetsToLL_M-50_HT-600to800" : 20,
+ "DYJetsToLL_M-50_HT-800to1200" : 20,
+ "DYJetsToLL_M-50_TuneCP5" : 400,
+ "QCD_HT1500to2000_TuneCP5" : 30,
+ "QCD_HT2000toInf_TuneCP5" : 30,
+ "QCD_HT200to300_TuneCP5" : 300,
+ "QCD_HT500to700_TuneCP5" : 200,
+ "TTJets_DiLept_TuneCP5" : 20,
+ "TTJets_SingleLeptFromT_TuneCP5" : 30,
+ "TTJets_SingleLeptFromTbar_TuneCP5" : 30,
+ "WJetsToLNu_HT-100To200_TuneCP5" : 30,
+ "WJetsToLNu_HT-1200To2500_TuneCP5" : 10,
+ "WJetsToLNu_HT-200To400_TuneCP5" : 20,
+ "WJetsToLNu_HT-2500ToInf_TuneCP5" : 10,
+ "WJetsToLNu_HT-400To600_TuneCP5" : 10,
+ "WJetsToLNu_HT-600To800_TuneCP5" : 10,
+ "WJetsToLNu_HT-800To1200_TuneCP5" : 10,
+ "WWTo1L1Nu2Q_13TeV_amcatnloFXFX" : 30,
+ "WZTo1L1Nu2Q_13TeV_amcatnloFXFX" : 30,
+ "WZTo1L3Nu_13TeV_amcatnloFXFX" : 30,
+ "ZJetsToNuNu_HT-200To400_13TeV-madgraph" : 30,
+ "ZJetsToNuNu_HT-400To600_13TeV-madgraph" : 20,
+ "ZJetsToNuNu_HT-600To800_13TeV-madgraph" : 20,
+ "ZJetsToNuNu_HT-800To1200_13TeV-madgraph" : 20,
 }
  
 def main():
@@ -215,6 +215,7 @@ notification = Never
             sumTypes[type][types[1] + "_" + types[2]] += 1
     print("totalFiles:", totalFiles)
     print("sumTypes:",sumTypes)
+    #exit(0)   
     for type in sumTypes:
         for typeRange in sumTypes[type]:
             print("\n\n\n\n\n-----")

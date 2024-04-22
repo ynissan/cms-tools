@@ -4,6 +4,7 @@
 
 shopt -s nullglob 
 
+
 #---------- GET OPTIONS ------------
 POSITIONAL=()
 while [[ $# -gt 0 ]]
@@ -41,8 +42,8 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
-        --phase1)
-        PHASE1=true
+        --master)
+        MASTER=true
         POSITIONAL+=("$1")
         shift
         ;;
@@ -75,8 +76,9 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 SCRIPT_PATH=$ANALYZER_PATH
 if [ -n "$SKIM" ]; then
     SCRIPT_PATH=$SKIMMER_PATH
-    if [ -n "$PHASE1" ]; then
-        OUTPUT_DIR=$SKIM_PHASE1_OUTPUT_DIR
+    if [ -n "$MASTER" ]; then
+        SCRIPT_PATH=$JPSI_SKIMMER_PATH
+        OUTPUT_DIR=$SKIM_MASTER_OUTPUT_DIR
     elif [ -n "$Z_PEAK" ]; then
         SCRIPT_PATH=$JPSI_SKIMMER_PATH
         OUTPUT_DIR=$SKIM_Z_PEAK_OUTPUT_DIR
@@ -128,27 +130,19 @@ if [ ! -d "$ERR_OUTPUT" ]; then
 fi
 
 files=()
-TYPES_TO_LOOP=${BG_TYPES[@]}
-PREFIX=Summer16
-if [ -n "$PHASE1" ]; then
-    TYPES_TO_LOOP=${BG_TYPES_17[@]}             #removed _17 for testing
-    PREFIX=RunIIFall17MiniAODv2
-fi
 
 if [ -z "$SELECTION" ]; then
-    for type in ${TYPES_TO_LOOP[@]}; do 
+    for type in ${BG_TYPES[@]}; do 
         echo "Checking type $type"
         if [ "$type" = "DYJetsToLL" ]; then
-            files=("${files[@]}" ${BG_NTUPLES}/$PREFIX.${type}_M-50_*)
-            if [ "$PREFIX" = "Summer16" ]; then
-                files=("${files[@]}" ${BG_NTUPLES}/RunIISummer16MiniAODv3.DYJetsToLL_M-5to50*)
-            fi
+            files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_M-50_*)
+            files=("${files[@]}" ${BG_NTUPLES}/RunIISummer16MiniAODv3.DYJetsToLL_M-5to50*)
         elif [ "$type" = "ZJetsToNuNu" ]; then
-            files=("${files[@]}" ${BG_NTUPLES}/$PREFIX.${type}_HT*)
+            files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_HT*)
         elif [ "$type" = "TTJets" ]; then
-            files=("${files[@]}" ${BG_NTUPLES}/$PREFIX.${type}_TuneCUETP8M1*)
+            files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_TuneCUETP8M1*)
         else
-            files=("${files[@]}" ${BG_NTUPLES}/$PREFIX.${type}_*)
+            files=("${files[@]}" ${BG_NTUPLES}/Summer16.${type}_*)
         fi
     done
 else
@@ -173,7 +167,6 @@ fi
 
 #files=()
 
-
 timestamp=$(date +%Y%m%d_%H%M%S%N)
 output_file="${WORK_DIR}/condor_submut.${timestamp}"
 echo "output file: $output_file"
@@ -187,13 +180,13 @@ priority = 0
 EOM
 
 file_limit=0
-files_per_job=5 #3
+files_per_job=10 #4
 
 for type in reg madHtFilesGt600 madHtFilesLt600; do
 
     i=0
     count=0
-    input_files=""
+    input_files=""				
     
     echo "In loop running $type"
     
@@ -211,15 +204,16 @@ for type in reg madHtFilesGt600 madHtFilesLt600; do
     fi
     
     echo "extra_params $extra_params"
-    #echo $list
-    
+
+#     echo $list
+   
     for fullname in $list; do
         name=$(basename $fullname)
         #echo "Checking $FILE_OUTPUT/$name"
         skip=0
         for ef in ${FILE_EXCLUDE_LIST[@]}; do
             if [[ $name == *"$ef"* ]]; then
-                echo "Skipping file $name"
+                #echo "Skipping file $name"
                 skip=1
             fi
         done
@@ -233,13 +227,25 @@ for type in reg madHtFilesGt600 madHtFilesLt600; do
             #echo "$name exist. Skipping..."
             continue
         fi
-        input_files="$input_files $fullname"
+        
+#         echo "before"
+#         echo $input_files
+#         input_files="$input_files $fullname"
+#         echo "after"   
+#         echo $input_files
+		if [ "$input_files" = "" ]; then
+# 			echo "first case"
+			input_files="$fullname"
+		else
+# 			echo "second case"
+			input_files="$input_files $fullname"
+		fi
         ((count+=1))
         if [ $(($count % $files_per_job)) == 0 ]; then
-            cmd="$BG_SCRIPTS/run_bg_analysis_single.sh -i '$input_files' $extra_params ${POSITIONAL[@]}"
+            cmd="$BG_SCRIPTS/run_bg_analysis_single.sh -i \"$input_files\" $extra_params ${POSITIONAL[@]}"
             echo $cmd
 cat << EOM >> $output_file
-arguments = "$BG_SCRIPTS/run_bg_analysis_single.sh -i '$input_files' $extra_params ${POSITIONAL[@]}"
+arguments = $BG_SCRIPTS/run_bg_analysis_single.sh -i \"$input_files\" $extra_params ${POSITIONAL[@]}
 error = $ERR_OUTPUT/$(basename $fullname .root).err
 output = $STD_OUTPUT/$(basename $fullname .root).output
 Queue
@@ -257,10 +263,10 @@ EOM
     done
 
     if [ $(($count % $files_per_job)) != 0 ]; then
-        cmd="$BG_SCRIPTS/run_bg_analysis_single.sh -i '$input_files' $extra_params ${POSITIONAL[@]}"
+        cmd="$BG_SCRIPTS/run_bg_analysis_single.sh -i \"$input_files\" $extra_params ${POSITIONAL[@]}" #\"$input_files\"
         echo $cmd
 cat << EOM >> $output_file
-arguments = "$BG_SCRIPTS/run_bg_analysis_single.sh -i '$input_files' $extra_params ${POSITIONAL[@]}"
+arguments = $BG_SCRIPTS/run_bg_analysis_single.sh -i \"$input_files\" $extra_params ${POSITIONAL[@]}
 error = $ERR_OUTPUT/$(basename $fullname .root).err
 output = $STD_OUTPUT/$(basename $fullname .root).output
 Queue
@@ -270,5 +276,5 @@ done
 
 echo SUBMITTING JOBS....
 
-condor_submit $output_file
+# condor_submit $output_file
 rm $output_file

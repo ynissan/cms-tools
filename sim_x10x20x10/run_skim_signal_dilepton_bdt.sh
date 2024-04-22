@@ -17,6 +17,11 @@ do
         POSITIONAL+=("$1")
         shift
         ;;
+        --phase1)
+        PHASE1=true
+        POSITIONAL+=("$1")
+        shift
+        ;;
         --sam)
         SAM=true
         POSITIONAL+=("$1")
@@ -40,20 +45,26 @@ cmsenv
 
 
 INPUT_DIR=$SKIM_SIG_OUTPUT_DIR
-
+BDT_DIR=$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt
 if [ -n "$SAM" ]; then
     echo "GOT SAM"
     echo "HERE: $@"
     INPUT_DIR=$SKIM_SIG_SAM_OUTPUT_DIR
     #OUTPUT_DIR=$SKIM_SAM_SIG_BDT_OUTPUT_DIR
-elif [ -n "$SC" ]; then
-    echo "GOT SC"
+elif [ -n "$PHASE1" ]; then
+    echo "GOT PHASE1"
     echo "HERE: $@"
-    OUTPUT_DIR=$SKIM_SIG_DILEPTON_BDT_SC_OUTPUT_DIR
-    INPUT_DIR=$SKIM_SIG_BDT_SC_OUTPUT_DIR
+    INPUT_DIR=$SKIM_SIG_PHASE1_OUTPUT_DIR
+    BDT_DIR=$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt_phase1
+#     TRACK_SPLIT_DIR=$LEPTON_TRACK_PHASE1_SPLIT_DIR######neeee
+# elif [ -n "$SC" ]; then
+#     echo "GOT SC"
+#     echo "HERE: $@"
+#     OUTPUT_DIR=$SKIM_SIG_DILEPTON_BDT_SC_OUTPUT_DIR
+#     INPUT_DIR=$SKIM_SIG_BDT_SC_OUTPUT_DIR
 fi
 
-BDT_DIR=$OUTPUT_WD/cut_optimisation/tmva/dilepton_bdt
+
 
 timestamp=$(date +%Y%m%d_%H%M%S%N)
 output_file="${WORK_DIR}/condor_submut.${timestamp}"
