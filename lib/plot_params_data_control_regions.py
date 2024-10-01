@@ -234,13 +234,6 @@ class track_muons_data_control_region(BaseParams):
         'MET' : "Weight * passedMhtMet6pack * tEffhMetMhtRealXMht2016 * BranchingRatio",
     }
     
-    calculatedLumi = {
-        #Before nomult
-        #'MET' : 35.712736198,
-        #Afrer nomult
-        'MET' : 35.73895434
-    }
-    
     turnOnOnlyUsedObsInTree = True
     usedObs = ["passesUniversalSelection", "BranchingRatio","Weight","passedMhtMet6pack","tEffhMetMhtRealXMht2016","puWeight","MinDeltaPhiMhtJets","BTagsDeepMedium","twoLeptons%%%","MHT","MET","leptonFlavour%%%","invMass%%%","vetoElectronsPassIso","vetoMuonsPassIso","isoCr%%%","sameSign%%%", "leptons%%%", "deltaR%%%", "trackBDT%%%", "exclusiveTrack%%%", "exTrack_invMass%%%", "exclusiveTrackLeptonFlavour%%%", "sc_exclusiveTrack%%%", "sc_trackBDT%%%", "sc_exTrack_invMass%%%", "sc_exclusiveTrackLeptonFlavour%%%", "exTrack_dilepBDT%%%", "sc_exTrack_dilepBDT%%%"]
     injectJetIsoToList(usedObs, jetIsoStr)
@@ -255,7 +248,7 @@ class track_muons_data_control_region(BaseParams):
     blind_data = True
 
     save_histrograms_to_file = True
-    load_histrograms_from_file = False
+    load_histrograms_from_file = True
     
 
     sig_line_width = 3
